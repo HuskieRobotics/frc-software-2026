@@ -3,8 +3,13 @@
   "robotLength": 0.85725,
   "holonomicMode": true,
   "pathFolders": [
-    "XRP",
-    "Tuning"
+    "Depot+Climb",
+    "Neutral Zone+Climb",
+    "Neutral Zone+Depot",
+    "Neutral Zone x2",
+    "Shoot Preload+Climb",
+    "Tuning",
+    "XRP"
   ],
   "autoFolders": [
     "XRP",
