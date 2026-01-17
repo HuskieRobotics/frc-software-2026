@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 12.966244444444444,
-        "y": 7.421133333333334
+        "x": 8.937,
+        "y": 6.881
       },
       "prevControl": null,
       "nextControl": {
-        "x": 9.388956109134046,
-        "y": 7.3434519572953745
+        "x": 13.606559905106213,
+        "y": 8.311779359435985
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.937069988137605,
-        "y": 6.880806642941875
+        "x": 14.779311981020166,
+        "y": 4.277081850533808
       },
       "prevControl": {
-        "x": 8.990865954922896,
-        "y": 7.515599051008303
+        "x": 14.273629893238436,
+        "y": 7.225100830367734
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Neutral Zone+Climb",
