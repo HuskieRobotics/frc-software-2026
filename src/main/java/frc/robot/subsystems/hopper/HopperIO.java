@@ -1,5 +1,12 @@
 package frc.robot.subsystems.hopper;
 
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface HopperIO {
@@ -15,22 +22,30 @@ public interface HopperIO {
     public static class HopperIOInputs {
 
         // Voltage
-        double backVoltageSupplied = 0.0;
-        double midVoltageSupplied = 0.0;
+        Voltage rollerVoltageSupplied = Volts.of(0.0);
+        Voltage spindexerVoltageSupplied = Volts.of(0.0);
 
-        // Temp FIXME: the following may not be needed
-        // double backTemperatureCelsius = 0.0;
-        // double midTemperatureCelsius = 0.0;
+        // Temp 
+        Temperature rollerTemperatureCelsius = Celsius.of(0.0);
+        Temperature spindexerTemperatureCelsius = Celsius.of(0.0);
 
         // Connections
-        boolean backMotorConnected = false;
-        boolean midMotorConnected = false;
+        boolean rollerMotorConnected = false;
+        boolean spindexerMotorConnected = false;
+
+        // Stator 
+        Current spindexerStatorCurrentAmps = Amps.of(0.0);
+        Current rollerStatorCurrentAmps = Amps.of(0.0);
+
+        // Supply
+        Current spindexerSupplyCurrentAmps = Amps.of(0.0);
+        Current rollerSupplyCurrentAmps = Amps.of(0.0);
 
 
     }
 
-    public default void setBackVoltage(double voltage) {}
-    public default void setMidVoltage(double voltage) {}
+    public default void setRollerVoltage(double voltage) {}
+    public default void setSpindexerVoltage(double voltage) {}
 
     public default void updateInputs(HopperIOInputs inputs) {}
 
