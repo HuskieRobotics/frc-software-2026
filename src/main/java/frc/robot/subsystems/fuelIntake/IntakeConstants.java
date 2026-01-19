@@ -56,6 +56,15 @@ public class IntakeConstants {
 
     public static final double ROLLER_LOWER_CURRENT_LIMIT = 0;
 
+
+    public static final double INTAKE_ROLLER_VELOCITY_RPS = 0;
+
+
+    public static final Distance DEPLOYED_POSITION_ROTATIONS = null;
+
+
+    public static final Distance RETRACTED_POSITION_ROTATIONS = null;
+
    
   }
 
