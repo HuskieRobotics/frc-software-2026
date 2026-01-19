@@ -11,6 +11,7 @@ package frc.lib.team254;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.StatusSignalCollection;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
@@ -18,6 +19,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import java.util.function.Supplier;
 
@@ -400,4 +407,13 @@ public class Phoenix6Util {
         canivoreSignalsAlert);
     checkError(rioSignals.refreshAll(), "failed to refresh signals on RIO:", rioSignalsAlert);
   }
+
+public static void registerSignals(StatusSignal<Voltage> rollerVoltageSS, StatusSignal<Voltage> deployerVoltageSS,
+        StatusSignal<AngularVelocity> rollerVelocitySS, StatusSignal<Current> rollerStatorCurrentSS,
+        StatusSignal<Current> deployerStatorCurrentSS, StatusSignal<Current> rollerSupplyCurrentSS,
+        StatusSignal<Current> deployerSupplyCurrentSS, StatusSignal<Temperature> rollerTempSS,
+        StatusSignal<Temperature> deployerTempSS, StatusSignal<Angle> deployerPositionSS) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'registerSignals'");
+}
 }

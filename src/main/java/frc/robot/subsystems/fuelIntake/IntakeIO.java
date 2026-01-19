@@ -3,6 +3,7 @@ package frc.robot.subsystems.fuelIntake;
 
 import static edu.wpi.first.units.Units.*;
 
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -17,7 +18,7 @@ public interface IntakeIO {
     public static class IntakeIOInputs {
     //rollers
     Voltage rollerVoltage = Volts.of(0);
-    AngularVelocity rollerVelocityRadPerSec = RotationsPerSecond.of(0.0);
+    AngularVelocity rollerVelocityRPS = RotationsPerSecond.of(0.0);
     Current rollerStatorCurrentAmps = Amps.of(0);
     Current rollerSupplyCurrentAmps = Amps.of(0);
     Temperature rollerTempCelcius = Celsius.of(0);
@@ -27,7 +28,6 @@ public interface IntakeIO {
 
     //deployer
     Voltage deployerVoltage = Volts.of(0);
-    AngularVelocity deployerVelocityRadPerSec = RotationsPerSecond.of(0);
     Current deployerStatorCurrentAmps = Amps.of(0);
     Current deployerSupplyCurrentAmps = Amps.of(0);
     Temperature deployerTempCelcius = Celsius.of(0);
