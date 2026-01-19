@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5536000000000003,
-        "y": 3.742744444444444
+        "x": 7.495,
+        "y": 6.978
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8979635320460617,
-        "y": 3.760438580696054
+        "x": 3.116346381962569,
+        "y": 8.182669039149175
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7093666666666665,
-        "y": 3.742744444444444
+        "x": 2.406239620403322,
+        "y": 6.020071174377224
       },
       "prevControl": {
-        "x": 1.217600588360953,
-        "y": 3.7364114215755797
+        "x": 2.707497034394361,
+        "y": 7.052953736658072
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 0.0,
+    "rotation": -43.531
   },
   "reversed": false,
-  "folder": "Shoot Preload+Climb",
+  "folder": "Neutral Zone x2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
