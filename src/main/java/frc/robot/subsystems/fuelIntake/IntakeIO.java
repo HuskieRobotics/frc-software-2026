@@ -34,8 +34,9 @@ public interface IntakeIO {
     Angle deployerReferencePositionDeg = Rotations.of(0);
     Distance linearPosition = Meters.of(0);
     Angle angularPosition = Rotations.of(0);
-
-    boolean closedLoopError = false;
+    Angle closedLoopError = Rotations.of(0);
+    Angle closedLoopReference = Rotation.of(0);
+    
     boolean deployerConnected = false;
         
     }
