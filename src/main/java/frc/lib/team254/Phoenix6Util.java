@@ -408,12 +408,5 @@ public class Phoenix6Util {
     checkError(rioSignals.refreshAll(), "failed to refresh signals on RIO:", rioSignalsAlert);
   }
 
-public static void registerSignals(StatusSignal<Voltage> rollerVoltageSS, StatusSignal<Voltage> deployerVoltageSS,
-        StatusSignal<AngularVelocity> rollerVelocitySS, StatusSignal<Current> rollerStatorCurrentSS,
-        StatusSignal<Current> deployerStatorCurrentSS, StatusSignal<Current> rollerSupplyCurrentSS,
-        StatusSignal<Current> deployerSupplyCurrentSS, StatusSignal<Temperature> rollerTempSS,
-        StatusSignal<Temperature> deployerTempSS, StatusSignal<Angle> deployerPositionSS) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'registerSignals'");
-}
+
 }
