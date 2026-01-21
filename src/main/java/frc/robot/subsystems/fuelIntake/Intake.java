@@ -29,8 +29,8 @@ public class Intake extends SubsystemBase {
         new LoggedTunableNumber("Intake/DeployerCurrent", 0.0);
 
     
-    private final Debouncer deployerDeployedDebouncer = new Debouncer(0.1);
-    private final Debouncer deployerRetractedDebouncer = new Debouncer(0.1);
+    private final Debouncer deployerDeployedDebouncer = new Debouncer(0.5);
+    private final Debouncer deployerRetractedDebouncer = new Debouncer(0.5);
 
     
 
