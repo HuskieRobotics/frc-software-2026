@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
+
     
     @AutoLog
     public static class IntakeIOInputs {
@@ -43,14 +44,16 @@ public interface IntakeIO {
 
     public default void updateInputs(IntakeIOInputs inputs) {}
 
-    public default void setRollerVelocity(double Velocity) {}
+    public default void setRollerVelocity(double velocity) {}
 
     public default void setRollerVoltage(Voltage volts) {}
 
     public default void  setDeployerPosition(Distance linearDistance) {}
 
-    public default void setDeployerVoltage (Voltage volts) {}
+    public default void setDeployerVoltage (Voltage Volts) {}
 
     public default void setDeployerCurrent (Current amps) {}
+
+    
 }
 

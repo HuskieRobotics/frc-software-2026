@@ -1,11 +1,22 @@
 package frc.robot.subsystems.fuelIntake;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volt;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.subsystems.elevator.ElevatorConstants.JAMMED_CURRENT_AMPS;
+import static frc.robot.subsystems.elevator.ElevatorConstants.JAMMED_TIME_THRESHOLD_SECONDS;
+
+import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
@@ -14,6 +25,13 @@ public class Intake extends SubsystemBase {
     private final IntakeIO io;
 
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+
+
+    private CurrentSpikeDetector rollerJamDetector =
+        new CurrentSpikeDetector(JAMMED_CURRENT_AMPS, JAMMED_TIME_THRESHOLD_SECONDS);
+
+    private Alert rollerJamAlert =
+        new Alert("Intake Roller Jammed 💀, use manual control.", Alert.AlertType.kError);
 
     private final LoggedTunableNumber testingMode = 
         new LoggedTunableNumber("Intake/TestingMode", 0);
@@ -39,15 +57,25 @@ public class Intake extends SubsystemBase {
 
     }
 
+    private final SysIdRoutine rollerSysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
+              Volts.of(2.0), // override default step voltage (7 V)
+              null, // Use default timeout (10 s)
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(output -> io.setRollerVoltage(output), null, this));
+
     @Override
     public void periodic() {
         io.updateInputs(inputs);
 
+    
     }
 
     
 
-    public void intake() {
+    public void startRoller() {
         io.setRollerVelocity(IntakeConstants.INTAKE_ROLLER_VELOCITY_RPS);
     }
 
@@ -55,13 +83,16 @@ public class Intake extends SubsystemBase {
         io.setRollerVelocity(0.0);
     }
 
-    public void deploy(){
+    public void deployIntake(){
         io.setDeployerPosition(IntakeConstants.DEPLOYED_POSITION_ROTATIONS);
     }
 
-    public void retract(){
+    public void retractIntake(){
         io.setDeployerPosition(IntakeConstants.RETRACTED_POSITION_ROTATIONS);
     }
+
+
+
 
         public boolean isDeployed() {
            // Only consider deployed if the hardware is connected

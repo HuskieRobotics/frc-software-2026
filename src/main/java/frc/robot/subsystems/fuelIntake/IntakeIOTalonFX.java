@@ -1,7 +1,7 @@
 package frc.robot.subsystems.fuelIntake;
 
 import static edu.wpi.first.units.Units.Rotations;
-
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -209,8 +209,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void setRollerVoltage(Voltage volts) {
-        this.rollerMotor.setControl(rollerVoltageRequest.withOutput(volts));
+    public void setRollerVoltage(Voltage Volts) {
+        this.rollerMotor.setControl(rollerVoltageRequest.withOutput(Volts));
     }
 
     @Override
