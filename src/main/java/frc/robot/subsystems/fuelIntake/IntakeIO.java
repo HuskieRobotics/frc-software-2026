@@ -21,6 +21,8 @@ public interface IntakeIO {
     Current rollerSupplyCurrentAmps = Amps.of(0);
     Temperature rollerTempCelcius = Celsius.of(0);
     AngularVelocity rollerReferenceVelocityRadPerSec = RotationsPerSecond.of(0);
+    Angle rollerClosedLoopError = Rotations.of(0);
+    Angle rollerClosedLoopReference = Rotations.of(0);
 
     boolean rollerConnected = false;
 
@@ -32,8 +34,8 @@ public interface IntakeIO {
     Angle deployerReferencePositionDeg = Rotations.of(0);
     Distance linearPosition = Meters.of(0);
     Angle angularPosition = Rotations.of(0);
-    Angle closedLoopError = Rotations.of(0);
-    Angle closedLoopReference = Rotation.of(0);
+    Angle deployerClosedLoopError = Rotations.of(0);
+    Angle deployerClosedLoopReference = Rotations.of(0);
 
     boolean deployerConnected = false;
   }
@@ -43,6 +45,8 @@ public interface IntakeIO {
   public default void setRollerVelocity(double velocity) {}
 
   public default void setRollerVoltage(Voltage volts) {}
+
+  public default void setRollerCurrent(Current amps) {}
 
   public default void setDeployerPosition(Distance linearDistance) {}
 
