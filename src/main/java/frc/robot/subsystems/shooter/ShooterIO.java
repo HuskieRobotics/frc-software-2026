@@ -17,36 +17,39 @@ public interface ShooterIO {
   // each device is reachable. Due to logging limitations, properties cannot be a subtype of
   // Measure. Therefore all properties are suffix with their unit to mitigate bugs due to unit
   // mismatches.
+
   @AutoLog
+  // IO Inputs are below
   public static class ShooterIOInputs {
 
     // Kicker inputs
     boolean kickerConnected = false;
-    Current kickerStatorCurret = Amps.of(0.0);
-    Current kickerSupplyCurret = Amps.of(0.0);
+    Current kickerStatorCurrent = Amps.of(0.0);
+    Current kickerSupplyCurrent = Amps.of(0.0);
     Voltage kickerVoltage = Volts.of(0.0);
-    Temperature kickTemperature = Celsius.of(0.0);
+    Temperature kickerTemperature = Celsius.of(0.0);
 
-    // Flywheel inputs
-    boolean flywheelConnected = false;
-    Current flywheelStatorCurrent = Amps.of(0.0);
-    Current flywheelSupplyCurrent = Amps.of(0.0);
-    Current flywheelTorqueCurrent = Amps.of(0.0);
-    AngularVelocity flywheelVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelReferenceVelocity = RotationsPerSecond.of(0.0); // chached from set method
-    AngularVelocity flywheelClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
-    AngularVelocity flywheelClosedLoopErrorVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
+    // Flywheel Lead inputs
+    boolean flywheelLeadConnected = false;
+    Current flywheelLeadStatorCurrent = Amps.of(0.0);
+    Current flywheelLeadSupplyCurrent = Amps.of(0.0);
+    Current flywheelLeadTorqueCurrent = Amps.of(0.0);
+    AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0); // cached from set method
+    AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
+    AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
+    Temperature flywheelLeadTemperature = Celsius.of(0.0);
 
     // Turret inputs
     boolean turretConnected = false;
     Current turretStatorCurrent = Amps.of(0.0);
     Current turretSupplyCurrent = Amps.of(0.0);
-    
     Voltage turretVoltage = Volts.of(0.0);
     Angle turretPosition = Degrees.of(0.0);
     Angle turretReferencePosition = Degrees.of(0.0); // cached from set method
     Angle turretClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
     Angle turretClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
+    Temperature turretTemperature = Celsius.of(0.0);
 
     // Hood inputs
     boolean hoodConnected = false;
@@ -57,36 +60,29 @@ public interface ShooterIO {
     Angle hoodReferencePosition = Degrees.of(0.0); // cached from set method
     Angle hoodClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
     Angle hoodClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
+    Temperature hoodTemperature = Celsius.of(0.0);
     
     // Encoder inputs (tbd)
+    Angle encoderAngleDegrees = Degrees.of(0.0);
+    AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
 
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-  public default void setShooterWheelTopVelocity(AngularVelocity velocity) {}
-
-  public default void setShooterWheelBottomVelocity(AngularVelocity velocity) {}
-
-  public default void setShooterWheelTopCurrent(Current amps) {}
-
-  public default void setShooterWheelBottomCurrent(Current amps) {}
-
   // Kicker IO methods
-  public default void setKickerMotorIntakeVoltage(Voltage voltage) {}
+  public default void setKickerVoltage(Voltage voltage) {}
+  public default void setKickerUnjamVoltage(Voltage voltage) {}
 
   // Flywheel IO methods
   public default void setFlywheelVelocity(AngularVelocity velocity) {}
-
-  public default void setFlywheelTorqueCurrent(Current amps) {}
+  // public default void setFlywheelTorqueCurrent(Current amps) {} //FIXME: unsure if this is needed
 
   // Turret IO methods
   public default void setTurretPosition(Angle position) {}
-
   public default void setTurretVoltage(Voltage voltage) {}
 
   // Hood IO methods
   public default void setHoodPosition(Angle position) {}
-
   public default void setHoodVoltage(Voltage voltage) {}
 }

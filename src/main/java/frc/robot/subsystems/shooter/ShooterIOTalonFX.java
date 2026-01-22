@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
+import javax.swing.text.Position;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
@@ -17,6 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -35,27 +38,43 @@ import frc.robot.Constants;
 public class ShooterIOTalonFX implements ShooterIO {
 
   // We usually use VelocityTorqueCurrentFOC to control the velocity of a wheel.
-  private VelocityTorqueCurrentFOC shootMotorTopVelocityRequest;
-  private VelocityTorqueCurrentFOC shootMotorBottomVelocityRequest;
-  private TorqueCurrentFOC shootMotorTopCurrentRequest;
-  private TorqueCurrentFOC shootMotorBottomCurrentRequest;
+  private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
+  private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
-  private StatusSignal<Current> shootMotorTopStatorCurrentStatusSignal;
-  private StatusSignal<Current> shootMotorBottomStatorCurrentStatusSignal;
-  private StatusSignal<Current> shootMotorTopSupplyCurrentStatusSignal;
-  private StatusSignal<Current> shootMotorBottomSupplyCurrentStatusSignal;
-  private StatusSignal<AngularVelocity> shootMotorTopVelocityStatusSignal;
-  private StatusSignal<AngularVelocity> shootMotorBottomVelocityStatusSignal;
-  private StatusSignal<Temperature> shootMotorTopTemperatureStatusSignal;
-  private StatusSignal<Temperature> shootMotorBottomTemperatureStatusSignal;
-  private StatusSignal<Voltage> shootMotorTopVoltageStatusSignal;
-  private StatusSignal<Voltage> shootMotorBottomVoltageStatusSignal;
-  private StatusSignal<Distance> gamePieceDistanceStatusSignal;
-  private StatusSignal<Double> gamePieceSignalStrengthStatusSignal;
-  private StatusSignal<Boolean> gamePieceDetectedStatusSignal;
+  private StatusSignal<Current> flywheelLeadStatorCurrentStatusSignal;
+  private StatusSignal<Current> flywheelLeadSupplyCurrentStatusSignal;
+  private StatusSignal<Current> flywheelLeadTorqueCurrentStatusSignal;
+  private StatusSignal<Current> kickerStatorCurrentStatusSignal;
+  private StatusSignal<Current> kickerSupplyCurrentStatusSignal;
+  private StatusSignal<Current> turretStatorCurrentStatusSignal;
+  private StatusSignal<Current> turretSupplyCurrentStatusSignal;
+  private StatusSignal<Current> hoodStatorCurrentStatusSignal;
+  private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
 
-  private AngularVelocity shootTopMotorReferenceVelocity = RotationsPerSecond.of(0.0);
-  private AngularVelocity shootBottomMotorReferenceVelocity = RotationsPerSecond.of(0.0);
+// Angular Velocity Status Signals
+// For flywheel lead motor
+  private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
+  private StatusSignal<AngularVelocity> flywheelLeadReferenceVelocityStatusSignal;
+  private StatusSignal<AngularVelocity> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
+  private StatusSignal<AngularVelocity> flywheelLeadClosedLoopErrorVelocityStatusSignal;
+
+  private StatusSignal<Temperature> flywheelTemperatureStatusSignal;
+  private StatusSignal<Temperature> kickerTemperatureStatusSignal;
+  private StatusSignal<Temperature> turretTemperatureStatusSignal;
+  private StatusSignal<Temperature> hoodTemperatureStatusSignal;
+
+  private StatusSignal<Voltage> flywheelVoltageStatusSignal;
+  private StatusSignal<Voltage> kickerVoltageStatusSignal;
+  private StatusSignal<Voltage> turretVoltageStatusSignal;
+  private StatusSignal<Voltage> hoodVoltageStatusSignal;
+
+  private StatusSignal<Angle> turretPositionStatusSignal;
+  private StatusSignal<Angle> hoodPositionStatusSignal;
+
+  private AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
+  private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
+  private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+  private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
 
   private final Debouncer topMotorConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer bottomMotorConnectedDebouncer = new Debouncer(0.5);
@@ -64,8 +83,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   private VelocitySystemSim shootMotorTopSim;
   private VelocitySystemSim shootMotorBottomSim;
 
-  private Alert topMotorConfigAlert =
-      new Alert("Failed to apply configuration for shooter top motor.", AlertType.kError);
+  private Alert flywheelLeadConfigAlert =
+      new Alert("Failed to apply configuration for fly wheel lead motor.", AlertType.kError);
   private Alert bottomMotorConfigAlert =
       new Alert("Failed to apply configuration for shooter bottom motor.", AlertType.kError);
   private Alert gamePieceDetectorConfigAlert =
@@ -79,8 +98,8 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Top kI", ShooterConstants.TOP_SHOOT_KI);
   private final LoggedTunableNumber shootMotorTopKD =
       new LoggedTunableNumber("Shooter/Top kD", ShooterConstants.TOP_SHOOT_KD);
-  private final LoggedTunableNumber shootMotorTopKS =
-      new LoggedTunableNumber("Shooter/Top kS", ShooterConstants.TOP_SHOOT_KS);
+private final LoggedTunableNumber flywheelKS =
+    new LoggedTunableNumber("Shooter/Flywheel kS", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KS);
   private final LoggedTunableNumber shootMotorBottomKP =
       new LoggedTunableNumber("Shooter/Bottom kP", ShooterConstants.BOTTOM_SHOOT_KP);
   private final LoggedTunableNumber shootMotorBottomKI =
@@ -110,10 +129,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     shootMotorBottom = new TalonFX(BOTTOM_SHOOTER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     gamePieceDetector = new CANrange(GAME_PIECE_SENSOR_ID, RobotConfig.getInstance().getCANBus());
 
-    shootMotorTopVelocityRequest = new VelocityTorqueCurrentFOC(0);
-    shootMotorBottomVelocityRequest = new VelocityTorqueCurrentFOC(0);
-    shootMotorTopCurrentRequest = new TorqueCurrentFOC(0);
-    shootMotorBottomCurrentRequest = new TorqueCurrentFOC(0);
+    flywheelVelocityRequest = new VelocityTorqueCurrentFOC(0);
+    flywheelCurrentRequest = new TorqueCurrentFOC(0);
 
     shootMotorTopVelocityStatusSignal = shootMotorTop.getVelocity();
     shootMotorBottomVelocityStatusSignal = shootMotorBottom.getVelocity();

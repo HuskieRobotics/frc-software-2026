@@ -151,6 +151,39 @@ public class Shooter extends SubsystemBase {
     LoggedTracer.record("Shooter");
   }
 
+  // Subsystem methods
+
+  public void setKickerMotorIntakeVoltage(Voltage currentMotorIntakeVoltage) {
+    io.setKickerMotorIntakeVoltage(currentMotorIntakeVoltage);
+  }
+
+  public void setFlywheelVelocity(Voltage currentMotorFlywheelVoltage) {
+    io.setFlywheelVelocity(currentMotorFlywheelVoltage);
+  }
+
+  // we use torque current instead of a regular current
+  public void setFlywheelTorqueCurrent() {
+    io.setFlywheel
+  }
+
+  public void setTurretPosition() {
+    
+  }
+
+  public void setTurretVoltage() {
+    
+  }
+
+  public void setHoodPosition() {
+    
+  }
+
+  public void setHoodVoltage() {
+    
+  }
+
+
+
   public void setIdleVelocity() {
     io.setShooterWheelBottomVelocity(SHOOTER_IDLE_VELOCITY);
     io.setShooterWheelTopVelocity(SHOOTER_IDLE_VELOCITY);
@@ -212,6 +245,8 @@ public class Shooter extends SubsystemBase {
                   io.setShooterWheelTopVelocity(RotationsPerSecond.of(0.0));
                 }));
   }
+
+
 
   private Command getPresetCheckCommand(Distance distance) {
     return Commands.sequence(
