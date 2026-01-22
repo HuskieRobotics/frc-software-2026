@@ -14,9 +14,12 @@ public class ShooterConstants {
 
   public static final String SUBSYSTEM_NAME = "Shooter";
 
-  public static final int TOP_SHOOTER_MOTOR_ID = 27;
-  public static final int BOTTOM_SHOOTER_MOTOR_ID = 28;
-  public static final int GAME_PIECE_SENSOR_ID = 29;
+  // change the ids once we get the updated stuff
+  public static final int LEAD_FLYWHEEL_MOTOR_ID = 0;
+  public static final int BOTTOM_SHOOTER_MOTOR_ID = 0;
+  public static final int GAME_PIECE_SENSOR_ID = 0;
+  public static final int HOOD_MOTOR_ID = 0;
+  public static final int TURRET_MOTOR_ID = 0;
 
   // PID constants are determined empirically through tuning
   public static final double TOP_SHOOT_KP = 5.0;
@@ -49,4 +52,35 @@ public class ShooterConstants {
   // game pirece detection constants
   public static final double DETECTOR_MIN_SIGNAL_STRENGTH = 2000;
   public static final double DETECTOR_PROXIMITY_THRESHOLD = 0.1;
+
+
+
+
+
+  //THIS IS REAL STUFF THAT TYLER ADDED
+  //Flywheel PID Constants (subject to change)
+  public static final double FLYWHEELROTATION_KP = 0.0;
+  public static final double FLYWHEELROTATION_KI = 0.0;
+  public static final double FLYWHEELROTATION_KD = 0.0;
+
+  //Turret PID Constants (subject to change)
+  public static final double TURRETROTATION_KP = 0.0;
+  public static final double TURRETROTATION_KI = 0.0;
+  public static final double TURRETROTATION_KD = 0.0;
+
+  //Hood PID Constants (subject to change)
+  public static final double HOODROTATION_KP = 0.0;
+  public static final double HOODROTATION_KI = 0.0;
+  public static final double HOODROTATION_KD = 0.0;
+
+  //Hard coded non-tunable physics values
+  public static final double MOTOR_KS = 0.0;
+  public static final double MOTOR_KG = 0.0;
+  public static final double ROTATION_KV = 0.0;
+  public static final double ROTATION_KA = 0.0;
+
+  //Motion magic PID constants
+  public static final double ROTATION_EXPO_KV = 0.0;
+  public static final double ROTATION_EXPO_KA = 0.0;
+  public static final double MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
 }

@@ -4,9 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
@@ -20,33 +20,46 @@ public interface ShooterIO {
   @AutoLog
   public static class ShooterIOInputs {
 
-    // Top Shooter Motor Inputs
-    boolean shootMotorTopConnected = false;
-    Current shootMotorTopStatorCurrent = Amps.of(0.0);
-    Current shootMotorTopSupplyCurrent = Amps.of(0.0);
-    AngularVelocity shootMotorTopVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorTopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorTopClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorTopClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature shootMotorTopTemperature = Celsius.of(0.0);
-    Voltage shootMotorTopVoltage = Volts.of(0.0);
+    // Kicker inputs
+    boolean kickerConnected = false;
+    Current kickerStatorCurret = Amps.of(0.0);
+    Current kickerSupplyCurret = Amps.of(0.0);
+    Voltage kickerVoltage = Volts.of(0.0);
+    Temperature kickTemperature = Celsius.of(0.0);
 
-    // Bottom Shooter Motor Inputs
-    boolean shootMotorBottomConnected = false;
-    Current shootMotorBottomStatorCurrent = Amps.of(0.0);
-    Current shootMotorBottomSupplyCurrent = Amps.of(0.0);
-    AngularVelocity shootMotorBottomVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorBottomReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorBottomClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorBottomClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature shootMotorBottomTemperature = Celsius.of(0.0);
-    Voltage shootMotorBottomVoltage = Volts.of(0.0);
+    // Flywheel inputs
+    boolean flywheelConnected = false;
+    Current flywheelStatorCurrent = Amps.of(0.0);
+    Current flywheelSupplyCurrent = Amps.of(0.0);
+    Current flywheelTorqueCurrent = Amps.of(0.0);
+    AngularVelocity flywheelVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelReferenceVelocity = RotationsPerSecond.of(0.0); // chached from set method
+    AngularVelocity flywheelClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
+    AngularVelocity flywheelClosedLoopErrorVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
 
-    // Game Piece Detection
-    boolean sensorConnected = false;
-    boolean hasGamePiece = false;
-    Distance distanceToGamePiece = Meters.of(0.0);
-    double signalStrength = 0.0;
+    // Turret inputs
+    boolean turretConnected = false;
+    Current turretStatorCurrent = Amps.of(0.0);
+    Current turretSupplyCurrent = Amps.of(0.0);
+    
+    Voltage turretVoltage = Volts.of(0.0);
+    Angle turretPosition = Degrees.of(0.0);
+    Angle turretReferencePosition = Degrees.of(0.0); // cached from set method
+    Angle turretClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
+    Angle turretClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
+
+    // Hood inputs
+    boolean hoodConnected = false;
+    Current hoodStatorCurrent = Amps.of(0.0);
+    Current hoodSupplyCurrent = Amps.of(0.0);
+    Voltage hoodVoltage = Volts.of(0.0);
+    Angle hoodPosition = Degrees.of(0.0);
+    Angle hoodReferencePosition = Degrees.of(0.0); // cached from set method
+    Angle hoodClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
+    Angle hoodClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
+    
+    // Encoder inputs (tbd)
+
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
@@ -58,4 +71,22 @@ public interface ShooterIO {
   public default void setShooterWheelTopCurrent(Current amps) {}
 
   public default void setShooterWheelBottomCurrent(Current amps) {}
+
+  // Kicker IO methods
+  public default void setKickerMotorIntakeVoltage(Voltage voltage) {}
+
+  // Flywheel IO methods
+  public default void setFlywheelVelocity(AngularVelocity velocity) {}
+
+  public default void setFlywheelTorqueCurrent(Current amps) {}
+
+  // Turret IO methods
+  public default void setTurretPosition(Angle position) {}
+
+  public default void setTurretVoltage(Voltage voltage) {}
+
+  // Hood IO methods
+  public default void setHoodPosition(Angle position) {}
+
+  public default void setHoodVoltage(Voltage voltage) {}
 }

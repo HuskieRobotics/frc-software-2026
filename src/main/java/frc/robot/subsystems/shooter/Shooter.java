@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -61,6 +62,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Top Wheel Current", 0);
   private final LoggedTunableNumber bottomWheelCurrent =
       new LoggedTunableNumber("Shooter/Bottom Wheel Current", 0);
+  private final LoggedTunableBoolean isShooterReady = 
+      new LoggedTunableBoolean("Shooter/Is Shooter Ready", false);
+    
 
   // As an alternative to determining a mathematical function to map distances to velocities,
   // we can use an InterpolatingDoubleTreeMap to store the distances and their corresponding
