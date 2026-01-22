@@ -1,8 +1,6 @@
 package frc.robot.subsystems.fuelIntake;
 
-
 import static edu.wpi.first.units.Units.*;
-
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -14,10 +12,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
 
-    
-    @AutoLog
-    public static class IntakeIOInputs {
-    //rollers
+  @AutoLog
+  public static class IntakeIOInputs {
+    // rollers
     Voltage rollerVoltage = Volts.of(0);
     AngularVelocity rollerVelocityRPS = RotationsPerSecond.of(0.0);
     Current rollerStatorCurrentAmps = Amps.of(0);
@@ -27,7 +24,7 @@ public interface IntakeIO {
 
     boolean rollerConnected = false;
 
-    //deployer
+    // deployer
     Voltage deployerVoltage = Volts.of(0);
     Current deployerStatorCurrentAmps = Amps.of(0);
     Current deployerSupplyCurrentAmps = Amps.of(0);
@@ -37,23 +34,19 @@ public interface IntakeIO {
     Angle angularPosition = Rotations.of(0);
     Angle closedLoopError = Rotations.of(0);
     Angle closedLoopReference = Rotation.of(0);
-    
+
     boolean deployerConnected = false;
-        
-    }
+  }
 
-    public default void updateInputs(IntakeIOInputs inputs) {}
+  public default void updateInputs(IntakeIOInputs inputs) {}
 
-    public default void setRollerVelocity(double velocity) {}
+  public default void setRollerVelocity(double velocity) {}
 
-    public default void setRollerVoltage(Voltage volts) {}
+  public default void setRollerVoltage(Voltage volts) {}
 
-    public default void  setDeployerPosition(Distance linearDistance) {}
+  public default void setDeployerPosition(Distance linearDistance) {}
 
-    public default void setDeployerVoltage (Voltage Volts) {}
+  public default void setDeployerVoltage(Voltage Volts) {}
 
-    public default void setDeployerCurrent (Current amps) {}
-
-    
+  public default void setDeployerCurrent(Current amps) {}
 }
-
