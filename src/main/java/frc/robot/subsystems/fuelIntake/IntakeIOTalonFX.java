@@ -176,13 +176,13 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollerVelocityRPS = rollerVelocitySS.getValue();
     inputs.rollerStatorCurrentAmps = rollerStatorCurrentSS.getValue();
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentSS.getValue();
-    inputs.rollerTempCelcius = rollerTempSS.getValue();
+    inputs.rollerTempCelsius = rollerTempSS.getValue();
     inputs.rollerVoltage = rollerVoltageSS.getValue();
 
     inputs.deployerVoltage = deployerVoltageSS.getValue();
     inputs.deployerStatorCurrentAmps = deployerStatorCurrentSS.getValue();
     inputs.deployerSupplyCurrentAmps = deployerSupplyCurrentSS.getValue();
-    inputs.deployerTempCelcius = deployerTempSS.getValue();
+    inputs.deployerTempCelsius = deployerTempSS.getValue();
 
     if (Constants.TUNING_MODE) {
       inputs.rollerClosedLoopError = Rotations.of(rollerMotor.getClosedLoopError().getValueAsDouble());

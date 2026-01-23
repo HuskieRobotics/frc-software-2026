@@ -4,8 +4,11 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,12 +33,12 @@ public class Intake extends SubsystemBase {
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Intake/TestingMode", 0);
   private final LoggedTunableNumber rollerVelocityRPS =
       new LoggedTunableNumber("Intake/RollerVelocityRPS", 0.0);
+  private final LoggedTunableNumber rollerCurrent =
+      new LoggedTunableNumber("Intake/RollerCurrent", 0.0);
   private final LoggedTunableNumber deployerPositionRotations =
       new LoggedTunableNumber("Intake/DeployerPositionRotations", 0.0);
   private final LoggedTunableNumber deployerVoltage =
       new LoggedTunableNumber("Intake/DeployerVoltage", 0.0);
-  private final LoggedTunableNumber rollerVoltage =
-      new LoggedTunableNumber("Intake/RollerVoltage", 0.0);
   private final LoggedTunableNumber deployerCurrent =
       new LoggedTunableNumber("Intake/DeployerCurrent", 0.0);
 
@@ -51,13 +54,33 @@ public class Intake extends SubsystemBase {
           new SysIdRoutine.Config(
               Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
               Volts.of(2.0), // override default step voltage (7 V)
-              null, // Use default timeout (10 s)
+              null, // Use default timeout (10 s
               state -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(io::setRollerVoltage, null, this));
+
+  private final SysIdRoutine deployerSysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
+              Volts.of(2.0), // override default step voltage (7 V)
+              null, // Use default timeout (10 s
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(io::setDeployerVoltage, null, this));
+
+  
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+
+    Logger.processInputs(IntakeConstants.SUBSYSTEM_NAME, inputs);
+
+    if (testingMode.get() == 1) {
+      io.setRollerVelocity(rollerVelocityRPS.get());
+      io.setRollerCurrent(Amps.of(rollerCurrent.get()));
+      io.setDeployerVoltage(Volts.of(deployerVoltage.get()));
+      io.setDeployerCurrent(Amps.of(deployerCurrent.get()));
+    }
 
     if (rollerJamDetector.update(Math.abs(inputs.rollerStatorCurrentAmps.in(Amps)))) {
       reverseRoller();

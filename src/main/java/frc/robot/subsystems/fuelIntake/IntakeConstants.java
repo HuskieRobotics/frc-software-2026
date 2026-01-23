@@ -10,6 +10,8 @@ public class IntakeConstants {
     throw new IllegalStateException(CONSTRUCTOR_EXCEPTION);
   }
 
+  //FIXME: update all values
+
   public static final double DEPLOYER_KP = 0;
   public static final double DEPLOYER_KI = 0;
   public static final double DEPLOYER_KD = 0;
@@ -20,7 +22,6 @@ public class IntakeConstants {
   public static final double DEPLOYER_KV_EXPO = 0;
   public static final double DEPLOYER_KA_EXPO = 0;
   
-  // not sure if we need all of these
   public static final double ROLLER_KP = 0;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
