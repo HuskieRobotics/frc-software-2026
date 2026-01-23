@@ -37,378 +37,483 @@ import frc.robot.Constants;
 
 public class ShooterIOTalonFX implements ShooterIO {
 
-  // We usually use VelocityTorqueCurrentFOC to control the velocity of a wheel.
-  private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
-  private TorqueCurrentFOC flywheelLeadCurrentRequest;
+// We usually use VelocityTorqueCurrentFOC to control the velocity of a wheel.
+private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
+private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
-  private StatusSignal<Current> flywheelLeadStatorCurrentStatusSignal;
-  private StatusSignal<Current> flywheelLeadSupplyCurrentStatusSignal;
-  private StatusSignal<Current> flywheelLeadTorqueCurrentStatusSignal;
-  private StatusSignal<Current> kickerStatorCurrentStatusSignal;
-  private StatusSignal<Current> kickerSupplyCurrentStatusSignal;
-  private StatusSignal<Current> turretStatorCurrentStatusSignal;
-  private StatusSignal<Current> turretSupplyCurrentStatusSignal;
-  private StatusSignal<Current> hoodStatorCurrentStatusSignal;
-  private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
+private StatusSignal<Current> flywheelLeadSupplyCurrentStatusSignal;
+private StatusSignal<Current> flywheelLeadStatorCurrentStatusSignal;
+private StatusSignal<Current> flywheelLeadTorqueCurrentStatusSignal;
+private StatusSignal<Current> kickerStatorCurrentStatusSignal;
+private StatusSignal<Current> kickerSupplyCurrentStatusSignal;
+private StatusSignal<Current> turretStatorCurrentStatusSignal;
+private StatusSignal<Current> turretSupplyCurrentStatusSignal;
+private StatusSignal<Current> hoodStatorCurrentStatusSignal;
+private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
 
 // Angular Velocity Status Signals
 // For flywheel lead motor
-  private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
-  private StatusSignal<AngularVelocity> flywheelLeadReferenceVelocityStatusSignal;
-  private StatusSignal<AngularVelocity> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
-  private StatusSignal<AngularVelocity> flywheelLeadClosedLoopErrorVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelLeadReferenceVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelLeadClosedLoopErrorVelocityStatusSignal;
 
-  private StatusSignal<Temperature> flywheelTemperatureStatusSignal;
-  private StatusSignal<Temperature> kickerTemperatureStatusSignal;
-  private StatusSignal<Temperature> turretTemperatureStatusSignal;
-  private StatusSignal<Temperature> hoodTemperatureStatusSignal;
+private StatusSignal<Temperature> flywheelTemperatureStatusSignal;
+private StatusSignal<Temperature> kickerTemperatureStatusSignal;
+private StatusSignal<Temperature> turretTemperatureStatusSignal;
+private StatusSignal<Temperature> hoodTemperatureStatusSignal;
 
-  private StatusSignal<Voltage> flywheelVoltageStatusSignal;
-  private StatusSignal<Voltage> kickerVoltageStatusSignal;
-  private StatusSignal<Voltage> turretVoltageStatusSignal;
-  private StatusSignal<Voltage> hoodVoltageStatusSignal;
+private StatusSignal<Voltage> flywheelVoltageStatusSignal;
+private StatusSignal<Voltage> kickerVoltageStatusSignal;
+private StatusSignal<Voltage> turretVoltageStatusSignal;
+private StatusSignal<Voltage> hoodVoltageStatusSignal;
 
-  private StatusSignal<Angle> turretPositionStatusSignal;
-  private StatusSignal<Angle> hoodPositionStatusSignal;
+private StatusSignal<Angle> turretPositionStatusSignal;
+private StatusSignal<Angle> hoodPositionStatusSignal;
 
-  private AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
-  private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
-  private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-  private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
 
-  private final Debouncer topMotorConnectedDebouncer = new Debouncer(0.5);
-  private final Debouncer bottomMotorConnectedDebouncer = new Debouncer(0.5);
-  private final Debouncer gamePieceSensorConnectedDebouncer = new Debouncer(0.5);
+private AngularVelocity kickerVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity kickerClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+private AngularVelocity kickerClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
 
-  private VelocitySystemSim shootMotorTopSim;
-  private VelocitySystemSim shootMotorBottomSim;
+private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
+private final Debouncer kickerConnectedDebouncer = new Debouncer(0.5);
+private final Debouncer hoodConnectedDebouncer = new Debouncer(0.5);
+private final Debouncer turretConnectedDebouncer = new Debouncer(0.5);
 
-  private Alert flywheelLeadConfigAlert =
-      new Alert("Failed to apply configuration for fly wheel lead motor.", AlertType.kError);
-  private Alert bottomMotorConfigAlert =
-      new Alert("Failed to apply configuration for shooter bottom motor.", AlertType.kError);
-  private Alert gamePieceDetectorConfigAlert =
-      new Alert("Failed to apply configuration for shooter game piece detector.", AlertType.kError);
+private TalonFX flywheelLead;
+private TalonFX kicker;
+private TalonFX turret;
+private TalonFX hood;
 
-  // The following enables tuning of the PID and feedforward values for the arm by changing values
-  // via AdvantageScope and not needing to change values in code, compile, and re-deploy.
-  private final LoggedTunableNumber shootMotorTopKP =
-      new LoggedTunableNumber("Shooter/Top kP", ShooterConstants.TOP_SHOOT_KP);
-  private final LoggedTunableNumber shootMotorTopKI =
-      new LoggedTunableNumber("Shooter/Top kI", ShooterConstants.TOP_SHOOT_KI);
-  private final LoggedTunableNumber shootMotorTopKD =
-      new LoggedTunableNumber("Shooter/Top kD", ShooterConstants.TOP_SHOOT_KD);
-private final LoggedTunableNumber flywheelKS =
-    new LoggedTunableNumber("Shooter/Flywheel kS", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KS);
-  private final LoggedTunableNumber shootMotorBottomKP =
-      new LoggedTunableNumber("Shooter/Bottom kP", ShooterConstants.BOTTOM_SHOOT_KP);
-  private final LoggedTunableNumber shootMotorBottomKI =
-      new LoggedTunableNumber("Shooter/Bottom kI", ShooterConstants.BOTTOM_SHOOT_KI);
-  private final LoggedTunableNumber shootMotorBottomKD =
-      new LoggedTunableNumber("Shooter/Bottom kD", ShooterConstants.BOTTOM_SHOOT_KD);
-  private final LoggedTunableNumber shootMotorBottomKS =
-      new LoggedTunableNumber("Shooter/Bottom kS", ShooterConstants.BOTTOM_SHOOT_KS);
-  private final LoggedTunableNumber detectorMinSignalStrength =
-      new LoggedTunableNumber(
-          "Shooter/Min Signal Strength", ShooterConstants.DETECTOR_MIN_SIGNAL_STRENGTH);
-  private final LoggedTunableNumber detectorProximityThreshold =
-      new LoggedTunableNumber(
-          "Shooter/Proximity Threshold", ShooterConstants.DETECTOR_PROXIMITY_THRESHOLD);
+private Alert flywheelLeadConfigAlert =
+    new Alert("Failed to apply configuration for fly wheel lead motor.", AlertType.kError);
+private Alert kickerConfigAlert =
+    new Alert("Failed to apply configuration for kicker motor.", AlertType.kError);
+private Alert hoodConfigAlert =
+    new Alert("Failed to apply configuration for hood motor.", AlertType.kError);
+private Alert turretConfigAlert =
+    new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
 
-  // It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
-  // Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
-  private final LoggedTunableNumber simDetectorDistance =
-      new LoggedTunableNumber("Shooter/Sim Detector Distance (m)", 1.0);
+// The following enables tuning of the PID and feedforward values for the arm by changing values
+// via AdvantageScope and not needing to change values in code, compile, and re-deploy.
+private final LoggedTunableNumber flywheelLeadKP =
+    new LoggedTunableNumber("Shooter/Top kP", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KP);
+private final LoggedTunableNumber flywheelLeadKI =
+    new LoggedTunableNumber("Shooter/Top kI", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KI);
+private final LoggedTunableNumber flywheelLeadKD =
+    new LoggedTunableNumber("Shooter/Top kD", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KD);
+private final LoggedTunableNumber turretKP =
+    new LoggedTunableNumber("Shooter/Turret kP", ShooterConstants.TURRET_ROTATION_KP);
+private final LoggedTunableNumber turretKI =
+    new LoggedTunableNumber("Shooter/Turret kI", ShooterConstants.TURRET_ROTATION_KI);
+private final LoggedTunableNumber turretKD =
+    new LoggedTunableNumber("Shooter/Turret kD", ShooterConstants.TURRET_ROTATION_KD);
+private final LoggedTunableNumber hoodKP =
+    new LoggedTunableNumber("Shooter/Hood kP", ShooterConstants.HOOD_ROTATION_KP);
+private final LoggedTunableNumber hoodKI =
+    new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_ROTATION_KI);
+private final LoggedTunableNumber hoodKD =
+    new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_ROTATION_KD);
+private final LoggedTunableNumber kickerKP =
+    new LoggedTunableNumber("Shooter/Kicker kP", ShooterConstants.Kicker_ROTATION_KP);
+private final LoggedTunableNumber kickerKI =
+    new LoggedTunableNumber("Shooter/Kicker kI", ShooterConstants.Kicker_ROTATION_KI);
+private final LoggedTunableNumber kickerKD =
+    new LoggedTunableNumber("Shooter/Kicker kD", ShooterConstants.Kicker_ROTATION_KD);
+// It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
+// Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
+private final LoggedTunableNumber simDetectorDistance =
+    new LoggedTunableNumber("Shooter/Sim Detector Distance (m)", 1.0);
 
-  private TalonFX shootMotorTop;
-  private TalonFX shootMotorBottom;
-  private CANrange gamePieceDetector;
+private TalonFX shootMotorTop;
+private TalonFX shootMotorBottom;
+private CANrange gamePieceDetector;
 
-  public ShooterIOTalonFX() {
-    shootMotorTop = new TalonFX(TOP_SHOOTER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    shootMotorBottom = new TalonFX(BOTTOM_SHOOTER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    gamePieceDetector = new CANrange(GAME_PIECE_SENSOR_ID, RobotConfig.getInstance().getCANBus());
+private VelocitySystemSim flywheelLeadSim;
+private VelocitySystemSim kickerLeadSim;
+private VelocitySystemSim turretLeadSim;
+private VelocitySystemSim hoodLeadSim;
 
-    flywheelVelocityRequest = new VelocityTorqueCurrentFOC(0);
-    flywheelCurrentRequest = new TorqueCurrentFOC(0);
+public ShooterIOTalonFX() {
+  flywheelLead = new TalonFX(FLYWHEEL_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+  kicker = new TalonFX(KICKER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+  turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+  hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
-    shootMotorTopVelocityStatusSignal = shootMotorTop.getVelocity();
-    shootMotorBottomVelocityStatusSignal = shootMotorBottom.getVelocity();
-    shootMotorTopStatorCurrentStatusSignal = shootMotorTop.getStatorCurrent();
-    shootMotorBottomStatorCurrentStatusSignal = shootMotorBottom.getStatorCurrent();
-    shootMotorTopSupplyCurrentStatusSignal = shootMotorTop.getSupplyCurrent();
-    shootMotorBottomSupplyCurrentStatusSignal = shootMotorBottom.getSupplyCurrent();
-    shootMotorTopTemperatureStatusSignal = shootMotorTop.getDeviceTemp();
-    shootMotorBottomTemperatureStatusSignal = shootMotorBottom.getDeviceTemp();
-    shootMotorTopVoltageStatusSignal = shootMotorTop.getMotorVoltage();
-    shootMotorBottomVoltageStatusSignal = shootMotorBottom.getMotorVoltage();
+  flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
+  flywheelLeadCurrentRequest = new TorqueCurrentFOC(0);
 
-    gamePieceDistanceStatusSignal = gamePieceDetector.getDistance();
-    gamePieceSignalStrengthStatusSignal = gamePieceDetector.getSignalStrength();
-    gamePieceDetectedStatusSignal = gamePieceDetector.getIsDetected();
+// FLYWHEEL LEAD
+flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
+flywheelLeadStatorCurrentStatusSignal = flywheelLead.getStatorCurrent();
+flywheelLeadTorqueCurrentStatusSignal = flywheelLead.getTorqueCurrent(); // FIXME: check if it is torque current
+flywheelLeadVelocityStatusSignal = flywheelLead.getVelocity();
+flywheelLeadReferenceVelocityStatusSignal = flywheelLead.getVelocity(); // reference, cached
+flywheelLeadClosedLoopReferenceVelocityStatusSignal = flywheelLead.getClosedLoopReference(); // FIXME: check API
+flywheelLeadClosedLoopErrorVelocityStatusSignal = flywheelLead.getClosedLoopError(); // FIXME: check API
+flywheelTemperatureStatusSignal = flywheelLead.getDeviceTemp();
+flywheelVoltageStatusSignal = flywheelLead.getMotorVoltage();
 
-    // To improve performance, subsystems register all their signals with Phoenix6Util. All signals
-    // on the entire CAN bus will be refreshed at the same time by Phoenix6Util; so, there is no
-    // need to refresh any StatusSignals in this class.
-    Phoenix6Util.registerSignals(
-        true,
-        shootMotorTopVelocityStatusSignal,
-        shootMotorBottomVelocityStatusSignal,
-        shootMotorTopStatorCurrentStatusSignal,
-        shootMotorBottomStatorCurrentStatusSignal,
-        shootMotorTopSupplyCurrentStatusSignal,
-        shootMotorBottomSupplyCurrentStatusSignal,
-        shootMotorTopTemperatureStatusSignal,
-        shootMotorBottomTemperatureStatusSignal,
-        shootMotorTopVoltageStatusSignal,
-        shootMotorBottomVoltageStatusSignal,
-        gamePieceDistanceStatusSignal,
-        gamePieceSignalStrengthStatusSignal,
-        gamePieceDetectedStatusSignal);
+// KICKER
+kickerStatorCurrentStatusSignal = kicker.getStatorCurrent();
+kickerSupplyCurrentStatusSignal = kicker.getSupplyCurrent();
+kickerTemperatureStatusSignal = kicker.getDeviceTemp();
+kickerVoltageStatusSignal = kicker.getMotorVoltage();
 
-    configShootMotor(shootMotorTop, SHOOT_TOP_INVERTED, true, topMotorConfigAlert);
-    configShootMotor(shootMotorBottom, SHOOT_BOTTOM_INVERTED, false, bottomMotorConfigAlert);
-    configGamePieceDetector(gamePieceDetector, gamePieceDetectorConfigAlert);
+// TURRET
+turretStatorCurrentStatusSignal = turret.getStatorCurrent();
+turretSupplyCurrentStatusSignal = turret.getSupplyCurrent();
+turretTemperatureStatusSignal = turret.getDeviceTemp();
+turretVoltageStatusSignal = turret.getMotorVoltage();
+turretPositionStatusSignal = turret.getPosition();
 
-    // Create a simulation objects for the shooter. The specific parameters for the simulation
-    // are determined based on the mechanical design of the shooter.
-    this.shootMotorBottomSim =
-        new VelocitySystemSim(
-            shootMotorBottom,
-            ShooterConstants.SHOOT_BOTTOM_INVERTED,
-            0.05,
-            0.01,
-            ShooterConstants.SHOOT_MOTORS_GEAR_RATIO);
-    this.shootMotorTopSim =
-        new VelocitySystemSim(
-            shootMotorTop,
-            ShooterConstants.SHOOT_TOP_INVERTED,
-            0.05,
-            0.01,
-            ShooterConstants.SHOOT_MOTORS_GEAR_RATIO);
-  }
+// HOOD
+hoodStatorCurrentStatusSignal = hood.getStatorCurrent();
+hoodTemperatureStatusSignal = hood.getDeviceTemp();
+hoodVoltageStatusSignal = hood.getMotorVoltage();
+hoodPositionStatusSignal = hood.getPosition();
 
-  @Override
-  public void updateInputs(ShooterIOInputs inputs) {
-    // Determine if the motors for the shooter are still connected (i.e., reachable on the CAN bus).
-    // We do this by verifying that none of the status signals for the device report an error.
-    inputs.shootMotorTopConnected =
-        topMotorConnectedDebouncer.calculate(
-            BaseStatusSignal.isAllGood(
-                shootMotorTopVelocityStatusSignal,
-                shootMotorTopStatorCurrentStatusSignal,
-                shootMotorTopSupplyCurrentStatusSignal,
-                shootMotorTopTemperatureStatusSignal,
-                shootMotorTopVoltageStatusSignal));
-    inputs.shootMotorBottomConnected =
-        bottomMotorConnectedDebouncer.calculate(
-            BaseStatusSignal.isAllGood(
-                shootMotorBottomVelocityStatusSignal,
-                shootMotorBottomStatorCurrentStatusSignal,
-                shootMotorBottomSupplyCurrentStatusSignal,
-                shootMotorBottomTemperatureStatusSignal,
-                shootMotorBottomVoltageStatusSignal));
-    inputs.sensorConnected =
-        gamePieceSensorConnectedDebouncer.calculate(
-            BaseStatusSignal.isAllGood(
-                gamePieceDistanceStatusSignal,
-                gamePieceSignalStrengthStatusSignal,
-                gamePieceDetectedStatusSignal));
 
-    // Updates Top Shooter Motor Inputs
-    inputs.shootMotorTopStatorCurrent = shootMotorTopStatorCurrentStatusSignal.getValue();
-    inputs.shootMotorTopSupplyCurrent = shootMotorTopSupplyCurrentStatusSignal.getValue();
-    inputs.shootMotorTopVelocity = shootMotorTopVelocityStatusSignal.getValue();
-    inputs.shootMotorTopTemperature = shootMotorTopTemperatureStatusSignal.getValue();
-    inputs.shootMotorTopVoltage = shootMotorTopVoltageStatusSignal.getValue();
-    inputs.shootMotorTopReferenceVelocity = this.shootTopMotorReferenceVelocity.copy();
+  // To improve performance, subsystems register all their signals with Phoenix6Util. All signals
+  // on the entire CAN bus will be refreshed at the same time by Phoenix6Util; so, there is no
+  // need to refresh any StatusSignals in this class.
+  Phoenix6Util.registerSignals(
+      true,
+      //FLYWHEEL LEAD
+      flywheelLeadSupplyCurrentStatusSignal,
+      flywheelLeadStatorCurrentStatusSignal,
+      flywheelLeadTorqueCurrentStatusSignal,
+      flywheelLeadVelocityStatusSignal,
+      flywheelLeadReferenceVelocityStatusSignal,
+      flywheelLeadClosedLoopReferenceVelocityStatusSignal,
+      flywheelLeadClosedLoopErrorVelocityStatusSignal,
+      flywheelTemperatureStatusSignal,
+      flywheelVoltageStatusSignal,
 
-    // Updates Bottom Shooter Motor Inputs
-    inputs.shootMotorBottomStatorCurrent = shootMotorBottomStatorCurrentStatusSignal.getValue();
-    inputs.shootMotorBottomSupplyCurrent = shootMotorBottomSupplyCurrentStatusSignal.getValue();
-    inputs.shootMotorBottomVelocity = shootMotorBottomVelocityStatusSignal.getValue();
-    inputs.shootMotorBottomTemperature = shootMotorBottomTemperatureStatusSignal.getValue();
-    inputs.shootMotorBottomVoltage = shootMotorBottomVoltageStatusSignal.getValue();
-    inputs.shootMotorBottomReferenceVelocity = this.shootBottomMotorReferenceVelocity.copy();
+      //KICKER
+      kickerStatorCurrentStatusSignal,
+      kickerSupplyCurrentStatusSignal,
+      kickerTemperatureStatusSignal,
+      kickerVoltageStatusSignal,
 
-    // Update Game Piece Detection Inputs
-    inputs.hasGamePiece = gamePieceDetectedStatusSignal.getValue();
+      //TURRET
+      turretStatorCurrentStatusSignal,
+      turretSupplyCurrentStatusSignal,
+      turretTemperatureStatusSignal,
+      turretVoltageStatusSignal,
+      turretPositionStatusSignal,
 
-    // Retrieve the closed loop reference status signals directly from the motor in this method
-    // instead of retrieving in advance because the status signal returned depends on the current
-    // control mode. To eliminate the performance hit, only retrieve the closed loop reference
-    // signals if the tuning mode is enabled. It is critical that these input values are only used
-    // for tuning and not used elsewhere in the subsystem. For example, the
-    // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
-    // will always be populated.
-    if (Constants.TUNING_MODE) {
-      inputs.shootMotorTopClosedLoopReferenceVelocity =
-          RotationsPerSecond.of(shootMotorTop.getClosedLoopReference().getValue());
-      inputs.shootMotorTopClosedLoopErrorVelocity =
-          RotationsPerSecond.of(shootMotorTop.getClosedLoopError().getValue());
-      inputs.shootMotorBottomClosedLoopReferenceVelocity =
-          RotationsPerSecond.of(shootMotorBottom.getClosedLoopReference().getValue());
-      inputs.shootMotorBottomClosedLoopErrorVelocity =
-          RotationsPerSecond.of(shootMotorBottom.getClosedLoopError().getValue());
+      //HOOD
+      hoodStatorCurrentStatusSignal,
+      hoodSupplyCurrentStatusSignal,
+      hoodTemperatureStatusSignal,
+      hoodVoltageStatusSignal,
+      hoodPositionStatusSignal
+
+      );
+  configShootMotor(flywheelLead, FLYWHEEL_LEAD_INVERTED, true, flywheelLeadConfigAlert);
+  configShootMotor(kicker, KICKER_INVERTED, false, kickerConfigAlert);
+  configShootMotor(turret, TURRET_INVERTED, false, turretConfigAlert);
+  configShootMotor(hood, HOOD_INVERTED, false, hoodConfigAlert);
+  // Create a simulation objects for the shooter. The specific parameters for the simulation
+  // are determined based on the mechanical design of the shooter.
+  this.flywheelLeadSim =
+      new VelocitySystemSim(
+          flywheelLead,
+          ShooterConstants.FLYWHEEL_LEAD_INVERTED,
+          0.05, //update as needed
+          0.01, //up  date as needed
+          ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO);
+  this.kickerLeadSim =
+      new VelocitySystemSim(
+          shootMotorTop,
+          ShooterConstants.KICKER_INVERTED,
+          0.05,
+          0.01,
+          ShooterConstants.KICKER_GEAR_RATIO);
+  this.turretLeadSim =
+      new VelocitySystemSim(
+          shootMotorBottom,
+          ShooterConstants.TURRET_INVERTED,
+          0.05,
+          0.01,
+          ShooterConstants.TURRET_GEAR_RATIO);
+  this.hoodLeadSim =
+      new VelocitySystemSim(
+          shootMotorBottom,
+          ShooterConstants.HOOD_INVERTED,
+          0.05,
+          0.01,
+          ShooterConstants.HOOD_GEAR_RATIO);
+}
+
+@Override
+public void updateInputs(ShooterIOInputs inputs) {
+  // Determine if the motors for the shooter are still connected (i.e., reachable on the CAN bus).
+  // We do this by verifying that none of the status signals for the device report an error.
+  inputs.flywheelLeadConnected =
+      flywheelLeadConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              flywheelLeadVelocityStatusSignal,
+              flywheelLeadStatorCurrentStatusSignal,
+              flywheelLeadSupplyCurrentStatusSignal,
+              flywheelTemperatureStatusSignal,
+              flywheelVoltageStatusSignal
+              ));
+  inputs.kickerConnected =
+      kickerConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              kickerStatorCurrentStatusSignal,
+              kickerSupplyCurrentStatusSignal,
+              kickerTemperatureStatusSignal,
+              kickerVoltageStatusSignal));
+  inputs.hoodConnected =
+      hoodConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              hoodStatorCurrentStatusSignal,
+              hoodSupplyCurrentStatusSignal,
+              hoodTemperatureStatusSignal,
+              hoodVoltageStatusSignal
+          ));
+  inputs.turretConnected =
+      turretConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              turretStatorCurrentStatusSignal,
+              turretSupplyCurrentStatusSignal,
+              turretTemperatureStatusSignal,
+              turretVoltageStatusSignal
+          ));
+
+  // Updates Flywheel Lead Motor Inputs
+  inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValue();
+  inputs.flywheelLeadSupplyCurrent = flywheelLeadSupplyCurrentStatusSignal.getValue();
+  inputs.flywheelLeadTorqueCurrent = flywheelLeadTorqueCurrentStatusSignal.getValue();
+  inputs.flywheelLeadVelocity = flywheelLeadVelocityStatusSignal.getValue();
+  inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
+  inputs.flywheelLeadTemperature = flywheelTemperatureStatusSignal.getValue();
+  inputs.flywheelLeadVoltage = flywheelVoltageStatusSignal.getValue();
+  inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
+  inputs.flywheelLeadClosedLoopReferenceVelocity = flywheelLeadClosedLoopReferenceVelocityStatusSignal.getValue();
+  inputs.flywheelLeadClosedLoopErrorVelocity = flywheelLeadClosedLoopErrorVelocityStatusSignal.getValue();
+
+  // Updates Kicker Motor Inputs
+  inputs.kickerStatorCurrent = kickerStatorCurrentStatusSignal.getValue();
+  inputs.kickerSupplyCurrent = kickerSupplyCurrentStatusSignal.getValue();
+  inputs.kickerTemperature = kickerTemperatureStatusSignal.getValue();
+  inputs.kickerVoltage = kickerVoltageStatusSignal.getValue();
+
+  // Updates Turret Motor Inputs
+  inputs.turretStatorCurrent = turretStatorCurrentStatusSignal.getValue();
+  inputs.turretSupplyCurrent = turretSupplyCurrentStatusSignal.getValue();
+  inputs.turretTemperature = turretTemperatureStatusSignal.getValue();
+  inputs.turretVoltage = turretVoltageStatusSignal.getValue();
+  inputs.turretPosition = turretPositionStatusSignal.getValue();
+
+  // Updates Hood Motor Inputs
+  inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
+  inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValue();
+  inputs.hoodTemperature = hoodTemperatureStatusSignal.getValue();
+  inputs.hoodVoltage = hoodVoltageStatusSignal.getValue();
+  inputs.hoodPosition = hoodPositionStatusSignal.getValue();
+
+
+  // Retrieve the closed loop reference status signals directly from the motor in this method
+  // instead of retrieving in advance because the status signal returned depends on the current
+  // control mode. To eliminate the performance hit, only retrieve the closed loop reference
+  // signals if the tuning mode is enabled. It is critical that these input values are only used
+  // for tuning and not used elsewhere in the subsystem. For example, the
+  // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
+  // will always be populated.
+  if (Constants.TUNING_MODE) {
+      inputs.flywheelLeadClosedLoopReferenceVelocity =
+          RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
+      inputs.flywheelLeadClosedLoopErrorVelocity =
+          RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
+      inputs.kickerClosedLoopReferenceVelocity =
+          RotationsPerSecond.of(kicker.getClosedLoopReference().getValue());
+      inputs.kickerClosedLoopErrorVelocity =
+          RotationsPerSecond.of(kicker.getClosedLoopError().getValue());
+      inputs.turretClosedLoopReferencePosition =
+          Rotations.of(turret.getClosedLoopReference().getValue());
+      inputs.turretClosedLoopErrorPosition =
+          Rotations.of(kicker.getClosedLoopError().getValue());
+      inputs.hoodClosedLoopReferencePosition =
+          Rotations.of(kicker.getClosedLoopReference().getValue());
+      inputs.hoodClosedLoopErrorPosition =
+          Rotations.of(kicker.getClosedLoopError().getValue());
+      
+    
       inputs.distanceToGamePiece = gamePieceDistanceStatusSignal.getValue();
       inputs.signalStrength = gamePieceSignalStrengthStatusSignal.getValue();
-    }
-
-    // In order for a tunable to be useful, there must be code that checks if its value has changed.
-    // When a subsystem has multiple tunables that are related, the ifChanged method is a convenient
-    // to check and apply changes from multiple tunables at once.
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        pid -> {
-          Slot0Configs config = new Slot0Configs();
-          this.shootMotorTop.getConfigurator().refresh(config);
-          config.kP = pid[0];
-          config.kI = pid[1];
-          config.kD = pid[2];
-          config.kS = pid[3];
-
-          this.shootMotorTop.getConfigurator().apply(config);
-        },
-        shootMotorTopKP,
-        shootMotorTopKI,
-        shootMotorTopKD,
-        shootMotorTopKS);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        pid -> {
-          Slot0Configs config = new Slot0Configs();
-          this.shootMotorBottom.getConfigurator().refresh(config);
-          config.kP = pid[0];
-          config.kI = pid[1];
-          config.kD = pid[2];
-          config.kS = pid[3];
-
-          this.shootMotorBottom.getConfigurator().apply(config);
-        },
-        shootMotorBottomKP,
-        shootMotorBottomKI,
-        shootMotorBottomKD,
-        shootMotorBottomKS);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        detectorConfig -> {
-          ProximityParamsConfigs config = new ProximityParamsConfigs();
-          this.gamePieceDetector.getConfigurator().refresh(config);
-          config.MinSignalStrengthForValidMeasurement = detectorConfig[0];
-          config.ProximityThreshold = detectorConfig[1];
-
-          this.gamePieceDetector.getConfigurator().apply(config);
-        },
-        detectorMinSignalStrength,
-        detectorProximityThreshold);
-
-    // The last step in the updateInputs method is to update the simulation.
-    if (Constants.getMode() == Constants.Mode.SIM) {
-      this.shootMotorBottomSim.updateSim();
-      this.shootMotorTopSim.updateSim();
-      this.gamePieceDetector.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
-      this.gamePieceDetector.getSimState().setDistance(simDetectorDistance.get());
-    }
   }
 
-  @Override
-  public void setShooterWheelTopVelocity(AngularVelocity velocity) {
-    shootMotorTop.setControl(shootMotorTopVelocityRequest.withVelocity(velocity));
+  // In order for a tunable to be useful, there must be code that checks if its value has changed.
+  // When a subsystem has multiple tunables that are related, the ifChanged method is a convenient
+  // to check and apply changes from multiple tunables at once.
+  LoggedTunableNumber.ifChanged(
+      hashCode(),
+      pid -> {
+        Slot0Configs config = new Slot0Configs();
+        this.shootMotorTop.getConfigurator().refresh(config);
+        config.kP = pid[0];
+        config.kI = pid[1];
+        config.kD = pid[2];
+        config.kS = pid[3];
 
-    // To improve performance, we store the reference velocity as an instance variable to avoid
-    // having to retrieve the status signal object from the device in the updateInputs method.
-    this.shootTopMotorReferenceVelocity = velocity.copy();
+        this.shootMotorTop.getConfigurator().apply(config);
+      },
+      shootMotorTopKP,
+      shootMotorTopKI,
+      shootMotorTopKD,
+      shootMotorTopKS);
+  LoggedTunableNumber.ifChanged(
+      hashCode(),
+      pid -> {
+        Slot0Configs config = new Slot0Configs();
+        this.shootMotorBottom.getConfigurator().refresh(config);
+        config.kP = pid[0];
+        config.kI = pid[1];
+        config.kD = pid[2];
+        config.kS = pid[3];
+
+        this.shootMotorBottom.getConfigurator().apply(config);
+      },
+      shootMotorBottomKP,
+      shootMotorBottomKI,
+      shootMotorBottomKD,
+      shootMotorBottomKS);
+  LoggedTunableNumber.ifChanged(
+      hashCode(),
+      detectorConfig -> {
+        ProximityParamsConfigs config = new ProximityParamsConfigs();
+        this.gamePieceDetector.getConfigurator().refresh(config);
+        config.MinSignalStrengthForValidMeasurement = detectorConfig[0];
+        config.ProximityThreshold = detectorConfig[1];
+
+        this.gamePieceDetector.getConfigurator().apply(config);
+      },
+      detectorMinSignalStrength,
+      detectorProximityThreshold);
+
+  // The last step in the updateInputs method is to update the simulation.
+  if (Constants.getMode() == Constants.Mode.SIM) {
+    this.shootMotorBottomSim.updateSim();
+    this.shootMotorTopSim.updateSim();
+    this.gamePieceDetector.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
+    this.gamePieceDetector.getSimState().setDistance(simDetectorDistance.get());
+  }
+}
+
+//FIXME: Implement the following setter and getter IO methods
+
+
+@Override
+public void setShooterWheelTopVelocity(AngularVelocity velocity) {
+  shootMotorTop.setControl(shootMotorTopVelocityRequest.withVelocity(velocity));
+
+  // To improve performance, we store the reference velocity as an instance variable to avoid
+  // having to retrieve the status signal object from the device in the updateInputs method.
+  this.shootTopMotorReferenceVelocity = velocity.copy();
+}
+
+// While we cannot use subtypes of Measure in the inputs class due to logging limitations, we do
+// strive to use them (e.g., AngularVelocity) throughout the rest of the code to mitigate bugs due
+// to unit mismatches.
+@Override
+public void setShooterWheelBottomVelocity(AngularVelocity velocity) {
+  shootMotorBottom.setControl(shootMotorBottomVelocityRequest.withVelocity(velocity));
+
+  // To improve performance, we store the reference velocity as an instance variable to avoid
+  // having to retrieve the status signal object from the device in the updateInputs method.
+  this.shootBottomMotorReferenceVelocity = velocity.copy();
+}
+
+@Override
+public void setShooterWheelTopCurrent(Current amps) {
+  shootMotorTop.setControl(shootMotorTopCurrentRequest.withOutput(amps));
+}
+
+@Override
+public void setShooterWheelBottomCurrent(Current amps) {
+  shootMotorBottom.setControl(shootMotorBottomCurrentRequest.withOutput(amps));
+}
+
+@Override
+public void 
+
+private void configShootMotor(
+    TalonFX shootMotor, boolean isInverted, boolean isTopMotor, Alert configAlert) {
+
+  TalonFXConfiguration shootMotorsConfig = new TalonFXConfiguration();
+
+  if (isTopMotor) {
+    shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+        ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
+    shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+        -ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
+  } else {
+    shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+        ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
+    shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+        -ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
   }
 
-  // While we cannot use subtypes of Measure in the inputs class due to logging limitations, we do
-  // strive to use them (e.g., AngularVelocity) throughout the rest of the code to mitigate bugs due
-  // to unit mismatches.
-  @Override
-  public void setShooterWheelBottomVelocity(AngularVelocity velocity) {
-    shootMotorBottom.setControl(shootMotorBottomVelocityRequest.withVelocity(velocity));
-
-    // To improve performance, we store the reference velocity as an instance variable to avoid
-    // having to retrieve the status signal object from the device in the updateInputs method.
-    this.shootBottomMotorReferenceVelocity = velocity.copy();
+  if (isTopMotor) {
+    shootMotorsConfig.Slot0.kP = shootMotorTopKP.get();
+    shootMotorsConfig.Slot0.kI = shootMotorTopKI.get();
+    shootMotorsConfig.Slot0.kD = shootMotorTopKD.get();
+    shootMotorsConfig.Slot0.kS = shootMotorTopKS.get();
+  } else {
+    shootMotorsConfig.Slot0.kP = shootMotorBottomKP.get();
+    shootMotorsConfig.Slot0.kI = shootMotorBottomKI.get();
+    shootMotorsConfig.Slot0.kD = shootMotorBottomKD.get();
+    shootMotorsConfig.Slot0.kS = shootMotorBottomKS.get();
   }
 
-  @Override
-  public void setShooterWheelTopCurrent(Current amps) {
-    shootMotorTop.setControl(shootMotorTopCurrentRequest.withOutput(amps));
-  }
+  shootMotorsConfig.Feedback.SensorToMechanismRatio = ShooterConstants.SHOOT_MOTORS_GEAR_RATIO;
 
-  @Override
-  public void setShooterWheelBottomCurrent(Current amps) {
-    shootMotorBottom.setControl(shootMotorBottomCurrentRequest.withOutput(amps));
-  }
+  shootMotorsConfig.MotorOutput.Inverted =
+      isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+  shootMotorsConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-  private void configShootMotor(
-      TalonFX shootMotor, boolean isInverted, boolean isTopMotor, Alert configAlert) {
+  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
+  // method will apply the configuration, read back the configuration, and ensure that it is
+  // correct. If not, it will reattempt five times and eventually, generate an alert.
+  Phoenix6Util.applyAndCheckConfiguration(shootMotor, shootMotorsConfig, configAlert);
 
-    TalonFXConfiguration shootMotorsConfig = new TalonFXConfiguration();
+  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
+  // devices for faults periodically when the robot is disabled and generate alerts if any faults
+  // are found.
+  FaultReporter.getInstance()
+      .registerHardware(SUBSYSTEM_NAME, isTopMotor ? "TopMotor" : "BottomMotor", shootMotor);
+}
 
-    if (isTopMotor) {
-      shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-          ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
-      shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-          -ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
-    } else {
-      shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-          ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
-      shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-          -ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
-    }
+private void configGamePieceDetector(CANrange detector, Alert configAlert) {
+  CANrangeConfiguration config = new CANrangeConfiguration();
 
-    if (isTopMotor) {
-      shootMotorsConfig.Slot0.kP = shootMotorTopKP.get();
-      shootMotorsConfig.Slot0.kI = shootMotorTopKI.get();
-      shootMotorsConfig.Slot0.kD = shootMotorTopKD.get();
-      shootMotorsConfig.Slot0.kS = shootMotorTopKS.get();
-    } else {
-      shootMotorsConfig.Slot0.kP = shootMotorBottomKP.get();
-      shootMotorsConfig.Slot0.kI = shootMotorBottomKI.get();
-      shootMotorsConfig.Slot0.kD = shootMotorBottomKD.get();
-      shootMotorsConfig.Slot0.kS = shootMotorBottomKS.get();
-    }
+  // if CANrange has a signal strength of at least 2000, it is a valid measurement
+  config.ProximityParams.MinSignalStrengthForValidMeasurement = detectorMinSignalStrength.get();
 
-    shootMotorsConfig.Feedback.SensorToMechanismRatio = ShooterConstants.SHOOT_MOTORS_GEAR_RATIO;
+  // if CANrange detects an object within 0.1 meters, it will trigger the "isDetected" signal
+  config.ProximityParams.ProximityThreshold = detectorProximityThreshold.get();
 
-    shootMotorsConfig.MotorOutput.Inverted =
-        isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-    shootMotorsConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+  // make the CANrange update as fast as possible at 100 Hz. This requires short-range mode
+  config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
 
-    // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-    // method will apply the configuration, read back the configuration, and ensure that it is
-    // correct. If not, it will reattempt five times and eventually, generate an alert.
-    Phoenix6Util.applyAndCheckConfiguration(shootMotor, shootMotorsConfig, configAlert);
+  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
+  // method will apply the configuration, read back the configuration, and ensure that it is
+  // correct. If not, it will reattempt five times and eventually, generate an alert.
+  Phoenix6Util.applyAndCheckConfiguration(detector, config, configAlert);
 
-    // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-    // devices for faults periodically when the robot is disabled and generate alerts if any faults
-    // are found.
-    FaultReporter.getInstance()
-        .registerHardware(SUBSYSTEM_NAME, isTopMotor ? "TopMotor" : "BottomMotor", shootMotor);
-  }
-
-  private void configGamePieceDetector(CANrange detector, Alert configAlert) {
-    CANrangeConfiguration config = new CANrangeConfiguration();
-
-    // if CANrange has a signal strength of at least 2000, it is a valid measurement
-    config.ProximityParams.MinSignalStrengthForValidMeasurement = detectorMinSignalStrength.get();
-
-    // if CANrange detects an object within 0.1 meters, it will trigger the "isDetected" signal
-    config.ProximityParams.ProximityThreshold = detectorProximityThreshold.get();
-
-    // make the CANrange update as fast as possible at 100 Hz. This requires short-range mode
-    config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
-
-    // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-    // method will apply the configuration, read back the configuration, and ensure that it is
-    // correct. If not, it will reattempt five times and eventually, generate an alert.
-    Phoenix6Util.applyAndCheckConfiguration(detector, config, configAlert);
-
-    // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-    // devices for faults periodically when the robot is disabled and generate alerts if any faults
-    // are found.
-    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "GamePieceDetector", detector);
-  }
+  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
+  // devices for faults periodically when the robot is disabled and generate alerts if any faults
+  // are found.
+  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "GamePieceDetector", detector);
+}
 }

@@ -6,6 +6,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -151,36 +152,36 @@ public class Shooter extends SubsystemBase {
     LoggedTracer.record("Shooter");
   }
 
-  // Subsystem methods
-
-  public void setKickerMotorIntakeVoltage(Voltage currentMotorIntakeVoltage) {
-    io.setKickerMotorIntakeVoltage(currentMotorIntakeVoltage);
-  }
-
-  public void setFlywheelVelocity(Voltage currentMotorFlywheelVoltage) {
-    io.setFlywheelVelocity(currentMotorFlywheelVoltage);
-  }
-
-  // we use torque current instead of a regular current
-  public void setFlywheelTorqueCurrent() {
-    io.setFlywheel
-  }
-
-  public void setTurretPosition() {
+public boolean isShooterReady(){
     
-  }
+}
 
-  public void setTurretVoltage() {
-    
-  }
+public void setHoodPosition(Angle position){
+    io.setHoodPosition(position);
+}
 
-  public void setHoodPosition() {
-    
-  }
+public void setTurretPosition(Angle position){
+    io.setTurretPosition(position);
+}
 
-  public void setHoodVoltage() {
-    
-  }
+public boolean isKickerJammed(){
+    return io.isKickerJammed();
+}
+
+public void setFlywheelVelocity(AngularVelocity velocity){
+    io.setFlywheelVelocity(velocity);
+}
+
+public double getPassingDistance(){
+    // FIXME: Unsure if this is gonna be a command or a method
+    return 0.0;
+} 
+
+ 
+
+
+  
+
 
 
 

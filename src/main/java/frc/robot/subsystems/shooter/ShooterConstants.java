@@ -1,9 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import edu.wpi.first.units.measure.AngularVelocity;
-
 public class ShooterConstants {
 
   private static final String CONSTRUCTOR_EXCEPTION = "constant class";
@@ -21,14 +17,7 @@ public class ShooterConstants {
   public static final int FLYWHEEL_FOLLOW3_MOTOR_ID = 0;
   public static final int HOOD_MOTOR_ID = 0;
   public static final int TURRET_MOTOR_ID = 0;
-
-  // PID constants are determined empirically through tuning
-  public static final double TOP_SHOOT_KP = 5.0;
-  public static final double TOP_SHOOT_KI = 0.0;
-  public static final double TOP_SHOOT_KD = 0.0;
-  public static final double BOTTOM_SHOOT_KP = 5.0;
-  public static final double BOTTOM_SHOOT_KI = 0.0;
-  public static final double BOTTOM_SHOOT_KD = 0.0;
+  public static final int KICKER_MOTOR_ID = 0;
 
   //THIS IS REAL STUFF
   //Flywheel PID Constants (subject to change)
@@ -36,15 +25,32 @@ public class ShooterConstants {
   public static final double FLYWHEEL_LEAD_ROTATION_KI = 0.0;
   public static final double FLYWHEEL_LEAD_ROTATION_KD = 0.0;
 
+  public static final boolean FLYWHEEL_LEAD_INVERTED = false;
+  public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.0;
+
   //Turret PID Constants (subject to change)
   public static final double TURRET_ROTATION_KP = 0.0;
   public static final double TURRET_ROTATION_KI = 0.0;
   public static final double TURRET_ROTATION_KD = 0.0;
 
+  public static final boolean TURRET_INVERTED = false;
+  public static final double TURRET_GEAR_RATIO = 0; //FIXME: Update once we know
+
   //Hood PID Constants (subject to change)
   public static final double HOOD_ROTATION_KP = 0.0;
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
+
+  public static final boolean HOOD_INVERTED = false;
+  public static final double HOOD_GEAR_RATIO = 0; //FIXME: Update once we know
+  
+  //Kicker PID Constants (subject to change)
+  public static final double Kicker_ROTATION_KP = 0.0;
+  public static final double Kicker_ROTATION_KI = 0.0;
+  public static final double Kicker_ROTATION_KD = 0.0;
+
+  public static final boolean KICKER_INVERTED = false;
+  public static final double KICKER_GEAR_RATIO = 0; //FIXME: Update once we know
 
   //Hard coded non-tunable physics values
   public static final double MOTOR_KS = 0.0;

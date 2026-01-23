@@ -27,6 +27,10 @@ public interface ShooterIO {
     Current kickerStatorCurrent = Amps.of(0.0);
     Current kickerSupplyCurrent = Amps.of(0.0);
     Voltage kickerVoltage = Volts.of(0.0);
+    AngularVelocity kickerVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity kickerClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity kickerClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
     Temperature kickerTemperature = Celsius.of(0.0);
 
     // Flywheel Lead inputs
@@ -64,6 +68,8 @@ public interface ShooterIO {
     
     // Encoder inputs (tbd)
     Angle encoderAngleDegrees = Degrees.of(0.0);
+
+
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
 
   }
@@ -85,4 +91,8 @@ public interface ShooterIO {
   // Hood IO methods
   public default void setHoodPosition(Angle position) {}
   public default void setHoodVoltage(Voltage voltage) {}
+  
+  
+  public default double getPassingDistance() {} 
+  // FIXME: unsure if this would be needed as this might end up being a command
 }
