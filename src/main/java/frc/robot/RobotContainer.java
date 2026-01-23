@@ -101,6 +101,7 @@ public class RobotContainer {
      * that use it directly or indirectly. If this isn't done, a null pointer exception will result.
      */
     createRobotConfig();
+    Field2d.getInstance().populateAllianceZone();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
