@@ -1,16 +1,18 @@
 package frc.robot.subsystems.fuelIntake;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.subsystems.elevator.ElevatorConstants.JAMMED_CURRENT_AMPS;
-import static frc.robot.subsystems.elevator.ElevatorConstants.JAMMED_TIME_THRESHOLD_SECONDS;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class Intake extends SubsystemBase {
@@ -20,10 +22,10 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private CurrentSpikeDetector rollerJamDetector =
-      new CurrentSpikeDetector(JAMMED_CURRENT_AMPS, JAMMED_TIME_THRESHOLD_SECONDS);
+      new CurrentSpikeDetector(IntakeConstants.ROLLER_JAMMED_CURRENT_AMPS, IntakeConstants.ROLLER_JAMMED_TIME_THRESHOLD_SECONDS);
 
   private Alert rollerJamAlert =
-      new Alert("Intake Roller Jammed 💀, use manual control.", Alert.AlertType.kError);
+      new Alert("Intake roller jammed 💀, use manual control.", Alert.AlertType.kError);
 
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Intake/TestingMode", 0);
   private final LoggedTunableNumber rollerVelocityRPS =
@@ -51,11 +53,18 @@ public class Intake extends SubsystemBase {
               Volts.of(2.0), // override default step voltage (7 V)
               null, // Use default timeout (10 s)
               state -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(output -> io.setRollerVoltage(output), null, this));
+          new SysIdRoutine.Mechanism(io::setRollerVoltage, null, this));
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+
+    if (rollerJamDetector.update(Math.abs(inputs.rollerStatorCurrentAmps.in(Amps)))) {
+      reverseRoller();
+      rollerJamAlert.set(true);
+    } else {
+      rollerJamAlert.set(false);
+    }
   }
 
   public void startRoller() {
@@ -64,6 +73,10 @@ public class Intake extends SubsystemBase {
 
   public void stopRoller() {
     io.setRollerVelocity(0.0);
+  }
+
+  public void reverseRoller() {
+    io.setRollerVelocity(-IntakeConstants.INTAKE_ROLLER_VELOCITY_RPS);
   }
 
   public void deployIntake() {

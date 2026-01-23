@@ -46,11 +46,11 @@ public interface IntakeIO {
 
   public default void setRollerVoltage(Voltage volts) {}
 
-  public default void setRollerCurrent(Current amps) {}
+  public default void setRollerCurrent(Current Amps) {}
 
   public default void setDeployerPosition(Distance linearDistance) {}
 
   public default void setDeployerVoltage(Voltage Volts) {}
 
-  public default void setDeployerCurrent(Current amps) {}
+  public default void setDeployerCurrent(Current Amps) {}
 }

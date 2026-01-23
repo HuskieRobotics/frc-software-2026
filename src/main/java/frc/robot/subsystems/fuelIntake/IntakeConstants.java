@@ -34,7 +34,7 @@ public class IntakeConstants {
   public static final int ROLLER_MOTOR_ID = 0;
   public static final int DEPLOYER_MOTOR_ID = 0;
 
-  public static final Distance DEPLOYER_CIRCUIMFERENCE = null;
+  public static final Distance DEPLOYER_CIRCUMFERENCE = null;
   public static final double DEPLOYER_CRUISE_VELOCITY = 0;
   public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 0;
   public static final double DEPLOYER_LOWER_CURRENT_LIMIT = 0;
@@ -47,4 +47,7 @@ public class IntakeConstants {
   public static final double INTAKE_ROLLER_VELOCITY_RPS = 0;
   public static final Distance DEPLOYED_POSITION_ROTATIONS = null;
   public static final Distance RETRACTED_POSITION_ROTATIONS = null;
+
+  public static final double ROLLER_JAMMED_CURRENT_AMPS = 0;
+  public static final double ROLLER_JAMMED_TIME_THRESHOLD_SECONDS = 0;
 }

@@ -197,7 +197,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     inputs.angularPosition = deployerPositionSS.getValue();
     inputs.linearPosition =
-        IntakeConstants.DEPLOYER_CIRCUIMFERENCE.times(inputs.angularPosition.in(Rotations));
+        IntakeConstants.DEPLOYER_CIRCUMFERENCE.times(inputs.angularPosition.in(Rotations));
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -266,20 +266,20 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setRollerCurrent(Current amps) {
+  public void setRollerCurrent(Current Amps) {
     this.rollerMotor.setControl(rollerCurrentRequest);
   }
 
   @Override
-  public void setDeployerCurrent(Current amps) {
-    this.rollerMotor.setControl(deployerCurrentRequest);
+  public void setDeployerCurrent(Current Amps) {
+    this.deployerMotor.setControl(deployerCurrentRequest);
   }
 
   @Override
   public void setDeployerPosition(Distance linearPosition) {
     deployerMotor.setControl(
         deployerPositionRequest.withPosition(
-            Rotations.of(linearPosition.div(IntakeConstants.DEPLOYER_CIRCUIMFERENCE).magnitude())));
+            Rotations.of(linearPosition.div(IntakeConstants.DEPLOYER_CIRCUMFERENCE).magnitude())));
   }
 
   private void configDeployerMotor(TalonFX motor) {
