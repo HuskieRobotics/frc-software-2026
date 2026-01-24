@@ -1,6 +1,7 @@
 package frc.robot.subsystems.fuelIntake;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
@@ -115,7 +116,7 @@ public class Intake extends SubsystemBase {
     // Only consider deployed if the hardware is connected
     if (!inputs.deployerConnected) {
       return false;
-    } else if (inputs.angularPosition.in(Rotations) >= deployerPositionRotations.get()) {
+    } else if (inputs.linearPosition.in(Meters) >= deployerPositionRotations.get()) {
       return deployerDeployedDebouncer.calculate(true);
     } else {
       return deployerDeployedDebouncer.calculate(false);
@@ -126,7 +127,7 @@ public class Intake extends SubsystemBase {
     // Only consider retracted if the hardware is connected
     if (!inputs.deployerConnected) {
       return false;
-    } else if (inputs.angularPosition.in(Rotations) <= 0.0) {
+    } else if (inputs.linearPosition.in(Meters) <= 0.0) {
       return deployerRetractedDebouncer.calculate(true);
     } else {
       return deployerRetractedDebouncer.calculate(false);
