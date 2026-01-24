@@ -116,6 +116,10 @@ public class Field2d {
     this.transformedTrenchZone = new Region2d(trenchEdges);
   }
 
+  public void logAllianceZonePoints() {
+    transformedAllianceZone.logPoints();
+  }
+
   /**
    * Create a path from a starting pose in one region to an ending pose in another region that
    * passes through the transition points defined for those regions.
