@@ -35,6 +35,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import frc.robot.Constants;
 
 public class ShooterIOTalonFX implements ShooterIO {
@@ -90,10 +91,7 @@ private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.
 private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
 private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
 
-private AngularVelocity kickerVelocity = RotationsPerSecond.of(0.0);
-private AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
-private AngularVelocity kickerClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-private AngularVelocity kickerClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+private Voltage kickerVoltage = Volts.of(0.0);
 
 private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer kickerConnectedDebouncer = new Debouncer(0.5);
@@ -134,6 +132,12 @@ private final LoggedTunableNumber turretKI =
     new LoggedTunableNumber("Shooter/Turret kI", ShooterConstants.TURRET_ROTATION_KI);
 private final LoggedTunableNumber turretKD =
     new LoggedTunableNumber("Shooter/Turret kD", ShooterConstants.TURRET_ROTATION_KD);
+private final LoggedTunableNumber turretKV =
+    new LoggedTunableNumber("Shooter/Turret kV", ShooterConstants.TURRET_ROTATION_EXPO_KV);
+private final LoggedTunableNumber turretKA =
+    new LoggedTunableNumber("Shooter/Turret kA", ShooterConstants.TURRET_ROTATION_EXPO_KA);
+private final LoggedTunableNumber turretMotionMagicCruiseVelocity =
+    new LoggedTunableNumber("Shooter/Turret Magic Cruise Velocity", ShooterConstants.TURRET_MOTION_MAGIC_CRUISE_VELOCITY);
 private final LoggedTunableNumber hoodKP =
     new LoggedTunableNumber("Shooter/Hood kP", ShooterConstants.HOOD_ROTATION_KP);
 private final LoggedTunableNumber hoodKI =
@@ -237,7 +241,7 @@ hoodPositionStatusSignal = hood.getPosition();
       hoodPositionStatusSignal
 
       );
-  configShootMotor(flywheelLead, FLYWHEEL_LEAD_INVERTED, true, flywheelLeadConfigAlert);
+  configShootMotor(flywheelLead, FLYWHEEL_LEAD_INVERTED, true, flywheelLeadConfigAlert, ShooterIOInputs.flywheelLeadConnected);
   configShootMotor(kicker, KICKER_INVERTED, false, kickerConfigAlert);
   configShootMotor(turret, TURRET_INVERTED, false, turretConfigAlert);
   configShootMotor(hood, HOOD_INVERTED, false, hoodConfigAlert);
@@ -319,8 +323,6 @@ public void updateInputs(ShooterIOInputs inputs) {
   inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValue();
   inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValue();
   inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
-  inputs.flywheelLeadClosedLoopReferenceVelocity = flywheelLeadClosedLoopReferenceVelocityStatusSignal.getValue();
-  inputs.flywheelLeadClosedLoopErrorVelocity = flywheelLeadClosedLoopErrorVelocityStatusSignal.getValue();
 
   // Updates Kicker Motor Inputs
   inputs.kickerStatorCurrent = kickerStatorCurrentStatusSignal.getValue();
@@ -351,42 +353,40 @@ public void updateInputs(ShooterIOInputs inputs) {
   // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
   // will always be populated.
   if (Constants.TUNING_MODE) {
+    //Flywheel Lead
     inputs.flywheelLeadVelocity = 
         flywheelLead.getVelocity().getValue();
     inputs.flywheelLeadSupplyCurrent = 
         flywheelLead.getSupplyCurrent().getValue();
     inputs.flywheelLeadStatorCurrent =
         flywheelLead.getStatorCurrent().getValue();
-    inputs.kickerVelocity =
-        kicker.getVelocity().getValue();
+    inputs.flywheelLeadClosedLoopReferenceVelocity =
+        RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
+    inputs.flywheelLeadClosedLoopErrorVelocity =
+        RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
+    
+    //Kicker
+    inputs.kickerVoltage =
+        kicker.getMotorVoltage().getValue();
     inputs.kickerSupplyCurrent =
         kicker.getSupplyCurrent().getValue();
     inputs.kickerStatorCurrent = 
         kicker.getStatorCurrent().getValue();
+
+    //Turret
     inputs.turretVoltage =
         turret.getMotorVoltage().getValue();
-    inputs.turretSupplyCurrent
-    
-        // amar
-        // left off here need to find getmotorvoltage and change it getvoltage for consistancy
-
-
-      inputs.flywheelLeadClosedLoopReferenceVelocity =
-          flywheelLead.getClosedLoopReference().getValue();
-      inputs.flywheelLeadClosedLoopErrorVelocity =
-          flywheelLead.getClosedLoopError().getValue();
-      inputs.kickerClosedLoopReferenceVelocity =
-          RotationsPerSecond.of(kicker.getClosedLoopReference().getValue());
-      inputs.kickerClosedLoopErrorVelocity =
-          RotationsPerSecond.of(kicker.getClosedLoopError().getValue());
-      inputs.turretClosedLoopReferencePosition =
-          Rotations.of(turret.getClosedLoopReference().getValue());
-      inputs.turretClosedLoopErrorPosition =
-          Rotations.of(kicker.getClosedLoopError().getValue());
-      inputs.hoodClosedLoopReferencePosition =
-          Rotations.of(kicker.getClosedLoopReference().getValue());
-      inputs.hoodClosedLoopErrorPosition =
-          Rotations.of(kicker.getClosedLoopError().getValue());
+    inputs.turretSupplyCurrent =
+        turret.getSupplyCurrent().getValue();
+    inputs.turretStatorCurrent =
+        turret.getStatorCurrent().getValue();
+    //Hood
+    inputs.hoodVoltage =
+        hood.getMotorVoltage().getValue();
+    inputs.hoodSupplyCurrent =
+        hood.getSupplyCurrent().getValue();
+    inputs.hoodStatorCurrent =
+        hood.getStatorCurrent().getValue();
   }
 
   // In order for a tunable to be useful, there must be code that checks if its value has changed.
@@ -414,17 +414,68 @@ public void updateInputs(ShooterIOInputs inputs) {
         config.kP = pid[0];
         config.kI = pid[1];
         config.kD = pid[2];
-
         kicker.getConfigurator().apply(config);
       },
       kickerKP,
       kickerKI,
       kickerKD);
+  LoggedTunableNumber.ifChanged(
+      hashCode(),
+      pid -> {
+        Slot0Configs config = new Slot0Configs();
+        MotionMagicConfigs mmConfig = new MotionMagicConfigs();
+        
+        turret.getConfigurator().refresh(config);
+        turret.getConfigurator().refresh(mmConfig);
+        
+        config.kP = pid[0];
+        config.kI = pid[1];
+        config.kD = pid[2];
+        config.kV = pid[3];
+        config.kA = pid[4]; 
+        mmConfig.MotionMagicCruiseVelocity = pid[5];
+
+        turret.getConfigurator().apply(config);
+        turret.getConfigurator().apply(mmConfig);
+        
+      },
+      turretKP,
+      turretKI,
+      turretKD,
+      turretKV,
+      turretKA,
+      turretMotionMagicCruiseVelocity);
+
+  LoggedTunableNumber.ifChanged(
+    hashCode(),
+    pid -> {
+      Slot0Configs config = new Slot0Configs();
+      MotionMagicConfigs mmConfig = new MotionMagicConfigs();
+      hood.getConfigurator().refresh(config);
+      config.kP = pid[0];
+      config.kI = pid[1];
+      config.kD = pid[2];
+      config.kV = pid[3];
+      config.kA = pid[4];
+      mmConfig.MotionMagicCruiseVelocity = pid[5];
+
+      hood.getConfigurator().apply(config);
+      hood.getConfigurator().apply(mmConfig);
+
+    },
+    hoodKP,
+    hoodKI,
+    hoodKD,
+    turretKV,
+    turretKA,
+    turretMotionMagicCruiseVelocity);
 
   // The last step in the updateInputs method is to update the simulation.
   if (Constants.getMode() == Constants.Mode.SIM) {
     flywheelLeadSim.updateSim();
     kickerLeadSim.updateSim();
+    turretLeadSim.updateSim();
+    hoodLeadSim.updateSim();
   }
 }
 
@@ -469,16 +520,16 @@ public void setHoodVoltage(Voltage voltage) {
     hood.setControl(hoodVoltageRequest.withOutput(voltage));
 }
 
-private void configShootMotor(
-    TalonFX shootMotor, boolean isInverted, boolean isTopMotor, Alert configAlert) {
+private void configFlywheel(
+    TalonFX flywheel, boolean isInverted, boolean isLead, boolean isFollowA, boolean isFollowB, boolean isFollowC, Alert configAlert) {
 
   TalonFXConfiguration shootMotorsConfig = new TalonFXConfiguration();
 
-  if (isTopMotor) {
+  if (isLead) {
     shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
         ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
     shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
+        -ShooterConstants.
   } else {
     shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
         ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
