@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Velocity;
+import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class Intake extends SubsystemBase {
@@ -28,7 +30,7 @@ public class Intake extends SubsystemBase {
       new CurrentSpikeDetector(IntakeConstants.ROLLER_JAMMED_CURRENT_AMPS, IntakeConstants.ROLLER_JAMMED_TIME_THRESHOLD_SECONDS);
 
   private Alert rollerJamAlert =
-      new Alert("Intake roller jammed 💀, use manual control.", Alert.AlertType.kError);
+      new Alert("Intake roller jammed 💀", Alert.AlertType.kError);
 
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Intake/TestingMode", 0);
   private final LoggedTunableNumber rollerVelocityRPS =
@@ -88,6 +90,8 @@ public class Intake extends SubsystemBase {
     } else {
       rollerJamAlert.set(false);
     }
+
+    LoggedTracer.record("Intake");
   }
 
   public void startRoller() {
