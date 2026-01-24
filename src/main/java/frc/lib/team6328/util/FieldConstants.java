@@ -13,11 +13,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.lib.team3061.vision.VisionConstants;
+import edu.wpi.first.wpilibj.Filesystem;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+@java.lang.SuppressWarnings({"java:S112", "java:S115", "java:S1118", "java:S3077"})
 
 /**
  * Contains information for location of field element and other useful reference points.
@@ -332,7 +334,12 @@ public class FieldConstants {
         synchronized (this) {
           if (layout == null) {
             try {
-              Path p = VisionConstants.OFFICIAL_APRILTAG_FIELD_LAYOUT_PATH;
+              Path p =
+                  Path.of(
+                      Filesystem.getDeployDirectory().getPath(),
+                      "apriltags",
+                      fieldType.getJsonFolder(),
+                      name + ".json");
               layout = new AprilTagFieldLayout(p);
               layoutString = new ObjectMapper().writeValueAsString(layout);
             } catch (IOException e) {
