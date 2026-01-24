@@ -88,16 +88,6 @@ public class Field2d {
     this.transformedAllianceZone = new Region2d(zoneCorners);
   }
 
-  public void inAllianceZone() {
-    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-
-    if (getAlliance() == Alliance.Red) {
-      pose = FlippingUtil.flipFieldPose(pose);
-    }
-
-    transformedAllianceZone.contains(pose);
-  }
-
   /**
    * Create a path from a starting pose in one region to an ending pose in another region that
    * passes through the transition points defined for those regions.
@@ -255,14 +245,14 @@ public class Field2d {
     return alliance;
   }
 
-  public boolean isOutsideOfAllianceZone() {
+  public boolean inAllianceZone() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
     if (getAlliance() == Alliance.Red) {
       pose = FlippingUtil.flipFieldPose(pose);
     }
 
-    return !transformedAllianceZone.contains(pose);
+    return transformedAllianceZone.contains(pose);
   }
 
   public enum Side {
