@@ -105,7 +105,8 @@
             "properties": {
               "topic": "/SmartDashboard/SystemStatus/ClearAllFaults",
               "period": 0.06,
-              "show_type": true
+              "show_type": true,
+              "maximize_button_space": false
             }
           },
           {
@@ -165,7 +166,8 @@
             "properties": {
               "topic": "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck",
               "period": 0.06,
-              "show_type": true
+              "show_type": true,
+              "maximize_button_space": false
             }
           },
           {
@@ -391,6 +393,40 @@
             "type": "Toggle Button",
             "properties": {
               "topic": "/northstar_center/calibration/capture_flag",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Operator",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Pass",
+            "x": 112.0,
+            "y": 80.0,
+            "width": 400.0,
+            "height": 160.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Pass",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Shoot On The Move",
+            "x": 112.0,
+            "y": 256.0,
+            "width": 400.0,
+            "height": 176.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Shoot On The Move",
               "period": 0.06,
               "data_type": "boolean"
             }
