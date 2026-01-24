@@ -2,6 +2,7 @@ package frc.robot.subsystems.hopper;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
@@ -39,11 +40,15 @@ public interface HopperIO {
         Current spindexerSupplyCurrentAmps = Amps.of(0.0);
         Current rollerSupplyCurrentAmps = Amps.of(0.0);
 
+        // Angular Velocity
+        AngularVelocity spindexerVelocity = RotationsPerSecond.of(0.0);
 
     }
 
     public default void setRollerVoltage(double voltage) {}
     public default void setSpindexerVoltage(double voltage) {}
+
+    public default void setSpindexerVelocity(double velocity) {}
 
     public default void updateInputs(HopperIOInputs inputs) {}
 
