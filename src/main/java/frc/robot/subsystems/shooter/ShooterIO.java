@@ -1,10 +1,11 @@
 package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
@@ -118,12 +119,11 @@ public interface ShooterIO {
     Angle hoodClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
     Angle hoodClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
     Temperature hoodTemperature = Celsius.of(0.0);
-    
+
     // Encoder inputs (tbd)
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
-
-  }
+  
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
@@ -141,5 +141,6 @@ public interface ShooterIO {
 
   // Hood IO methods
   public default void setHoodPosition(Angle position) {}
+
   public default void setHoodVoltage(Voltage voltage) {}
 }

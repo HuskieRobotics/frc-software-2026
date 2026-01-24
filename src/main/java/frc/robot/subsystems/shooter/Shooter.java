@@ -167,6 +167,33 @@ public double getPassingDistance(){
 */
 
 
+  public boolean isShooterReady() {}
+
+  public void setHoodPosition(Angle position) {
+    io.setHoodPosition(position);
+  }
+
+  public void setTurretPosition(Angle position) {
+    io.setTurretPosition(position);
+  }
+
+  public boolean isKickerJammed() {
+    return io.isKickerJammed();
+  }
+
+  public void setFlywheelVelocity(AngularVelocity velocity) {
+    io.setFlywheelVelocity(velocity);
+  }
+
+  public double getPassingDistance() {
+    // FIXME: Unsure if this is gonna be a command or a method
+    return 0.0;
+  }
+
+  public void setIdleVelocity() {
+    io.setShooterWheelBottomVelocity(SHOOTER_IDLE_VELOCITY);
+    io.setShooterWheelTopVelocity(SHOOTER_IDLE_VELOCITY);
+  }
 
   // While we cannot use subtypes of Measure in the inputs class due to logging limitations, we do
   // strive to use them (e.g., Distance) throughout the rest of the code to mitigate bugs due to
@@ -224,8 +251,6 @@ public double getPassingDistance(){
                   io.setShooterWheelTopVelocity(RotationsPerSecond.of(0.0));
                 }));
   }
-
-
 
   private Command getPresetCheckCommand(Distance distance) {
     return Commands.sequence(

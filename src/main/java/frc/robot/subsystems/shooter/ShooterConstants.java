@@ -28,7 +28,7 @@ public class ShooterConstants {
   public static final boolean FLYWHEEL_LEAD_INVERTED = false;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.0;
 
-  //Turret PID Constants (subject to change)
+  // Turret PID Constants (subject to change)
   public static final double TURRET_ROTATION_KP = 0.0;
   public static final double TURRET_ROTATION_KI = 0.0;
   public static final double TURRET_ROTATION_KD = 0.0;
@@ -37,9 +37,9 @@ public class ShooterConstants {
   public static final double TURRET_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
 
   public static final boolean TURRET_INVERTED = false;
-  public static final double TURRET_GEAR_RATIO = 0; //FIXME: Update once we know
+  public static final double TURRET_GEAR_RATIO = 0; // FIXME: Update once we know
 
-  //Hood PID Constants (subject to change)
+  // Hood PID Constants (subject to change)
   public static final double HOOD_ROTATION_KP = 0.0;
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
@@ -56,7 +56,8 @@ public class ShooterConstants {
   public static final double KICKER_ROTATION_KD = 0.0;
 
   public static final boolean KICKER_INVERTED = false;
-  public static final double KICKER_GEAR_RATIO = 0; //FIXME: Update once we know
+  public static final double KICKER_GEAR_RATIO = 0; // FIXME: Update once we know
+
 
   //FIXME: to be deleted 
   // public static final double MOTOR_KS = 0.0;
@@ -66,7 +67,14 @@ public class ShooterConstants {
 
   // Current limits
   public static final int FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT = 40;
-  public static final int HOOD_PEAK_CURRENT_LIMIT = 20;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
   public static final int KICKER_PEAK_CURRENT_LIMIT = 20;
-}
+
+  // Hard coded non-tunable physics values
+  public static final double MOTOR_KS = 0.0;
+  public static final double MOTOR_KG = 0.0;
+  public static final double ROTATION_KV = 0.0;
+  public static final double ROTATION_KA = 0.0;
+
+  // Motion magic PID constants
+  public static final double ROTATION_EXPO_KV = 0.0;
