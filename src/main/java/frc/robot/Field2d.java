@@ -39,6 +39,7 @@ public class Field2d {
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
+  private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -66,7 +67,7 @@ public class Field2d {
 
     // since positive x is defined at forward if we move the far side x back 2 inches it should
     // result in giving us a 2 inch buffer
-    double buffer = Units.inchesToMeters(2);
+    double buffer = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
     double safeFarSideX = FieldConstants.LinesVertical.allianceZone - buffer;
 
     Translation2d[] zoneCorners =
@@ -85,6 +86,16 @@ public class Field2d {
         };
 
     this.transformedAllianceZone = new Region2d(zoneCorners);
+  }
+
+  public void inAllianceZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    transformedAllianceZone.contains(pose);
   }
 
   /**
