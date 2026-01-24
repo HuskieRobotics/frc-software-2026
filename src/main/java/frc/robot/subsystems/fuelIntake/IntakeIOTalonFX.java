@@ -1,6 +1,7 @@
 package frc.robot.subsystems.fuelIntake;
 
 import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -182,12 +183,14 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.deployerTempCelsius = deployerTempSS.getValue();
 
     if (Constants.TUNING_MODE) {
-      inputs.rollerClosedLoopError = Rotations.of(rollerMotor.getClosedLoopError().getValueAsDouble());
-      inputs.deployerClosedLoopError = Rotations.of(deployerMotor.getClosedLoopError().getValueAsDouble());
+      inputs.rollerClosedLoopError =
+          Rotations.of(rollerMotor.getClosedLoopError().getValueAsDouble());
+      inputs.deployerClosedLoopError =
+          Rotations.of(deployerMotor.getClosedLoopError().getValueAsDouble());
 
       inputs.rollerClosedLoopReference =
           Rotations.of(rollerMotor.getClosedLoopReference().getValueAsDouble());
-          
+
       inputs.deployerClosedLoopReference =
           Rotations.of(deployerMotor.getClosedLoopReference().getValueAsDouble());
     }

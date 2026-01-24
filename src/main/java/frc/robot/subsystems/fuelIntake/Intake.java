@@ -1,24 +1,19 @@
 package frc.robot.subsystems.fuelIntake;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.units.measure.Velocity;
-import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
-import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
 
@@ -27,10 +22,11 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private CurrentSpikeDetector rollerJamDetector =
-      new CurrentSpikeDetector(IntakeConstants.ROLLER_JAMMED_CURRENT_AMPS, IntakeConstants.ROLLER_JAMMED_TIME_THRESHOLD_SECONDS);
+      new CurrentSpikeDetector(
+          IntakeConstants.ROLLER_JAMMED_CURRENT_AMPS,
+          IntakeConstants.ROLLER_JAMMED_TIME_THRESHOLD_SECONDS);
 
-  private Alert rollerJamAlert =
-      new Alert("Intake roller jammed 💀", Alert.AlertType.kError);
+  private Alert rollerJamAlert = new Alert("Intake roller jammed 💀", Alert.AlertType.kError);
 
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Intake/TestingMode", 0);
   private final LoggedTunableNumber rollerVelocityRPS =
@@ -47,29 +43,30 @@ public class Intake extends SubsystemBase {
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.5);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.5);
 
+  private SysIdRoutine rollerSysIdRoutine;
+  private SysIdRoutine deployerSysIdRoutine;
+
   public Intake(IntakeIO io) {
     this.io = io;
+
+    rollerSysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
+                Volts.of(2.0), // override default step voltage (7 V)
+                null, // Use default timeout (10 s
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(io::setRollerVoltage, null, this));
+
+    deployerSysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
+                Volts.of(2.0), // override default step voltage (7 V)
+                null, // Use default timeout (10 s
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(io::setDeployerVoltage, null, this));
   }
-
-  private final SysIdRoutine rollerSysIdRoutine =
-      new SysIdRoutine(
-          new SysIdRoutine.Config(
-              Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
-              Volts.of(2.0), // override default step voltage (7 V)
-              null, // Use default timeout (10 s
-              state -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(io::setRollerVoltage, null, this));
-
-  private final SysIdRoutine deployerSysIdRoutine =
-      new SysIdRoutine(
-          new SysIdRoutine.Config(
-              Volts.of(2.0).per(Second), // override default ramp rate (1 V/s)
-              Volts.of(2.0), // override default step voltage (7 V)
-              null, // Use default timeout (10 s
-              state -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(io::setDeployerVoltage, null, this));
-
-  
 
   @Override
   public void periodic() {
@@ -118,7 +115,7 @@ public class Intake extends SubsystemBase {
     // Only consider deployed if the hardware is connected
     if (!inputs.deployerConnected) {
       return false;
-    } else if (inputs.linearPosition.toRotations() >= IntakeConstants.DEPLOYED_POSITION_ROTATIONS) {
+    } else if (inputs.angularPosition.in(Rotations) >= deployerPositionRotations.get()) {
       return deployerDeployedDebouncer.calculate(true);
     } else {
       return deployerDeployedDebouncer.calculate(false);
@@ -129,8 +126,7 @@ public class Intake extends SubsystemBase {
     // Only consider retracted if the hardware is connected
     if (!inputs.deployerConnected) {
       return false;
-    } else if (inputs.linearPosition.toRotations()
-        <= IntakeConstants.RETRACTED_POSITION_ROTATIONS) {
+    } else if (inputs.angularPosition.in(Rotations) <= 0.0) {
       return deployerRetractedDebouncer.calculate(true);
     } else {
       return deployerRetractedDebouncer.calculate(false);
