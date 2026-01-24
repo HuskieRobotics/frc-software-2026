@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
@@ -18,6 +19,8 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
+
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -45,8 +48,8 @@ public class Shooter extends SubsystemBase {
   // all subsystems receive a reference to their IO implementation when constructed
   private ShooterIO io;
 
-  // all subsystems create the AutoLogged version of their IO inputs class
-  private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
+  // all subsystems create the IO inputs instance for this subsystem
+  private final ShooterIOInputs shooterInputs = new ShooterIOInputs();
 
   // When initially testing a mechanism, it is best to manually provide a voltage or current to
   // verify the mechanical functionality. At times, this can be done via Phoenix Tuner. However,
@@ -55,16 +58,13 @@ public class Shooter extends SubsystemBase {
   // an efficient approach when, for example, empirically tuning the velocity for different
   // distances when shooting a game piece.
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
-  private final LoggedTunableNumber topWheelVelocityRPS =
-      new LoggedTunableNumber("Shooter/Top Wheel Velocity (RPS)", 0);
-  private final LoggedTunableNumber bottomWheelVelocityRPS =
-      new LoggedTunableNumber("Shooter/Bottom Wheel Velocity (RPS)", 0);
-  private final LoggedTunableNumber topWheelCurrent =
-      new LoggedTunableNumber("Shooter/Top Wheel Current", 0);
-  private final LoggedTunableNumber bottomWheelCurrent =
-      new LoggedTunableNumber("Shooter/Bottom Wheel Current", 0);
+  
   private final LoggedTunableBoolean isShooterReady = 
       new LoggedTunableBoolean("Shooter/Is Shooter Ready", false);
+  private final LoggedTunableNumber hoodAngle = 
+      new LoggedTunableNumber("Shooter/Hood Angle", 0);
+  private final LoggedTunableNumber turretAngle = 
+      new LoggedTunableNumber("Shooter/Turret Angle", 0);
     
 
   // As an alternative to determining a mathematical function to map distances to velocities,
@@ -126,25 +126,21 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // the first step in periodic is to update the inputs from the IO implementation.
-    io.updateInputs(shooterInputs);
+    ShooterIOInputs ShooterIOInputs = new ShooterIOInputs();
+    io.updateInputs(ShooterIOInputs);
+    Logger.recordOutput("Shooter/IsShooterReady", this.isShooterReady.toString());
+    Logger.recordOutput("Shooter/TestingMode", this.testingMode.toString());
+    Logger.recordOutput("Shooter/HoodAngle", this.hoodAngle.toString());
+    Logger.recordOutput("Shooter/TurretAngle", this.turretAngle.toString());
+  
+    
+    //We might want to calculate the current target right here based off hood angle + turret angle
 
-    // the next step is to log the inputs to the AdvantageKit logger.
-    Logger.processInputs(SUBSYSTEM_NAME, shooterInputs);
-
-    // If the testing mode is enabled, set either the velocity (if not zero) or apply the
-    // specified current (if not zero).
     if (testingMode.get() == 1) {
-      if (topWheelVelocityRPS.get() != 0) {
-        io.setShooterWheelTopVelocity(RotationsPerSecond.of(topWheelVelocityRPS.get()));
-      } else if (topWheelCurrent.get() != 0) {
-        io.setShooterWheelTopCurrent(Amps.of(topWheelCurrent.get()));
-      }
-      if (bottomWheelVelocityRPS.get() != 0) {
-        io.setShooterWheelBottomVelocity(RotationsPerSecond.of(bottomWheelVelocityRPS.get()));
-      } else if (bottomWheelCurrent.get() != 0) {
-        io.setShooterWheelBottomCurrent(Amps.of(bottomWheelCurrent.get()));
-      }
+      io.setFlywheelLeadVelocity(ShooterIOInputs.flywheelLeadReferenceVelocity);
+      io.setKickerVoltage(ShooterIOInputs.kickerReferenceVoltage);
+      io.setHoodPosition(ShooterIOInputs.hoodReferencePosition);
+      io.setTurretPosition(ShooterIOInputs.turretReferencePosition);
     }
 
     // Log how long this subsystem takes to execute its periodic method.
@@ -152,43 +148,25 @@ public class Shooter extends SubsystemBase {
     LoggedTracer.record("Shooter");
   }
 
-public boolean isShooterReady(){
-    
-}
+  public boolean isShooterReady(){
+    ShooterIOInputs ShooterIOInputs = new ShooterIOInputs();
+    return (ShooterIOInputs.flywheelLeadConnected &&
+            ShooterIOInputs.kickerConnected &&
+            ShooterIOInputs.hoodConnected &&
+            ShooterIOInputs.turretConnected && ShooterIOInputs.flywheelLeadVelocity > RotationsPerSecond.of(FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT).in(RotationsPerSecond) );
+            
 
-public void setHoodPosition(Angle position){
-    io.setHoodPosition(position);
-}
 
-public void setTurretPosition(Angle position){
-    io.setTurretPosition(position);
-}
+// public boolean isKickerJammed() {} FIXME: If we determine to add a sensor, then add this 
 
-public boolean isKickerJammed(){
-    return io.isKickerJammed();
-}
-
-public void setFlywheelVelocity(AngularVelocity velocity){
-    io.setFlywheelVelocity(velocity);
-}
-
+/**
 public double getPassingDistance(){
     // FIXME: Unsure if this is gonna be a command or a method
     return 0.0;
 } 
-
- 
-
-
-  
+*/
 
 
-
-
-  public void setIdleVelocity() {
-    io.setShooterWheelBottomVelocity(SHOOTER_IDLE_VELOCITY);
-    io.setShooterWheelTopVelocity(SHOOTER_IDLE_VELOCITY);
-  }
 
   // While we cannot use subtypes of Measure in the inputs class due to logging limitations, we do
   // strive to use them (e.g., Distance) throughout the rest of the code to mitigate bugs due to
