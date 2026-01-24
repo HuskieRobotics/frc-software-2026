@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.robot.Field2d;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class ShooterConfiguration extends Command {
@@ -46,7 +47,7 @@ public class ShooterConfiguration extends Command {
   public void end(boolean interrupted) {}
 
   public ShooterMode getMode() {
-    if (inAllianceZone()) {
+    if (Field2d.getInstance().inAllianceZone()) {
       if (hubActive()) {
         return ShooterMode.SHOOT;
       } else {
@@ -80,11 +81,6 @@ public class ShooterConfiguration extends Command {
     } // aim the turret at transforme dhub based on velocity
     else if (getMode() == ShooterMode.PASS) {
     } // aim turret at nearest corner
-  }
-
-  // make region2d with mechanical advantage field constants
-  public boolean inAllianceZone() {
-    return false;
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
