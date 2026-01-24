@@ -39,7 +39,9 @@ public class Field2d {
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
+  private Region2d transformedTrenchZone;
   private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
+  private double TRENCH_ZONE_BUFFER_INCHES = 12;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -67,8 +69,8 @@ public class Field2d {
 
     // since positive x is defined at forward if we move the far side x back 2 inches it should
     // result in giving us a 2 inch buffer
-    double buffer = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
-    double safeFarSideX = FieldConstants.LinesVertical.allianceZone - buffer;
+    double bufferAZ = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
+    double safeFarSideX = FieldConstants.LinesVertical.allianceZone - bufferAZ;
 
     Translation2d[] zoneCorners =
         new Translation2d[] {
@@ -86,6 +88,32 @@ public class Field2d {
         };
 
     this.transformedAllianceZone = new Region2d(zoneCorners);
+  }
+
+  public void populateTrenchZone() {
+
+    double bufferTrench = Units.inchesToMeters(TRENCH_ZONE_BUFFER_INCHES);
+    double halfFieldX = FieldConstants.fieldLength / 2;
+    double hubLeftY = FieldConstants.Hub.farLeftCorner.getY();
+    double hubRightY = FieldConstants.Hub.farRightCorner.getY();
+
+    Translation2d[] trenchEdges =
+        new Translation2d[] {
+
+          // Left Trench
+          new Translation2d(FieldConstants.LinesVertical.allianceZone, hubLeftY + bufferTrench),
+          new Translation2d(halfFieldX, hubLeftY + bufferTrench),
+          new Translation2d(halfFieldX, FieldConstants.fieldWidth),
+          new Translation2d(FieldConstants.LinesVertical.allianceZone, FieldConstants.fieldWidth),
+
+          // Right Trench
+          new Translation2d(FieldConstants.LinesVertical.allianceZone, 0.0),
+          new Translation2d(halfFieldX, 0.0),
+          new Translation2d(halfFieldX, hubRightY - bufferTrench),
+          new Translation2d(FieldConstants.LinesVertical.allianceZone, hubRightY - bufferTrench)
+        };
+
+    this.transformedTrenchZone = new Region2d(trenchEdges);
   }
 
   /**
@@ -253,6 +281,16 @@ public class Field2d {
     }
 
     return transformedAllianceZone.contains(pose);
+  }
+
+  public boolean inTrenchZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedTrenchZone.contains(pose);
   }
 
   public enum Side {

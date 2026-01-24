@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.reflect.Field;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.robot.Field2d;
@@ -22,6 +24,7 @@ public class ShooterConfiguration extends Command {
     SHOOT,
     SHOOT_OTM,
     COLLECT,
+    NEAR_TRENCH,
     PASS
   }
 
@@ -47,6 +50,13 @@ public class ShooterConfiguration extends Command {
   public void end(boolean interrupted) {}
 
   public ShooterMode getMode() {
+    if(Field2d.getInstance().inTrenchZone()){
+
+      return ShooterMode.NEAR_TRENCH;
+
+    }
+
+
     if (Field2d.getInstance().inAllianceZone()) {
       if (hubActive()) {
         return ShooterMode.SHOOT;
@@ -63,9 +73,12 @@ public class ShooterConfiguration extends Command {
     }
   }
 
-  public void getTrajectory() {
 
-    if (getMode() == ShooterMode.SHOOT || getMode() == ShooterMode.COLLECT) {
+  public void getTrajectory() {
+    if(getMode() == ShooterMode.NEAR_TRENCH){
+      // set hood to max
+    }
+    else if (getMode() == ShooterMode.SHOOT || getMode() == ShooterMode.COLLECT) {
     } // model for aimed position
     else if (getMode() == ShooterMode.SHOOT_OTM) {
     } // model for OTM pos
