@@ -68,6 +68,7 @@ public interface ShooterIO {
     
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
+    public boolean kickerConnected;
   }
 
     // Kicker inputs
@@ -133,6 +134,7 @@ public interface ShooterIO {
 
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
+
   // public default void setFlywheelTorqueCurrent(Current amps) {} //FIXME: unsure if this is needed
 
   // Turret IO methods

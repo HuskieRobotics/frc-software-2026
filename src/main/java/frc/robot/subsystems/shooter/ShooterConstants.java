@@ -69,6 +69,7 @@ public class ShooterConstants {
   public static final int FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT = 40;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
   public static final int KICKER_PEAK_CURRENT_LIMIT = 20;
+  public static final int HOOD_PEAK_CURRENT_LIMIT = 20;
 
   // Hard coded non-tunable physics values
   public static final double MOTOR_KS = 0.0;
@@ -78,3 +79,4 @@ public class ShooterConstants {
 
   // Motion magic PID constants
   public static final double ROTATION_EXPO_KV = 0.0;
+}

@@ -144,6 +144,12 @@ private final LoggedTunableNumber hoodKI =
     new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_ROTATION_KI);
 private final LoggedTunableNumber hoodKD =
     new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_ROTATION_KD);
+private final LoggedTunableNumber hoodKV =
+    new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_EXPO_KV);
+private final LoggedTunableNumber hoodKA =
+    new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_EXPO_KA);
+private final LoggedTunableNumber hoodMotionMagicCruiseVelocity =
+    new LoggedTunableNumber("Shooter/Hood Magic Cruise Velocity", ShooterConstants.HOOD_MOTION_MAGIC_CRUISE_VELOCITY);
 private final LoggedTunableNumber kickerKP =
     new LoggedTunableNumber("Shooter/Kicker kP", ShooterConstants.KICKER_ROTATION_KP);
 private final LoggedTunableNumber kickerKI =
@@ -241,10 +247,10 @@ hoodPositionStatusSignal = hood.getPosition();
       hoodPositionStatusSignal
 
       );
-  configShootMotor(flywheelLead, FLYWHEEL_LEAD_INVERTED, true, flywheelLeadConfigAlert, ShooterIOInputs.flywheelLeadConnected);
-  configShootMotor(kicker, KICKER_INVERTED, false, kickerConfigAlert);
-  configShootMotor(turret, TURRET_INVERTED, false, turretConfigAlert);
-  configShootMotor(hood, HOOD_INVERTED, false, hoodConfigAlert);
+  configFlywheel(flywheelLead, FLYWHEEL_LEAD_INVERTED, true, flywheelLeadConfigAlert);
+  configKicker(kicker, KICKER_INVERTED, false, kickerConfigAlert);
+  configTurret(turret, TURRET_INVERTED, false, turretConfigAlert);
+  configHood(hood, HOOD_INVERTED, false, hoodConfigAlert);
   // Create a simulation objects for the shooter. The specific parameters for the simulation
   // are determined based on the mechanical design of the shooter.
   this.flywheelLeadSim =
@@ -521,51 +527,119 @@ public void setHoodVoltage(Voltage voltage) {
 }
 
 private void configFlywheel(
-    TalonFX flywheel, boolean isInverted, boolean isLead, boolean isFollowA, boolean isFollowB, boolean isFollowC, Alert configAlert) {
+    TalonFX flywheel, boolean isInverted, boolean isLead, Alert configAlert) {
 
-  TalonFXConfiguration shootMotorsConfig = new TalonFXConfiguration();
+  TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
 
-  if (isLead) {
-    shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT;
-    shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.
-  } else {
-    shootMotorsConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
-    shootMotorsConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT;
-  }
+    flywheelConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+        ShooterConstants.FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT;
+    flywheelConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+        -ShooterConstants.FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT;
+    
+    flywheelConfig.Slot0.kP = flywheelLeadKP.get();
+    flywheelConfig.Slot0.kI = flywheelLeadKI.get();
+    flywheelConfig.Slot0.kD = flywheelLeadKD.get();
 
-  if (isTopMotor) {
-    shootMotorsConfig.Slot0.kP = shootMotorTopKP.get();
-    shootMotorsConfig.Slot0.kI = shootMotorTopKI.get();
-    shootMotorsConfig.Slot0.kD = shootMotorTopKD.get();
-    shootMotorsConfig.Slot0.kS = shootMotorTopKS.get();
-  } else {
-    shootMotorsConfig.Slot0.kP = shootMotorBottomKP.get();
-    shootMotorsConfig.Slot0.kI = shootMotorBottomKI.get();
-    shootMotorsConfig.Slot0.kD = shootMotorBottomKD.get();
-    shootMotorsConfig.Slot0.kS = shootMotorBottomKS.get();
-  }
+  flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO; //FIXME: would we need this as ratio is 1:1
 
-  shootMotorsConfig.Feedback.SensorToMechanismRatio = ShooterConstants.SHOOT_MOTORS_GEAR_RATIO;
-
-  shootMotorsConfig.MotorOutput.Inverted =
+  flywheelConfig.MotorOutput.Inverted =
       isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-  shootMotorsConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+  flywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
   // It is critical that devices are successfully configured. The applyAndCheckConfiguration
   // method will apply the configuration, read back the configuration, and ensure that it is
   // correct. If not, it will reattempt five times and eventually, generate an alert.
-  Phoenix6Util.applyAndCheckConfiguration(shootMotor, shootMotorsConfig, configAlert);
+  Phoenix6Util.applyAndCheckConfiguration(flywheel, flywheelConfig, configAlert);
 
   // A subsystem needs to register each device with FaultReporter. FaultReporter will check
   // devices for faults periodically when the robot is disabled and generate alerts if any faults
   // are found.
   FaultReporter.getInstance()
-      .registerHardware(SUBSYSTEM_NAME, isTopMotor ? "TopMotor" : "BottomMotor", shootMotor);
+      .registerHardware(SUBSYSTEM_NAME, isLead ? "TopMotor" : "BottomMotor", flywheel);
 }
+
+private void configKicker(
+    TalonFX kicker, boolean isInverted, boolean isLead, Alert configAlert) {
+
+  TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
+
+    kickerConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+        ShooterConstants.KICKER_PEAK_CURRENT_LIMIT;
+    kickerConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+        -ShooterConstants.KICKER_PEAK_CURRENT_LIMIT;
+    
+    kickerConfig.Slot0.kP = kickerKP.get();
+    kickerConfig.Slot0.kI = kickerKI.get();
+    kickerConfig.Slot0.kD = kickerKD.get();
+
+  kickerConfig.Feedback.SensorToMechanismRatio = ShooterConstants.KICKER_GEAR_RATIO; //FIXME: would we need this?
+
+  kickerConfig.MotorOutput.Inverted =
+      isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+  kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+}
+
+private void configTurret(
+    TalonFX turret, boolean isInverted, boolean isLead, Alert configAlert) {
+
+        TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+
+        turretConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+            ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;
+        turretConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+            -ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;
+        
+        turretConfig.Slot0.kP = turretKP.get();
+        turretConfig.Slot0.kI = turretKI.get();
+        turretConfig.Slot0.kD = turretKD.get();
+        turretConfig.Slot0.kV = turretKV.get();
+        turretConfig.Slot0.kA = turretKA.get();
+        turretConfig.MotionMagic.MotionMagicCruiseVelocity = turretMotionMagicCruiseVelocity.get();
+    
+    turretConfig.Feedback.SensorToMechanismRatio = ShooterConstants.TURRET_GEAR_RATIO; //FIXME: would we need this?
+
+    turretConfig.MotorOutput.Inverted =
+        isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+}
+
+private void configHood(
+    TalonFX hood, boolean isInverted, boolean isLead, Alert configAlert) {
+
+        TalonFXConfiguration hoodConfig = new TalonFXConfiguration(); 
+        
+        hoodConfig.TorqueCurrent.PeakForwardTorqueCurrent =
+            ShooterConstants.HOOD_PEAK_CURRENT_LIMIT;
+        hoodConfig.TorqueCurrent.PeakReverseTorqueCurrent =
+            -ShooterConstants.HOOD_PEAK_CURRENT_LIMIT;
+
+        hoodConfig.Slot0.kP = hoodKP.get();
+        hoodConfig.Slot0.kI = hoodKI.get();
+        hoodConfig.Slot0.kD = hoodKD.get();
+        hoodConfig.Slot0.kV = hoodKV.get();
+        hoodConfig.Slot0.kA = hoodKA.get();
+        hoodConfig.MotionMagic.MotionMagicCruiseVelocity = hoodMotionMagicCruiseVelocity.get();
+
+    hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO; //FIXME: would we need this?
+
+    hoodConfig.MotorOutput.Inverted =
+        isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+}
+  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
+  // method will apply the configuration, read back the configuration, and ensure that it is
+  // correct. If not, it will reattempt five times and eventually, generate an alert.
+  Phoenix6Util.applyAndCheckConfiguration(flywheel, flywheelConfig, configAlert);
+  Phoenix6Util.applyAndCheckConfiguration(kicker, kickerConfig, configAlert);
+  Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
+  Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
+
+  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
+  // devices for faults periodically when the robot is disabled and generate alerts if any faults
+  // are found.
+  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, kicker); //FIXME: add names and adjust to other motors 
+}
+
 
 private void configGamePieceDetector(CANrange detector, Alert configAlert) {
   CANrangeConfiguration config = new CANrangeConfiguration();
@@ -588,5 +662,5 @@ private void configGamePieceDetector(CANrange detector, Alert configAlert) {
   // devices for faults periodically when the robot is disabled and generate alerts if any faults
   // are found.
   FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "GamePieceDetector", detector);
-}
-}
+} // fix errors for brackets
+
