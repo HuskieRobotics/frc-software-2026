@@ -50,13 +50,16 @@ public class ShooterConfiguration extends Command {
     }
 
     if (Field2d.getInstance().inAllianceZone()) {
-      if (hubActive() && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+      if (hubActive()
+          && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
         return ShooterMode.SHOOT_OTM;
       } else {
         return ShooterMode.SHOOT;
       }
     } else {
-      if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) { // pass toggeled by Operator
+      if (OISelector.getOperatorInterface()
+          .getPassToggle()
+          .getAsBoolean()) { // pass toggeled by Operator
         return ShooterMode.PASS;
       } else {
         return ShooterMode.COLLECT;
@@ -76,7 +79,7 @@ public class ShooterConfiguration extends Command {
       // model for OTM pos
     } else if (getMode() == ShooterMode.PASS) {
       // model for aimed position, which would be the nearest position
-    } 
+    }
   }
 
   public void getTurret() {

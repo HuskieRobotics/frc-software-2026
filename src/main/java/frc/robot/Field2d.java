@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This singleton class models the field as a collection of regions. This class is used to create a
