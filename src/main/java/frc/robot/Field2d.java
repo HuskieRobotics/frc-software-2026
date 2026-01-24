@@ -4,13 +4,17 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.FieldConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +38,9 @@ public class Field2d {
 
   private Alliance alliance = DriverStation.Alliance.Blue;
 
+  private Region2d transformedAllianceZone;
+  private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
+
   /**
    * Get the singleton instance of the Field2d class.
    *
@@ -54,6 +61,31 @@ public class Field2d {
    */
   public void setRegions(Region2d[] regions) {
     this.regions = regions;
+  }
+
+  public void populateAllianceZone() {
+
+    // since positive x is defined at forward if we move the far side x back 2 inches it should
+    // result in giving us a 2 inch buffer
+    double buffer = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
+    double safeFarSideX = FieldConstants.LinesVertical.allianceZone - buffer;
+
+    Translation2d[] zoneCorners =
+        new Translation2d[] {
+          // bottom right corner
+          new Translation2d(0.0, 0.0),
+
+          // top right corner
+          new Translation2d(safeFarSideX, 0.0),
+
+          // top left corner
+          new Translation2d(safeFarSideX, FieldConstants.fieldWidth),
+
+          // bottom left corner
+          new Translation2d(0.0, FieldConstants.fieldWidth)
+        };
+
+    this.transformedAllianceZone = new Region2d(zoneCorners);
   }
 
   /**
@@ -211,6 +243,16 @@ public class Field2d {
    */
   public Alliance getAlliance() {
     return alliance;
+  }
+
+  public boolean inAllianceZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedAllianceZone.contains(pose);
   }
 
   public enum Side {
