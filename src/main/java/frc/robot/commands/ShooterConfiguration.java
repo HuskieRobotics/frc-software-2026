@@ -5,16 +5,13 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.robot.Field2d;
+import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class ShooterConfiguration extends Command {
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
-
-  private boolean isHubActive;
-
-  private boolean passToggled;
 
   private String gameData;
 
@@ -49,22 +46,20 @@ public class ShooterConfiguration extends Command {
 
   public ShooterMode getMode() {
     if (Field2d.getInstance().inTrenchZone()) {
-
       return ShooterMode.NEAR_TRENCH;
     }
 
     if (Field2d.getInstance().inAllianceZone()) {
-      if (hubActive()) {
-        return ShooterMode.SHOOT;
+      if (hubActive() && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+        return ShooterMode.SHOOT_OTM;
       } else {
-        return ShooterMode.COLLECT;
+        return ShooterMode.SHOOT;
       }
     } else {
-
-      if (passToggled) { // pass toggeled by Operator
+      if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) { // pass toggeled by Operator
         return ShooterMode.PASS;
       } else {
-        return ShooterMode.SHOOT_OTM;
+        return ShooterMode.COLLECT;
       }
     }
   }
@@ -72,12 +67,16 @@ public class ShooterConfiguration extends Command {
   public void getTrajectory() {
     if (getMode() == ShooterMode.NEAR_TRENCH) {
       // set hood to max
-    } else if (getMode() == ShooterMode.SHOOT || getMode() == ShooterMode.COLLECT) {
-    } // model for aimed position
-    else if (getMode() == ShooterMode.SHOOT_OTM) {
-    } // model for OTM pos
-    else if (getMode() == ShooterMode.PASS) {
-    } // model for aimed position, which would be the nearest position
+    } else if (getMode() == ShooterMode.SHOOT) {
+      // model for aimed position
+      // x stance
+    } else if (getMode() == ShooterMode.COLLECT) {
+      // model for aimed position
+    } else if (getMode() == ShooterMode.SHOOT_OTM) {
+      // model for OTM pos
+    } else if (getMode() == ShooterMode.PASS) {
+      // model for aimed position, which would be the nearest position
+    } 
   }
 
   public void getTurret() {

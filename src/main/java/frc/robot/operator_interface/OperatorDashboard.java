@@ -22,7 +22,7 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Pass", false, true);
 
   public final LoggedTunableBoolean shootOnTheMoveToggle =
-      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, true);
+      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", true, true);
 
   public OperatorDashboard() {}
 
