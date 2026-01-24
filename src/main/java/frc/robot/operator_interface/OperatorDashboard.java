@@ -18,7 +18,23 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean enablePrimaryIRSensors =
       new LoggedTunableBoolean("operatorDashboard/Enable Primary IR Sensors", true, true);
 
+  public final LoggedTunableBoolean passToggle =
+      new LoggedTunableBoolean("operatorDashboard/Pass", false, true);
+
+  public final LoggedTunableBoolean shootOnTheMoveToggle =
+      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, true);
+
   public OperatorDashboard() {}
+
+  @Override
+  public Trigger getPassToggle() {
+    return new Trigger(() -> passToggle.get());
+  }
+
+  @Override
+  public Trigger getShootOnTheMoveToggle() {
+    return new Trigger(() -> shootOnTheMoveToggle.get());
+  }
 
   @Override
   public Trigger getVisionIsEnabledTrigger() {
