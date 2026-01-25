@@ -39,9 +39,15 @@ public class Field2d {
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
-  private Region2d transformedTrenchZone;
-  private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
-  private double TRENCH_ZONE_BUFFER_INCHES = 12;
+  private Region2d transformedLeftTrenchZone;
+  private Region2d transformedRightTrenchZone;
+  private Region2d transformedLeftBumpZone;
+  private Region2d transformedRightBumpZone;
+  private double ALLIANCE_ZONE_BUFFER_X = 2; // inches
+  private double TRENCH_ZONE_BUFFER_Y = 12; // inches
+  private double TRENCH_ZONE_BUFFER_X = 7; // inches
+  private double BUMP_ZONE_BUFFER_Y = 6; // inches
+  private double BUMP_ZONE_BUFFER_X = 6; // inches
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -69,7 +75,7 @@ public class Field2d {
 
     // since positive x is defined at forward if we move the far side x back 2 inches it should
     // result in giving us a 2 inch buffer
-    double bufferAZ = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
+    double bufferAZ = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_X);
     double safeFarSideX = FieldConstants.LinesVertical.allianceZone - bufferAZ;
 
     Translation2d[] zoneCorners =
@@ -92,32 +98,89 @@ public class Field2d {
 
   public void populateTrenchZone() {
 
-    double bufferTrench = Units.inchesToMeters(TRENCH_ZONE_BUFFER_INCHES);
-    double shiftConstant = Units.inchesToMeters(7); // FIXME: how far we need to be from the trench inorder to raise the hood to its max angle
-    double trenchLineX = FieldConstants.LinesVertical.neutralZoneNear;
-    double hubLeftY = FieldConstants.Hub.farLeftCorner.getY();
-    double hubRightY = FieldConstants.Hub.farRightCorner.getY();
+    double bufferTrenchX = Units.inchesToMeters(TRENCH_ZONE_BUFFER_X);
+    double bufferTrenchY = Units.inchesToMeters(TRENCH_ZONE_BUFFER_Y);
 
-    Translation2d[] trenchEdges =
+    Translation2d[] leftTrenchEdges =
         new Translation2d[] {
 
           // Left Trench
           new Translation2d(
-              FieldConstants.LinesVertical.allianceZone - shiftConstant, hubLeftY + bufferTrench),
-          new Translation2d(trenchLineX + shiftConstant, hubLeftY + bufferTrench),
-          new Translation2d(trenchLineX + shiftConstant, FieldConstants.fieldWidth),
+              FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
+              FieldConstants.LinesHorizontal.leftTrenchOpenStart),
           new Translation2d(
-              FieldConstants.LinesVertical.allianceZone - shiftConstant, FieldConstants.fieldWidth),
-
-          // Right Trench
-          new Translation2d(FieldConstants.LinesVertical.allianceZone - shiftConstant, 0.0),
-          new Translation2d(trenchLineX + shiftConstant, 0.0),
-          new Translation2d(trenchLineX + shiftConstant, hubRightY - bufferTrench),
+              FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
+              FieldConstants.LinesHorizontal.leftTrenchOpenEnd - bufferTrenchY),
           new Translation2d(
-              FieldConstants.LinesVertical.allianceZone - shiftConstant, hubRightY - bufferTrench)
+              FieldConstants.LinesVertical.neutralZoneNear + bufferTrenchX,
+              FieldConstants.LinesHorizontal.leftTrenchOpenEnd - bufferTrenchY),
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferTrenchX,
+              FieldConstants.LinesHorizontal.leftTrenchOpenStart),
         };
 
-    this.transformedTrenchZone = new Region2d(trenchEdges);
+    Translation2d[] rightTrenchEdges =
+        new Translation2d[] {
+          // Right Trench
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
+              FieldConstants.LinesHorizontal.rightTrenchOpenEnd),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
+              FieldConstants.LinesHorizontal.rightTrenchOpenStart + bufferTrenchY),
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferTrenchX,
+              FieldConstants.LinesHorizontal.rightTrenchOpenStart + bufferTrenchY),
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferTrenchX,
+              FieldConstants.LinesHorizontal.rightTrenchOpenEnd),
+        };
+    this.transformedLeftTrenchZone = new Region2d(leftTrenchEdges);
+    this.transformedRightTrenchZone = new Region2d(rightTrenchEdges);
+  }
+
+  public void populateBumpZone() {
+
+    double bufferBumpY = Units.inchesToMeters(BUMP_ZONE_BUFFER_Y);
+    double bufferBumpX = Units.inchesToMeters(BUMP_ZONE_BUFFER_X);
+
+    Translation2d[] leftBumpEdges =
+        new Translation2d[] {
+
+          // Left Bump
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferBumpX,
+              FieldConstants.LinesHorizontal.leftBumpEnd - bufferBumpY),
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferBumpX,
+              FieldConstants.LinesHorizontal.leftBumpStart + bufferBumpY),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - bufferBumpX,
+              FieldConstants.LinesHorizontal.leftBumpStart + bufferBumpY),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - bufferBumpX,
+              FieldConstants.LinesHorizontal.leftBumpEnd - bufferBumpY)
+        };
+
+    Translation2d[] rightBumpEdges =
+        new Translation2d[] {
+          // Right Bump
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferBumpX,
+              FieldConstants.LinesHorizontal.rightBumpStart + bufferBumpY),
+          new Translation2d(
+              FieldConstants.LinesVertical.neutralZoneNear + bufferBumpX,
+              FieldConstants.LinesHorizontal.rightBumpEnd - bufferBumpY),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - bufferBumpX,
+              FieldConstants.LinesHorizontal.rightBumpEnd - bufferBumpY),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - bufferBumpX,
+              FieldConstants.LinesHorizontal.rightBumpStart + bufferBumpY)
+        };
+
+    this.transformedLeftBumpZone = new Region2d(leftBumpEdges);
+    this.transformedRightBumpZone = new Region2d(rightBumpEdges);
   }
 
   public void logAllianceZonePoints() {
@@ -125,7 +188,13 @@ public class Field2d {
   }
 
   public void logTrenchZonePoints() {
-    transformedTrenchZone.logPoints("trenchZone");
+    transformedLeftTrenchZone.logPoints("leftTrenchZone");
+    transformedRightTrenchZone.logPoints("rightTrenchZone");
+  }
+
+  public void logBumpZonePoints() {
+    transformedLeftBumpZone.logPoints("leftBumpZone");
+    transformedRightBumpZone.logPoints("rightBumpZone");
   }
 
   /**
@@ -302,7 +371,17 @@ public class Field2d {
       pose = FlippingUtil.flipFieldPose(pose);
     }
 
-    return transformedTrenchZone.contains(pose);
+    return transformedLeftTrenchZone.contains(pose) || transformedRightTrenchZone.contains(pose);
+  }
+
+  public boolean inBumpZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedLeftBumpZone.contains(pose) || transformedRightBumpZone.contains(pose);
   }
 
   public enum Side {
