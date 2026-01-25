@@ -16,15 +16,12 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.Field2d;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.shooter.Shooter;
-
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
@@ -115,26 +112,25 @@ public class CrossSubsystemsCommandsFactory {
     registerSysIdCommands(oi);
   }
 
-  public static Command  getScoreMoneyShotCommand(SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi){
+  public static Command getScoreMoneyShotCommand(
+      SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi) {
 
-
-    return Commands.sequence(
-    );
+    return Commands.sequence();
 
     // this will get called if we are in shoot mode AND the aim button is being held
   }
 
-  public static Command holdToShoot(SwerveDrivetrain drivetrain, Shooter shooter){
+  public static Command holdToShoot(SwerveDrivetrain drivetrain, Shooter shooter) {
 
     return null;
     // call unload shooter
 
   }
 
-  public static void unloadShooter(SwerveDrivetrain drivetrain, Hopper hopper){
+  public static void unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
 
     drivetrain.holdXstance();
-    hopper.setKickerVelocity(); 
+    // hopper.setKickerVelocity();
 
     // x-stance
     // run the kicker until all of the fuel is gone (unload)

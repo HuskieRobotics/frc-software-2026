@@ -104,6 +104,7 @@ public class RobotContainer {
     Field2d.getInstance().populateAllianceZone();
     Field2d.getInstance().logAllianceZonePoints();
     Field2d.getInstance().populateTrenchZone();
+    Field2d.getInstance().logTrenchZonePoints();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {

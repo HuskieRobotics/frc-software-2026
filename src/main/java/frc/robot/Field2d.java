@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * This singleton class models the field as a collection of regions. This class is used to create a
@@ -94,7 +93,8 @@ public class Field2d {
   public void populateTrenchZone() {
 
     double bufferTrench = Units.inchesToMeters(TRENCH_ZONE_BUFFER_INCHES);
-    double halfFieldX = FieldConstants.fieldLength / 2;
+    double shiftConstant = Units.inchesToMeters(7); // FIXME: how far we need to be from the trench inorder to raise the hood to its max angle
+    double trenchLineX = FieldConstants.LinesVertical.neutralZoneNear;
     double hubLeftY = FieldConstants.Hub.farLeftCorner.getY();
     double hubRightY = FieldConstants.Hub.farRightCorner.getY();
 
@@ -102,23 +102,30 @@ public class Field2d {
         new Translation2d[] {
 
           // Left Trench
-          new Translation2d(FieldConstants.LinesVertical.allianceZone, hubLeftY + bufferTrench),
-          new Translation2d(halfFieldX, hubLeftY + bufferTrench),
-          new Translation2d(halfFieldX, FieldConstants.fieldWidth),
-          new Translation2d(FieldConstants.LinesVertical.allianceZone, FieldConstants.fieldWidth),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - shiftConstant, hubLeftY + bufferTrench),
+          new Translation2d(trenchLineX + shiftConstant, hubLeftY + bufferTrench),
+          new Translation2d(trenchLineX + shiftConstant, FieldConstants.fieldWidth),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - shiftConstant, FieldConstants.fieldWidth),
 
           // Right Trench
-          new Translation2d(FieldConstants.LinesVertical.allianceZone, 0.0),
-          new Translation2d(halfFieldX, 0.0),
-          new Translation2d(halfFieldX, hubRightY - bufferTrench),
-          new Translation2d(FieldConstants.LinesVertical.allianceZone, hubRightY - bufferTrench)
+          new Translation2d(FieldConstants.LinesVertical.allianceZone - shiftConstant, 0.0),
+          new Translation2d(trenchLineX + shiftConstant, 0.0),
+          new Translation2d(trenchLineX + shiftConstant, hubRightY - bufferTrench),
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone - shiftConstant, hubRightY - bufferTrench)
         };
 
     this.transformedTrenchZone = new Region2d(trenchEdges);
   }
 
   public void logAllianceZonePoints() {
-    transformedAllianceZone.logPoints("allianceZone");
+    transformedAllianceZone.logPoints("aliianceZone");
+  }
+
+  public void logTrenchZonePoints() {
+    transformedTrenchZone.logPoints("trenchZone");
   }
 
   /**
