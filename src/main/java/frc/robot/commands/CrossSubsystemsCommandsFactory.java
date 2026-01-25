@@ -16,6 +16,8 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Field2d;
+import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
@@ -118,6 +120,20 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence();
 
     // this will get called if we are in shoot mode AND the aim button is being held
+  }
+
+  public static Command getRaiseHoodNearTrenchCommand(SwerveDrivetrain drivetrain, Shooter shooter) {
+
+return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().inTrenchZone()),
+            Commands.runOnce(
+                () -> shooter.setIdleVelocity(), shooter)), // FIXME: change from set idle velocity to set hood angle to max
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
   }
 
   public static Command holdToShoot(SwerveDrivetrain drivetrain, Shooter shooter) {
