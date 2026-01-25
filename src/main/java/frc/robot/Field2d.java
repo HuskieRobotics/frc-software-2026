@@ -118,7 +118,7 @@ public class Field2d {
   }
 
   public void logAllianceZonePoints() {
-    transformedAllianceZone.logPoints();
+    transformedAllianceZone.logPoints("allianceZone");
   }
 
   /**
