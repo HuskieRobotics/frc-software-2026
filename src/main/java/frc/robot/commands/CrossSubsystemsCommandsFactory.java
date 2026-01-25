@@ -125,6 +125,8 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getRaiseHoodNearTrenchCommand(
       SwerveDrivetrain drivetrain, Shooter shooter) {
 
+    // this will raise the hood of our shooter while we in inside of our trench zone
+
     return Commands.deadline(
         Commands.sequence(
             Commands.waitUntil(() -> Field2d.getInstance().inTrenchZone()),
@@ -140,9 +142,34 @@ public class CrossSubsystemsCommandsFactory {
 
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
 
-    return null;
+    // this will rotate our robot into a diamond shape while we are near the bump zone
 
-    // this will get called if we are in shoot mode AND the aim button is being held
+    double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
+
+    double nearest45DegreeAngle =
+        Math.round(currentRotationPose / 45.0) * 45.0; // find nearest 45 degree angle
+
+    Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
+
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().inBumpZone()),
+            Commands.runOnce(
+                () ->
+                    drivetrain.driveFacingAngle(
+                        RobotConfig.getInstance()
+                            .getRobotMaxVelocity()
+                            .times(OISelector.getOperatorInterface().getTranslateX()),
+                        RobotConfig.getInstance()
+                            .getRobotMaxVelocity()
+                            .times(OISelector.getOperatorInterface().getTranslateY()),
+                        targetRotation,
+                        false))),
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
   }
 
   public static Command holdToShoot(SwerveDrivetrain drivetrain, Shooter shooter) {
