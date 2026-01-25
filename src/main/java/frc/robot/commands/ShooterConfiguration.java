@@ -16,11 +16,11 @@ public class ShooterConfiguration extends Command {
   private String gameData;
 
   public enum ShooterMode {
-    SHOOT,
-    SHOOT_OTM,
-    COLLECT,
-    NEAR_TRENCH,
-    PASS
+    CAN_SHOOT, // Shoot only when we want
+    SHOOT_OTM, // shoot on the move
+    COLLECT_AND_HOLD, // collecting and holding fuel in hopper
+    NEAR_TRENCH, // near the trenh zone
+    PASS // passing mode
   }
 
   public ShooterConfiguration(SwerveDrivetrain drivetrain, Shooter shooter) {
@@ -54,7 +54,7 @@ public class ShooterConfiguration extends Command {
           && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
         return ShooterMode.SHOOT_OTM;
       } else {
-        return ShooterMode.SHOOT;
+        return ShooterMode.CAN_SHOOT;
       }
     } else {
       if (OISelector.getOperatorInterface()
@@ -62,7 +62,7 @@ public class ShooterConfiguration extends Command {
           .getAsBoolean()) { // pass toggeled by Operator
         return ShooterMode.PASS;
       } else {
-        return ShooterMode.COLLECT;
+        return ShooterMode.COLLECT_AND_HOLD;
       }
     }
   }
@@ -70,10 +70,10 @@ public class ShooterConfiguration extends Command {
   public void getTrajectory() {
     if (getMode() == ShooterMode.NEAR_TRENCH) {
       // set hood to max
-    } else if (getMode() == ShooterMode.SHOOT) {
+    } else if (getMode() == ShooterMode.CAN_SHOOT) {
       // model for aimed position
       // x stance
-    } else if (getMode() == ShooterMode.COLLECT) {
+    } else if (getMode() == ShooterMode.COLLECT_AND_HOLD) {
       // model for aimed position
     } else if (getMode() == ShooterMode.SHOOT_OTM) {
       // model for OTM pos
@@ -84,10 +84,10 @@ public class ShooterConfiguration extends Command {
 
   public void getTurret() {
 
-    if (getMode() == ShooterMode.SHOOT || getMode() == ShooterMode.COLLECT) {
+    if (getMode() == ShooterMode.CAN_SHOOT || getMode() == ShooterMode.COLLECT_AND_HOLD) {
     } // aim turret at hub
     else if (getMode() == ShooterMode.SHOOT_OTM) {
-    } // aim the turret at transforme dhub based on velocity
+    } // aim the turret at transformed hub based on velocity
     else if (getMode() == ShooterMode.PASS) {
     } // aim turret at nearest corner
   }
