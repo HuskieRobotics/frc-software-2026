@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,11 +20,11 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrainIO;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrainIOCTRE;
 import frc.lib.team3061.vision.Vision;
-import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIONorthstar;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
+import frc.lib.team6328.util.FieldConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ArmCommandFactory;
 import frc.robot.commands.AutonomousCommandsFactory;
@@ -56,8 +55,6 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.visualizations.RobotVisualization;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -84,10 +81,6 @@ public class RobotContainer {
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
   private final LoggedNetworkNumber endgameAlert2 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #2", 10.0);
-
-  private static final String LAYOUT_FILE_MISSING =
-      "Could not find the specified AprilTags layout file";
-  private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
 
@@ -227,18 +220,10 @@ public class RobotContainer {
 
     CameraConfig[] cameraConfigs = config.getCameraConfigs();
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
-    AprilTagFieldLayout layout;
-    try {
-      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    } catch (IOException e) {
-      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
-      layoutFileMissingAlert.setText(
-          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-      layoutFileMissingAlert.set(true);
-    }
     for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIOPhotonVision(cameraConfigs[i].id(), layout);
+      visionIOs[i] =
+          new VisionIOPhotonVision(
+              cameraConfigs[i].id(), FieldConstants.defaultAprilTagType.getLayout());
     }
     vision = new Vision(visionIOs);
 
@@ -255,18 +240,9 @@ public class RobotContainer {
 
     CameraConfig[] cameraConfigs = config.getCameraConfigs();
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
-    AprilTagFieldLayout layout;
-    try {
-      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    } catch (IOException e) {
-      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
-      layoutFileMissingAlert.setText(
-          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-      layoutFileMissingAlert.set(true);
-    }
     for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIONorthstar(layout, cameraConfigs[i]);
+      visionIOs[i] =
+          new VisionIONorthstar(FieldConstants.defaultAprilTagType.getLayout(), cameraConfigs[i]);
     }
     vision = new Vision(visionIOs);
 
@@ -283,21 +259,11 @@ public class RobotContainer {
 
     CameraConfig[] cameraConfigs = config.getCameraConfigs();
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
-    AprilTagFieldLayout layout;
-    try {
-      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    } catch (IOException e) {
-      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-      layoutFileMissingAlert.setText(
-          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-      layoutFileMissingAlert.set(true);
-    }
-
     for (int i = 0; i < visionIOs.length; i++) {
       visionIOs[i] =
           new VisionIOSim(
               cameraConfigs[i].id(),
-              layout,
+              FieldConstants.defaultAprilTagType.getLayout(),
               swerveDrivetrain::getPose,
               cameraConfigs[i].robotToCameraTransform());
     }
@@ -341,18 +307,10 @@ public class RobotContainer {
 
     CameraConfig[] cameraConfigs = config.getCameraConfigs();
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
-    AprilTagFieldLayout layout;
-    try {
-      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    } catch (IOException e) {
-      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
-      layoutFileMissingAlert.setText(
-          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-      layoutFileMissingAlert.set(true);
-    }
     for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIOPhotonVision(cameraConfigs[i].id(), layout);
+      visionIOs[i] =
+          new VisionIOPhotonVision(
+              cameraConfigs[i].id(), FieldConstants.defaultAprilTagType.getLayout());
     }
     vision = new Vision(visionIOs);
 
@@ -369,18 +327,9 @@ public class RobotContainer {
 
     CameraConfig[] cameraConfigs = config.getCameraConfigs();
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
-    AprilTagFieldLayout layout;
-    try {
-      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    } catch (IOException e) {
-      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
-      layoutFileMissingAlert.setText(
-          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-      layoutFileMissingAlert.set(true);
-    }
     for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIONorthstar(layout, cameraConfigs[i]);
+      visionIOs[i] =
+          new VisionIONorthstar(FieldConstants.defaultAprilTagType.getLayout(), cameraConfigs[i]);
     }
     vision = new Vision(visionIOs);
 

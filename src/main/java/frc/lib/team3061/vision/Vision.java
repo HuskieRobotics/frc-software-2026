@@ -21,9 +21,9 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.VisionIO.PoseObservation;
 import frc.lib.team3061.vision.VisionIO.PoseObservationType;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,11 +56,6 @@ public class Vision extends SubsystemBase {
   private List<Integer> camerasToConsider = new ArrayList<>();
 
   private AprilTagFieldLayout layout;
-  private Alert noAprilTagLayoutAlert =
-      new Alert(
-          "No AprilTag layout file found. Update APRILTAG_FIELD_LAYOUT_PATH in VisionConstants.java",
-          AlertType.kWarning);
-  private final Alert unofficialAprilTagLayoutAlert = new Alert("", AlertType.kInfo);
 
   private boolean isEnabled = true;
   private boolean isVisionUpdating = false;
@@ -138,24 +133,7 @@ public class Vision extends SubsystemBase {
       robotPosesRejected.add(new ArrayList<>());
     }
 
-    // load and log all of the AprilTags in the field layout file
-    try {
-      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-      noAprilTagLayoutAlert.set(false);
-    } catch (IOException e) {
-      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-      noAprilTagLayoutAlert.set(true);
-    }
-
-    // AprilTag layout alert
-    if (!APRILTAG_FIELD_LAYOUT_PATH.equals(OFFICIAL_APRILTAG_FIELD_LAYOUT_PATH)) {
-      unofficialAprilTagLayoutAlert.set(true);
-      unofficialAprilTagLayoutAlert.setText(
-          "Unofficial AprilTag layout in use ("
-              + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH.toString()
-              + ").");
-    }
-
+    this.layout = FieldConstants.defaultAprilTagType.getLayout();
     Pose3d[] aprilTagsPoses = new Pose3d[this.layout.getTags().size()];
     for (int i = 0; i < aprilTagsPoses.length; i++) {
       aprilTagsPoses[i] = this.layout.getTags().get(i).pose;
@@ -278,7 +256,7 @@ public class Vision extends SubsystemBase {
           if (acceptPose) {
             // get tag poses and update last detection times
             final int finalCameraIndex = cameraIndex;
-            for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
+            for (int tagID = 1; tagID < FieldConstants.aprilTagCount; tagID++) {
               if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
                 if (ENABLE_DETAILED_LOGGING) {
                   lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
