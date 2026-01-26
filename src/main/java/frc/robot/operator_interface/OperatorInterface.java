@@ -77,7 +77,7 @@ public interface OperatorInterface {
 
   // DRIVER TRIGGERS, mostly game-specific
 
-  public default Trigger getDriveToPoseButton() {
+  public default Trigger getDriveToBankButton() {
     return new Trigger(() -> false);
   }
 

@@ -12,11 +12,6 @@ public class DriveToBank extends DriveToPose {
 
   private static final double DRIVE_TO_BANK_Y_BOOST = 0.5; // in m/s
 
-  // private final SwerveDrivetrain drivetrain;
-  // private final Hopper hopper;
-
-  // drive to the most accurate shooting locaiton, against the wall
-
   public DriveToBank(
       SwerveDrivetrain drivetrain,
       Supplier<Pose2d> targetPoseSupplier,

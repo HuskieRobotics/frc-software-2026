@@ -42,7 +42,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToPoseButton() {
+  public Trigger getDriveToBankButton() {
     return translateJoystickButtons[1];
   }
 

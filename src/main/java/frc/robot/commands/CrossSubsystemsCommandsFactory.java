@@ -52,6 +52,11 @@ public class CrossSubsystemsCommandsFactory {
       new LoggedTunableNumber(
           "DriveToPoseExample/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
+  private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
+  private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
+      0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
+  private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
+
   private static ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
@@ -99,7 +104,7 @@ public class CrossSubsystemsCommandsFactory {
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getDriveToPoseButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, elevator, oi));
+    oi.getDriveToBankButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, elevator, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -234,6 +239,30 @@ public class CrossSubsystemsCommandsFactory {
             CrossSubsystemsCommandsFactory::updatePIDConstants,
             5.0)
         .withName("drive to pose");
+  }
+
+  private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
+    return new DriveToBank(
+            drivetrain,
+            CrossSubsystemsCommandsFactory::getTargetPose,
+            xController,
+            yController,
+            thetaController,
+            new Transform2d(
+                DRIVE_TO_BANK_X_TOLERANCE_METERS,
+                DRIVE_TO_BANK_Y_TOLERANCE_METERS,
+                Rotation2d.fromDegrees(DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES)),
+            true,
+            (atPose) ->
+                LEDs.getInstance()
+                    .requestState(
+                        atPose
+                            ? LEDs.States.AT_POSE
+                            : LEDs.States
+                                .AUTO_DRIVING_TO_POSE), /* will do other in parallel, probably not here though */
+            CrossSubsystemsCommandsFactory::updatePIDConstants, /* need to see this */
+            3.0)
+        .withName("drive to bank");
   }
 
   private static Command getDriveToPoseOverrideCommand(
