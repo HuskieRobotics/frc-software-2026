@@ -101,6 +101,12 @@ public class RobotContainer {
      * that use it directly or indirectly. If this isn't done, a null pointer exception will result.
      */
     createRobotConfig();
+    Field2d.getInstance().populateAllianceZone();
+    Field2d.getInstance().logAllianceZonePoints();
+    Field2d.getInstance().populateTrenchZone();
+    Field2d.getInstance().logTrenchZonePoints();
+    Field2d.getInstance().populateBumpZone();
+    Field2d.getInstance().logBumpZonePoints();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -487,6 +493,12 @@ public class RobotContainer {
   public void periodic() {
     // add robot-wide periodic code here
     visualization.update();
+
+    if (Field2d.getInstance().inTrenchZone()) {
+
+      // run getRaiseHoodNearTench command
+      CrossSubsystemsCommandsFactory.getRaiseHoodNearTrenchCommand(swerveDrivetrain, shooter);
+    }
   }
 
   public void autonomousInit() {

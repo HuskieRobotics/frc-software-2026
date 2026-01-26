@@ -102,6 +102,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getPassToggle() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getShootOnTheMoveToggle() {
+    return new Trigger(() -> false);
+  }
+
   // XRP EXAMPLE TRIGGERS
   public default Trigger getMoveArmMiddlePositionTrigger() {
     return new Trigger(() -> false);

@@ -16,6 +16,8 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Field2d;
+import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
@@ -110,6 +112,72 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll().onTrue(getInterruptAllCommand(differentialDrivetrain, vision, arm, oi));
 
     registerSysIdCommands(oi);
+  }
+
+  public static Command getScoreSafeShotCommand(
+      SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi) {
+
+    return Commands.sequence();
+
+    // Drive to bank and unload shooter
+
+    // this will get called if we are in shoot mode AND the aim button is being held
+  }
+
+  public static Command getRaiseHoodNearTrenchCommand(
+      SwerveDrivetrain drivetrain, Shooter shooter) {
+
+    // this will raise the hood of our shooter while we in inside of our trench zone
+
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().inTrenchZone()),
+            Commands.runOnce(
+                () -> shooter.setIdleVelocity(),
+                shooter)), // FIXME: change from set idle velocity to set hood angle to max
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
+  }
+
+  public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
+
+    // this will rotate our robot into a diamond shape while we are near the bump zone
+
+    double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
+
+    double nearest45DegreeAngle =
+        Math.round(currentRotationPose / 45.0) * 45.0; // find nearest 45 degree angle
+
+    Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
+
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().inBumpZone()),
+            Commands.runOnce(
+                () ->
+                    drivetrain.driveFacingAngle(
+                        RobotConfig.getInstance()
+                            .getRobotMaxVelocity()
+                            .times(OISelector.getOperatorInterface().getTranslateX()),
+                        RobotConfig.getInstance()
+                            .getRobotMaxVelocity()
+                            .times(OISelector.getOperatorInterface().getTranslateY()),
+                        targetRotation,
+                        false))),
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
+  }
+
+  public Command unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
+
+    return Commands.parallel(Commands.run(drivetrain::holdXstance));
+    // add hopper kick method
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
