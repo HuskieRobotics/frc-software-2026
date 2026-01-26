@@ -121,7 +121,7 @@ public class Shooter extends SubsystemBase {
    this.io = io;
 
 
-   populateShootingMap();
+
 
 
    // Register this subsystem's SysId routine with the SysIdRoutineChooser. This allows
@@ -161,7 +161,7 @@ public class Shooter extends SubsystemBase {
      io.setHoodPosition(ShooterIOInputs.hoodReferencePosition);
      io.setTurretPosition(ShooterIOInputs.turretReferencePosition);
    }
-
+   //FIXME: Can also add more conditions based off velocities/positions
 
    // Log how long this subsystem takes to execute its periodic method.
    // This is useful for debugging performance issues.
@@ -170,24 +170,28 @@ public class Shooter extends SubsystemBase {
 
 
  public boolean isShooterReady() {
-   ShooterIOInputs ShooterIOInputs = new ShooterIOInputs();
-   return (ShooterIOInputs.flywheelLeadConnected &&
-           ShooterIOInputs.kickerConnected &&
-           ShooterIOInputs.hoodConnected &&
-           ShooterIOInputs.turretConnected);
+   return (this.io.flywheelLeadConnected &&
+           this.io.kickerConnected &&
+           this.io.hoodConnected &&
+           this.io.turretConnected);
 }
-
 
 //LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE);
 
 public void reverseShooter() {
-  ShooterIOInputs io = new ShooterIOInputs();
-  io.setFlywheelLeadVelocity(RotationsPerSecond.of(io.flywheelLeadVelocity.in(RotationsPerSecond) * -1));
-  io.setKickerVoltage(RotationsPerSecond.of(io.kickerVoltage.in(Volts) * -1));
+  this.io.setFlywheelLeadVelocity(RotationsPerSecond.of(io.flywheelLeadVelocity.in(RotationsPerSecond) * -1));
+  this.io.setKickerVoltage(Volts.of(io.kickerVoltage.in(Volts) * -1));
 }
-   //FIXME: Can also add more conditions based off velocities/positions
           
-
+public void isStuck()
+{
+  if(this.io.kickerSupplyCurrent.in(Amps) <  )
+  {
+    this.io.kickerSupplyCurrent.in(Amps) > 5.0 && 
+    Math.abs(this.io.kickerVelocity.in(RotationsPerSecond)) < 1.0
+    //LEDs.getInstance().requestState(States.SHOOTER_JAMMED);
+  }
+}
 // public boolean isKickerJammed() {} FIXME: If we determine to add a sensor, then add this
 
 
@@ -213,6 +217,8 @@ public double getPassingDistance(){
    io.setShooterWheelTopVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
    io.setShooterWheelBottomVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
  }
+
+
 
 
  public boolean isTopShooterAtSetpoint() {
