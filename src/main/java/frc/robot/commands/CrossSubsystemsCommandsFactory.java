@@ -114,10 +114,12 @@ public class CrossSubsystemsCommandsFactory {
     registerSysIdCommands(oi);
   }
 
-  public static Command getScoreMoneyShotCommand(
+  public static Command getScoreSafeShotCommand(
       SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi) {
 
     return Commands.sequence();
+
+    // Drive to bank and unload shooter
 
     // this will get called if we are in shoot mode AND the aim button is being held
   }
@@ -172,21 +174,10 @@ public class CrossSubsystemsCommandsFactory {
             OISelector.getOperatorInterface()::getRotate));
   }
 
-  public static Command holdToShoot(SwerveDrivetrain drivetrain, Shooter shooter) {
+  public Command unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
 
-    return null;
-    // call unload shooter
-
-  }
-
-  public static void unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
-
-    drivetrain.holdXstance();
-    // hopper.setKickerVelocity();
-
-    // x-stance
-    // run the kicker until all of the fuel is gone (unload)
-
+    return Commands.parallel(Commands.run(drivetrain::holdXstance));
+    // add hopper kick method
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
