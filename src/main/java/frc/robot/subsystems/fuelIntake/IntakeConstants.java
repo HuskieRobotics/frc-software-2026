@@ -28,9 +28,9 @@ public class IntakeConstants {
   public static final double ROLLER_KS = 0;
   public static final double ROLLER_KV = 0;
   public static final double ROLLER_KA = 0;
-  public static final double ROLLER_KG = 0;
   public static final double ROLLER_KV_EXPO = 0;
   public static final double ROLLER_KA_EXPO = 0;
+  public static final double ROLLER_JERK = 0.0;
 
   public static final int ROLLER_MOTOR_ID = 0;
   public static final int DEPLOYER_MOTOR_ID = 0;
@@ -42,7 +42,7 @@ public class IntakeConstants {
 
   public static final String SUBSYSTEM_NAME = "Intake";
 
-  public static final double ROLLER_CRUISE_VELOCITY = 0; // might not need this
+  public static final double ROLLER_CRUISE_VELOCITY = 0;
   public static final double ROLLER_PEAK_CURRENT_LIMIT = 0;
   public static final double ROLLER_LOWER_CURRENT_LIMIT = 0;
   public static final double INTAKE_ROLLER_VELOCITY_RPS = 0;

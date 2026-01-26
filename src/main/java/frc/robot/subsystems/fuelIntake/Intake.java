@@ -112,10 +112,10 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isDeployed() {
-    // Only consider deployed if the hardware is connected
     if (!inputs.deployerConnected) {
       return false;
-    } else if (inputs.linearPosition.in(Meters) >= IntakeConstants.DEPLOYED_POSITION_ROTATIONS) {
+    } else if (inputs.linearPosition.in(Meters)
+        >= IntakeConstants.DEPLOYED_POSITION_ROTATIONS.in(Meters)) {
       return deployerDeployedDebouncer.calculate(true);
     } else {
       return deployerDeployedDebouncer.calculate(false);
@@ -123,10 +123,10 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isRetracted() {
-    // Only consider retracted if the hardware is connected
     if (!inputs.deployerConnected) {
       return false;
-    } else if (inputs.linearPosition.in(Meters) <= IntakeConstants.RETRACTED_POSITION_ROTATIONS) {
+    } else if (inputs.linearPosition.in(Meters)
+        <= IntakeConstants.RETRACTED_POSITION_ROTATIONS.in(Meters)) {
       return deployerRetractedDebouncer.calculate(true);
     } else {
       return deployerRetractedDebouncer.calculate(false);
