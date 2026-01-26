@@ -33,9 +33,6 @@ public interface ShooterIO {
     Temperature kickerTemperature = Celsius.of(0.0);
 
     boolean flywheelLeadConnected = false;
-    boolean flywheelFollower1Connected = false;
-    boolean flywheelFollower2Connected = false;
-    boolean flywheelFollower3Connected = false;
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
     Current flywheelLeadSupplyCurrent = Amps.of(0.0);
     Current flywheelLeadTorqueCurrent = Amps.of(0.0);
@@ -45,6 +42,43 @@ public interface ShooterIO {
     AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
     Temperature flywheelLeadTemperature = Celsius.of(0.0);
+
+    // FLYWHEEL FOLLOW 1
+    boolean flywheelFollow1Connected = false;
+    Current flywheelFollow1StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow1SupplyCurrent = Amps.of(0.0);
+    Current flywheelFollow1TorqueCurrent = Amps.of(0.0);
+    Voltage flywheelFollow1Voltage = Volts.of(0.0);
+    AngularVelocity flywheelFollow1Velocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow1ReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow1ClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow1ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow1Temperature = Celsius.of(0.0);
+
+    // FLYWHEEL FOLLOW 2
+    boolean flywheelFollow2Connected = false;
+    Current flywheelFollow2StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow2SupplyCurrent = Amps.of(0.0);
+    Current flywheelFollow2TorqueCurrent = Amps.of(0.0);
+    Voltage flywheelFollow2Voltage = Volts.of(0.0);
+    AngularVelocity flywheelFollow2Velocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow2ReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow2ClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow2ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow2Temperature = Celsius.of(0.0);
+
+    // FLYWHEEL FOLLOW 3
+    boolean flywheelFollow3Connected = false;
+    Current flywheelFollow3StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow3SupplyCurrent = Amps.of(0.0);
+    Current flywheelFollow3TorqueCurrent = Amps.of(0.0);
+    Voltage flywheelFollow3Voltage = Volts.of(0.0);
+    AngularVelocity flywheelFollow3Velocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow3ReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow3ClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow3ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow3Temperature = Celsius.of(0.0);
+
 
     boolean turretConnected = false;
     Current turretStatorCurrent = Amps.of(0.0);

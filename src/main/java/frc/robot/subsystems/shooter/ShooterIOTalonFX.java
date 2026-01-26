@@ -87,9 +87,21 @@ private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
 // For flywheel lead motor
 private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelLeadReferenceVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow1VelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow1ReferenceVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow2VelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow2ReferenceVelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow3VelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow3ReferenceVelocityStatusSignal;
 //Flywheel closed loop velocity signals as Double due to API limitations
 private StatusSignal<Double> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
 private StatusSignal<Double> flywheelLeadClosedLoopErrorVelocityStatusSignal;
+private StatusSignal<Double> flywheelFollow1ClosedLoopReferenceVelocityStatusSignal;
+private StatusSignal<Double> flywheelFollow1ClosedLoopErrorVelocityStatusSignal;
+private StatusSignal<Double> flywheelFollow2ClosedLoopReferenceVelocityStatusSignal;
+private StatusSignal<Double> flywheelFollow2ClosedLoopErrorVelocityStatusSignal;
+private StatusSignal<Double> flywheelFollow3ClosedLoopReferenceVelocityStatusSignal;
+private StatusSignal<Double> flywheelFollow3ClosedLoopErrorVelocityStatusSignal;
 
 private StatusSignal<Temperature> flywheelLeadTemperatureStatusSignal;
 private StatusSignal<Temperature> flywheelFollow1TemperatureStatusSignal;
@@ -321,13 +333,14 @@ hoodPositionStatusSignal = hood.getPosition();
       hoodPositionStatusSignal
 
       );
-  configFlywheelLead(flywheelLead, FLYWHEEL_LEAD_INVERTED, true, flywheelLeadConfigAlert);
-  configFlywheelFollow1(flywheelFollow1, FLYWHEEL_Follow1_INVERTED, false, flywheelFollow1ConfigAlert);
-  configFlywheelFollow2(flywheelFollow2, FLYWHEEL_Follow2_INVERTED, false, flywheelFollow2ConfigAlert);
-  configFlywheelFollow3(flywheelFollow3, FLYWHEEL_Follow3_INVERTED, false, flywheelFollow3ConfigAlert);
-  configKicker(kicker, KICKER_INVERTED, false, kickerConfigAlert);
-  configTurret(turret, TURRET_INVERTED, false, turretConfigAlert);
-  configHood(hood, HOOD_INVERTED, false, hoodConfigAlert);
+  configFlywheelLead(flywheelLead, FLYWHEEL_LEAD_INVERTED,"flywheel lead", true, flywheelLeadConfigAlert);
+  configFlywheelFollow1(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
+  configFlywheelFollow2(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
+  configFlywheelFollow3(flywheelFollow3, FLYWHEEL_FOLLOW_3_INVERTED, "flywheel follow 3", false, flywheelFollow3ConfigAlert);
+  configKicker(kicker, KICKER_INVERTED, "kicker", kickerConfigAlert);
+  configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
+  configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
+  
   // Create a simulation objects for the shooter. The specific parameters for the simulation
   // are determined based on the mechanical design of the shooter.
   this.flywheelLeadSim =
@@ -335,8 +348,15 @@ hoodPositionStatusSignal = hood.getPosition();
           flywheelLead,
           ShooterConstants.FLYWHEEL_LEAD_INVERTED,
           0.05, //update as needed
-          0.01, //up  date as needed
+          0.01, //update as needed
           ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO);
+ this.flywheelFollow1Sim =
+      new VelocitySystemSim(
+          flywheelFollow1,
+          ShooterConstants.FLYWHEEL_FOLLOW_1_INVERTED,
+          0.05, //update as needed
+          0.01, //update as needed
+          ShooterConstants.FLYWHEEL_FOLLOW_1_GEAR_RATIO);
   this.kickerLeadSim =
       new VelocitySystemSim(
           kicker,
@@ -358,6 +378,27 @@ hoodPositionStatusSignal = hood.getPosition();
           0.05,
           0.01,
           ShooterConstants.HOOD_GEAR_RATIO);
+    this.flywheelFollow1Sim =
+      new VelocitySystemSim(
+          flywheelFollow1,
+          ShooterConstants.FLYWHEEL_FOLLOW_1_INVERTED,
+          0.05, //update as needed
+          0.01, //update as needed
+          ShooterConstants.FLYWHEEL_FOLLOW_1_GEAR_RATIO);
+    this.flywheelFollow2Sim =
+      new VelocitySystemSim(
+          flywheelFollow2,
+          ShooterConstants.FLYWHEEL_FOLLOW_2_INVERTED,
+          0.05, //update as needed
+          0.01, //update as needed
+          ShooterConstants.FLYWHEEL_FOLLOW_2_GEAR_RATIO);
+    this.flywheelFollow3Sim =
+      new VelocitySystemSim(
+          flywheelFollow3,
+          ShooterConstants.FLYWHEEL_FOLLOW_3_INVERTED,
+          0.05, //update as needed
+          0.01, //update as needed
+          ShooterConstants.FLYWHEEL_FOLLOW_3_GEAR_RATIO);
 }
 
 @Override
@@ -372,6 +413,30 @@ public void updateInputs(ShooterIOInputs inputs) {
               flywheelLeadSupplyCurrentStatusSignal,
               flywheelLeadTemperatureStatusSignal,
               flywheelLeadVoltageStatusSignal
+              ));
+  inputs.flywheelFollower1Connected =
+      flywheelLeadConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              flywheelFollow1StatorCurrentStatusSignal,
+              flywheelFollow1SupplyCurrentStatusSignal,
+              flywheelFollow1TemperatureStatusSignal,
+              flywheelFollow1VoltageStatusSignal
+              ));
+  inputs.flywheelFollower2Connected =
+      flywheelLeadConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              flywheelFollow2StatorCurrentStatusSignal,
+              flywheelFollow2SupplyCurrentStatusSignal,
+              flywheelFollow2TemperatureStatusSignal,
+              flywheelFollow2VoltageStatusSignal
+              ));
+  inputs.flywheelFollower3Connected =
+      flywheelLeadConnectedDebouncer.calculate(
+          BaseStatusSignal.isAllGood(
+              flywheelFollow3StatorCurrentStatusSignal,
+              flywheelFollow3SupplyCurrentStatusSignal,
+              flywheelFollow3TemperatureStatusSignal,
+              flywheelFollow3VoltageStatusSignal
               ));
   inputs.kickerConnected =
       kickerConnectedDebouncer.calculate(
@@ -406,6 +471,33 @@ public void updateInputs(ShooterIOInputs inputs) {
   inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValue();
   inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValue();
   inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
+
+  // Updates Flywheel Follow1 Motor Inputs
+  inputs.flywheelFollow1StatorCurrent = flywheelFollow1StatorCurrentStatusSignal.getValue();
+  inputs.flywheelFollow1SupplyCurrent = flywheelFollow1SupplyCurrentStatusSignal.getValue();
+  inputs.flywheelFollow1TorqueCurrent = flywheelFollow1TorqueCurrentStatusSignal.getValue();
+  inputs.flywheelFollow1Velocity = flywheelFollow1VelocityStatusSignal.getValue();
+  inputs.flywheelFollow1Temperature = flywheelFollow1TemperatureStatusSignal.getValue();
+  inputs.flywheelFollow1Voltage = flywheelFollow1VoltageStatusSignal.getValue();
+  inputs.flywheelFollow1ReferenceVelocity = flywheelFollow1ReferenceVelocityStatusSignal.getValue();
+
+// Updates Flywheel Follow2 Motor Inputs
+inputs.flywheelFollow2StatorCurrent = flywheelFollow2StatorCurrentStatusSignal.getValue();
+inputs.flywheelFollow2SupplyCurrent = flywheelFollow2SupplyCurrentStatusSignal.getValue();
+inputs.flywheelFollow2TorqueCurrent = flywheelFollow2TorqueCurrentStatusSignal.getValue();
+inputs.flywheelFollow2Velocity = flywheelFollow2VelocityStatusSignal.getValue();
+inputs.flywheelFollow2Temperature = flywheelFollow2TemperatureStatusSignal.getValue();
+inputs.flywheelFollow2Voltage = flywheelFollow2VoltageStatusSignal.getValue();
+inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatusSignal.getValue();
+
+// Updates Flywheel Follow3 Motor Inputs
+inputs.flywheelFollow3StatorCurrent = flywheelFollow3StatorCurrentStatusSignal.getValue();
+inputs.flywheelFollow3SupplyCurrent = flywheelFollow3SupplyCurrentStatusSignal.getValue();
+inputs.flywheelFollow3TorqueCurrent = flywheelFollow3TorqueCurrentStatusSignal.getValue();
+inputs.flywheelFollow3Velocity = flywheelFollow3VelocityStatusSignal.getValue();
+inputs.flywheelFollow3Temperature = flywheelFollow3TemperatureStatusSignal.getValue();
+inputs.flywheelFollow3Voltage = flywheelFollow3VoltageStatusSignal.getValue();
+inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatusSignal.getValue();
 
   // Updates Kicker Motor Inputs
   inputs.kickerStatorCurrent = kickerStatorCurrentStatusSignal.getValue();
@@ -559,6 +651,9 @@ public void updateInputs(ShooterIOInputs inputs) {
     kickerLeadSim.updateSim();
     turretLeadSim.updateSim();
     hoodLeadSim.updateSim();
+    flywheelFollow1Sim.updateSim();
+    flywheelFollow2Sim.updateSim();
+    flywheelFollow3Sim.updateSim();
   }
 }
 
@@ -703,6 +798,10 @@ private void configHood(
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 }
+    
+    
+
+
   // It is critical that devices are successfully configured. The applyAndCheckConfiguration
   // method will apply the configuration, read back the configuration, and ensure that it is
   // correct. If not, it will reattempt five times and eventually, generate an alert.
@@ -716,7 +815,6 @@ private void configHood(
   // are found.
   FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, kicker); //FIXME: add names and adjust to other motors 
 }
-
 
 private void configGamePieceDetector(CANrange detector, Alert configAlert) {
   CANrangeConfiguration config = new CANrangeConfiguration();
@@ -739,5 +837,5 @@ private void configGamePieceDetector(CANrange detector, Alert configAlert) {
   // devices for faults periodically when the robot is disabled and generate alerts if any faults
   // are found.
   FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "GamePieceDetector", detector);
-} // fix errors for brackets
+} // FIXME: fix errors for brackets
 

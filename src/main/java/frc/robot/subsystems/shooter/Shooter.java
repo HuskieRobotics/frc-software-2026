@@ -178,21 +178,23 @@ public class Shooter extends SubsystemBase {
 
 //LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE);
 
-public void reverseShooter() {
-  this.io.setFlywheelLeadVelocity(RotationsPerSecond.of(io.flywheelLeadVelocity.in(RotationsPerSecond) * -1));
-  this.io.setKickerVoltage(Volts.of(io.kickerVoltage.in(Volts) * -1));
+public void reverseKicker() {
+      this.io.setKickerVoltage(Volts.of(io.kickerVoltage.in(Volts) * -1));
 }
           
-public void isStuck()
+public boolean isKickerJammed() // FIXME: If we determine to add a sensor, then change
 {
-  if(this.io.kickerSupplyCurrent.in(Amps) <  )
+  if(this.io.kickerSupplyCurrent.in(Amps) > FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT )
   {
-    this.io.kickerSupplyCurrent.in(Amps) > 5.0 && 
-    Math.abs(this.io.kickerVelocity.in(RotationsPerSecond)) < 1.0
-    //LEDs.getInstance().requestState(States.SHOOTER_JAMMED);
+    return true;
   }
+  return false;
 }
-// public boolean isKickerJammed() {} FIXME: If we determine to add a sensor, then add this
+
+public void runBackwards() {
+  this.io.setKickerVoltage(Volts.of());
+  this.io.setFlywheelLeadVelocity(); // reverse
+}
 
 
 /**
