@@ -69,7 +69,8 @@ public class ShooterConfiguration extends Command {
 
   public void getTrajectory() {
     if (getMode() == ShooterMode.NEAR_TRENCH) {
-      // set hood to max
+      shooter.setIdleVelocity(); // FIXME: change method to set shooter to proper velocity
+      // model for aimed position
     } else if (getMode() == ShooterMode.CAN_SHOOT) {
       // model for aimed position
       // x stance
