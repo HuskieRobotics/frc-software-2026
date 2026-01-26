@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public class DriveToBank extends DriveToPose {
 
-  private static final double DRIVE_TO_BANK_Y_BOOST = 0.5; // in m/s
+  private static final double DRIVE_TO_BANK_X_BOOST = 0.5; // in m/s
 
   public DriveToBank(
       SwerveDrivetrain drivetrain,
@@ -40,6 +40,6 @@ public class DriveToBank extends DriveToPose {
   public Translation2d adjustVelocities(
       Translation2d velocitiesInTargetFrame, Transform2d poseDifferenceInTargetFrame) {
     return new Translation2d(
-        velocitiesInTargetFrame.getX(), velocitiesInTargetFrame.getY() + DRIVE_TO_BANK_Y_BOOST);
+        velocitiesInTargetFrame.getX() + DRIVE_TO_BANK_X_BOOST, velocitiesInTargetFrame.getY());
   }
 }

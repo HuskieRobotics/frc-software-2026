@@ -15,6 +15,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -104,7 +105,7 @@ public class CrossSubsystemsCommandsFactory {
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getDriveToBankButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, elevator, oi));
+    oi.getDriveToBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -244,7 +245,7 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
     return new DriveToBank(
             drivetrain,
-            CrossSubsystemsCommandsFactory::getTargetPose,
+            CrossSubsystemsCommandsFactory::getTargetBankPose,
             xController,
             yController,
             thetaController,
@@ -274,6 +275,12 @@ public class CrossSubsystemsCommandsFactory {
   private static Pose2d getTargetPose() {
     return new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(90.0));
   }
+
+  private static Pose2d getTargetBankPose() {
+    return new Pose2d(FieldConstants.LinesVertical.center, FieldConstants.LinesHorizontal.center, Rotation2d.fromDegrees(90));
+  }
+
+
 
   private static void updatePIDConstants(Transform2d poseDifference) {
     // Update from tunable numbers
