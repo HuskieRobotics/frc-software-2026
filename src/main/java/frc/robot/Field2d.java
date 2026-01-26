@@ -44,7 +44,7 @@ public class Field2d {
   private Region2d transformedLeftBumpZone;
   private Region2d transformedRightBumpZone;
   private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
-  private double TRENCH_ZONE_BUFFER_Y_INCHES = 12; 
+  private double TRENCH_ZONE_BUFFER_Y_INCHES = 12;
   private double TRENCH_ZONE_BUFFER_X_INCHES = 7;
   private double BUMP_ZONE_BUFFER_Y_INCHES = 6;
   private double BUMP_ZONE_BUFFER_X_INCHES = 6;
