@@ -43,11 +43,11 @@ public class Field2d {
   private Region2d transformedRightTrenchZone;
   private Region2d transformedLeftBumpZone;
   private Region2d transformedRightBumpZone;
-  private double ALLIANCE_ZONE_BUFFER_X = 2; // inches
-  private double TRENCH_ZONE_BUFFER_Y = 12; // inches
-  private double TRENCH_ZONE_BUFFER_X = 7; // inches
-  private double BUMP_ZONE_BUFFER_Y = 6; // inches
-  private double BUMP_ZONE_BUFFER_X = 6; // inches
+  private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
+  private double TRENCH_ZONE_BUFFER_Y_INCHES = 12; 
+  private double TRENCH_ZONE_BUFFER_X_INCHES = 7;
+  private double BUMP_ZONE_BUFFER_Y_INCHES = 6;
+  private double BUMP_ZONE_BUFFER_X_INCHES = 6;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -75,7 +75,7 @@ public class Field2d {
 
     // since positive x is defined at forward if we move the far side x back 2 inches it should
     // result in giving us a 2 inch buffer
-    double bufferAZ = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_X);
+    double bufferAZ = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
     double safeFarSideX = FieldConstants.LinesVertical.allianceZone - bufferAZ;
 
     Translation2d[] zoneCorners =
@@ -98,8 +98,8 @@ public class Field2d {
 
   public void populateTrenchZone() {
 
-    double bufferTrenchX = Units.inchesToMeters(TRENCH_ZONE_BUFFER_X);
-    double bufferTrenchY = Units.inchesToMeters(TRENCH_ZONE_BUFFER_Y);
+    double bufferTrenchX = Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES);
+    double bufferTrenchY = Units.inchesToMeters(TRENCH_ZONE_BUFFER_Y_INCHES);
 
     Translation2d[] leftTrenchEdges =
         new Translation2d[] {
@@ -141,8 +141,8 @@ public class Field2d {
 
   public void populateBumpZone() {
 
-    double bufferBumpY = Units.inchesToMeters(BUMP_ZONE_BUFFER_Y);
-    double bufferBumpX = Units.inchesToMeters(BUMP_ZONE_BUFFER_X);
+    double bufferBumpY = Units.inchesToMeters(BUMP_ZONE_BUFFER_Y_INCHES);
+    double bufferBumpX = Units.inchesToMeters(BUMP_ZONE_BUFFER_X_INCHES);
 
     Translation2d[] leftBumpEdges =
         new Translation2d[] {

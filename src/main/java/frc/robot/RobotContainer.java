@@ -493,6 +493,13 @@ public class RobotContainer {
   public void periodic() {
     // add robot-wide periodic code here
     visualization.update();
+
+    if(Field2d.getInstance().inTrenchZone()){
+
+      // run getRaiseHoodNearTench command
+      CrossSubsystemsCommandsFactory.getRaiseHoodNearTrenchCommand(swerveDrivetrain, shooter);
+
+    }
   }
 
   public void autonomousInit() {
