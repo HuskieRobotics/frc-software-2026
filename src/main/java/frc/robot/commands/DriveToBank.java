@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-public class DriveToBank extends DriveToPose {
+public class DriveToBank /*extends DriveToPose*/ {
 
   // private final SwerveDrivetrain drivetrain;
   // private final Hopper hopper;
