@@ -124,6 +124,23 @@ public class CrossSubsystemsCommandsFactory {
     // this will get called if we are in shoot mode AND the aim button is being held
   }
 
+  public static Command getRaiseHoodNearTrenchCommand(
+      SwerveDrivetrain drivetrain, Shooter shooter) {
+
+    // this will raise the hood of our shooter while we in inside of our trench zone
+
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().inTrenchZone()),
+            Commands.runOnce(
+                () -> shooter.setIdleVelocity(),
+                shooter)), // FIXME: change from set idle velocity to set hood angle to max
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
+  }
 
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
 
