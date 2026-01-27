@@ -38,7 +38,7 @@ private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
 private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
 private VoltageOut kickerVoltageRequest;
-private VelocityTorqueCurrentFOC kickerCurrentRequest;
+private TorqueCurrentFOC kickerCurrentRequest;
 //private VoltageOut kickerUnjamVoltageRequest;
 
 private MotionMagicExpoVoltage turretPositionRequest;
@@ -118,8 +118,6 @@ private StatusSignal<Angle> hoodPositionStatusSignal;
 private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
 // private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
 // private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-
-private Voltage kickerVoltage = Volts.of(0.0);
 
 private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
@@ -665,11 +663,19 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
 @Override
 public void setFlywheelLeadVelocity(AngularVelocity velocity) {
   flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocity));
-
   // To improve performance, we store the reference velocity as an instance variable to avoid
   // having to retrieve the status signal object from the device in the updateInputs method.
   this.flywheelLeadReferenceVelocity = velocity.copy();
 }
+
+public void setflywheelLeadCurrentRequest(double TorqueCurrentFOC) {
+    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(TorqueCurrentFOC));
+}
+
+public void setKickerCurrentRequest(double TorqueCurrentFOC) {
+    kicker.setControl(kickerCurrentRequest.withOutput(TorqueCurrentFOC));
+}
+
 
 @Override
 public void setKickerVoltage(Voltage voltage) {
