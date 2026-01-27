@@ -84,9 +84,6 @@ public class RobotContainer {
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
 
-  // Shooter Mode Triggers
-  private Trigger nearTrenchTrigger;
-
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
    * commands.
@@ -405,11 +402,6 @@ public class RobotContainer {
                 Commands.waitSeconds(0.25),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ENDGAME_ALERT))
                     .withTimeout(0.5)));
-  }
-
-  private void configureShooterModeTriggers() {
-    nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
-    nearTrenchTrigger.onTrue(Commands.none());
   }
 
   private void configureDrivetrainCommands() {
