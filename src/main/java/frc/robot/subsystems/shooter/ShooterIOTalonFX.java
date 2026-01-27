@@ -152,6 +152,8 @@ private Alert turretConfigAlert =
 
 // The following enables tuning of the PID and feedforward values for the arm by changing values
 // via AdvantageScope and not needing to change values in code, compile, and re-deploy.
+
+private final LoggedTunableNumber tuningMode = new LoggedTunableNumber("Shooter/Tuning Mode", ShooterConstants.TUNING_MODE);
 private final LoggedTunableNumber flywheelLeadKP =
     new LoggedTunableNumber("Shooter/Top kP", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KP);
 private final LoggedTunableNumber flywheelLeadKI =
@@ -199,6 +201,7 @@ private VelocitySystemSim flywheelFollow3Sim;
 private VelocitySystemSim kickerLeadSim;
 private VelocitySystemSim turretLeadSim;
 private VelocitySystemSim hoodLeadSim;
+// private ShooterSystemSim shooterSystemSim;
 
 public ShooterIOTalonFX() {
   flywheelLead = new TalonFX(FLYWHEEL_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
@@ -528,10 +531,12 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
   // for tuning and not used elsewhere in the subsystem. For example, the
   // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
   // will always be populated.
-  if (Constants.TUNING_MODE) {
+  if (tuningMode.get() == 1) {
     //Flywheel Lead
     inputs.flywheelLeadVelocity = 
         flywheelLead.getVelocity().getValue();
+     inputs.flywheelFollow1Velocity = inputs.flywheelFollow1.setFlywheelTorqueCurrent()
+   
     inputs.flywheelLeadSupplyCurrent = 
         flywheelLead.getSupplyCurrent().getValue();
     inputs.flywheelLeadStatorCurrent =

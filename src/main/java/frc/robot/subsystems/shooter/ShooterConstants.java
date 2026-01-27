@@ -9,7 +9,7 @@ public class ShooterConstants {
   }
 
   public static final String SUBSYSTEM_NAME = "Shooter";
-  public static final boolean TESTING = false;
+  public static final boolean TUNING_MODE = false;
 
   // change the ids once we get the updated stuff
   public static final int FLYWHEEL_LEAD_MOTOR_ID = 0;
