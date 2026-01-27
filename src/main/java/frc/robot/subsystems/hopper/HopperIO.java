@@ -42,13 +42,15 @@ public interface HopperIO {
 
         // Angular Velocity
         AngularVelocity spindexerVelocity = RotationsPerSecond.of(0.0);
+        AngularVelocity rollerVelocity = RotationsPerSecond.of(0.0);
 
     }
 
     public default void setRollerVoltage(double voltage) {}
     public default void setSpindexerVoltage(double voltage) {}
 
-    public default void setSpindexerVelocity(double velocity) {}
+    public default void setSpindexerVelocity(AngularVelocity velocity) {}
+    public default void setRollerVelocity(AngularVelocity velocity) {}
 
     public default void updateInputs(HopperIOInputs inputs) {}
 
