@@ -15,7 +15,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
-import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -105,7 +104,7 @@ public class CrossSubsystemsCommandsFactory {
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getDriveToBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain, shooter, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -123,6 +122,8 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getScoreSafeShotCommand(
       SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi) {
 
+    // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
+    // shoot_otm && in AZ
     return Commands.sequence();
 
     // Drive to bank and unload shooter
@@ -277,10 +278,11 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Pose2d getTargetBankPose() {
-    return new Pose2d(FieldConstants.LinesVertical.center, FieldConstants.LinesHorizontal.center, Rotation2d.fromDegrees(90));
+    // for testing
+    // return new Pose2d(FieldConstants.LinesVertical.center, FieldConstants.LinesHorizontal.center,
+    // Rotation2d.fromDegrees(90));
+    return Field2d.getInstance().getNearestBank();
   }
-
-
 
   private static void updatePIDConstants(Transform2d poseDifference) {
     // Update from tunable numbers

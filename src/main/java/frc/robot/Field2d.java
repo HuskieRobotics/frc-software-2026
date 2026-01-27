@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -36,6 +38,9 @@ public class Field2d {
 
   private Region2d[] regions;
 
+  // for all four possible banks depending on alliance
+  private Pose2d[] banks = new Pose2d[4];
+
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
@@ -43,11 +48,13 @@ public class Field2d {
   private Region2d transformedRightTrenchZone;
   private Region2d transformedLeftBumpZone;
   private Region2d transformedRightBumpZone;
-  private double ALLIANCE_ZONE_BUFFER_INCHES = 2;
-  private double TRENCH_ZONE_BUFFER_Y_INCHES = 12;
-  private double TRENCH_ZONE_BUFFER_X_INCHES = 7;
-  private double BUMP_ZONE_BUFFER_Y_INCHES = 6;
-  private double BUMP_ZONE_BUFFER_X_INCHES = 6;
+  private final double ALLIANCE_ZONE_BUFFER_INCHES = 2;
+  private final double TRENCH_ZONE_BUFFER_Y_INCHES = 12; // FIXME: remove after discussion
+  private final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
+  private final double BUMP_ZONE_BUFFER_Y_INCHES = 6; // FIXME: remove after discussion
+  private final double BUMP_ZONE_BUFFER_X_INCHES = 6;
+
+  private final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -94,6 +101,44 @@ public class Field2d {
         };
 
     this.transformedAllianceZone = new Region2d(zoneCorners);
+  }
+
+  /**
+   * For now, this method populates all four banks (although only two can be used for any specific
+   * match) In the future, it can be improved to only have two banks constructed at the start of the
+   * match based on alliance.
+   */
+  public void populateBanks() {
+    // bank will have a temp target-relative y-tolerance of 0.25 meters = ~10 inches (field-relative
+    // x-tolerance)
+    // must be at least 10 inches outside of trench zone
+    // the rotations in these poses isn't necessarily important but they would likely change by 180
+    // degrees to be the same
+
+    // blue left bank
+    banks[0] =
+        new Pose2d(
+            FieldConstants.LinesVertical.allianceZone
+                - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
+                - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
+            FieldConstants.fieldWidth
+                - RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
+            Rotation2d.fromDegrees(180));
+
+    // blue right bank
+    banks[1] =
+        new Pose2d(
+            FieldConstants.LinesVertical.allianceZone
+                - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
+                - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
+            RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
+            Rotation2d.fromDegrees(0));
+
+    // red left bank
+    banks[2] = FlippingUtil.flipFieldPose(banks[0]);
+
+    // red right bank
+    banks[3] = FlippingUtil.flipFieldPose(banks[1]);
   }
 
   public void populateTrenchZone() {
@@ -382,6 +427,12 @@ public class Field2d {
     }
 
     return transformedLeftBumpZone.contains(pose) || transformedRightBumpZone.contains(pose);
+  }
+
+  public Pose2d getNearestBank() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    return pose.nearest(Arrays.asList(banks));
   }
 
   public enum Side {
