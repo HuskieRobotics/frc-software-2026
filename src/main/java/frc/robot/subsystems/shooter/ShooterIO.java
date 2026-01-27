@@ -102,7 +102,7 @@ public interface ShooterIO {
     
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
-    public boolean kickerConnected;
+    boolean kickerConnected;
   }
 
     // Kicker inputs
@@ -119,9 +119,9 @@ public interface ShooterIO {
 
     // Flywheel Lead inputs
     boolean flywheelLeadConnected = false;
-    boolean flywheelFollower1Connected = false;
-    boolean flywheelFollower2Connected = false;
-    boolean flywheelFollower3Connected = false;
+    boolean flywheelFollow1Connected = false;
+    boolean flywheelFollow2Connected = false;
+    boolean flywheelFollow3Connected = false;
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
     Current flywheelLeadSupplyCurrent = Amps.of(0.0);
     Current flywheelLeadTorqueCurrent = Amps.of(0.0);
@@ -164,7 +164,7 @@ public interface ShooterIO {
 
   // Kicker IO methods
   public default void setKickerVoltage(Voltage voltage) {}
-  // public default void setKickerUnjamVoltage(Voltage voltage) {} FIXME: we could just use setKickerVoltage with a constant
+  public default void setKickerUnjamVoltage(Voltage voltage) {}
 
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
@@ -174,7 +174,7 @@ public interface ShooterIO {
 
   // Turret IO methods
   public default void setTurretPosition(Angle position) {}
-  // public default void setTurretVoltage(Voltage voltage) {} //FIXME: unsure if this is needed
+  public default void setTurretVoltage(Voltage voltage) {} 
 
   // Hood IO methods
   public default void setHoodPosition(Angle position) {}

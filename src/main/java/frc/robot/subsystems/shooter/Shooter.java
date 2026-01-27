@@ -50,8 +50,8 @@ import org.littletonrobotics.junction.Logger;
 * </ul>
 */
 public class Shooter extends SubsystemBase {
- // all subsystems receive a reference to their IO implementation when constructed
- private ShooterIO io;
+// all subsystems receive a reference to their IO implementation when constructed
+private ShooterIO io;
 
 
  // all subsystems create the IO inputs instance for this subsystem
@@ -170,30 +170,37 @@ public class Shooter extends SubsystemBase {
 
 
  public boolean isShooterReady() {
-   return (this.io.flywheelLeadConnected &&
-           this.io.kickerConnected &&
-           this.io.hoodConnected &&
-           this.io.turretConnected);
+   return (ShooterIO.flywheelLeadConnected &&
+           ShooterIO.flywheelFollow1Connected &&
+           ShooterIO.flywheelFollow2Connected &&
+           ShooterIO.flywheelFollow3Connected &&
+           ShooterIO.kickerConnected &&
+           ShooterIO.hoodConnected &&
+           ShooterIO.turretConnected);
 }
 
 //LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE);
 
 public void reverseKicker() {
-      this.io.setKickerVoltage(Volts.of(io.kickerVoltage.in(Volts) * -1));
+      this.io.setKickerVoltage(Volts.of(ShooterIO.kickerVoltage.in(Volts) * -1));
 }
           
 public boolean isKickerJammed() // FIXME: If we determine to add a sensor, then change
 {
-  if(this.io.kickerSupplyCurrent.in(Amps) > FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT )
+  if(this.io.kickerSupplyCurrent.in(Amps) > KICKER_PEAK_CURRENT_LIMIT )
   {
     return true;
   }
   return false;
 }
 
+public void autoAim() {
+  
+}
+
 public void reverseShooter() {
-  this.io.setKickerVoltage(Volts.of(io.kickerVoltage.in(Volts) * -1));
-  this.io.setFlywheelTorqueCurrent(Volts.of(io.flywheelLeadVoltage) * -1); // reverse
+  this.io.setKickerVoltage(Volts.of(ShooterIO.kickerVoltage.in(Volts) * -1));
+  this.io.setFlywheelTorqueCurrent(Volts.of(ShooterIO.flywheelLeadVoltage) * -1); // reverse
 }
 
 
@@ -213,11 +220,11 @@ public double getPassingDistance(){
    // done for convenience as additional values can always be logged when replaying a log file.
    // While this is often done in the periodic method, at times values are only logged when they
    // are changed.
-   Logger.recordOutput("Shooter/distance", distance);
+  //  Logger.recordOutput("Shooter/distance", distance);
 
 
-   io.setShooterWheelTopVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
-   io.setShooterWheelBottomVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
+  //  io.setShooterWheelTopVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
+  //  io.setShooterWheelBottomVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
  }
 
 
@@ -313,7 +320,7 @@ public double getPassingDistance(){
  }
 
 
- public void setFlywheelLeadVelocity(AngularVelocity velocity){
+public void setFlywheelLeadVelocity(AngularVelocity velocity){      
    io.setFlywheelLeadVelocity(velocity);
  }
 

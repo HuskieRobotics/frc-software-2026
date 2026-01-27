@@ -27,6 +27,7 @@ import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.VelocitySystemSim;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import frc.robot.Constants;
@@ -39,10 +40,10 @@ private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
 private VoltageOut kickerVoltageRequest;
 private TorqueCurrentFOC kickerCurrentRequest;
-//private VoltageOut kickerUnjamVoltageRequest;
+private VoltageOut kickerUnjamVoltageRequest;
 
 private MotionMagicExpoVoltage turretPositionRequest;
-//private VoltageOut turretVoltageRequest;
+private VoltageOut turretVoltageRequest;
 
 private MotionMagicExpoVoltage hoodPositionRequest;
 private VoltageOut hoodVoltageRequest;
@@ -114,10 +115,8 @@ private StatusSignal<Voltage> hoodVoltageStatusSignal;
 private StatusSignal<Angle> turretPositionStatusSignal;
 private StatusSignal<Angle> hoodPositionStatusSignal;
 
-// private AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
-private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
-// private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-// private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+
+
 
 private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
@@ -138,11 +137,11 @@ private TalonFX hood;
 private Alert flywheelLeadConfigAlert =
     new Alert("Failed to apply configuration for fly wheel lead motor.", AlertType.kError);
 private Alert flywheelFollow1ConfigAlert =
-    new Alert("Failed to apply configuration for fly wheel follow motor.", AlertType.kError);
+    new Alert("Failed to apply configuration for fly wheel follow 1 motor.", AlertType.kError);
 private Alert flywheelFollow2ConfigAlert =
-    new Alert("Failed to apply configuration for fly wheel follow motor.", AlertType.kError);
+    new Alert("Failed to apply configuration for fly wheel follow 2 motor.", AlertType.kError);
 private Alert flywheelFollow3ConfigAlert =
-    new Alert("Failed to apply configuration for fly wheel follow motor.", AlertType.kError);
+    new Alert("Failed to apply configuration for fly wheel follow 3 motor.", AlertType.kError);
 private Alert kickerConfigAlert =
     new Alert("Failed to apply configuration for kicker motor.", AlertType.kError);
 private Alert hoodConfigAlert =
@@ -153,7 +152,8 @@ private Alert turretConfigAlert =
 // The following enables tuning of the PID and feedforward values for the arm by changing values
 // via AdvantageScope and not needing to change values in code, compile, and re-deploy.
 
-private final LoggedTunableNumber tuningMode = new LoggedTunableNumber("Shooter/Tuning Mode", ShooterConstants.TUNING_MODE);
+private final LoggedTunableBoolean tuningMode = 
+    new LoggedTunableBoolean("Shooter/Tuning Mode", ShooterConstants.TUNING_MODE);
 private final LoggedTunableNumber flywheelLeadKP =
     new LoggedTunableNumber("Shooter/Top kP", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KP);
 private final LoggedTunableNumber flywheelLeadKI =
@@ -201,7 +201,6 @@ private VelocitySystemSim flywheelFollow3Sim;
 private VelocitySystemSim kickerLeadSim;
 private VelocitySystemSim turretLeadSim;
 private VelocitySystemSim hoodLeadSim;
-// private ShooterSystemSim shooterSystemSim;
 
 public ShooterIOTalonFX() {
   flywheelLead = new TalonFX(FLYWHEEL_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
@@ -218,22 +217,22 @@ public ShooterIOTalonFX() {
 // FLYWHEEL LEAD
 flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
 flywheelLeadStatorCurrentStatusSignal = flywheelLead.getStatorCurrent();
-flywheelLeadTorqueCurrentStatusSignal = flywheelLead.getTorqueCurrent(); // FIXME: check if it is torque current
+flywheelLeadTorqueCurrentStatusSignal = flywheelLead.getTorqueCurrent();
 flywheelLeadVelocityStatusSignal = flywheelLead.getVelocity();
 flywheelLeadReferenceVelocityStatusSignal = flywheelLead.getVelocity(); // reference, cached
-flywheelLeadClosedLoopReferenceVelocityStatusSignal = flywheelLead.getClosedLoopReference(); // FIXME: check API
-flywheelLeadClosedLoopErrorVelocityStatusSignal = flywheelLead.getClosedLoopError(); // FIXME: check API
+flywheelLeadClosedLoopReferenceVelocityStatusSignal = flywheelLead.getClosedLoopReference(); 
+flywheelLeadClosedLoopErrorVelocityStatusSignal = flywheelLead.getClosedLoopError();
 flywheelLeadTemperatureStatusSignal = flywheelLead.getDeviceTemp();
 flywheelLeadVoltageStatusSignal = flywheelLead.getMotorVoltage();
 
 // Follow 1
 flywheelFollow1SupplyCurrentStatusSignal = flywheelFollow1.getSupplyCurrent();
 flywheelFollow1StatorCurrentStatusSignal = flywheelFollow1.getStatorCurrent();
-flywheelFollow1TorqueCurrentStatusSignal = flywheelFollow1.getTorqueCurrent(); // FIXME: check if it is torque current
+flywheelFollow1TorqueCurrentStatusSignal = flywheelFollow1.getTorqueCurrent();
 flywheelFollow1VelocityStatusSignal = flywheelFollow1.getVelocity();
 flywheelFollow1ReferenceVelocityStatusSignal = flywheelFollow1.getVelocity(); // reference, cached
-flywheelFollow1ClosedLoopReferenceVelocityStatusSignal = flywheelFollow1.getClosedLoopReference(); // FIXME: check API
-flywheelFollow1ClosedLoopErrorVelocityStatusSignal = flywheelFollow1.getClosedLoopError(); // FIXME: check API
+flywheelFollow1ClosedLoopReferenceVelocityStatusSignal = flywheelFollow1.getClosedLoopReference();
+flywheelFollow1ClosedLoopErrorVelocityStatusSignal = flywheelFollow1.getClosedLoopError();
 flywheelFollow1TemperatureStatusSignal = flywheelFollow1.getDeviceTemp();
 flywheelFollow1VoltageStatusSignal = flywheelFollow1.getMotorVoltage();
 
@@ -241,11 +240,11 @@ flywheelFollow1VoltageStatusSignal = flywheelFollow1.getMotorVoltage();
 // Follow 2
 flywheelFollow2SupplyCurrentStatusSignal = flywheelFollow2.getSupplyCurrent();
 flywheelFollow2StatorCurrentStatusSignal = flywheelFollow2.getStatorCurrent();
-flywheelFollow2TorqueCurrentStatusSignal = flywheelFollow2.getTorqueCurrent(); // FIXME: check if it is torque current
+flywheelFollow2TorqueCurrentStatusSignal = flywheelFollow2.getTorqueCurrent();
 flywheelFollow2VelocityStatusSignal = flywheelFollow2.getVelocity();
 flywheelFollow2ReferenceVelocityStatusSignal = flywheelFollow2.getVelocity(); // reference, cached
-flywheelFollow2ClosedLoopReferenceVelocityStatusSignal = flywheelFollow2.getClosedLoopReference(); // FIXME: check API
-flywheelFollow2ClosedLoopErrorVelocityStatusSignal = flywheelFollow2.getClosedLoopError(); // FIXME: check API
+flywheelFollow2ClosedLoopReferenceVelocityStatusSignal = flywheelFollow2.getClosedLoopReference();
+flywheelFollow2ClosedLoopErrorVelocityStatusSignal = flywheelFollow2.getClosedLoopError();
 flywheelFollow2TemperatureStatusSignal = flywheelFollow2.getDeviceTemp();
 flywheelFollow2VoltageStatusSignal = flywheelFollow2.getMotorVoltage();
 
@@ -253,11 +252,11 @@ flywheelFollow2VoltageStatusSignal = flywheelFollow2.getMotorVoltage();
 // Follow 3
 flywheelFollow3SupplyCurrentStatusSignal = flywheelFollow3.getSupplyCurrent();
 flywheelFollow3StatorCurrentStatusSignal = flywheelFollow3.getStatorCurrent();
-flywheelFollow3TorqueCurrentStatusSignal = flywheelFollow3.getTorqueCurrent(); // FIXME: check if it is torque current
+flywheelFollow3TorqueCurrentStatusSignal = flywheelFollow3.getTorqueCurrent();
 flywheelFollow3VelocityStatusSignal = flywheelFollow3.getVelocity();
 flywheelFollow3ReferenceVelocityStatusSignal = flywheelFollow3.getVelocity(); // reference, cached
-flywheelFollow3ClosedLoopReferenceVelocityStatusSignal = flywheelFollow3.getClosedLoopReference(); // FIXME: check API
-flywheelFollow3ClosedLoopErrorVelocityStatusSignal = flywheelFollow3.getClosedLoopError(); // FIXME: check API
+flywheelFollow3ClosedLoopReferenceVelocityStatusSignal = flywheelFollow3.getClosedLoopReference();
+flywheelFollow3ClosedLoopErrorVelocityStatusSignal = flywheelFollow3.getClosedLoopError();
 flywheelFollow3TemperatureStatusSignal = flywheelFollow3.getDeviceTemp();
 flywheelFollow3VoltageStatusSignal = flywheelFollow3.getMotorVoltage();
 
@@ -531,11 +530,11 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
   // for tuning and not used elsewhere in the subsystem. For example, the
   // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
   // will always be populated.
-  if (tuningMode.get() == 1) {
+  if (tuningMode.get()) {
     //Flywheel Lead
     inputs.flywheelLeadVelocity = 
         flywheelLead.getVelocity().getValue();
-     inputs.flywheelFollow1Velocity = inputs.flywheelFollow1.setFlywheelTorqueCurrent()
+     inputs.flywheelLeadTorqueCurrent = flywheelLead.getTorqueCurrent().getValue();
    
     inputs.flywheelLeadSupplyCurrent = 
         flywheelLead.getSupplyCurrent().getValue();
@@ -670,16 +669,16 @@ public void setFlywheelLeadVelocity(AngularVelocity velocity) {
   flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocity));
   // To improve performance, we store the reference velocity as an instance variable to avoid
   // having to retrieve the status signal object from the device in the updateInputs method.
-  this.flywheelLeadReferenceVelocity = velocity.copy();
 }
 
-public void setflywheelLeadCurrentRequest(double TorqueCurrentFOC) {
-    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(TorqueCurrentFOC));
+public void setflywheelLeadCurrentRequest(double torqueCurrentFOC) {
+    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(torqueCurrentFOC));
 }
 
-public void setKickerCurrentRequest(double TorqueCurrentFOC) {
-    kicker.setControl(kickerCurrentRequest.withOutput(TorqueCurrentFOC));
+public void setKickerCurrentRequest(double torqueCurrentFOC) {
+    kicker.setControl(kickerCurrentRequest.withOutput(torqueCurrentFOC));
 }
+
 
 
 @Override
@@ -687,20 +686,20 @@ public void setKickerVoltage(Voltage voltage) {
     kicker.setControl(kickerVoltageRequest.withOutput(voltage));
 }
 
-//@Override
-//public void setKickerUnjamVoltage(Voltage voltage) {
-    //kicker.setControl(kickerUnjamVoltageRequest.withOutput(voltage));
-//}
+@Override
+public void setKickerUnjamVoltage(Voltage voltage) {
+    kicker.setControl(kickerUnjamVoltageRequest.withOutput(voltage));
+}
 
 @Override
 public void setTurretPosition(Angle position) {
     turret.setControl(turretPositionRequest.withPosition(position));
 }
 
-//@Override
-//public void setTurretVoltage(Voltage voltage) {
-    //turret.setControl(turretVoltageRequest.withOutput(voltage));
-//}
+@Override
+public void setTurretVoltage(Voltage voltage) {
+    turret.setControl(turretVoltageRequest.withOutput(voltage));
+}
 
 @Override
 public void setHoodPosition (Angle position) {
@@ -725,9 +724,10 @@ private void configFlywheel(
     flywheelConfig.Slot0.kP = flywheelLeadKP.get();
     flywheelConfig.Slot0.kI = flywheelLeadKI.get();
     flywheelConfig.Slot0.kD = flywheelLeadKD.get();
-    }
-  flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO; //FIXME: would we need this as ratio is 1:1
 
+    flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO; 
+    }
+  
   flywheelConfig.MotorOutput.Inverted =
       isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
   flywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -758,8 +758,7 @@ private void configKicker(
     kickerConfig.Slot0.kI = kickerKI.get();
     kickerConfig.Slot0.kD = kickerKD.get();
 
-  kickerConfig.Feedback.SensorToMechanismRatio = ShooterConstants.KICKER_GEAR_RATIO; //FIXME: would we need this?
-
+  kickerConfig.Feedback.SensorToMechanismRatio = ShooterConstants.KICKER_GEAR_RATIO; 
   kickerConfig.MotorOutput.Inverted =
       isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
   kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -792,7 +791,7 @@ private void configTurret(
         turretConfig.Slot0.kA = turretKA.get();
         turretConfig.MotionMagic.MotionMagicCruiseVelocity = turretMotionMagicCruiseVelocity.get();
     
-    turretConfig.Feedback.SensorToMechanismRatio = ShooterConstants.TURRET_GEAR_RATIO; //FIXME: would we need this?
+    turretConfig.Feedback.SensorToMechanismRatio = ShooterConstants.TURRET_GEAR_RATIO;
 
     turretConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
@@ -820,7 +819,7 @@ private void configHood(
         hoodConfig.Slot0.kA = hoodKA.get();
         hoodConfig.MotionMagic.MotionMagicCruiseVelocity = hoodMotionMagicCruiseVelocity.get();
 
-    hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO; //FIXME: would we need this?
+    hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
 
     hoodConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
@@ -833,19 +832,6 @@ private void configHood(
     
     
 
-
-  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-  // method will apply the configuration, read back the configuration, and ensure that it is
-  // correct. If not, it will reattempt five times and eventually, generate an alert.
-//   Phoenix6Util.applyAndCheckConfiguration(flywheel, flywheelConfig, configAlert);
-//   Phoenix6Util.applyAndCheckConfiguration(kicker, kickerConfig, configAlert);
-//   Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
-//   Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
-
-  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-  // devices for faults periodically when the robot is disabled and generate alerts if any faults
-  // are found.
-//   FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, kicker); //FIXME: add names and adjust to other motors 
 }
 
 
