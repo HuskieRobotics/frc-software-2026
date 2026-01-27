@@ -3,6 +3,8 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -12,6 +14,9 @@ public class ShooterConfiguration extends Command {
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
+
+  // Shooter Mode Triggers
+  private Trigger nearTrenchTrigger;
 
   private String gameData;
 
@@ -98,5 +103,10 @@ public class ShooterConfiguration extends Command {
   // add a t second offset for how long it takes the ball (on average) to actually enter the hub
   public boolean hubActive() {
     return true;
+  }
+
+  private void configureShooterModeTriggers() {
+    nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
+    nearTrenchTrigger.onTrue(Commands.none());
   }
 }
