@@ -3,34 +3,26 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
-import javax.swing.text.Position;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
-import com.ctre.phoenix6.hardware.CANrange;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.RobotController;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -43,7 +35,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
 // We usually use VelocityTorqueCurrentFOC to control the velocity of a wheel.
 private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
-//private TorqueCurrentFOC flywheelLeadCurrentRequest;
+private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
 private VoltageOut kickerVoltageRequest;
 private VelocityTorqueCurrentFOC kickerCurrentRequest;
@@ -122,14 +114,17 @@ private StatusSignal<Voltage> hoodVoltageStatusSignal;
 private StatusSignal<Angle> turretPositionStatusSignal;
 private StatusSignal<Angle> hoodPositionStatusSignal;
 
-private AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
+// private AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
 private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
-private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+// private AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+// private AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
 
 private Voltage kickerVoltage = Volts.of(0.0);
 
 private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
+private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
+private final Debouncer flywheelFollow2ConnectedDebouncer = new Debouncer(0.5);
+private final Debouncer flywheelFollow3ConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer kickerConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer hoodConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer turretConnectedDebouncer = new Debouncer(0.5);
@@ -198,8 +193,6 @@ private final LoggedTunableNumber kickerKD =
     
 // It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
 // Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
-private final LoggedTunableNumber simDetectorDistance =
-    new LoggedTunableNumber("Shooter/Sim Detector Distance (m)", 1.0);
 
 private VelocitySystemSim flywheelLeadSim;
 private VelocitySystemSim flywheelFollow1Sim;
@@ -219,7 +212,7 @@ public ShooterIOTalonFX() {
   hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
   flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
-  //flywheelLeadCurrentRequest = new TorqueCurrentFOC(0);
+  flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
 
 // FLYWHEEL LEAD
 flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
@@ -312,6 +305,24 @@ hoodPositionStatusSignal = hood.getPosition();
       flywheelFollow1ClosedLoopReferenceVelocityStatusSignal,
       flywheelFollow1ClosedLoopErrorVelocityStatusSignal,
 
+      //FLYWHEEL Follow 2
+      flywheelFollow2SupplyCurrentStatusSignal,
+      flywheelFollow2StatorCurrentStatusSignal,
+      flywheelFollow2TorqueCurrentStatusSignal,
+      flywheelFollow2VelocityStatusSignal,
+      flywheelFollow2ReferenceVelocityStatusSignal,
+      flywheelFollow2ClosedLoopReferenceVelocityStatusSignal,
+      flywheelFollow2ClosedLoopErrorVelocityStatusSignal,
+
+      //FLYWHEEL Follow 3
+      flywheelFollow3SupplyCurrentStatusSignal,
+      flywheelFollow3StatorCurrentStatusSignal,
+      flywheelFollow3TorqueCurrentStatusSignal,
+      flywheelFollow3VelocityStatusSignal,
+      flywheelFollow3ReferenceVelocityStatusSignal,
+      flywheelFollow3ClosedLoopReferenceVelocityStatusSignal,
+      flywheelFollow3ClosedLoopErrorVelocityStatusSignal,
+
       //KICKER
       kickerStatorCurrentStatusSignal,
       kickerSupplyCurrentStatusSignal,
@@ -333,10 +344,10 @@ hoodPositionStatusSignal = hood.getPosition();
       hoodPositionStatusSignal
 
       );
-  configFlywheelLead(flywheelLead, FLYWHEEL_LEAD_INVERTED,"flywheel lead", true, flywheelLeadConfigAlert);
-  configFlywheelFollow1(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
-  configFlywheelFollow2(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
-  configFlywheelFollow3(flywheelFollow3, FLYWHEEL_FOLLOW_3_INVERTED, "flywheel follow 3", false, flywheelFollow3ConfigAlert);
+  configFlywheel(flywheelLead, FLYWHEEL_LEAD_INVERTED,"flywheel lead", true, flywheelLeadConfigAlert);
+  configFlywheel(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
+  configFlywheel(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
+  configFlywheel(flywheelFollow3, FLYWHEEL_FOLLOW_3_INVERTED, "flywheel follow 3", false, flywheelFollow3ConfigAlert);
   configKicker(kicker, KICKER_INVERTED, "kicker", kickerConfigAlert);
   configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
   configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
@@ -350,13 +361,6 @@ hoodPositionStatusSignal = hood.getPosition();
           0.05, //update as needed
           0.01, //update as needed
           ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO);
- this.flywheelFollow1Sim =
-      new VelocitySystemSim(
-          flywheelFollow1,
-          ShooterConstants.FLYWHEEL_FOLLOW_1_INVERTED,
-          0.05, //update as needed
-          0.01, //update as needed
-          ShooterConstants.FLYWHEEL_FOLLOW_1_GEAR_RATIO);
   this.kickerLeadSim =
       new VelocitySystemSim(
           kicker,
@@ -414,24 +418,24 @@ public void updateInputs(ShooterIOInputs inputs) {
               flywheelLeadTemperatureStatusSignal,
               flywheelLeadVoltageStatusSignal
               ));
-  inputs.flywheelFollower1Connected =
-      flywheelLeadConnectedDebouncer.calculate(
+  inputs.flywheelFollow1Connected =
+      flywheelFollow1ConnectedDebouncer.calculate(
           BaseStatusSignal.isAllGood(
               flywheelFollow1StatorCurrentStatusSignal,
               flywheelFollow1SupplyCurrentStatusSignal,
               flywheelFollow1TemperatureStatusSignal,
               flywheelFollow1VoltageStatusSignal
               ));
-  inputs.flywheelFollower2Connected =
-      flywheelLeadConnectedDebouncer.calculate(
+  inputs.flywheelFollow2Connected =
+      flywheelFollow2ConnectedDebouncer.calculate(
           BaseStatusSignal.isAllGood(
               flywheelFollow2StatorCurrentStatusSignal,
               flywheelFollow2SupplyCurrentStatusSignal,
               flywheelFollow2TemperatureStatusSignal,
               flywheelFollow2VoltageStatusSignal
               ));
-  inputs.flywheelFollower3Connected =
-      flywheelLeadConnectedDebouncer.calculate(
+  inputs.flywheelFollow3Connected =
+      flywheelFollow3ConnectedDebouncer.calculate(
           BaseStatusSignal.isAllGood(
               flywheelFollow3StatorCurrentStatusSignal,
               flywheelFollow3SupplyCurrentStatusSignal,
@@ -467,7 +471,6 @@ public void updateInputs(ShooterIOInputs inputs) {
   inputs.flywheelLeadSupplyCurrent = flywheelLeadSupplyCurrentStatusSignal.getValue();
   inputs.flywheelLeadTorqueCurrent = flywheelLeadTorqueCurrentStatusSignal.getValue();
   inputs.flywheelLeadVelocity = flywheelLeadVelocityStatusSignal.getValue();
-  inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
   inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValue();
   inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValue();
   inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
@@ -641,9 +644,9 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
     hoodKP,
     hoodKI,
     hoodKD,
-    turretKV,
-    turretKA,
-    turretMotionMagicCruiseVelocity);
+    hoodKV,
+    hoodKA,
+    hoodMotionMagicCruiseVelocity);
 
   // The last step in the updateInputs method is to update the simulation.
   if (Constants.getMode() == Constants.Mode.SIM) {
@@ -698,20 +701,20 @@ public void setHoodVoltage(Voltage voltage) {
     hood.setControl(hoodVoltageRequest.withOutput(voltage));
 }
 
-private void configFlywheelLead(
-    TalonFX flywheel, boolean isInverted, boolean isLead, Alert configAlert) {
+private void configFlywheel(
+    TalonFX flywheel, boolean isInverted, String motorName, boolean isLead, Alert configAlert) {
 
   TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
 
     flywheelConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT;
+        ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
     flywheelConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.FLYWHEEL_LEAD_PEAK_CURRENT_LIMIT;
-    
+        -ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
+    if (isLead) {
     flywheelConfig.Slot0.kP = flywheelLeadKP.get();
     flywheelConfig.Slot0.kI = flywheelLeadKI.get();
     flywheelConfig.Slot0.kD = flywheelLeadKD.get();
-
+    }
   flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO; //FIXME: would we need this as ratio is 1:1
 
   flywheelConfig.MotorOutput.Inverted =
@@ -726,12 +729,12 @@ private void configFlywheelLead(
   // A subsystem needs to register each device with FaultReporter. FaultReporter will check
   // devices for faults periodically when the robot is disabled and generate alerts if any faults
   // are found.
-  FaultReporter.getInstance()
-      .registerHardware(SUBSYSTEM_NAME, isLead ? "TopMotor" : "BottomMotor", flywheel);
+  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, flywheel);
 }
 
 private void configKicker(
-    TalonFX kicker, boolean isInverted, boolean isLead, Alert configAlert) {
+    TalonFX kicker, boolean isInverted, String motorName,
+    Alert configAlert) {
 
   TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
 
@@ -749,10 +752,20 @@ private void configKicker(
   kickerConfig.MotorOutput.Inverted =
       isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
   kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
+  // method will apply the configuration, read back the configuration, and ensure that it is
+  // correct. If not, it will reattempt five times and eventually, generate an alert.
+  Phoenix6Util.applyAndCheckConfiguration(kicker, kickerConfig, configAlert);
+
+  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
+  // devices for faults periodically when the robot is disabled and generate alerts if any faults
+  // are found.
+  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, kicker);
 }
 
 private void configTurret(
-    TalonFX turret, boolean isInverted, boolean isLead, Alert configAlert) {
+    TalonFX turret, boolean isInverted, String motorName,Alert configAlert) {
 
         TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
@@ -773,10 +786,14 @@ private void configTurret(
     turretConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
+
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, turret);
 }
 
 private void configHood(
-    TalonFX hood, boolean isInverted, boolean isLead, Alert configAlert) {
+    TalonFX hood, boolean isInverted, String motorName, Alert configAlert) {
 
         TalonFXConfiguration hoodConfig = new TalonFXConfiguration(); 
         
@@ -797,6 +814,10 @@ private void configHood(
     hoodConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
+
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
 }
     
     
@@ -805,37 +826,15 @@ private void configHood(
   // It is critical that devices are successfully configured. The applyAndCheckConfiguration
   // method will apply the configuration, read back the configuration, and ensure that it is
   // correct. If not, it will reattempt five times and eventually, generate an alert.
-  Phoenix6Util.applyAndCheckConfiguration(flywheel, flywheelConfig, configAlert);
-  Phoenix6Util.applyAndCheckConfiguration(kicker, kickerConfig, configAlert);
-  Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
-  Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
+//   Phoenix6Util.applyAndCheckConfiguration(flywheel, flywheelConfig, configAlert);
+//   Phoenix6Util.applyAndCheckConfiguration(kicker, kickerConfig, configAlert);
+//   Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
+//   Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
 
   // A subsystem needs to register each device with FaultReporter. FaultReporter will check
   // devices for faults periodically when the robot is disabled and generate alerts if any faults
   // are found.
-  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, kicker); //FIXME: add names and adjust to other motors 
+//   FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, kicker); //FIXME: add names and adjust to other motors 
 }
 
-private void configGamePieceDetector(CANrange detector, Alert configAlert) {
-  CANrangeConfiguration config = new CANrangeConfiguration();
-
-  // if CANrange has a signal strength of at least 2000, it is a valid measurement
-  config.ProximityParams.MinSignalStrengthForValidMeasurement = detectorMinSignalStrength.get();
-
-  // if CANrange detects an object within 0.1 meters, it will trigger the "isDetected" signal
-  config.ProximityParams.ProximityThreshold = detectorProximityThreshold.get();
-
-  // make the CANrange update as fast as possible at 100 Hz. This requires short-range mode
-  config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
-
-  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-  // method will apply the configuration, read back the configuration, and ensure that it is
-  // correct. If not, it will reattempt five times and eventually, generate an alert.
-  Phoenix6Util.applyAndCheckConfiguration(detector, config, configAlert);
-
-  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-  // devices for faults periodically when the robot is disabled and generate alerts if any faults
-  // are found.
-  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "GamePieceDetector", detector);
-} // FIXME: fix errors for brackets
 

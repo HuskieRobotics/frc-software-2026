@@ -191,9 +191,9 @@ public boolean isKickerJammed() // FIXME: If we determine to add a sensor, then 
   return false;
 }
 
-public void runBackwards() {
-  this.io.setKickerVoltage(Volts.of());
-  this.io.setFlywheelLeadVelocity(); // reverse
+public void reverseShooter() {
+  this.io.setKickerVoltage(Volts.of(io.kickerVoltage.in(Volts) * -1));
+  this.io.setFlywheelTorqueCurrent(Volts.of(io.flywheelLeadVoltage) * -1); // reverse
 }
 
 

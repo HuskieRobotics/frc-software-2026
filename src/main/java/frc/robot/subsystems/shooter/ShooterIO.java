@@ -169,7 +169,8 @@ public interface ShooterIO {
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
 
-  // public default void setFlywheelTorqueCurrent(Current amps) {} //FIXME: unsure if this is needed
+  public default void setFlywheelTorqueCurrent(Current amps) {}
+  // this is used in the reverseShooter() method
 
   // Turret IO methods
   public default void setTurretPosition(Angle position) {}
