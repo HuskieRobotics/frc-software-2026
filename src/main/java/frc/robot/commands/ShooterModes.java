@@ -10,7 +10,7 @@ import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.shooter.Shooter;
 
-public class ShooterConfiguration extends Command {
+public class ShooterModes extends Command {
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
@@ -28,7 +28,7 @@ public class ShooterConfiguration extends Command {
     PASS // passing mode
   }
 
-  public ShooterConfiguration(SwerveDrivetrain drivetrain, Shooter shooter) {
+  public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
     this.drivetrain = drivetrain;
     this.shooter = shooter;
   }
