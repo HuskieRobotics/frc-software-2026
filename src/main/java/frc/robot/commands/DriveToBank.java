@@ -10,7 +10,8 @@ import java.util.function.Supplier;
 
 public class DriveToBank extends DriveToPose {
 
-  private static final double DRIVE_TO_BANK_X_BOOST = 0.5; // in m/s
+  // boost is negative to drive backwards into wall
+  private static final double DRIVE_TO_BANK_X_BOOST = -0.25; // in m/s
 
   public DriveToBank(
       SwerveDrivetrain drivetrain,

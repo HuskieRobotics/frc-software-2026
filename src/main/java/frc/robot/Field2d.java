@@ -112,8 +112,8 @@ public class Field2d {
     // bank will have a temp target-relative y-tolerance of 0.25 meters = ~10 inches (field-relative
     // x-tolerance)
     // must be at least 10 inches outside of trench zone
-    // the rotations in these poses isn't necessarily important but they would likely change by 180
-    // degrees to be the same
+
+    // rotation of 90 degrees on right, 270 on left for back of robot to be facing wall
 
     // blue left bank
     banks[0] =
@@ -123,7 +123,7 @@ public class Field2d {
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             FieldConstants.fieldWidth
                 - RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
-            Rotation2d.fromDegrees(180));
+            Rotation2d.fromDegrees(270));
 
     // blue right bank
     banks[1] =
@@ -132,7 +132,7 @@ public class Field2d {
                 - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
-            Rotation2d.fromDegrees(0));
+            Rotation2d.fromDegrees(90));
 
     // red left bank
     banks[2] = FlippingUtil.flipFieldPose(banks[0]);
