@@ -18,7 +18,6 @@ public class ShooterConstants {
   public static final int FLYWHEEL_FOLLOW_3_MOTOR_ID = 0;
   public static final int HOOD_MOTOR_ID = 0;
   public static final int TURRET_MOTOR_ID = 0;
-  public static final int KICKER_MOTOR_ID = 0;
 
   // Flywheel PID Constants (subject to change)
   public static final double FLYWHEEL_LEAD_ROTATION_KP = 0.0;
@@ -60,18 +59,10 @@ public class ShooterConstants {
 
   public static final boolean HOOD_INVERTED = false;
   public static final double HOOD_GEAR_RATIO = 0;
-  // Kicker PID Constants (subject to change)
-  public static final double KICKER_ROTATION_KP = 0.0;
-  public static final double KICKER_ROTATION_KI = 0.0;
-  public static final double KICKER_ROTATION_KD = 0.0;
-
-  public static final boolean KICKER_INVERTED = false;
-  public static final double KICKER_GEAR_RATIO = 0; 
 
   // Current limits
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 40;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
-  public static final int KICKER_PEAK_CURRENT_LIMIT = 20;
   public static final int HOOD_PEAK_CURRENT_LIMIT = 20;
 
   // Hard coded non-tunable physics values

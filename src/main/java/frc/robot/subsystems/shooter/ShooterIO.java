@@ -22,15 +22,6 @@ public interface ShooterIO {
   // IO Inputs are below
   public static class ShooterIOInputs {
     boolean connected = false;
-    Current kickerStatorCurrent = Amps.of(0.0);
-    Current kickerSupplyCurrent = Amps.of(0.0);
-    Voltage kickerVoltage = Volts.of(0.0);
-    Voltage kickerReferenceVoltage = Volts.of(0.0);
-    AngularVelocity kickerVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity kickerClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity kickerClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature kickerTemperature = Celsius.of(0.0);
 
     boolean flywheelLeadConnected = false;
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
@@ -102,20 +93,9 @@ public interface ShooterIO {
     
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
-    boolean kickerConnected;
   }
 
-    // Kicker inputs
-    boolean kickerConnected = false;
-    Current kickerStatorCurrent = Amps.of(0.0);
-    Current kickerSupplyCurrent = Amps.of(0.0);
-    Voltage kickerVoltage = Volts.of(0.0);
-    Voltage kickerReferenceVoltage = Volts.of(0.0); // cached from set method
-    AngularVelocity kickerVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity kickerClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity kickerClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature kickerTemperature = Celsius.of(0.0);
+   
 
     // Flywheel Lead inputs
     boolean flywheelLeadConnected = false;
@@ -162,9 +142,7 @@ public interface ShooterIO {
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-  // Kicker IO methods
-  public default void setKickerVoltage(Voltage voltage) {}
-  public default void setKickerUnjamVoltage(Voltage voltage) {}
+
 
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}

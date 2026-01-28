@@ -157,7 +157,6 @@ private ShooterIO io;
 
    if (testingMode.get() == 1) {
      io.setFlywheelLeadVelocity(ShooterIOInputs.flywheelLeadReferenceVelocity);
-     io.setKickerVoltage(ShooterIOInputs.kickerReferenceVoltage);
      io.setHoodPosition(ShooterIOInputs.hoodReferencePosition);
      io.setTurretPosition(ShooterIOInputs.turretReferencePosition);
    }
@@ -174,32 +173,20 @@ private ShooterIO io;
            ShooterIO.flywheelFollow1Connected &&
            ShooterIO.flywheelFollow2Connected &&
            ShooterIO.flywheelFollow3Connected &&
-           ShooterIO.kickerConnected &&
            ShooterIO.hoodConnected &&
            ShooterIO.turretConnected);
 }
 
 //LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE);
 
-public void reverseKicker() {
-      this.io.setKickerVoltage(Volts.of(ShooterIO.kickerVoltage.in(Volts) * -1));
-}
+
           
-public boolean isKickerJammed() // FIXME: If we determine to add a sensor, then change
-{
-  if(this.io.kickerSupplyCurrent.in(Amps) > KICKER_PEAK_CURRENT_LIMIT )
-  {
-    return true;
-  }
-  return false;
-}
 
 public void autoAim() {
   
 }
 
 public void reverseShooter() {
-  this.io.setKickerVoltage(Volts.of(ShooterIO.kickerVoltage.in(Volts) * -1));
   this.io.setFlywheelTorqueCurrent(Volts.of(ShooterIO.flywheelLeadVoltage) * -1); // reverse
 }
 
@@ -315,9 +302,7 @@ public double getPassingDistance(){
                  + this.shooterInputs.shootMotorTopVelocity);
    }
  }
-  public void setKickerVoltage(Voltage voltage){
-   io.setKickerVoltage(voltage);
- }
+
 
 
 public void setFlywheelLeadVelocity(AngularVelocity velocity){      

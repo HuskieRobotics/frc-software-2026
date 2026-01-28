@@ -38,10 +38,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
 private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
-private VoltageOut kickerVoltageRequest;
-private TorqueCurrentFOC kickerCurrentRequest;
-private VoltageOut kickerUnjamVoltageRequest;
-
 private MotionMagicExpoVoltage turretPositionRequest;
 private VoltageOut turretVoltageRequest;
 
@@ -68,9 +64,7 @@ private StatusSignal<Current> flywheelFollow3SupplyCurrentStatusSignal;
 private StatusSignal<Current> flywheelFollow3StatorCurrentStatusSignal;
 private StatusSignal<Current> flywheelFollow3TorqueCurrentStatusSignal;
 
-// Kicker, Turret, and Hood Status Signals
-private StatusSignal<Current> kickerStatorCurrentStatusSignal;
-private StatusSignal<Current> kickerSupplyCurrentStatusSignal;
+// Turret, and Hood Status Signals
 private StatusSignal<Current> turretStatorCurrentStatusSignal;
 private StatusSignal<Current> turretSupplyCurrentStatusSignal;
 private StatusSignal<Current> hoodStatorCurrentStatusSignal;
@@ -100,7 +94,6 @@ private StatusSignal<Temperature> flywheelLeadTemperatureStatusSignal;
 private StatusSignal<Temperature> flywheelFollow1TemperatureStatusSignal;
 private StatusSignal<Temperature> flywheelFollow2TemperatureStatusSignal;
 private StatusSignal<Temperature> flywheelFollow3TemperatureStatusSignal;
-private StatusSignal<Temperature> kickerTemperatureStatusSignal;
 private StatusSignal<Temperature> turretTemperatureStatusSignal;
 private StatusSignal<Temperature> hoodTemperatureStatusSignal;
 
@@ -108,7 +101,6 @@ private StatusSignal<Voltage> flywheelLeadVoltageStatusSignal;
 private StatusSignal<Voltage> flywheelFollow1VoltageStatusSignal;
 private StatusSignal<Voltage> flywheelFollow2VoltageStatusSignal;
 private StatusSignal<Voltage> flywheelFollow3VoltageStatusSignal;
-private StatusSignal<Voltage> kickerVoltageStatusSignal;
 private StatusSignal<Voltage> turretVoltageStatusSignal;
 private StatusSignal<Voltage> hoodVoltageStatusSignal;
 
@@ -122,7 +114,6 @@ private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow2ConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow3ConnectedDebouncer = new Debouncer(0.5);
-private final Debouncer kickerConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer hoodConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer turretConnectedDebouncer = new Debouncer(0.5);
 
@@ -130,7 +121,6 @@ private TalonFX flywheelLead;
 private TalonFX flywheelFollow1;
 private TalonFX flywheelFollow2;
 private TalonFX flywheelFollow3;
-private TalonFX kicker;
 private TalonFX turret;
 private TalonFX hood;
 
@@ -142,8 +132,6 @@ private Alert flywheelFollow2ConfigAlert =
     new Alert("Failed to apply configuration for fly wheel follow 2 motor.", AlertType.kError);
 private Alert flywheelFollow3ConfigAlert =
     new Alert("Failed to apply configuration for fly wheel follow 3 motor.", AlertType.kError);
-private Alert kickerConfigAlert =
-    new Alert("Failed to apply configuration for kicker motor.", AlertType.kError);
 private Alert hoodConfigAlert =
     new Alert("Failed to apply configuration for hood motor.", AlertType.kError);
 private Alert turretConfigAlert =
@@ -184,12 +172,6 @@ private final LoggedTunableNumber hoodKA =
     new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_EXPO_KA);
 private final LoggedTunableNumber hoodMotionMagicCruiseVelocity =
     new LoggedTunableNumber("Shooter/Hood Magic Cruise Velocity", ShooterConstants.HOOD_MOTION_MAGIC_CRUISE_VELOCITY);
-private final LoggedTunableNumber kickerKP =
-    new LoggedTunableNumber("Shooter/Kicker kP", ShooterConstants.KICKER_ROTATION_KP);
-private final LoggedTunableNumber kickerKI =
-    new LoggedTunableNumber("Shooter/Kicker kI", ShooterConstants.KICKER_ROTATION_KI);
-private final LoggedTunableNumber kickerKD =
-    new LoggedTunableNumber("Shooter/Kicker kD", ShooterConstants.KICKER_ROTATION_KD);
     
 // It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
 // Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
@@ -198,7 +180,6 @@ private VelocitySystemSim flywheelLeadSim;
 private VelocitySystemSim flywheelFollow1Sim;
 private VelocitySystemSim flywheelFollow2Sim;
 private VelocitySystemSim flywheelFollow3Sim;
-private VelocitySystemSim kickerLeadSim;
 private VelocitySystemSim turretLeadSim;
 private VelocitySystemSim hoodLeadSim;
 
@@ -207,7 +188,6 @@ public ShooterIOTalonFX() {
   flywheelFollow1 = new TalonFX(FLYWHEEL_FOLLOW_1_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow2 = new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow3 = new TalonFX(FLYWHEEL_FOLLOW_3_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-  kicker = new TalonFX(KICKER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
@@ -261,11 +241,6 @@ flywheelFollow3TemperatureStatusSignal = flywheelFollow3.getDeviceTemp();
 flywheelFollow3VoltageStatusSignal = flywheelFollow3.getMotorVoltage();
 
 
-// KICKER
-kickerStatorCurrentStatusSignal = kicker.getStatorCurrent();
-kickerSupplyCurrentStatusSignal = kicker.getSupplyCurrent();
-kickerTemperatureStatusSignal = kicker.getDeviceTemp();
-kickerVoltageStatusSignal = kicker.getMotorVoltage();
 
 // TURRET
 turretStatorCurrentStatusSignal = turret.getStatorCurrent();
@@ -323,12 +298,6 @@ hoodPositionStatusSignal = hood.getPosition();
       flywheelFollow3ClosedLoopReferenceVelocityStatusSignal,
       flywheelFollow3ClosedLoopErrorVelocityStatusSignal,
 
-      //KICKER
-      kickerStatorCurrentStatusSignal,
-      kickerSupplyCurrentStatusSignal,
-      kickerTemperatureStatusSignal,
-      kickerVoltageStatusSignal,
-
       //TURRET
       turretStatorCurrentStatusSignal,
       turretSupplyCurrentStatusSignal,
@@ -348,7 +317,6 @@ hoodPositionStatusSignal = hood.getPosition();
   configFlywheel(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
   configFlywheel(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
   configFlywheel(flywheelFollow3, FLYWHEEL_FOLLOW_3_INVERTED, "flywheel follow 3", false, flywheelFollow3ConfigAlert);
-  configKicker(kicker, KICKER_INVERTED, "kicker", kickerConfigAlert);
   configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
   configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
   
@@ -361,13 +329,6 @@ hoodPositionStatusSignal = hood.getPosition();
           0.05, //update as needed
           0.01, //update as needed
           ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO);
-  this.kickerLeadSim =
-      new VelocitySystemSim(
-          kicker,
-          ShooterConstants.KICKER_INVERTED,
-          0.05,
-          0.01,
-          ShooterConstants.KICKER_GEAR_RATIO);
   this.turretLeadSim =
       new VelocitySystemSim(
           turret,
@@ -442,13 +403,6 @@ public void updateInputs(ShooterIOInputs inputs) {
               flywheelFollow3TemperatureStatusSignal,
               flywheelFollow3VoltageStatusSignal
               ));
-  inputs.kickerConnected =
-      kickerConnectedDebouncer.calculate(
-          BaseStatusSignal.isAllGood(
-              kickerStatorCurrentStatusSignal,
-              kickerSupplyCurrentStatusSignal,
-              kickerTemperatureStatusSignal,
-              kickerVoltageStatusSignal));
   inputs.hoodConnected =
       hoodConnectedDebouncer.calculate(
           BaseStatusSignal.isAllGood(
@@ -502,12 +456,6 @@ inputs.flywheelFollow3Temperature = flywheelFollow3TemperatureStatusSignal.getVa
 inputs.flywheelFollow3Voltage = flywheelFollow3VoltageStatusSignal.getValue();
 inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatusSignal.getValue();
 
-  // Updates Kicker Motor Inputs
-  inputs.kickerStatorCurrent = kickerStatorCurrentStatusSignal.getValue();
-  inputs.kickerSupplyCurrent = kickerSupplyCurrentStatusSignal.getValue();
-  inputs.kickerTemperature = kickerTemperatureStatusSignal.getValue();
-  inputs.kickerVoltage = kickerVoltageStatusSignal.getValue();
-
   // Updates Turret Motor Inputs
   inputs.turretStatorCurrent = turretStatorCurrentStatusSignal.getValue();
   inputs.turretSupplyCurrent = turretSupplyCurrentStatusSignal.getValue();
@@ -544,15 +492,6 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
         RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
     inputs.flywheelLeadClosedLoopErrorVelocity =
         RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
-    
-    //Kicker
-    inputs.kickerVoltage =
-        kicker.getMotorVoltage().getValue();
-    inputs.kickerSupplyCurrent =
-        kicker.getSupplyCurrent().getValue();
-    inputs.kickerStatorCurrent = 
-        kicker.getStatorCurrent().getValue();
-
     //Turret
     inputs.turretVoltage =
         turret.getMotorVoltage().getValue();
@@ -586,19 +525,6 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
       flywheelLeadKP,
       flywheelLeadKI,
       flywheelLeadKD);
-  LoggedTunableNumber.ifChanged(
-      hashCode(),
-      pid -> {
-        Slot0Configs config = new Slot0Configs();
-        kicker.getConfigurator().refresh(config);
-        config.kP = pid[0];
-        config.kI = pid[1];
-        config.kD = pid[2];
-        kicker.getConfigurator().apply(config);
-      },
-      kickerKP,
-      kickerKI,
-      kickerKD);
   LoggedTunableNumber.ifChanged(
       hashCode(),
       pid -> {
@@ -653,7 +579,6 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
   // The last step in the updateInputs method is to update the simulation.
   if (Constants.getMode() == Constants.Mode.SIM) {
     flywheelLeadSim.updateSim();
-    kickerLeadSim.updateSim();
     turretLeadSim.updateSim();
     hoodLeadSim.updateSim();
     flywheelFollow1Sim.updateSim();
@@ -675,21 +600,7 @@ public void setflywheelLeadCurrentRequest(double torqueCurrentFOC) {
     flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(torqueCurrentFOC));
 }
 
-public void setKickerCurrentRequest(double torqueCurrentFOC) {
-    kicker.setControl(kickerCurrentRequest.withOutput(torqueCurrentFOC));
-}
 
-
-
-@Override
-public void setKickerVoltage(Voltage voltage) {
-    kicker.setControl(kickerVoltageRequest.withOutput(voltage));
-}
-
-@Override
-public void setKickerUnjamVoltage(Voltage voltage) {
-    kicker.setControl(kickerUnjamVoltageRequest.withOutput(voltage));
-}
 
 @Override
 public void setTurretPosition(Angle position) {
@@ -741,37 +652,6 @@ private void configFlywheel(
   // devices for faults periodically when the robot is disabled and generate alerts if any faults
   // are found.
   FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, flywheel);
-}
-
-private void configKicker(
-    TalonFX kicker, boolean isInverted, String motorName,
-    Alert configAlert) {
-
-  TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
-
-    kickerConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.KICKER_PEAK_CURRENT_LIMIT;
-    kickerConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.KICKER_PEAK_CURRENT_LIMIT;
-    
-    kickerConfig.Slot0.kP = kickerKP.get();
-    kickerConfig.Slot0.kI = kickerKI.get();
-    kickerConfig.Slot0.kD = kickerKD.get();
-
-  kickerConfig.Feedback.SensorToMechanismRatio = ShooterConstants.KICKER_GEAR_RATIO; 
-  kickerConfig.MotorOutput.Inverted =
-      isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-  kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-  // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-  // method will apply the configuration, read back the configuration, and ensure that it is
-  // correct. If not, it will reattempt five times and eventually, generate an alert.
-  Phoenix6Util.applyAndCheckConfiguration(kicker, kickerConfig, configAlert);
-
-  // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-  // devices for faults periodically when the robot is disabled and generate alerts if any faults
-  // are found.
-  FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, kicker);
 }
 
 private void configTurret(
