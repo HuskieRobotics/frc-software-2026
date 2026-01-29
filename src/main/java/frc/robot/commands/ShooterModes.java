@@ -49,7 +49,8 @@ public class ShooterModes extends Command {
   @Override
   public void end(boolean interrupted) {}
 
-  public ShooterMode getMode() {
+
+  private ShooterMode getMode() {
     if (Field2d.getInstance().inTrenchZone()) {
       return ShooterMode.NEAR_TRENCH;
     }

@@ -25,6 +25,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.List;
+import frc.robot.commands.ShooterModes;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -120,16 +121,25 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi) {
+      SwerveDrivetrain drivetrain, Shooter hopper, OperatorInterface oi) {
 
     // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
     // shoot_otm && in AZ
-    return Commands.sequence();
+    
+return Commands.either(
+
+        Commands.sequence(getDriveToBankCommand(drivetrain),
+            unloadShooter(drivetrain, hopper)),
+        Commands.none(),
+        ()-> Field2d.getInstance().inAllianceZone()
+            && !oi.getShootOnTheMoveToggle().getAsBoolean());
 
     // Drive to bank and unload shooter
 
     // this will get called if we are in shoot mode AND the aim button is being held
   }
+
+  
 
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
 
@@ -142,7 +152,7 @@ public class CrossSubsystemsCommandsFactory {
 
     Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
-    return Commands.deadline(
+    return 
         Commands.sequence(
             Commands.waitUntil(() -> Field2d.getInstance().inBumpZone()),
             Commands.runOnce(
@@ -155,15 +165,10 @@ public class CrossSubsystemsCommandsFactory {
                             .getRobotMaxVelocity()
                             .times(OISelector.getOperatorInterface().getTranslateY()),
                         targetRotation,
-                        false))),
-        new TeleopSwerve(
-            drivetrain,
-            OISelector.getOperatorInterface()::getTranslateX,
-            OISelector.getOperatorInterface()::getTranslateY,
-            OISelector.getOperatorInterface()::getRotate));
+                        false))));
   }
 
-  public Command unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
+  public static Command unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
 
     return Commands.parallel(Commands.run(drivetrain::holdXstance));
     // add hopper kick method
