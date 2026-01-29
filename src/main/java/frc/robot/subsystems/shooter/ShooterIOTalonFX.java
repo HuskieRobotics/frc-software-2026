@@ -27,7 +27,6 @@ import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.VelocitySystemSim;
-import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import frc.robot.Constants;
@@ -140,8 +139,6 @@ private Alert turretConfigAlert =
 // The following enables tuning of the PID and feedforward values for the arm by changing values
 // via AdvantageScope and not needing to change values in code, compile, and re-deploy.
 
-private final LoggedTunableBoolean tuningMode = 
-    new LoggedTunableBoolean("Shooter/Tuning Mode", ShooterConstants.TUNING_MODE);
 private final LoggedTunableNumber flywheelLeadKP =
     new LoggedTunableNumber("Shooter/Top kP", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KP);
 private final LoggedTunableNumber flywheelLeadKI =
@@ -190,7 +187,6 @@ public ShooterIOTalonFX() {
   flywheelFollow3 = new TalonFX(FLYWHEEL_FOLLOW_3_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-
   flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
   flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
 
@@ -216,7 +212,6 @@ flywheelFollow1ClosedLoopErrorVelocityStatusSignal = flywheelFollow1.getClosedLo
 flywheelFollow1TemperatureStatusSignal = flywheelFollow1.getDeviceTemp();
 flywheelFollow1VoltageStatusSignal = flywheelFollow1.getMotorVoltage();
 
-
 // Follow 2
 flywheelFollow2SupplyCurrentStatusSignal = flywheelFollow2.getSupplyCurrent();
 flywheelFollow2StatorCurrentStatusSignal = flywheelFollow2.getStatorCurrent();
@@ -228,7 +223,6 @@ flywheelFollow2ClosedLoopErrorVelocityStatusSignal = flywheelFollow2.getClosedLo
 flywheelFollow2TemperatureStatusSignal = flywheelFollow2.getDeviceTemp();
 flywheelFollow2VoltageStatusSignal = flywheelFollow2.getMotorVoltage();
 
-
 // Follow 3
 flywheelFollow3SupplyCurrentStatusSignal = flywheelFollow3.getSupplyCurrent();
 flywheelFollow3StatorCurrentStatusSignal = flywheelFollow3.getStatorCurrent();
@@ -239,8 +233,6 @@ flywheelFollow3ClosedLoopReferenceVelocityStatusSignal = flywheelFollow3.getClos
 flywheelFollow3ClosedLoopErrorVelocityStatusSignal = flywheelFollow3.getClosedLoopError();
 flywheelFollow3TemperatureStatusSignal = flywheelFollow3.getDeviceTemp();
 flywheelFollow3VoltageStatusSignal = flywheelFollow3.getMotorVoltage();
-
-
 
 // TURRET
 turretStatorCurrentStatusSignal = turret.getStatorCurrent();
@@ -478,34 +470,30 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
   // for tuning and not used elsewhere in the subsystem. For example, the
   // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
   // will always be populated.
-  if (tuningMode.get()) {
+
+  if(SHOOTER_TUNING_MODE){
+
     //Flywheel Lead
-    inputs.flywheelLeadVelocity = 
-        flywheelLead.getVelocity().getValue();
-     inputs.flywheelLeadTorqueCurrent = flywheelLead.getTorqueCurrent().getValue();
-   
-    inputs.flywheelLeadSupplyCurrent = 
-        flywheelLead.getSupplyCurrent().getValue();
-    inputs.flywheelLeadStatorCurrent =
-        flywheelLead.getStatorCurrent().getValue();
     inputs.flywheelLeadClosedLoopReferenceVelocity =
         RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
     inputs.flywheelLeadClosedLoopErrorVelocity =
         RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
-    //Turret
-    inputs.turretVoltage =
-        turret.getMotorVoltage().getValue();
-    inputs.turretSupplyCurrent =
-        turret.getSupplyCurrent().getValue();
-    inputs.turretStatorCurrent =
-        turret.getStatorCurrent().getValue();
-    //Hood
-    inputs.hoodVoltage =
-        hood.getMotorVoltage().getValue();
-    inputs.hoodSupplyCurrent =
-        hood.getSupplyCurrent().getValue();
-    inputs.hoodStatorCurrent =
-        hood.getStatorCurrent().getValue();
+
+    //Flywheel Follow1
+    inputs.flywheelFollow1ClosedLoopReferenceVelocity =
+        RotationsPerSecond.of(flywheelFollow1.getClosedLoopReference().getValue());
+    inputs.flywheelFollow1ClosedLoopErrorVelocity =
+        RotationsPerSecond.of(flywheelFollow1.getClosedLoopError().getValue());
+    //Flywheel Follow2
+    inputs.flywheelFollow2ClosedLoopReferenceVelocity =
+        RotationsPerSecond.of(flywheelFollow2.getClosedLoopReference().getValue());
+    inputs.flywheelFollow2ClosedLoopErrorVelocity =
+        RotationsPerSecond.of(flywheelFollow2.getClosedLoopError().getValue());
+    //Flywheel Follow3
+    inputs.flywheelFollow3ClosedLoopReferenceVelocity =
+        RotationsPerSecond.of(flywheelFollow3.getClosedLoopReference().getValue());
+    inputs.flywheelFollow3ClosedLoopErrorVelocity =
+        RotationsPerSecond.of(flywheelFollow3.getClosedLoopError().getValue());
   }
 
   // In order for a tunable to be useful, there must be code that checks if its value has changed.
@@ -596,11 +584,10 @@ public void setFlywheelLeadVelocity(AngularVelocity velocity) {
   // having to retrieve the status signal object from the device in the updateInputs method.
 }
 
-public void setflywheelLeadCurrentRequest(double torqueCurrentFOC) {
-    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(torqueCurrentFOC));
+@Override
+public void setFlywheelTorqueCurrent(Current amps) {
+    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(amps));
 }
-
-
 
 @Override
 public void setTurretPosition(Angle position) {

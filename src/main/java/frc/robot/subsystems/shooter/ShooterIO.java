@@ -21,8 +21,8 @@ public interface ShooterIO {
   @AutoLog
   // IO Inputs are below
   public static class ShooterIOInputs {
-    boolean connected = false;
 
+    // FLYWHEEL LEAD
     boolean flywheelLeadConnected = false;
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
     Current flywheelLeadSupplyCurrent = Amps.of(0.0);

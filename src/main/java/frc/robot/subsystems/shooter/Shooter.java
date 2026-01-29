@@ -64,72 +64,49 @@ private ShooterIO io;
  // mode and, for the shooter, specifying current or velocity is convenient. This feature is also
  // an efficient approach when, for example, empirically tuning the velocity for different
  // distances when shooting a game piece.
- private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
+
+ //testing mode creation of variables
+ private final LoggedTunableNumber testingMode = 
+     new LoggedTunableNumber("Shooter/TestingMode", 0);
+ private final LoggedTunableNumber flyWheelLeadVelocity = 
+     new LoggedTunableNumber("Shooter/FlyWheelLead Velocity", 0);
+ private final LoggedTunableNumber flywheelLeadTorqueCurrent = 
+     new LoggedTunableNumber("Shooter/FlyWheelLead TorqueCurrent", 0);
+ private final LoggedTunableNumber turretPosition = 
+     new LoggedTunableNumber("Shooter/Turret Position", 0);
+ private final LoggedTunableNumber turretVoltage = 
+     new LoggedTunableNumber("Shooter/Turret Voltage", 0);
+  private final LoggedTunableNumber hoodPosition =
+      new LoggedTunableNumber("Shooter/Hood Position", 0);
+  private final LoggedTunableNumber hoodVoltage = 
+      new LoggedTunableNumber("Shooter/Hood Voltage", 0);
   private final LoggedTunableBoolean isShooterReady =
      new LoggedTunableBoolean("Shooter/Is Shooter Ready", false);
- private final LoggedTunableNumber hoodAngle =
-     new LoggedTunableNumber("Shooter/Hood Angle", 0);
- private final LoggedTunableNumber turretAngle =
-     new LoggedTunableNumber("Shooter/Turret Angle", 0);
-  
-
-
- // As an alternative to determining a mathematical function to map distances to velocities,
- // we can use an InterpolatingDoubleTreeMap to store the distances and their corresponding
- // velocities. The InterpolatingDoubleTreeMap will linearly interpolate the velocity
- // for any distance that is not explicitly defined in the map.
- private InterpolatingDoubleTreeMap shootingMap = new InterpolatingDoubleTreeMap();
- private static final double FIELD_MEASUREMENT_OFFSET = 0.0;
- private final double[] shootingPopulationDistances = {7.329, 9.649, 11.336};
- private final double[] shootingPopulationRealVelocities = {40.0, 48.0, 55.0};
-
-
- private final Debouncer topAtSetpointDebouncer = new Debouncer(0.1);
- private final Debouncer bottomAtSetpointDebouncer = new Debouncer(0.1);
-
 
  // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
  // be used for voltage control, we can apply a current instead and reinterpret the units when
  // performing the analysis in SysId.
- private final SysIdRoutine shooterWheelTopSysIdRoutine =
-     new SysIdRoutine(
-         new SysIdRoutine.Config(
-             Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
-             Volts.of(10), // will actually be a step to 10 A
-             Seconds.of(5), // override default timeout (10 s)
-             // Log state with SignalLogger class
-             state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
-         new SysIdRoutine.Mechanism(
-             output -> io.setShooterWheelTopCurrent(Amps.of(output.in(Volts))),
-             null,
-             this)); // treat volts as amps
- private final SysIdRoutine shooterWheelBottomSysIdRoutine =
-     new SysIdRoutine(
-         new SysIdRoutine.Config(
-             Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
-             Volts.of(10), // will actually be a step to 10 A
-             Seconds.of(5), // override default timeout (10 s)
-             // Log state with SignalLogger class
-             state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
-         new SysIdRoutine.Mechanism(
-             output -> io.setShooterWheelBottomCurrent(Amps.of(output.in(Volts))),
-             null,
-             this)); // treat volts as amps
 
+private final SysIdRoutine flywheelIdRoutine =
+     new SysIdRoutine(
+         new SysIdRoutine.Config(
+             Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
+             Volts.of(10), // will actually be a step to 10 A
+             Seconds.of(5), // override default timeout (10 s)
+             // Log state with SignalLogger class
+             state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
+         new SysIdRoutine.Mechanism(
+             output -> io.setFlywheelTorqueCurrent(Amps.of(output.in(Volts))),
+             null,
+             this)); // treat volts as amps
 
  public Shooter(ShooterIO io) {
    this.io = io;
 
-
-
-
-
    // Register this subsystem's SysId routine with the SysIdRoutineChooser. This allows
    // the routine to be selected and executed from the dashboard.
    SysIdRoutineChooser.getInstance()
-       .addOption("Shooter Wheel Top Current", shooterWheelTopSysIdRoutine);
-   SysIdRoutineChooser.getInstance()
-       .addOption("Shooter Wheel Bottom Current", shooterWheelBottomSysIdRoutine);
+       .addOption("Flywheel Lead Top Current", flywheelIdRoutine);
 
 
    // Register this subsystem's system check command with the fault reporter. The system check
@@ -140,12 +117,15 @@ private ShooterIO io;
 
  @Override
  public void periodic() {
-   ShooterIOInputs ShooterIOInputs = new ShooterIOInputs();
-   io.updateInputs(ShooterIOInputs);
+   io.updateInputs(shooterInputs);
+  Logger.processInputs("Shooter", shooterInputs);
+
+
+
    Logger.recordOutput("Shooter/IsShooterReady", this.isShooterReady.toString());
    Logger.recordOutput("Shooter/TestingMode", this.testingMode.toString());
-   Logger.recordOutput("Shooter/HoodAngle", this.hoodAngle.toString());
-   Logger.recordOutput("Shooter/TurretAngle", this.turretAngle.toString());
+   Logger.recordOutput("Shooter/HoodAngle", this.hoodPosition.toString());
+   Logger.recordOutput("Shooter/TurretAngle", this.turretPosition.toString());
    if(isShooterReady.get()){
      Logger.recordOutput("Shooter/ShooterReady", true);
    } else {
@@ -153,6 +133,34 @@ private ShooterIO io;
    }
    
    //We might want to calculate the current target right here based off hood angle + turret angle
+
+   if (testingMode.get() == 1) {
+
+    //Flywheel Lead
+    if(flyWheelLeadVelocity.get() != 0){
+      io.setFlywheelLeadVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
+    }
+
+    else if(flywheelLeadTorqueCurrent.get() != 0){
+      io.setFlywheelTorqueCurrent(Amps.of(flywheelLeadTorqueCurrent.get()));
+    }
+
+    else if(turretPosition.get() != 0){
+      io.setTurretPosition(Degrees.of(turretPosition.get()));
+    }
+    else if(turretVoltage.get() != 0){
+      io.setTurretVoltage(Volts.of(turretVoltage.get()));
+    }
+
+    else if(hoodPosition.get() != 0){
+      io.setHoodPosition(Degrees.of(hoodPosition.get()));
+    }
+
+    else if(hoodVoltage.get() != 0){
+      io.setHoodVoltage(Volts.of(hoodVoltage.get()));
+    }
+  }
+
 
 
    if (testingMode.get() == 1) {
@@ -186,9 +194,9 @@ public void autoAim() {
   
 }
 
-public void reverseShooter() {
-  this.io.setFlywheelTorqueCurrent(Volts.of(ShooterIO.flywheelLeadVoltage) * -1); // reverse
-}
+// public void reverseShooter(double reverseAmps) { //FIXME: idk how to do this somebody do it
+//  io.setFlywheelTorqueCurrent(-ShooterConstants.SHOOTER_CURRENT);
+// }
 
 
 /**
@@ -199,69 +207,15 @@ public double getPassingDistance(){
 **/
 
 
- // While we cannot use subtypes of Measure in the inputs class due to logging limitations, we do
- // strive to use them (e.g., Distance) throughout the rest of the code to mitigate bugs due to
- // unit mismatches.
- public void setVelocity(Distance distance) {
-   // Subsystems may need to log additional information that is not part of the inputs. This is
-   // done for convenience as additional values can always be logged when replaying a log file.
-   // While this is often done in the periodic method, at times values are only logged when they
-   // are changed.
-  //  Logger.recordOutput("Shooter/distance", distance);
 
+// A subsystem's system check command is used to verify the functionality of the subsystem. It
+// should perform a sequence of commands (usually encapsulated in another method). The command
+// should always be decorated with an `until` condition that checks for faults in the subsystem
+// and an `andThen` condition that sets the subsystem to a safe state. This ensures that if any
+// faults are detected, the test will stop and the subsystem is always left in a safe state.
+ private Command getSystemCheckCommand() { //FIXME: fix this once Kush lets us know
 
-  //  io.setShooterWheelTopVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
-  //  io.setShooterWheelBottomVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
- }
-
-
-
-
- public boolean isTopShooterAtSetpoint() {
-   // This method uses a debouncer to determine if the shooter wheels are at the setpoint velocity.
-   // The velocity is considered at the setpoint if the velocity is within tolerance for the period
-   // specified when constructing the debouncer (e.g., 0.1 seconds or 5 loop iterations).
-   return topAtSetpointDebouncer.calculate(
-       shooterInputs.shootMotorTopVelocity.isNear(
-           shooterInputs.shootMotorTopReferenceVelocity, VELOCITY_TOLERANCE));
- }
-
-
- public boolean isBottomShooterAtSetpoint() {
-   return bottomAtSetpointDebouncer.calculate(
-       shooterInputs.shootMotorBottomVelocity.isNear(
-           shooterInputs.shootMotorBottomReferenceVelocity, VELOCITY_TOLERANCE));
- }
-
-
- private void populateShootingMap() {
-   for (int i = 0; i < shootingPopulationDistances.length; i++) {
-     shootingMap.put(
-         shootingPopulationDistances[i] + FIELD_MEASUREMENT_OFFSET,
-         shootingPopulationRealVelocities[i]);
-   }
- }
-
-
- private Command getSystemCheckCommand() {
-   // A subsystem's system check command is used to verify the functionality of the subsystem. It
-   // should perform a sequence of commands (usually encapsulated in another method). The command
-   // should always be decorated with an `until` condition that checks for faults in the subsystem
-   // and an `andThen` condition that sets the subsystem to a safe state. This ensures that if any
-   // faults are detected, the test will stop and the subsystem is always left in a safe state.
-   return Commands.sequence(
-           getPresetCheckCommand(Meters.of(7.0)),
-           getPresetCheckCommand(Meters.of(9.0)),
-           getPresetCheckCommand(Meters.of(11.0)),
-           getPresetCheckCommand(Meters.of(13.0)))
-       .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-       .andThen(
-           Commands.runOnce(
-               () -> {
-                 io.setShooterWheelBottomVelocity(RotationsPerSecond.of(0.0));
-                 io.setShooterWheelTopVelocity(RotationsPerSecond.of(0.0));
-               }));
- }
+    Commands.runOnce(() -> io.set)}
 
 
 
