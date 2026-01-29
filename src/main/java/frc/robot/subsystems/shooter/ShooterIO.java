@@ -82,9 +82,7 @@ public interface ShooterIO {
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
   }
-
-   
-
+  
     // Flywheel Lead inputs
     boolean flywheelLeadConnected = false;
     boolean flywheelFollow1Connected = false;
@@ -134,7 +132,7 @@ public interface ShooterIO {
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
 
-  public default void setFlywheelTorqueCurrent(Current amps) {}
+  public default void setFlywheelLeadTorqueCurrent(Current amps) {}
   // this is used in the reverseShooter() method
 
   // Turret IO methods

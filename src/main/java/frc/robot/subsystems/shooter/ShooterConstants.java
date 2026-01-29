@@ -44,7 +44,7 @@ public class ShooterConstants {
   public static final double TURRET_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
 
   public static final boolean TURRET_INVERTED = false;
-  public static final double TURRET_GEAR_RATIO = 0; 
+  public static final double TURRET_GEAR_RATIO = 0;
   // Hood PID Constants (subject to change)
   public static final double HOOD_ROTATION_KP = 0.0;
   public static final double HOOD_ROTATION_KI = 0.0;
@@ -70,4 +70,6 @@ public class ShooterConstants {
   // Motion magic PID constants
   public static final double ROTATION_EXPO_KV = 0.0;
 
+  public static final double VELOCITY_TOLERANCE = 5.0; // FIXME: determine value
+  public static final double POSITION_TOLERANCE = 2.0; // FIXME: determine value
 }

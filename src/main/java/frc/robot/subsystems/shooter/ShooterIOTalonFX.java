@@ -95,9 +95,6 @@ private StatusSignal<Voltage> hoodVoltageStatusSignal;
 private StatusSignal<Angle> turretPositionStatusSignal;
 private StatusSignal<Angle> hoodPositionStatusSignal;
 
-
-
-
 private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow2ConnectedDebouncer = new Debouncer(0.5);
@@ -148,7 +145,7 @@ private final LoggedTunableNumber hoodKI =
     new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_ROTATION_KI);
 private final LoggedTunableNumber hoodKD =
     new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_ROTATION_KD);
-private final LoggedTunableNumber hoodKV =
+private final LoggedTunableNumber hoodKV = 
     new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_EXPO_KV);
 private final LoggedTunableNumber hoodKA =
     new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_EXPO_KA);
@@ -349,7 +346,7 @@ public void updateInputs(ShooterIOInputs inputs) {
               hoodSupplyCurrentStatusSignal,
               hoodTemperatureStatusSignal,
               hoodVoltageStatusSignal
-          ));
+              ));
   inputs.turretConnected =
       turretConnectedDebouncer.calculate(
           BaseStatusSignal.isAllGood(
@@ -507,7 +504,7 @@ inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatus
   }
 }
 
-
+// implementation of IO methods that uses commaands that we import
 
 @Override
 public void setFlywheelLeadVelocity(AngularVelocity velocity) {
@@ -517,7 +514,7 @@ public void setFlywheelLeadVelocity(AngularVelocity velocity) {
 }
 
 @Override
-public void setFlywheelTorqueCurrent(Current amps) {
+public void setFlywheelLeadTorqueCurrent(Current amps) {
     flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(amps));
 }
 
@@ -601,8 +598,7 @@ private void configTurret(
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, turret);
 }
 
-private void configHood(
-    TalonFX hood, boolean isInverted, String motorName, Alert configAlert) {
+private void configHood(TalonFX hood, boolean isInverted, String motorName, Alert configAlert) {
 
         TalonFXConfiguration hoodConfig = new TalonFXConfiguration(); 
         

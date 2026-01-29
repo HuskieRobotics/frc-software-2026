@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter;
+    package frc.robot.subsystems.shooter;
 
 
 import static edu.wpi.first.units.Units.*;
@@ -56,7 +56,7 @@ private ShooterIO io;
 
  // all subsystems create the IO inputs instance for this subsystem
  private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
-
+// we can fix this error once we create a instance of shooter input s whentesting
 
  // When initially testing a mechanism, it is best to manually provide a voltage or current to
  // verify the mechanical functionality. At times, this can be done via Phoenix Tuner. However,
@@ -80,8 +80,8 @@ private ShooterIO io;
       new LoggedTunableNumber("Shooter/Hood Position", 0);
   private final LoggedTunableNumber hoodVoltage = 
       new LoggedTunableNumber("Shooter/Hood Voltage", 0);
-  private final LoggedTunableBoolean isShooterReady =
-     new LoggedTunableBoolean("Shooter/Is Shooter Ready", false);
+  private final LoggedTunableBoolean isShooterConnected =
+     new LoggedTunableBoolean("Shooter/Is Shooter Connected", false);
 
  // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
  // be used for voltage control, we can apply a current instead and reinterpret the units when
@@ -92,11 +92,11 @@ private final SysIdRoutine flywheelIdRoutine =
          new SysIdRoutine.Config(
              Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
              Volts.of(10), // will actually be a step to 10 A
-             Seconds.of(5), // override default timeout (10 s)
+             Seconds.of(10), // override default timeout (10 s)
              // Log state with SignalLogger class
              state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
          new SysIdRoutine.Mechanism(
-             output -> io.setFlywheelTorqueCurrent(Amps.of(output.in(Volts))),
+             output -> io.setFlywheelLeadTorqueCurrent(Amps.of(output.in(Volts))),
              null,
              this)); // treat volts as amps
 
@@ -111,38 +111,40 @@ private final SysIdRoutine flywheelIdRoutine =
 
    // Register this subsystem's system check command with the fault reporter. The system check
    // command can be added to the Elastic Dashboard to execute the system test.
-  //  FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
+  FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getShooterSystemCheckCommand());
  }
-
 
  @Override
  public void periodic() {
-  io.updateInputs(shooterInputs); // will be fixed once we create a shooterInputs instan
-  Logger.processInputs("Shooter", shooterInputs);
-
-
-
-   Logger.recordOutput("Shooter/IsShooterReady", this.isShooterReady.toString());
+  io.updateInputs(shooterInputs); // will be fixed once we build the code
+   Logger.processInputs("Shooter", shooterInputs);
+   Logger.recordOutput("Shooter/IsShooterConnected", this.isShooterConnected.toString());
    Logger.recordOutput("Shooter/TestingMode", this.testingMode.toString());
    Logger.recordOutput("Shooter/HoodAngle", this.hoodPosition.toString());
    Logger.recordOutput("Shooter/TurretAngle", this.turretPosition.toString());
-   if(isShooterReady.get()){
-     Logger.recordOutput("Shooter/ShooterReady", true);
+   
+   if(isShooterConnected.get()){
+     Logger.recordOutput("Shooter/ShooterConnected", true);
    } else {
-     Logger.recordOutput("Shooter/ShooterReady", false);
+     Logger.recordOutput("Shooter/ShooterConnected", false);
    }
    
    //We might want to calculate the current target right here based off hood angle + turret angle
 
-   if (testingMode.get() == 1) {
-
+   if (testingMode.get() == 1) { //If we are testing
+    
+    // Set velocities/positions to reference (desired) values
+     io.setFlywheelLeadVelocity(ShooterIO.flywheelLeadReferenceVelocity);
+     io.setHoodPosition(ShooterIO.hoodReferencePosition);
+     io.setTurretPosition(ShooterIO.turretReferencePosition);
+     
     //Flywheel Lead
     if(flyWheelLeadVelocity.get() != 0){
       io.setFlywheelLeadVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
     }
 
     else if(flywheelLeadTorqueCurrent.get() != 0){
-      io.setFlywheelTorqueCurrent(Amps.of(flywheelLeadTorqueCurrent.get()));
+      io.setFlywheelLeadTorqueCurrent(Amps.of(flywheelLeadTorqueCurrent.get()));
     }
 
     else if(turretPosition.get() != 0){
@@ -161,13 +163,6 @@ private final SysIdRoutine flywheelIdRoutine =
     }
   }
 
-
-
-   if (testingMode.get() == 1) {
-     io.setFlywheelLeadVelocity(ShooterIO.flywheelLeadReferenceVelocity);
-     io.setHoodPosition(ShooterIO.hoodReferencePosition);
-     io.setTurretPosition(ShooterIO.turretReferencePosition);
-   }
    //FIXME: Can also add more conditions based off velocities/positions
 
    // Log how long this subsystem takes to execute its periodic method.
@@ -176,7 +171,7 @@ private final SysIdRoutine flywheelIdRoutine =
  }
 
 
- public boolean isShooterReady() {
+ public boolean isShooterConnected() {
    return (ShooterIO.flywheelLeadConnected &&
            ShooterIO.flywheelFollow1Connected &&
            ShooterIO.flywheelFollow2Connected &&
@@ -184,16 +179,72 @@ private final SysIdRoutine flywheelIdRoutine =
            ShooterIO.turretConnected);
 }
 
-//LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE); //FIXME: What is this
+//LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE); //FIXME: add leds later
 
-
+ /**
+  * Creates a command that performs a system check of the shooter subsystem.
+  *
+  * <p>The system check verifies that all motors and sensors are connected and functioning
+  * properly.
+  *
+  * @return the system check command
+  */
+ public Command getShooterSystemCheckCommand() {
+   return Commands.runOnce(
+       () -> {
+         boolean allConnected = isShooterConnected();
+         if (!allConnected) {
+           FaultReporter.getInstance()
+               .addFault(
+                   SUBSYSTEM_NAME,
+                   "Shooter system check failed: One or more devices not connected.");
           
+         }
+         
+       },
+       this);
+ }
 
-public void autoAim() {
-  
-}
+ public void checkFlywheelVelocity(double flywheelLeadIntendedVelocityRPS, double flywheelFollow1IntendedVelocityRPS, double flywheelFollow2IntendedVelocityRPS) {
+   //flywheel lead
+  if(Math.abs(shooterInputs.flywheelLeadVelocity - flywheelLeadIntendedVelocityRPS) > VELOCITY_TOLERANCE)
+   {
+      if(Math.abs(shooterInputs.flywheelLeadVelocity) - Math.abs(flywheelLeadIntendedVelocityRPS) < 0)
+      {
+        FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Flywheel lead velocity is too low, should be " + flywheelLeadIntendedVelocityRPS + " but is " + shooterInputs.flywheelLeadVelocity);
+      }
+      else if(Math.abs(shooterInputs.flywheelLeadVelocity) - Math.abs(flywheelLeadIntendedVelocityRPS) > 0)
+      {
+        FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Flywheel lead velocity is too high, should be " + flywheelLeadIntendedVelocityRPS + " but is " + shooterInputs.flywheelLeadVelocity);
+      }
+   }
 
-// public void reverseShooter(double reverseAmps) { //FIXME: idk how to do this somebody do it
+   //flywheel follow 1
+   if(Math.abs(shooterInputs.flywheelFollow1Velocity) - Math.abs(flywheelFollow1IntendedVelocityRPS) > VELOCITY_TOLERANCE)
+   {
+      if(Math.abs(shooterInputs.flywheelFollow1Velocity) - Math.abs(flywheelFollow1IntendedVelocityRPS) < 0)
+      {
+        FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Flywheel follow 1 velocity is too low, should be " + flywheelFollow1IntendedVelocityRPS + " but is " + shooterInputs.flywheelFollow1Velocity);
+      }
+      else if(Math.abs(shooterInputs.flywheelFollow1Velocity) - Math.abs(flywheelFollow1IntendedVelocityRPS) > 0)
+      {
+        FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Flywheel follow 1 velocity is too high, should be " + flywheelFollow1IntendedVelocityRPS + " but is " + shooterInputs.flywheelFollow1Velocity);
+      }
+   }
+    //flywheel follow 2
+    if(Math.abs(shooterInputs.flywheelFollow2Velocity) - Math.abs(flywheelFollow2IntendedVelocityRPS) > VELOCITY_TOLERANCE)
+    {
+        if(Math.abs(shooterInputs.flywheelFollow2Velocity) - Math.abs(flywheelFollow2IntendedVelocityRPS) < 0)
+        {
+          FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Flywheel follow 2 velocity is too low, should be " + flywheelFollow2IntendedVelocityRPS + " but is " + shooterInputs.flywheelFollow2Velocity);
+        }
+        else if(Math.abs(shooterInputs.flywheelFollow2Velocity) - Math.abs(flywheelFollow2IntendedVelocityRPS) > 0)
+        {
+          FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Flywheel follow 2 velocity is too high, should be " + flywheelFollow2IntendedVelocityRPS + " but is " + shooterInputs.flywheelFollow2Velocity);
+        }
+    }
+  }
+// public void reverseShooter(double reverseAmps) { //FIXME: unsure if this is needed
 //  io.setFlywheelTorqueCurrent(-ShooterConstants.SHOOTER_CURRENT);
 // }
 
