@@ -64,12 +64,16 @@ public class ShooterModes extends Command {
     } else {
       if (OISelector.getOperatorInterface()
           .getPassToggle()
-          .getAsBoolean()) { // pass toggeled by Operator
+          .getAsBoolean()) { // pass toggeled by perator
         return ShooterMode.PASS;
       } else {
         return ShooterMode.COLLECT_AND_HOLD;
       }
     }
+  }
+
+  public boolean isShootOnTheMoveEnabled() {
+    return getMode() == ShooterMode.SHOOT_OTM;
   }
 
   public void getTrajectory() {
