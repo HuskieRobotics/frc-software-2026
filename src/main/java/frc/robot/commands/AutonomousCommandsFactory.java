@@ -335,21 +335,22 @@ public class AutonomousCommandsFactory {
 
  private Command rightNeutralZoneHopperAndClimb(SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
     PathPlannerPath driveToNeutralZone;
+    PathPlannerPath driveToTower;
     try {
         driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Neutral Zone");
-    }
-    // start intake
-    // max out hopper
-
-    PathPlannerPath driveToTower;
-    try{
         driveToTower = PathPlannerPath.fromPathFile("Right Neutral Zone to Tower");
-
+    } catch (Exception e) {
+        pathFileMissingAlert.setText("Could not find the specified path file.");
+        pathFileMissingAlert.set(true);
     }
-    // shoot while moving?
-    // start shooter
-    // empty hopper
-    // climb tower
+
+    // follow path to neutral zone
+    // collect fuel with timeout x OR another PathPlannerPath to drive along the NZ
+    // follow path to near bank
+    // drive to bank command
+    // unload shooter for x seconds
+    // follow path to tower
+    // climb sequence command
 
     return null;
   }
