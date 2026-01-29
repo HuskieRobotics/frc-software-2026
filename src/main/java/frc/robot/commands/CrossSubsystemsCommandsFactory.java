@@ -25,7 +25,6 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.shooter.Shooter;
 import java.util.List;
-import frc.robot.commands.ShooterModes;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -105,7 +104,7 @@ public class CrossSubsystemsCommandsFactory {
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain, shooter, oi));
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -120,30 +119,24 @@ public class CrossSubsystemsCommandsFactory {
     registerSysIdCommands(oi);
   }
 
+  // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain, Shooter hopper, OperatorInterface oi) {
+      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi) {
 
     // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
     // shoot_otm && in AZ
-    
-return Commands.either(
 
-        Commands.sequence(getDriveToBankCommand(drivetrain),
-            unloadShooter(drivetrain, hopper)),
+    return Commands.either(
+        Commands.sequence(
+            getDriveToBankCommand(drivetrain), unloadShooter(drivetrain /*, hopper*/)),
         Commands.none(),
-        ()-> Field2d.getInstance().inAllianceZone()
-            && !oi.getShootOnTheMoveToggle().getAsBoolean());
-
-    // Drive to bank and unload shooter
-
-    // this will get called if we are in shoot mode AND the aim button is being held
+        /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
+        () ->
+            Field2d.getInstance().inAllianceZone() && !oi.getShootOnTheMoveToggle().getAsBoolean());
   }
 
-  
-
+  // this will rotate our robot into a diamond shape while we are near the bump zone
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
-
-    // this will rotate our robot into a diamond shape while we are near the bump zone
 
     double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
 
@@ -152,26 +145,29 @@ return Commands.either(
 
     Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
-    return 
-        Commands.sequence(
-            Commands.waitUntil(() -> Field2d.getInstance().inBumpZone()),
-            Commands.runOnce(
-                () ->
-                    drivetrain.driveFacingAngle(
-                        RobotConfig.getInstance()
-                            .getRobotMaxVelocity()
-                            .times(OISelector.getOperatorInterface().getTranslateX()),
-                        RobotConfig.getInstance()
-                            .getRobotMaxVelocity()
-                            .times(OISelector.getOperatorInterface().getTranslateY()),
-                        targetRotation,
-                        false))));
+    return Commands.sequence(
+        /* this waituntil will become a trigger */
+        Commands.waitUntil(() -> Field2d.getInstance().inBumpZone()),
+        /* this will probably be a commands.run rather than a runOnce */
+        Commands.runOnce(
+            () ->
+                drivetrain.driveFacingAngle(
+                    RobotConfig.getInstance()
+                        .getRobotMaxVelocity()
+                        .times(OISelector.getOperatorInterface().getTranslateX()),
+                    RobotConfig.getInstance()
+                        .getRobotMaxVelocity()
+                        .times(OISelector.getOperatorInterface().getTranslateY()),
+                    targetRotation,
+                    false)));
   }
 
-  public static Command unloadShooter(SwerveDrivetrain drivetrain, Shooter hopper) {
+  // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
+  // CAN_SHOOT / non SHOOT_OTM
+  public static Command unloadShooter(SwerveDrivetrain drivetrain /*, Hopper hopper */) {
 
     return Commands.parallel(Commands.run(drivetrain::holdXstance));
-    // add hopper kick method
+    // add hopper kick method in parallel
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {

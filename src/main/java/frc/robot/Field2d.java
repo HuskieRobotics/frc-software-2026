@@ -109,14 +109,13 @@ public class Field2d {
    * For now, this method populates all four banks (although only two can be used for any specific
    * match) In the future, it can be improved to only have two banks constructed at the start of the
    * match based on alliance.
+   *
+   * <p>The bank will have a temp target-relative y-tolerance of 0.25 meters = ~10 inches
+   * (field-relative x-tolerance) We must be at least 10 inches outside of trench zone Target
+   * rotations of 90 degrees on the right, 270 on the left for the back of robot to be facing the
+   * wall
    */
   public void populateBanks() {
-    // bank will have a temp target-relative y-tolerance of 0.25 meters = ~10 inches (field-relative
-    // x-tolerance)
-    // must be at least 10 inches outside of trench zone
-
-    // rotation of 90 degrees on right, 270 on left for back of robot to be facing wall
-
     // blue left bank
     banks[0] =
         new Pose2d(
