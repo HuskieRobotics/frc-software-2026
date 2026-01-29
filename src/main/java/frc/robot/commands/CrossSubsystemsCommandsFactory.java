@@ -52,6 +52,11 @@ public class CrossSubsystemsCommandsFactory {
       new LoggedTunableNumber(
           "DriveToPoseExample/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
+  private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
+  private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
+      0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
+  private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
+
   private static ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
@@ -99,7 +104,7 @@ public class CrossSubsystemsCommandsFactory {
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getDriveToPoseButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, elevator, oi));
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain, shooter, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -117,6 +122,8 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getScoreSafeShotCommand(
       SwerveDrivetrain drivetrain, Shooter shooter, OperatorInterface oi) {
 
+    // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
+    // shoot_otm && in AZ
     return Commands.sequence();
 
     // Drive to bank and unload shooter
@@ -218,6 +225,30 @@ public class CrossSubsystemsCommandsFactory {
         .withName("drive to pose");
   }
 
+  private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
+    return new DriveToBank(
+            drivetrain,
+            CrossSubsystemsCommandsFactory::getTargetBankPose,
+            xController,
+            yController,
+            thetaController,
+            new Transform2d(
+                DRIVE_TO_BANK_X_TOLERANCE_METERS,
+                DRIVE_TO_BANK_Y_TOLERANCE_METERS,
+                Rotation2d.fromDegrees(DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES)),
+            true,
+            (atPose) ->
+                LEDs.getInstance()
+                    .requestState(
+                        atPose
+                            ? LEDs.States.AT_POSE
+                            : LEDs.States
+                                .AUTO_DRIVING_TO_POSE), /* will do other in parallel, probably not here though */
+            CrossSubsystemsCommandsFactory::updatePIDConstants, /* need to see this */
+            3.0)
+        .withName("drive to bank");
+  }
+
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
     return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
@@ -226,6 +257,13 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Pose2d getTargetPose() {
     return new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(90.0));
+  }
+
+  private static Pose2d getTargetBankPose() {
+    // for testing
+    // return new Pose2d(FieldConstants.LinesVertical.center, FieldConstants.LinesHorizontal.center,
+    // Rotation2d.fromDegrees(90));
+    return Field2d.getInstance().getNearestBank();
   }
 
   private static void updatePIDConstants(Transform2d poseDifference) {
