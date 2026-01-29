@@ -35,10 +35,6 @@ public class ShooterConstants {
   public static final boolean FLYWHEEL_FOLLOW_2_INVERTED = false;
   public static final double FLYWHEEL_FOLLOW_2_GEAR_RATIO = 1.0;
 
-  // Follow 3 Constants
-  public static final boolean FLYWHEEL_FOLLOW_3_INVERTED = false;
-  public static final double FLYWHEEL_FOLLOW_3_GEAR_RATIO = 1.0;
-
   // Turret PID Constants (subject to change)
   public static final double TURRET_ROTATION_KP = 0.0;
   public static final double TURRET_ROTATION_KI = 0.0;
@@ -73,7 +69,5 @@ public class ShooterConstants {
 
   // Motion magic PID constants
   public static final double ROTATION_EXPO_KV = 0.0;
-
-  //FIXME: Add CANCoder ID? 
 
 }

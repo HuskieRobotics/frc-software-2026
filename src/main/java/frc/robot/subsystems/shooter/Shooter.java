@@ -111,13 +111,13 @@ private final SysIdRoutine flywheelIdRoutine =
 
    // Register this subsystem's system check command with the fault reporter. The system check
    // command can be added to the Elastic Dashboard to execute the system test.
-   FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
+  //  FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
  }
 
 
  @Override
  public void periodic() {
-   io.updateInputs(shooterInputs);
+  io.updateInputs(shooterInputs); // will be fixed once we create a shooterInputs instan
   Logger.processInputs("Shooter", shooterInputs);
 
 
@@ -164,9 +164,9 @@ private final SysIdRoutine flywheelIdRoutine =
 
 
    if (testingMode.get() == 1) {
-     io.setFlywheelLeadVelocity(ShooterIOInputs.flywheelLeadReferenceVelocity);
-     io.setHoodPosition(ShooterIOInputs.hoodReferencePosition);
-     io.setTurretPosition(ShooterIOInputs.turretReferencePosition);
+     io.setFlywheelLeadVelocity(ShooterIO.flywheelLeadReferenceVelocity);
+     io.setHoodPosition(ShooterIO.hoodReferencePosition);
+     io.setTurretPosition(ShooterIO.turretReferencePosition);
    }
    //FIXME: Can also add more conditions based off velocities/positions
 
@@ -180,12 +180,11 @@ private final SysIdRoutine flywheelIdRoutine =
    return (ShooterIO.flywheelLeadConnected &&
            ShooterIO.flywheelFollow1Connected &&
            ShooterIO.flywheelFollow2Connected &&
-           ShooterIO.flywheelFollow3Connected &&
            ShooterIO.hoodConnected &&
            ShooterIO.turretConnected);
 }
 
-//LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE);
+//LEDs.getInstance().requestState(States.INDEXING_GAME_PIECE); //FIXME: What is this
 
 
           
@@ -197,66 +196,6 @@ public void autoAim() {
 // public void reverseShooter(double reverseAmps) { //FIXME: idk how to do this somebody do it
 //  io.setFlywheelTorqueCurrent(-ShooterConstants.SHOOTER_CURRENT);
 // }
-
-
-/**
-public double getPassingDistance(){
-   // FIXME: Unsure if this is gonna be a command or a method
-   return 0.0;
-}
-**/
-
-
-
-// A subsystem's system check command is used to verify the functionality of the subsystem. It
-// should perform a sequence of commands (usually encapsulated in another method). The command
-// should always be decorated with an `until` condition that checks for faults in the subsystem
-// and an `andThen` condition that sets the subsystem to a safe state. This ensures that if any
-// faults are detected, the test will stop and the subsystem is always left in a safe state.
- private Command getSystemCheckCommand() { //FIXME: fix this once Kush lets us know
-
-    Commands.runOnce(() -> io.set)}
-
-
-
-
-
-
- private Command getPresetCheckCommand(Distance distance) {
-   return Commands.sequence(
-       Commands.runOnce(() -> this.setVelocity(distance)),
-       Commands.waitSeconds(2.0),
-       Commands.runOnce(
-           () ->
-               this.checkVelocity(
-                   RotationsPerSecond.of(shootingMap.get(distance.in(Meters))),
-                   RotationsPerSecond.of(shootingMap.get(distance.in(Meters))))));
- }
-
-
- private void checkVelocity(AngularVelocity topVelocity, AngularVelocity bottomVelocity) {
-   // check bottom motor
-   if (!this.shooterInputs.shootMotorBottomVelocity.isNear(bottomVelocity, VELOCITY_TOLERANCE)) {
-     FaultReporter.getInstance()
-         .addFault(
-             SUBSYSTEM_NAME,
-             "Bottom shooter wheel velocity out of tolerance, should be "
-                 + bottomVelocity
-                 + " but is "
-                 + this.shooterInputs.shootMotorBottomVelocity);
-   }
-   // check top motor
-   if (!this.shooterInputs.shootMotorTopVelocity.isNear(topVelocity, VELOCITY_TOLERANCE)) {
-     FaultReporter.getInstance()
-         .addFault(
-             SUBSYSTEM_NAME,
-             "Top shooter wheel velocity out of tolerance, should be "
-                 + topVelocity
-                 + " but is "
-                 + this.shooterInputs.shootMotorTopVelocity);
-   }
- }
-
 
 
 public void setFlywheelLeadVelocity(AngularVelocity velocity){      

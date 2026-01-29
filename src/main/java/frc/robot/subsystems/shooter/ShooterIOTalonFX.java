@@ -58,11 +58,6 @@ private StatusSignal<Current> flywheelFollow2SupplyCurrentStatusSignal;
 private StatusSignal<Current> flywheelFollow2StatorCurrentStatusSignal;
 private StatusSignal<Current> flywheelFollow2TorqueCurrentStatusSignal;
 
-//Flywheel Follow3 Status Signals
-private StatusSignal<Current> flywheelFollow3SupplyCurrentStatusSignal;
-private StatusSignal<Current> flywheelFollow3StatorCurrentStatusSignal;
-private StatusSignal<Current> flywheelFollow3TorqueCurrentStatusSignal;
-
 // Turret, and Hood Status Signals
 private StatusSignal<Current> turretStatorCurrentStatusSignal;
 private StatusSignal<Current> turretSupplyCurrentStatusSignal;
@@ -74,11 +69,9 @@ private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
 private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelLeadReferenceVelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelFollow1VelocityStatusSignal;
-private StatusSignal<AngularVelocity> flywheelFollow1ReferenceVelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelFollow2VelocityStatusSignal;
+private StatusSignal<AngularVelocity> flywheelFollow1ReferenceVelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelFollow2ReferenceVelocityStatusSignal;
-private StatusSignal<AngularVelocity> flywheelFollow3VelocityStatusSignal;
-private StatusSignal<AngularVelocity> flywheelFollow3ReferenceVelocityStatusSignal;
 //Flywheel closed loop velocity signals as Double due to API limitations
 private StatusSignal<Double> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
 private StatusSignal<Double> flywheelLeadClosedLoopErrorVelocityStatusSignal;
@@ -86,20 +79,16 @@ private StatusSignal<Double> flywheelFollow1ClosedLoopReferenceVelocityStatusSig
 private StatusSignal<Double> flywheelFollow1ClosedLoopErrorVelocityStatusSignal;
 private StatusSignal<Double> flywheelFollow2ClosedLoopReferenceVelocityStatusSignal;
 private StatusSignal<Double> flywheelFollow2ClosedLoopErrorVelocityStatusSignal;
-private StatusSignal<Double> flywheelFollow3ClosedLoopReferenceVelocityStatusSignal;
-private StatusSignal<Double> flywheelFollow3ClosedLoopErrorVelocityStatusSignal;
 
 private StatusSignal<Temperature> flywheelLeadTemperatureStatusSignal;
 private StatusSignal<Temperature> flywheelFollow1TemperatureStatusSignal;
 private StatusSignal<Temperature> flywheelFollow2TemperatureStatusSignal;
-private StatusSignal<Temperature> flywheelFollow3TemperatureStatusSignal;
 private StatusSignal<Temperature> turretTemperatureStatusSignal;
 private StatusSignal<Temperature> hoodTemperatureStatusSignal;
 
 private StatusSignal<Voltage> flywheelLeadVoltageStatusSignal;
 private StatusSignal<Voltage> flywheelFollow1VoltageStatusSignal;
 private StatusSignal<Voltage> flywheelFollow2VoltageStatusSignal;
-private StatusSignal<Voltage> flywheelFollow3VoltageStatusSignal;
 private StatusSignal<Voltage> turretVoltageStatusSignal;
 private StatusSignal<Voltage> hoodVoltageStatusSignal;
 
@@ -112,14 +101,12 @@ private StatusSignal<Angle> hoodPositionStatusSignal;
 private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer flywheelFollow2ConnectedDebouncer = new Debouncer(0.5);
-private final Debouncer flywheelFollow3ConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer hoodConnectedDebouncer = new Debouncer(0.5);
 private final Debouncer turretConnectedDebouncer = new Debouncer(0.5);
 
 private TalonFX flywheelLead;
 private TalonFX flywheelFollow1;
 private TalonFX flywheelFollow2;
-private TalonFX flywheelFollow3;
 private TalonFX turret;
 private TalonFX hood;
 
@@ -129,8 +116,6 @@ private Alert flywheelFollow1ConfigAlert =
     new Alert("Failed to apply configuration for fly wheel follow 1 motor.", AlertType.kError);
 private Alert flywheelFollow2ConfigAlert =
     new Alert("Failed to apply configuration for fly wheel follow 2 motor.", AlertType.kError);
-private Alert flywheelFollow3ConfigAlert =
-    new Alert("Failed to apply configuration for fly wheel follow 3 motor.", AlertType.kError);
 private Alert hoodConfigAlert =
     new Alert("Failed to apply configuration for hood motor.", AlertType.kError);
 private Alert turretConfigAlert =
@@ -176,7 +161,6 @@ private final LoggedTunableNumber hoodMotionMagicCruiseVelocity =
 private VelocitySystemSim flywheelLeadSim;
 private VelocitySystemSim flywheelFollow1Sim;
 private VelocitySystemSim flywheelFollow2Sim;
-private VelocitySystemSim flywheelFollow3Sim;
 private VelocitySystemSim turretLeadSim;
 private VelocitySystemSim hoodLeadSim;
 
@@ -184,7 +168,6 @@ public ShooterIOTalonFX() {
   flywheelLead = new TalonFX(FLYWHEEL_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow1 = new TalonFX(FLYWHEEL_FOLLOW_1_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow2 = new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-  flywheelFollow3 = new TalonFX(FLYWHEEL_FOLLOW_3_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
@@ -222,17 +205,6 @@ flywheelFollow2ClosedLoopReferenceVelocityStatusSignal = flywheelFollow2.getClos
 flywheelFollow2ClosedLoopErrorVelocityStatusSignal = flywheelFollow2.getClosedLoopError();
 flywheelFollow2TemperatureStatusSignal = flywheelFollow2.getDeviceTemp();
 flywheelFollow2VoltageStatusSignal = flywheelFollow2.getMotorVoltage();
-
-// Follow 3
-flywheelFollow3SupplyCurrentStatusSignal = flywheelFollow3.getSupplyCurrent();
-flywheelFollow3StatorCurrentStatusSignal = flywheelFollow3.getStatorCurrent();
-flywheelFollow3TorqueCurrentStatusSignal = flywheelFollow3.getTorqueCurrent();
-flywheelFollow3VelocityStatusSignal = flywheelFollow3.getVelocity();
-flywheelFollow3ReferenceVelocityStatusSignal = flywheelFollow3.getVelocity(); // reference, cached
-flywheelFollow3ClosedLoopReferenceVelocityStatusSignal = flywheelFollow3.getClosedLoopReference();
-flywheelFollow3ClosedLoopErrorVelocityStatusSignal = flywheelFollow3.getClosedLoopError();
-flywheelFollow3TemperatureStatusSignal = flywheelFollow3.getDeviceTemp();
-flywheelFollow3VoltageStatusSignal = flywheelFollow3.getMotorVoltage();
 
 // TURRET
 turretStatorCurrentStatusSignal = turret.getStatorCurrent();
@@ -281,15 +253,6 @@ hoodPositionStatusSignal = hood.getPosition();
       flywheelFollow2ClosedLoopReferenceVelocityStatusSignal,
       flywheelFollow2ClosedLoopErrorVelocityStatusSignal,
 
-      //FLYWHEEL Follow 3
-      flywheelFollow3SupplyCurrentStatusSignal,
-      flywheelFollow3StatorCurrentStatusSignal,
-      flywheelFollow3TorqueCurrentStatusSignal,
-      flywheelFollow3VelocityStatusSignal,
-      flywheelFollow3ReferenceVelocityStatusSignal,
-      flywheelFollow3ClosedLoopReferenceVelocityStatusSignal,
-      flywheelFollow3ClosedLoopErrorVelocityStatusSignal,
-
       //TURRET
       turretStatorCurrentStatusSignal,
       turretSupplyCurrentStatusSignal,
@@ -308,7 +271,6 @@ hoodPositionStatusSignal = hood.getPosition();
   configFlywheel(flywheelLead, FLYWHEEL_LEAD_INVERTED,"flywheel lead", true, flywheelLeadConfigAlert);
   configFlywheel(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
   configFlywheel(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
-  configFlywheel(flywheelFollow3, FLYWHEEL_FOLLOW_3_INVERTED, "flywheel follow 3", false, flywheelFollow3ConfigAlert);
   configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
   configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
   
@@ -349,13 +311,6 @@ hoodPositionStatusSignal = hood.getPosition();
           0.05, //update as needed
           0.01, //update as needed
           ShooterConstants.FLYWHEEL_FOLLOW_2_GEAR_RATIO);
-    this.flywheelFollow3Sim =
-      new VelocitySystemSim(
-          flywheelFollow3,
-          ShooterConstants.FLYWHEEL_FOLLOW_3_INVERTED,
-          0.05, //update as needed
-          0.01, //update as needed
-          ShooterConstants.FLYWHEEL_FOLLOW_3_GEAR_RATIO);
 }
 
 @Override
@@ -386,14 +341,6 @@ public void updateInputs(ShooterIOInputs inputs) {
               flywheelFollow2SupplyCurrentStatusSignal,
               flywheelFollow2TemperatureStatusSignal,
               flywheelFollow2VoltageStatusSignal
-              ));
-  inputs.flywheelFollow3Connected =
-      flywheelFollow3ConnectedDebouncer.calculate(
-          BaseStatusSignal.isAllGood(
-              flywheelFollow3StatorCurrentStatusSignal,
-              flywheelFollow3SupplyCurrentStatusSignal,
-              flywheelFollow3TemperatureStatusSignal,
-              flywheelFollow3VoltageStatusSignal
               ));
   inputs.hoodConnected =
       hoodConnectedDebouncer.calculate(
@@ -439,15 +386,6 @@ inputs.flywheelFollow2Temperature = flywheelFollow2TemperatureStatusSignal.getVa
 inputs.flywheelFollow2Voltage = flywheelFollow2VoltageStatusSignal.getValue();
 inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatusSignal.getValue();
 
-// Updates Flywheel Follow3 Motor Inputs
-inputs.flywheelFollow3StatorCurrent = flywheelFollow3StatorCurrentStatusSignal.getValue();
-inputs.flywheelFollow3SupplyCurrent = flywheelFollow3SupplyCurrentStatusSignal.getValue();
-inputs.flywheelFollow3TorqueCurrent = flywheelFollow3TorqueCurrentStatusSignal.getValue();
-inputs.flywheelFollow3Velocity = flywheelFollow3VelocityStatusSignal.getValue();
-inputs.flywheelFollow3Temperature = flywheelFollow3TemperatureStatusSignal.getValue();
-inputs.flywheelFollow3Voltage = flywheelFollow3VoltageStatusSignal.getValue();
-inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatusSignal.getValue();
-
   // Updates Turret Motor Inputs
   inputs.turretStatorCurrent = turretStatorCurrentStatusSignal.getValue();
   inputs.turretSupplyCurrent = turretSupplyCurrentStatusSignal.getValue();
@@ -489,11 +427,6 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
         RotationsPerSecond.of(flywheelFollow2.getClosedLoopReference().getValue());
     inputs.flywheelFollow2ClosedLoopErrorVelocity =
         RotationsPerSecond.of(flywheelFollow2.getClosedLoopError().getValue());
-    //Flywheel Follow3
-    inputs.flywheelFollow3ClosedLoopReferenceVelocity =
-        RotationsPerSecond.of(flywheelFollow3.getClosedLoopReference().getValue());
-    inputs.flywheelFollow3ClosedLoopErrorVelocity =
-        RotationsPerSecond.of(flywheelFollow3.getClosedLoopError().getValue());
   }
 
   // In order for a tunable to be useful, there must be code that checks if its value has changed.
@@ -571,7 +504,6 @@ inputs.flywheelFollow3ReferenceVelocity = flywheelFollow3ReferenceVelocityStatus
     hoodLeadSim.updateSim();
     flywheelFollow1Sim.updateSim();
     flywheelFollow2Sim.updateSim();
-    flywheelFollow3Sim.updateSim();
   }
 }
 

@@ -58,18 +58,6 @@ public interface ShooterIO {
     AngularVelocity flywheelFollow2ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
     Temperature flywheelFollow2Temperature = Celsius.of(0.0);
 
-    // FLYWHEEL FOLLOW 3
-    boolean flywheelFollow3Connected = false;
-    Current flywheelFollow3StatorCurrent = Amps.of(0.0);
-    Current flywheelFollow3SupplyCurrent = Amps.of(0.0);
-    Current flywheelFollow3TorqueCurrent = Amps.of(0.0);
-    Voltage flywheelFollow3Voltage = Volts.of(0.0);
-    AngularVelocity flywheelFollow3Velocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelFollow3ReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelFollow3ClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelFollow3ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature flywheelFollow3Temperature = Celsius.of(0.0);
-
 
     boolean turretConnected = false;
     Current turretStatorCurrent = Amps.of(0.0);
@@ -101,7 +89,6 @@ public interface ShooterIO {
     boolean flywheelLeadConnected = false;
     boolean flywheelFollow1Connected = false;
     boolean flywheelFollow2Connected = false;
-    boolean flywheelFollow3Connected = false;
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
     Current flywheelLeadSupplyCurrent = Amps.of(0.0);
     Current flywheelLeadTorqueCurrent = Amps.of(0.0);
