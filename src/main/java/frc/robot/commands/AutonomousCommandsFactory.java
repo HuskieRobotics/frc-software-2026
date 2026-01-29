@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.vision.Vision;
+import frc.robot.subsystems.shooter.Shooter;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -307,4 +309,139 @@ public class AutonomousCommandsFactory {
         new PathPlannerAuto(autoName),
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
+
+
+  private Command leftNeutralZoneHopperAndClimb(SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+    PathPlannerPath driveToNeutralZone;
+    try {
+        driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Neutral Zone");
+    }
+    // start intake
+    // max out hopper
+
+    PathPlannerPath driveToTower;
+    try{
+        driveToTower = PathPlannerPath.fromPathFile("Left Neutral Zone to Tower");
+
+    }
+    // shoot while moving?
+    // start shooter
+    // empty hopper
+    // climb tower
+
+    return null;
+  }
+
+
+ private Command rightNeutralZoneHopperAndClimb(SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+    PathPlannerPath driveToNeutralZone;
+    try {
+        driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Neutral Zone");
+    }
+    // start intake
+    // max out hopper
+
+    PathPlannerPath driveToTower;
+    try{
+        driveToTower = PathPlannerPath.fromPathFile("Right Neutral Zone to Tower");
+
+    }
+    // shoot while moving?
+    // start shooter
+    // empty hopper
+    // climb tower
+
+    return null;
+  }
+
+
+   private Command middleHopperDepotAndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+    PathPlannerPath driveToDepot;
+    try{
+        driveToDepot = PathPlannerPath.fromPathFile("Middle Go To Depot");
+    }
+    // intake from depot
+    
+    PathPlannerPath depotToTower;
+    try{
+        depotToTower = PathPlannerPath.fromPathFile("Middle Depot to Tower");
+    }
+    // empty hopper
+    // climb
+}
+
+
+  private Command middleHopperAndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+    PathPlannerPath driveToTower;
+    try{
+        driveToTower = PathPlannerPath.fromPathFile("Middle Shoot Preload+Climb");
+    }
+    // empty hopper
+    // climb
+    return null;
+}
+
+
+    private Command rightHopperToNeutralZonex2AndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+    PathPlannerPath driveToNeutralZone;
+    try {
+        driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Neutral Zone");
+    }
+    // start intake
+    // max out hopper
+
+    PathPlannerPath driveToAllianceZone;
+    try{
+        driveToAllianceZone = PathPlannerPath.fromPathFile("Right Neutral Zone to Alliance Zone");
+
+    }
+    // shoot while moving?
+    // empty hopper
+
+    PathPlannerPath driveToNeutralZoneAgain;
+    try{
+        driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Right Alliance Zone to Neutral Zone");
+    }
+    // intake and max out hopper
+
+    PathPlannerPath driveToAllianceZoneAgain;
+    try{
+        driveToAllianceZoneAgain = PathPlannerPath.fromPathFile("Right Neutral Zone to Tower");
+    }
+    // empty hopper
+    //climb
+    return null;
+}
+
+
+
+     private Command leftHopperToNeutralZonex2AndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+    PathPlannerPath driveToNeutralZone;
+    try {
+        driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Neutral Zone");
+    }
+    // start intake
+    // max out hopper
+
+    PathPlannerPath driveToAllianceZone;
+    try{
+        driveToAllianceZone = PathPlannerPath.fromPathFile("Left Neutral Zone to Alliance Zone");
+
+    }
+    // shoot while moving?
+    // empty hopper
+
+    PathPlannerPath driveToNeutralZoneAgain;
+    try{
+        driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Left Alliance Zone to Neutral Zone");
+    }
+    // intake and max out hopper
+
+    PathPlannerPath driveToAllianceZoneAgain;
+    try{
+        driveToAllianceZoneAgain = PathPlannerPath.fromPathFile("Left Neutral Zone to Tower");
+    }
+    // empty hopper
+    //climb
+    return null;
 }
