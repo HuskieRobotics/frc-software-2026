@@ -25,13 +25,12 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.shooter.Shooter;
+
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
 
-  private static ShooterModes shooterModes;
-
-  private Trigger runHopperOTMandAZTrigger;
 
   private static final LoggedTunableNumber driveXKp =
       new LoggedTunableNumber(
@@ -102,18 +101,24 @@ public class CrossSubsystemsCommandsFactory {
       Arm arm,
       Elevator elevator,
       Manipulator manipulator,
-      Shooter shooter) {
+      Shooter shooter,
+      ShooterModes shooterModes
+      /*, Hopper hopper */ ) {
 
     oi.getInterruptAll()
         .onTrue(
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+
+    Trigger manualShootTrigger = oi.getManualShootButton();
+
+    manualShootTrigger
+        .and(shooterModes::manualShootEnabled).and(Field2d.getInstance()::inAllianceZone)
+        .whileTrue(unloadShooter(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
-
-    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
 
     registerSysIdCommands(oi);
   }
@@ -128,7 +133,7 @@ public class CrossSubsystemsCommandsFactory {
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi) {
+      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi, ShooterModes shooterModes) {
 
     // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
     // shoot_otm && in AZ
@@ -301,10 +306,5 @@ public class CrossSubsystemsCommandsFactory {
         thetaKd);
   }
 
-  private void confugreCrossSubsystemsTriggers() {
-
-    runHopperOTMandAZTrigger =
-        new Trigger(
-            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
-  }
+  private void confugreCrossSubsystemsTriggers() {}
 }

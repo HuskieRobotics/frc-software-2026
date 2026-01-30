@@ -67,6 +67,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getManualShootButton() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
   public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
