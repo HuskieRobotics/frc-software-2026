@@ -164,9 +164,6 @@ private VelocitySystemSim turretLeadSim;
 private VelocitySystemSim hoodLeadSim;
 
 public ShooterIOTalonFX() {
-flywheelFollow1.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
-flywheelFollow2.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
-    
 
   flywheelLead = new TalonFX(FLYWHEEL_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow1 = new TalonFX(FLYWHEEL_FOLLOW_1_MOTOR_ID, RobotConfig.getInstance().getCANBus());
@@ -175,6 +172,9 @@ flywheelFollow2.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentVa
   hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
   flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
+
+  flywheelFollow1.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
+  flywheelFollow2.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
 
 // FLYWHEEL LEAD
 flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
@@ -271,7 +271,7 @@ hoodPositionStatusSignal = hood.getPosition();
       hoodPositionStatusSignal
 
       );
-  configFlywheel(flywheelLead, FLYWHEEL_LEAD_INVERTED,"flywheel lead", true, flywheelLeadConfigAlert);
+  configFlywheel(flywheelLead, FLYWHEEL_LEAD_INVERTED, "flywheel lead", true, flywheelLeadConfigAlert);
   configFlywheel(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
   configFlywheel(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
   configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
@@ -304,15 +304,15 @@ hoodPositionStatusSignal = hood.getPosition();
       new VelocitySystemSim(
           flywheelFollow1,
           ShooterConstants.FLYWHEEL_FOLLOW_1_INVERTED,
-          0.05, //update as needed
-          0.01, //update as needed
+          0.05, 
+          0.01, 
           ShooterConstants.FLYWHEEL_FOLLOW_1_GEAR_RATIO);
     this.flywheelFollow2Sim =
       new VelocitySystemSim(
           flywheelFollow2,
           ShooterConstants.FLYWHEEL_FOLLOW_2_INVERTED,
-          0.05, //update as needed
-          0.01, //update as needed
+          0.05, 
+          0.01, 
           ShooterConstants.FLYWHEEL_FOLLOW_2_GEAR_RATIO);
 }
 
