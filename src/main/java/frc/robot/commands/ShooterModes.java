@@ -17,6 +17,10 @@ public class ShooterModes extends Command {
 
   // Shooter Mode Triggers
   private Trigger nearTrenchTrigger;
+  private Trigger passModeTrigger;
+  private Trigger collectAndHoldTrigger;
+  private Trigger shootOTMTrigger;
+  private Trigger canShootTrigger;
 
   private ShooterMode overrideMode = null;
 
@@ -62,8 +66,8 @@ public class ShooterModes extends Command {
       return ShooterMode.NEAR_TRENCH;
     }
 
-    if (Field2d.getInstance().inAllianceZone()) {
-      if (hubActive()
+    else if (Field2d.getInstance().inAllianceZone()) {
+      if (isHubActive()
           && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
         return ShooterMode.SHOOT_OTM;
       } else {
@@ -129,7 +133,7 @@ public class ShooterModes extends Command {
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
   // and game data to see which hub was active first
   // add a t second offset for how long it takes the ball (on average) to actually enter the hub
-  public boolean hubActive() {
+  public boolean isHubActive() {
     return true;
   }
 
@@ -144,5 +148,30 @@ public class ShooterModes extends Command {
             () -> setShooterMode(ShooterMode.NEAR_TRENCH),
             () -> setShooterMode(null) // set it back so that it returns to automatic modes?
             ));
-  }
+
+    passModeTrigger = new Trigger(
+        () -> OISelector.getOperatorInterface().getPassToggle().getAsBoolean() && !Field2d.getInstance().inAllianceZone());
+    
+    passModeTrigger.onTrue(
+        Commands.runOnce(() -> setShooterMode(ShooterMode.PASS)));   
+
+    collectAndHoldTrigger = new Trigger(
+        () -> !OISelector.getOperatorInterface().getPassToggle().getAsBoolean() && !Field2d.getInstance().inAllianceZone());
+
+    collectAndHoldTrigger.onTrue(
+        Commands.runOnce(() -> setShooterMode(ShooterMode.COLLECT_AND_HOLD)));
+
+    shootOTMTrigger = new Trigger(
+        () -> Field2d.getInstance().inAllianceZone()
+            && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean() && !isNearTrenchEnabled() && isHubActive());
+
+    shootOTMTrigger.onTrue(
+        Commands.runOnce(() -> setShooterMode(ShooterMode.SHOOT_OTM)));
+
+    canShootTrigger = new Trigger(
+        () -> !OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean() && Field2d.getInstance().inAllianceZone() && !isNearTrenchEnabled() && isHubActive());
+
+    canShootTrigger.onTrue(
+        Commands.runOnce(() -> setShooterMode(ShooterMode.MANUAL_SHOOT)));
+  }  
 }
