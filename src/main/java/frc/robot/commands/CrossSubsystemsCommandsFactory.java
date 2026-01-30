@@ -29,8 +29,11 @@ import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
 
-    //Triggers
-    private Trigger getRotateTrigger;
+  private static ShooterModes shooterModes;
+
+  // Triggers
+
+  private Trigger getRotateTrigger;
 
   private static final LoggedTunableNumber driveXKp =
       new LoggedTunableNumber(
@@ -112,6 +115,8 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
+    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+
     registerSysIdCommands(oi);
   }
 
@@ -135,8 +140,7 @@ public class CrossSubsystemsCommandsFactory {
             getDriveToBankCommand(drivetrain), unloadShooter(drivetrain /*, hopper*/)),
         Commands.none(),
         /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
-        () -> true
-    );
+        () -> shooterModes.getMode() == ShooterModes.ShooterMode.CAN_SHOOT);
   }
 
   // this will rotate our robot into a diamond shape while we are near the bump zone
@@ -150,16 +154,16 @@ public class CrossSubsystemsCommandsFactory {
     Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
     return Commands.run(
-            () ->
-                drivetrain.driveFacingAngle(
-                    RobotConfig.getInstance()
-                        .getRobotMaxVelocity()
-                        .times(OISelector.getOperatorInterface().getTranslateX()),
-                    RobotConfig.getInstance()
-                        .getRobotMaxVelocity()
-                        .times(OISelector.getOperatorInterface().getTranslateY()),
-                    targetRotation,
-                    false));
+        () ->
+            drivetrain.driveFacingAngle(
+                RobotConfig.getInstance()
+                    .getRobotMaxVelocity()
+                    .times(OISelector.getOperatorInterface().getTranslateX()),
+                RobotConfig.getInstance()
+                    .getRobotMaxVelocity()
+                    .times(OISelector.getOperatorInterface().getTranslateY()),
+                targetRotation,
+                false));
   }
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
