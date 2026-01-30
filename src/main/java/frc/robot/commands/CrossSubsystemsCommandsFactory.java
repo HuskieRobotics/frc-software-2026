@@ -31,9 +31,7 @@ public class CrossSubsystemsCommandsFactory {
 
   private static ShooterModes shooterModes;
 
-  // Triggers
-
-  private Trigger getRotateTrigger;
+  private Trigger runHopperOTMandAZTrigger;
 
   private static final LoggedTunableNumber driveXKp =
       new LoggedTunableNumber(
@@ -301,5 +299,12 @@ public class CrossSubsystemsCommandsFactory {
         thetaKp,
         thetaKi,
         thetaKd);
+  }
+
+  private void confugreCrossSubsystemsTriggers() {
+
+    runHopperOTMandAZTrigger =
+        new Trigger(
+            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
   }
 }

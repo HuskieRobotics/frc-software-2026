@@ -31,6 +31,7 @@ import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
 import frc.robot.commands.ElevatorCommandsFactory;
+import frc.robot.commands.ShooterModes;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.CalypsoRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -77,7 +78,10 @@ public class RobotContainer {
   private Shooter shooter;
   private RobotVisualization visualization;
 
+  private final ShooterModes shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+
   private Trigger rotateNearBumpTrigger;
+  private Trigger runHopperOTMandAZTrigger;
 
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
@@ -459,10 +463,16 @@ public class RobotContainer {
     this.checkAllianceColor();
   }
 
-  public void configureCrossSubCommandsTrigger() {
+  public void configureRobotContainerTriggers() {
 
     rotateNearBumpTrigger = new Trigger(() -> Field2d.getInstance().inBumpZone());
     rotateNearBumpTrigger.onTrue(
         CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
+
+    runHopperOTMandAZTrigger =
+        new Trigger(
+            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
+    runHopperOTMandAZTrigger.onTrue(
+        Commands.run(() -> shooter.setIdleVelocity())); // FIXME: change to run hopper
   }
 }
