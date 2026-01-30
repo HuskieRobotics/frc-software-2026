@@ -4,7 +4,6 @@ import static frc.robot.subsystems.hopper.HopperConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
@@ -14,7 +13,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -67,13 +65,11 @@ public class HopperIOTalonFX implements HopperIO {
     private final LoggedTunableNumber spindexerMotorKI = new LoggedTunableNumber("Hopper/SPINDEXER_KI", HopperConstants.SPINDEXER_KI);
     private final LoggedTunableNumber spindexerMotorKD = new LoggedTunableNumber("Hopper/SPINDEXER_KD", HopperConstants.SPINDEXER_KD);
     private final LoggedTunableNumber spindexerMotorKV = new LoggedTunableNumber("Hopper/SPINDEXER_KV", HopperConstants.SPINDEXER_KV);
-    private final LoggedTunableNumber spindexerCruiseVelocity = new LoggedTunableNumber("Hopper/SpindexerCruiseVelocity", 0);
 
     private final LoggedTunableNumber rollerMotorKP = new LoggedTunableNumber("Hopper/ROLLER_KP", HopperConstants.ROLLER_KP);
-    private final LoggedTunableNumber rollerMotorKI = new LoggedTunableNumber("Hopper/ROLLER_KI", HopperConstants.ROOLER_KI);
+    private final LoggedTunableNumber rollerMotorKI = new LoggedTunableNumber("Hopper/ROLLER_KI", HopperConstants.ROLLER_KI);
     private final LoggedTunableNumber rollerMotorKD = new LoggedTunableNumber("Hopper/ROLLER_KD", HopperConstants.ROLLER_KD);
     private final LoggedTunableNumber rollerMotorKV = new LoggedTunableNumber("Hopper/ROLLER_KV", HopperConstants.ROLLER_KV);
-    private final LoggedTunableNumber rollerCruiseVelocity = new LoggedTunableNumber("Hopper/RollerCruiseVelocity", 0);
     
     private final Debouncer connectedSpindexerDebouncer = new Debouncer(0.5);
     private final Debouncer connectedRollerDebouncer = new Debouncer(0.5);
@@ -155,44 +151,6 @@ public class HopperIOTalonFX implements HopperIO {
         inputs.rollerTemperatureCelsius = tempRollerStatusSignal.getValue();
         inputs.rollerVoltageSupplied = voltageSuppliedRollerStatusSignal.getValue();
         inputs.rollerVelocity = velocityRollerStatusSignal.getValue();
-
-        LoggedTunableNumber.ifChanged( // TODO: CruiseControl is not checked for/updated in the below method and it seems like it should be.
-            hashCode(),
-            motionMagic -> {
-                TalonFXConfiguration config = new TalonFXConfiguration();
-                this.hopperRollerMotor.getConfigurator().refresh(config);
-                config.Slot0.kP = motionMagic[0];
-                config.Slot0.kI = motionMagic[1];
-                config.Slot0.kD = motionMagic[2];
-                config.Slot0.kV = motionMagic[3];
-                config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[4];
-
-                this.hopperRollerMotor.getConfigurator().refresh(config);
-            },
-            rollerMotorKP,
-            rollerMotorKI,
-            rollerMotorKD,
-            rollerMotorKV,
-            rollerCruiseVelocity);
-
-        LoggedTunableNumber.ifChanged(
-            hashCode(),
-            motionMagic -> {
-                TalonFXConfiguration config = new TalonFXConfiguration();
-                this.hopperSpindexerMotor.getConfigurator().refresh(config);
-                config.Slot0.kP = motionMagic[0];
-                config.Slot0.kI = motionMagic[1];
-                config.Slot0.kP = motionMagic[2];
-                config.Slot0.kV = motionMagic[3];
-                config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[4];
-
-                this.hopperSpindexerMotor.getConfigurator().refresh(config);
-            }, 
-            spindexerMotorKP,
-            spindexerMotorKI,
-            spindexerMotorKD,
-            spindexerMotorKV,
-            spindexerCruiseVelocity);
         
     }
 
@@ -240,8 +198,6 @@ public class HopperIOTalonFX implements HopperIO {
         config.Slot0.kD = spindexerMotorKD.get();
         config.Slot0.kV = spindexerMotorKV.get();
 
-        config.MotionMagic.MotionMagicCruiseVelocity = spindexerCruiseVelocity.get();
-
         Phoenix6Util.applyAndCheckConfiguration(motor, config, hopperSpindexerConfigAlert);
 
         FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "hopper spindexer motor", motor);
@@ -251,12 +207,12 @@ public class HopperIOTalonFX implements HopperIO {
          TalonFXConfiguration config = new TalonFXConfiguration();
 
          config.CurrentLimits.SupplyCurrentLimit = ROLLER_MOTOR_PEAK_CURRENT_LIMIT;
-         config.CurrentLimits.StatorCurrentLimit = ROLLER_MOTOR_PEAK_CURRENT_LIMIT;
+         config.CurrentLimits.SupplyCurrentLimit = ROLLER_MOTOR_PEAK_CURRENT_LIMIT;
          config.CurrentLimits.SupplyCurrentLowerTime = 0;
          config.CurrentLimits.SupplyCurrentLimitEnable = true;
          config.CurrentLimits.StatorCurrentLimit = ROLLER_MOTOR_PEAK_CURRENT_LIMIT;
 
-         config.Feedback.SensorToMechanismRatio = ROLLER_GEAR_RATIO;
+         config.Feedback.SensorToMechanismRatio = SPINDEXER_GEAR_RATIO;
 
          config.MotorOutput.Inverted = 
              ROLLER_MOTOR_INVERTED
@@ -268,8 +224,6 @@ public class HopperIOTalonFX implements HopperIO {
          config.Slot0.kI = rollerMotorKI.get();
          config.Slot0.kD = rollerMotorKD.get();
          config.Slot0.kV = rollerMotorKV.get();
-
-         config.MotionMagic.MotionMagicCruiseVelocity = rollerCruiseVelocity.get();
 
          Phoenix6Util.applyAndCheckConfiguration(motor, config, hopperRollerConfigAlert);
 
