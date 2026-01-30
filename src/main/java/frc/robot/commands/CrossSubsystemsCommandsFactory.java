@@ -137,8 +137,7 @@ public class CrossSubsystemsCommandsFactory {
 
     return Commands.either(
         Commands.sequence(
-            getDriveToBankCommand(drivetrain), 
-            unloadShooter(drivetrain /*, hopper*/)),
+            getDriveToBankCommand(drivetrain), unloadShooter(drivetrain /*, hopper*/)),
         Commands.none(),
         /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
         () -> shooterModes.manualShootEnabled());

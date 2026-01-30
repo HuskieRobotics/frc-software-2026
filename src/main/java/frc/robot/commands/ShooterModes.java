@@ -33,6 +33,7 @@ public class ShooterModes extends Command {
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
     this.drivetrain = drivetrain;
     this.shooter = shooter;
+    configureShooterModeTriggers();
   }
 
   @Override
@@ -99,10 +100,9 @@ public class ShooterModes extends Command {
     return getMode() == ShooterMode.MANUAL_SHOOT;
   }
 
-
   public void getTrajectory() {
     if (getMode() == ShooterMode.NEAR_TRENCH) {
-       shooter.setIdleVelocity(); // FIXME: change to max hood angle
+      shooter.setIdleVelocity(); // FIXME: change to max hood angle
       // set hood to max
     } else if (getMode() == ShooterMode.MANUAL_SHOOT) {
       // model for aimed position
@@ -133,17 +133,16 @@ public class ShooterModes extends Command {
     return true;
   }
 
-  private ShooterMode setShooterMode(ShooterMode newMode) {
-    return overrideMode = newMode;
+  private void setShooterMode(ShooterMode newMode) {
+    this.overrideMode = newMode;
   }
 
   private void configureShooterModeTriggers() {
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
     nearTrenchTrigger.whileTrue(
-    Commands.startEnd(
-        () -> setShooterMode(ShooterMode.NEAR_TRENCH),
-        () -> setShooterMode(null) // set it back so that it returns to automatic modes?
-    )
-);
+        Commands.startEnd(
+            () -> setShooterMode(ShooterMode.NEAR_TRENCH),
+            () -> setShooterMode(null) // set it back so that it returns to automatic modes?
+            ));
   }
 }
