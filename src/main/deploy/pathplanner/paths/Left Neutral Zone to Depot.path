@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.495,
-        "y": 6.978
+        "x": 7.7535587188558335,
+        "y": 4.589098457893872
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.903582443653619,
-        "y": 7.24661921708185
+        "x": 7.9902609727164915,
+        "y": 8.075077105569946
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Real Neutral Zone"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 5.959855555555555
       },
       "prevControl": {
-        "x": 2.5783867141162524,
-        "y": 8.39785290628707
+        "x": 2.8688849347568217,
+        "y": 8.365575326210516
       },
       "nextControl": null,
       "isLocked": false,

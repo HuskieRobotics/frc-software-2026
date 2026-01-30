@@ -313,22 +313,23 @@ public class AutonomousCommandsFactory {
 
   private Command leftNeutralZoneHopperAndClimb(SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
     PathPlannerPath driveToNeutralZone;
-    try {
+     PathPlannerPath driveToTower;
+     try {
         driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Neutral Zone");
-    }
-    // start intake
-    // max out hopper
-
-    PathPlannerPath driveToTower;
-    try{
         driveToTower = PathPlannerPath.fromPathFile("Left Neutral Zone to Tower");
 
+    }catch (Exception e) {
+        pathFileMissingAlert.setText("Could not find the specified path file.");
+        pathFileMissingAlert.set(true);
     }
-    // shoot while moving?
-    // start shooter
-    // empty hopper
-    // climb tower
-
+    // 1st priority for bluff
+    // follow path to neutral zone
+    // change pathplanner path to collect fuel 
+    // follow path to near bank
+    // drive to bank command
+    // unload shoot for x seconds
+    // follow path to tower
+    // climb sequence command
     return null;
   }
 
@@ -343,7 +344,7 @@ public class AutonomousCommandsFactory {
         pathFileMissingAlert.setText("Could not find the specified path file.");
         pathFileMissingAlert.set(true);
     }
-
+    // 1st priority for bluffs
     // follow path to neutral zone
     // collect fuel with timeout x OR another PathPlannerPath to drive along the NZ
     // follow path to near bank
@@ -351,98 +352,71 @@ public class AutonomousCommandsFactory {
     // unload shooter for x seconds
     // follow path to tower
     // climb sequence command
-
     return null;
   }
 
 
    private Command middleHopperDepotAndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
     PathPlannerPath driveToDepot;
-    try{
+     PathPlannerPath depotToTower;
+     try{
         driveToDepot = PathPlannerPath.fromPathFile("Middle Go To Depot");
-    }
-    // intake from depot
-    
-    PathPlannerPath depotToTower;
-    try{
         depotToTower = PathPlannerPath.fromPathFile("Middle Depot to Tower");
-    }
-    // empty hopper
-    // climb
-}
+    }catch (Exception e) {
+        pathFileMissingAlert.setText("Could not find the specified path file.");
+        pathFileMissingAlert.set(true);}
+    // 2nd Prority for Bluffs
+    // make left one too
+    // follow path to tower
+    // unload shooter
+    // climb sequence
+        }
 
 
   private Command middleHopperAndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
     PathPlannerPath driveToTower;
     try{
         driveToTower = PathPlannerPath.fromPathFile("Middle Shoot Preload+Climb");
-    }
+    } catch (Exception e) {
+        pathFileMissingAlert.setText("Could not find the specified path file.");
+        pathFileMissingAlert.set(true);
+    // Low priority for week 1
     // empty hopper
     // climb
-    return null;
+    return null; }
 }
 
 
     private Command rightHopperToNeutralZonex2AndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
-    PathPlannerPath driveToNeutralZone;
+        PathPlannerPath driveToNeutralZone;
+        PathPlannerPath driveToAllianceZone;
+        PathPlannerPath driveToNeutralZoneAgain;
+        PathPlannerPath driveToAllianceZoneAgain;
     try {
         driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Neutral Zone");
-    }
-    // start intake
-    // max out hopper
-
-    PathPlannerPath driveToAllianceZone;
-    try{
         driveToAllianceZone = PathPlannerPath.fromPathFile("Right Neutral Zone to Alliance Zone");
-
-    }
-    // shoot while moving?
-    // empty hopper
-
-    PathPlannerPath driveToNeutralZoneAgain;
-    try{
         driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Right Alliance Zone to Neutral Zone");
-    }
-    // intake and max out hopper
-
-    PathPlannerPath driveToAllianceZoneAgain;
-    try{
         driveToAllianceZoneAgain = PathPlannerPath.fromPathFile("Right Neutral Zone to Tower");
-    }
-    // empty hopper
-    //climb
+    } catch (Exception e) {
+        pathFileMissingAlert.setText("Could not find the specified path file.");
+        pathFileMissingAlert.set(true);
     return null;
 }
+}
 
-
-
-     private Command leftHopperToNeutralZonex2AndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
-    PathPlannerPath driveToNeutralZone;
+    private Command leftHopperToNeutralZonex2AndClimb (SwerveDrivetrain drivetrain, Shooter shooter){     //add shooter and intake later
+        PathPlannerPath driveToNeutralZone;
+        PathPlannerPath driveToAllianceZone;
+        PathPlannerPath driveToNeutralZoneAgain;
+        PathPlannerPath driveToAllianceZoneAgain;
     try {
-        driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Neutral Zone");
-    }
-    // start intake
-    // max out hopper
-
-    PathPlannerPath driveToAllianceZone;
-    try{
+        driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Neutral Zone"); 
         driveToAllianceZone = PathPlannerPath.fromPathFile("Left Neutral Zone to Alliance Zone");
-
-    }
-    // shoot while moving?
-    // empty hopper
-
-    PathPlannerPath driveToNeutralZoneAgain;
-    try{
         driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Left Alliance Zone to Neutral Zone");
-    }
-    // intake and max out hopper
-
-    PathPlannerPath driveToAllianceZoneAgain;
-    try{
         driveToAllianceZoneAgain = PathPlannerPath.fromPathFile("Left Neutral Zone to Tower");
-    }
-    // empty hopper
-    //climb
+    } catch (Exception e) {
+        pathFileMissingAlert.setText("Could not find the specified path file.");
+        pathFileMissingAlert.set(true);
     return null;
+}
 }
