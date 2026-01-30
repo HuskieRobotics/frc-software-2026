@@ -58,7 +58,6 @@ public interface ShooterIO {
     AngularVelocity flywheelFollow2ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
     Temperature flywheelFollow2Temperature = Celsius.of(0.0);
 
-
     boolean turretConnected = false;
     Current turretStatorCurrent = Amps.of(0.0);
     Current turretSupplyCurrent = Amps.of(0.0);
@@ -82,48 +81,6 @@ public interface ShooterIO {
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
   }
-  
-    // Flywheel Lead inputs
-    boolean flywheelLeadConnected = false;
-    boolean flywheelFollow1Connected = false;
-    boolean flywheelFollow2Connected = false;
-    Current flywheelLeadStatorCurrent = Amps.of(0.0);
-    Current flywheelLeadSupplyCurrent = Amps.of(0.0);
-    Current flywheelLeadTorqueCurrent = Amps.of(0.0);
-    Voltage flywheelLeadVoltage = Volts.of(0.0);
-    AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0); // cached from set method
-    // These closed loop values are double because of the only return type of DOUBLE for getClosedLoopReference method
-    AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
-    AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0); // only logged when TUNING is set
-    Temperature flywheelLeadTemperature = Celsius.of(0.0);
-
-    // Turret inputs
-    boolean turretConnected = false;
-    Current turretStatorCurrent = Amps.of(0.0);
-    Current turretSupplyCurrent = Amps.of(0.0);
-    Voltage turretVoltage = Volts.of(0.0);
-    Angle turretPosition = Degrees.of(0.0);
-    Angle turretReferencePosition = Degrees.of(0.0); // cached from set method
-    Angle turretClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
-    Angle turretClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
-    Temperature turretTemperature = Celsius.of(0.0);
-
-    // Hood inputs
-    boolean hoodConnected = false;
-    Current hoodStatorCurrent = Amps.of(0.0);
-    Current hoodSupplyCurrent = Amps.of(0.0);
-    Voltage hoodVoltage = Volts.of(0.0);
-    Angle hoodPosition = Degrees.of(0.0);
-    Angle hoodReferencePosition = Degrees.of(0.0); // cached from set method
-    Angle hoodClosedLoopReferencePosition = Degrees.of(0.0); // only logged when TUNING is set
-    Angle hoodClosedLoopErrorPosition = Degrees.of(0.0); // only logged when TUNING is set
-    Temperature hoodTemperature = Celsius.of(0.0);
-
-    // Encoder inputs (tbd)
-    Angle encoderAngleDegrees = Degrees.of(0.0);
-    AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
-  
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 

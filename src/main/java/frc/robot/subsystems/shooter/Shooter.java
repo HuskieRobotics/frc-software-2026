@@ -220,7 +220,7 @@ private final SysIdRoutine flywheelIdRoutine =
    }
 
    //flywheel follow 1
-   if(Math.abs(shooterInputs.flywheelFollow1Velocity) - Math.abs(flywheelFollow1IntendedVelocityRPS) > VELOCITY_TOLERANCE)
+   if(Math.abs(shooterInputs.flywheelFollow1Velocity - flywheelFollow1IntendedVelocityRPS) > VELOCITY_TOLERANCE)
    {
       if(Math.abs(shooterInputs.flywheelFollow1Velocity) - Math.abs(flywheelFollow1IntendedVelocityRPS) < 0)
       {
@@ -232,7 +232,7 @@ private final SysIdRoutine flywheelIdRoutine =
       }
    }
     //flywheel follow 2
-    if(Math.abs(shooterInputs.flywheelFollow2Velocity) - Math.abs(flywheelFollow2IntendedVelocityRPS) > VELOCITY_TOLERANCE)
+    if(Math.abs(shooterInputs.flywheelFollow2Velocity - flywheelFollow2IntendedVelocityRPS) > VELOCITY_TOLERANCE)
     {
         if(Math.abs(shooterInputs.flywheelFollow2Velocity) - Math.abs(flywheelFollow2IntendedVelocityRPS) < 0)
         {
@@ -244,6 +244,36 @@ private final SysIdRoutine flywheelIdRoutine =
         }
     }
   }
+
+public void checkPosition(double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees)
+{
+  //Check if hood position is where it should be
+  if(Math.abs(shooterInputs.hoodPosition - hoodIntendedPositionDegrees) > POSITION_TOLERANCE)
+  {
+    if(shooterInputs.hoodPosition - hoodIntendedPositionDegrees < 0)
+    {
+      FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Hood position is too low, should be " + hoodIntendedPositionDegrees + " but is " + shooterInputs.hoodPosition);
+    }
+    else if(shooterInputs.hoodPosition - hoodIntendedPositionDegrees > 0)
+    {
+      FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Hood position is too high, should be " + hoodIntendedPositionDegrees + " but is " + shooterInputs.hoodPosition);
+    }
+  }
+
+  //Check if turret position is where it should be
+  if(Math.abs(shooterInputs.turretPosition - turretIntendedPositionDegrees) > POSITION_TOLERANCE)
+  {
+    if(shooterInputs.turretPosition - turretIntendedPositionDegrees < 0)
+    {
+      FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Turret position is too low, should be " + turretIntendedPositionDegrees + " but is " + shooterInputs.turretPosition);
+    }
+    else if(shooterInputs.turretPosition - turretIntendedPositionDegrees > 0)
+    {
+      FaultReporter.getInstance().addFault(SUBSYSTEM_NAME, "Turret position is too high, should be " + turretIntendedPositionDegrees + " but is " + shooterInputs.turretPosition);
+    }
+  }
+}
+
 // public void reverseShooter(double reverseAmps) { //FIXME: unsure if this is needed
 //  io.setFlywheelTorqueCurrent(-ShooterConstants.SHOOTER_CURRENT);
 // }

@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
@@ -30,6 +31,7 @@ import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import frc.robot.Constants;
+import com.ctre.phoenix6.controls.Follower;
 
 public class ShooterIOTalonFX implements ShooterIO {
 
@@ -162,6 +164,10 @@ private VelocitySystemSim turretLeadSim;
 private VelocitySystemSim hoodLeadSim;
 
 public ShooterIOTalonFX() {
+flywheelFollow1.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
+flywheelFollow2.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
+    
+
   flywheelLead = new TalonFX(FLYWHEEL_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow1 = new TalonFX(FLYWHEEL_FOLLOW_1_MOTOR_ID, RobotConfig.getInstance().getCANBus());
   flywheelFollow2 = new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
