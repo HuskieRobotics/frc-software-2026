@@ -18,6 +18,8 @@ public class ShooterModes extends Command {
   // Shooter Mode Triggers
   private Trigger nearTrenchTrigger;
 
+  private ShooterMode overrideMode = null;
+
   private String gameData;
 
   public enum ShooterMode {
@@ -50,7 +52,12 @@ public class ShooterModes extends Command {
   public void end(boolean interrupted) {}
 
   private ShooterMode getMode() {
-    if (Field2d.getInstance().inTrenchZone()) {
+
+    if (overrideMode != null) {
+      return overrideMode;
+    }
+
+    if (nearTrenchTrigger.getAsBoolean()) {
       return ShooterMode.NEAR_TRENCH;
     }
 
@@ -92,9 +99,10 @@ public class ShooterModes extends Command {
     return getMode() == ShooterMode.MANUAL_SHOOT;
   }
 
+
   public void getTrajectory() {
     if (getMode() == ShooterMode.NEAR_TRENCH) {
-      shooter.setIdleVelocity(); // FIXME: change to max hood angle
+       shooter.setIdleVelocity(); // FIXME: change to max hood angle
       // set hood to max
     } else if (getMode() == ShooterMode.MANUAL_SHOOT) {
       // model for aimed position
@@ -125,8 +133,17 @@ public class ShooterModes extends Command {
     return true;
   }
 
+  private ShooterMode setShooterMode(ShooterMode newMode) {
+    return overrideMode = newMode;
+  }
+
   private void configureShooterModeTriggers() {
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
-    nearTrenchTrigger.onTrue(Commands.none());
+    nearTrenchTrigger.whileTrue(
+    Commands.startEnd(
+        () -> setShooterMode(ShooterMode.NEAR_TRENCH),
+        () -> setShooterMode(null) // set it back so that it returns to automatic modes?
+    )
+);
   }
 }
