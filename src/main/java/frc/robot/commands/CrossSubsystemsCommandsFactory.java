@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.leds.LEDs;
@@ -27,6 +28,9 @@ import frc.robot.subsystems.shooter.Shooter;
 import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
+
+    //Triggers
+    private Trigger getRotateTrigger;
 
   private static final LoggedTunableNumber driveXKp =
       new LoggedTunableNumber(
@@ -131,8 +135,8 @@ public class CrossSubsystemsCommandsFactory {
             getDriveToBankCommand(drivetrain), unloadShooter(drivetrain /*, hopper*/)),
         Commands.none(),
         /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
-        () ->
-            Field2d.getInstance().inAllianceZone() && !oi.getShootOnTheMoveToggle().getAsBoolean());
+        () -> true
+    );
   }
 
   // this will rotate our robot into a diamond shape while we are near the bump zone
@@ -145,11 +149,7 @@ public class CrossSubsystemsCommandsFactory {
 
     Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
-    return Commands.sequence(
-        /* this waituntil will become a trigger */
-        Commands.waitUntil(() -> Field2d.getInstance().inBumpZone()),
-        /* this will probably be a commands.run rather than a runOnce */
-        Commands.runOnce(
+    return Commands.run(
             () ->
                 drivetrain.driveFacingAngle(
                     RobotConfig.getInstance()
@@ -159,7 +159,7 @@ public class CrossSubsystemsCommandsFactory {
                         .getRobotMaxVelocity()
                         .times(OISelector.getOperatorInterface().getTranslateY()),
                     targetRotation,
-                    false)));
+                    false));
   }
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
