@@ -34,7 +34,7 @@ public class Hopper extends SubsystemBase {
     private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged(); 
     
     private final LoggedTunableNumber spindexerVelocity =  new LoggedTunableNumber("Hopper/SpindexerVelocity", 0);
-    private final LoggedTunableNumber rollerVelocity = new LoggedTunableNumber("Hopper/RollerVelocity", 0);
+    private final LoggedTunableNumber rollerVelocity = new LoggedTunableNumber("Hopper/KickerVelocity", 0);
     private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Hopper/TestingMode", 0);
 
     private CurrentSpikeDetector spindexerSpikeDetector = new CurrentSpikeDetector(SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS, SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS);
@@ -74,7 +74,7 @@ public class Hopper extends SubsystemBase {
                 () -> { 
                     if(inputs.RollerVelocity.lt(rollerVelocity)) {
                         FaultReporter.getInstance()
-                        .addFault(SUBSYSTEM_NAME,"not moving as fast",false);
+                        .addFault(SUBSYSTEM_NAME,"kicker not moving as fast",false);
 
                     }
                 }),
@@ -84,7 +84,7 @@ public class Hopper extends SubsystemBase {
                 () -> { 
                     if(inputs.spindexerVelocity.lt(spindexerVelocity)) {
                         FaultReporter.getInstance()
-                        .addFault(SUBSYSTEM_NAME,"not moving as fast",false);
+                        .addFault(SUBSYSTEM_NAME,"spindexer not moving as fast",false);
 
                     }
                 })
