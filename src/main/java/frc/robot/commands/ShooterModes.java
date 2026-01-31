@@ -188,9 +188,17 @@ public class ShooterModes extends Command {
     canShootTrigger.onTrue(Commands.runOnce(() -> setShooterMode(ShooterMode.MANUAL_SHOOT)));
   }
 
+  private ChassisSpeeds getShooterFieldRelativeVelocity() {
+    ChassisSpeeds drivetrainSpeeds = RobotOdometry.getInstance().getFieldRelativeSpeeds();
+
+    // TODO: convert to shooter relative speeds with angular velocity of turret and robot_to_shooter
+    // transform
+    return drivetrainSpeeds;
+  }
+
   private Double[] calculateShootOnTheMove(double v, Angle theta, Angle phi) {
     // speeds need to be field relative
-    ChassisSpeeds fieldRelativeSpeeds = RobotOdometry.getInstance().getFieldRelativeSpeeds();
+    ChassisSpeeds fieldRelativeSpeeds = getShooterFieldRelativeVelocity();
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
     double robotVy = fieldRelativeSpeeds.vyMetersPerSecond;
 
