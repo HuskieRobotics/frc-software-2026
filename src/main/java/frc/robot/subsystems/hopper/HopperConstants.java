@@ -1,5 +1,9 @@
 package frc.robot.subsystems.hopper;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public class HopperConstants {
 
     // NOTE: Everything referring to the 'roller' motor is referred to as the 'kicker' motor by other subteams.
@@ -38,4 +42,7 @@ public class HopperConstants {
     public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.0; // FIXME: Update value
     public static final double ROLLER_CURRENT_SPIKE_THRESHHOLD_AMPS = 0.0; // FIXME: Update value
     public static final double ROLLER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.0; // FIXME: Update value
+
+    public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY = RotationsPerSecond.of(0.0); // <-- Should be negative (rotations per second) // FIXME: Update value
+    public static final AngularVelocity ROLLER_UNJAM_VELOCITY = RotationsPerSecond.of(0.0); // <-- Should be negative (rotations per second) // FIXME: Update value
 }

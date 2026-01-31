@@ -19,11 +19,14 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.SUBSYSTEM_NAME;
 import static frc.robot.subsystems.hopper.HopperConstants.ROLLER_CURRENT_SPIKE_THRESHHOLD_AMPS;
 import static frc.robot.subsystems.hopper.HopperConstants.ROLLER_CURRENT_SPIKE_THRESHOLD_SECONDS;
 import static frc.robot.subsystems.hopper.HopperConstants.ROLLER_MOTOR_MANUAL_CONTROL_VOLTAGE;
+import static frc.robot.subsystems.hopper.HopperConstants.ROLLER_UNJAM_VELOCITY;
 import static frc.robot.subsystems.hopper.HopperConstants.SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS;
 import static frc.robot.subsystems.hopper.HopperConstants.SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS;
 import static frc.robot.subsystems.hopper.HopperConstants.SPINDEXER_MOTOR_MANUAL_CONTROL_VOLTAGE;
+import static frc.robot.subsystems.hopper.HopperConstants.SPINDEXER_UNJAM_VELOCITY;
 
 import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -40,8 +43,8 @@ public class Hopper extends SubsystemBase {
     private CurrentSpikeDetector spindexerSpikeDetector = new CurrentSpikeDetector(SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS, SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS);
     private CurrentSpikeDetector rollerSpikeDetector = new CurrentSpikeDetector(ROLLER_CURRENT_SPIKE_THRESHHOLD_AMPS, ROLLER_CURRENT_SPIKE_THRESHOLD_SECONDS);
 
-    //private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
-    //private Alert rollerJammedAlert = new Alert("Kicker jam detected. This is the motor that kicks fuel from hopper into shooter.", AlertType.kError);
+    private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
+    private Alert rollerJammedAlert = new Alert("Kicker jam detected. This is the motor that kicks fuel from hopper into shooter.", AlertType.kError);
     
     public Hopper(HopperIO io){
         this.io = io;
@@ -53,6 +56,30 @@ public class Hopper extends SubsystemBase {
         io.updateInputs(inputs);
 
         Logger.processInputs(SUBSYSTEM_NAME, inputs);
+
+        if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrentAmps.in(Amps)))) {
+            CommandScheduler.getInstance()
+                .schedule(
+                    Commands.sequence(
+                        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
+                    )
+                );
+            spindexerJammedAlert.set(true);
+        } else {
+            spindexerJammedAlert.set(false);
+        }
+
+        if (rollerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrentAmps.in(Amps)))) {
+            CommandScheduler.getInstance()
+                .schedule(
+                    Commands.sequence(
+                        Commands.runOnce(() -> io.setRollerVelocity(ROLLER_UNJAM_VELOCITY))
+                    )
+                );
+            rollerJammedAlert.set(true);
+        } else {
+            rollerJammedAlert.set(false);
+        }
         
         if (testingMode.get()==1){
             if(spindexerVelocity.get()!=0){
@@ -78,7 +105,7 @@ public class Hopper extends SubsystemBase {
 
                     }
                 }),
-            Commands.runOnce(()->io.setSpindexerVoltage(SPINDEXER_MOTOR_MANUAL_CONTROL_VOLTAGE)), // FIXME
+            Commands.runOnce(()->io.setSpindexerVoltage(SPINDEXER_MOTOR_MANUAL_CONTROL_VOLTAGE)),
             Commands.waitSeconds(1.0),
             Commands.runOnce(
                 () -> { 
