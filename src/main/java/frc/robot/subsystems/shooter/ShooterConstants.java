@@ -9,7 +9,6 @@ public class ShooterConstants {
   }
 
   public static final String SUBSYSTEM_NAME = "Shooter";
-  public static final boolean SHOOTER_TUNING_MODE = false;
 
   // change the ids once we get the updated stuff
   public static final int FLYWHEEL_LEAD_MOTOR_ID = 0;
@@ -70,6 +69,24 @@ public class ShooterConstants {
   // Motion magic PID constants
   public static final double ROTATION_EXPO_KV = 0.0;
 
-  public static final double VELOCITY_TOLERANCE = 5.0; // FIXME: determine value
-  public static final double POSITION_TOLERANCE = 2.0; // FIXME: determine value
+  public static final double VELOCITY_TOLERANCE = 5.0;
+  public static final double POSITION_TOLERANCE = 2.0;
+
+  // Hood and turret position setpoints
+  public static final double HOOD_SETPOINT_1_DEGREES = 0.0;
+  public static final double HOOD_SETPOINT_2_DEGREES = 0.0;
+  public static final double HOOD_SETPOINT_3_DEGREES = 0.0;
+
+  public static final double TURRET_SETPOINT_1_DEGREES = 0.0;
+  public static final double TURRET_SETPOINT_2_DEGREES = 0.0;
+  public static final double TURRET_SETPOINT_3_DEGREES = 0.0;
+
+  // Velocity setpoints for lead flywheel
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_1_RPS = 0.0;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_2_RPS = 0.0;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_3_RPS = 0.0;
+
+  public static final double SHOOTER_IDLE_VELOCITY_RPS = 100.0; // idle velocity when not shooting
+
+  public static final double COMMAND_WAIT_TIME_SECONDS = 0.5; // time to wait between commands
 }

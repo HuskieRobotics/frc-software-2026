@@ -17,7 +17,6 @@ public interface ShooterIO {
   // Measure. Therefore all properties are suffix with their unit to mitigate bugs due to unit
   // mismatches.
 
-
   @AutoLog
   // IO Inputs are below
   public static class ShooterIOInputs {
@@ -84,20 +83,15 @@ public interface ShooterIO {
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-
-
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
-
   public default void setFlywheelLeadTorqueCurrent(Current amps) {}
-  // this is used in the reverseShooter() method
-
+  
   // Turret IO methods
   public default void setTurretPosition(Angle position) {}
   public default void setTurretVoltage(Voltage voltage) {} 
 
   // Hood IO methods
   public default void setHoodPosition(Angle position) {}
-
   public default void setHoodVoltage(Voltage voltage) {}
 }

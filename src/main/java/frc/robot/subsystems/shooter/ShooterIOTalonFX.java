@@ -1,9 +1,6 @@
 package frc.robot.subsystems.shooter;
-
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
-
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -74,6 +71,7 @@ private StatusSignal<AngularVelocity> flywheelFollow1VelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelFollow2VelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelFollow1ReferenceVelocityStatusSignal;
 private StatusSignal<AngularVelocity> flywheelFollow2ReferenceVelocityStatusSignal;
+
 //Flywheel closed loop velocity signals as Double due to API limitations
 private StatusSignal<Double> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
 private StatusSignal<Double> flywheelLeadClosedLoopErrorVelocityStatusSignal;
@@ -120,7 +118,7 @@ private Alert hoodConfigAlert =
 private Alert turretConfigAlert =
     new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
 
-// The following enables tuning of the PID and feedforward values for the arm by changing values
+// The following enables tuning of the PID and feedforward values by changing values
 // via AdvantageScope and not needing to change values in code, compile, and re-deploy.
 
 private final LoggedTunableNumber flywheelLeadKP =
@@ -173,10 +171,11 @@ public ShooterIOTalonFX() {
   flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
   flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
 
-  flywheelFollow1.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
-  flywheelFollow2.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from alligned to opposed if reversed
+  // Set up the flywheels 1 and 2 as followers of the lead flywheel
+  flywheelFollow1.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from aligned to opposed if reversed
+  flywheelFollow2.setControl(new Follower(FLYWHEEL_LEAD_MOTOR_ID, MotorAlignmentValue.Aligned)); // change from aligned to opposed if reversed
 
-// FLYWHEEL LEAD
+// Assign FLYWHEEL LEAD status signals
 flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
 flywheelLeadStatorCurrentStatusSignal = flywheelLead.getStatorCurrent();
 flywheelLeadTorqueCurrentStatusSignal = flywheelLead.getTorqueCurrent();
@@ -187,7 +186,7 @@ flywheelLeadClosedLoopErrorVelocityStatusSignal = flywheelLead.getClosedLoopErro
 flywheelLeadTemperatureStatusSignal = flywheelLead.getDeviceTemp();
 flywheelLeadVoltageStatusSignal = flywheelLead.getMotorVoltage();
 
-// Follow 1
+// Assign flywheel follow 1 status signals
 flywheelFollow1SupplyCurrentStatusSignal = flywheelFollow1.getSupplyCurrent();
 flywheelFollow1StatorCurrentStatusSignal = flywheelFollow1.getStatorCurrent();
 flywheelFollow1TorqueCurrentStatusSignal = flywheelFollow1.getTorqueCurrent();
@@ -198,7 +197,7 @@ flywheelFollow1ClosedLoopErrorVelocityStatusSignal = flywheelFollow1.getClosedLo
 flywheelFollow1TemperatureStatusSignal = flywheelFollow1.getDeviceTemp();
 flywheelFollow1VoltageStatusSignal = flywheelFollow1.getMotorVoltage();
 
-// Follow 2
+// Assign flywheel follow 2 status signals
 flywheelFollow2SupplyCurrentStatusSignal = flywheelFollow2.getSupplyCurrent();
 flywheelFollow2StatorCurrentStatusSignal = flywheelFollow2.getStatorCurrent();
 flywheelFollow2TorqueCurrentStatusSignal = flywheelFollow2.getTorqueCurrent();
@@ -209,14 +208,14 @@ flywheelFollow2ClosedLoopErrorVelocityStatusSignal = flywheelFollow2.getClosedLo
 flywheelFollow2TemperatureStatusSignal = flywheelFollow2.getDeviceTemp();
 flywheelFollow2VoltageStatusSignal = flywheelFollow2.getMotorVoltage();
 
-// TURRET
+// Assign turret status signals
 turretStatorCurrentStatusSignal = turret.getStatorCurrent();
 turretSupplyCurrentStatusSignal = turret.getSupplyCurrent();
 turretTemperatureStatusSignal = turret.getDeviceTemp();
 turretVoltageStatusSignal = turret.getMotorVoltage();
 turretPositionStatusSignal = turret.getPosition();
 
-// HOOD
+// Assign hood status signals
 hoodStatorCurrentStatusSignal = hood.getStatorCurrent();
 hoodTemperatureStatusSignal = hood.getDeviceTemp();
 hoodVoltageStatusSignal = hood.getMotorVoltage();
@@ -271,6 +270,8 @@ hoodPositionStatusSignal = hood.getPosition();
       hoodPositionStatusSignal
 
       );
+
+  // Configure all motors
   configFlywheel(flywheelLead, FLYWHEEL_LEAD_INVERTED, "flywheel lead", true, flywheelLeadConfigAlert);
   configFlywheel(flywheelFollow1, FLYWHEEL_FOLLOW_1_INVERTED, "flywheel follow 1", false, flywheelFollow1ConfigAlert);
   configFlywheel(flywheelFollow2, FLYWHEEL_FOLLOW_2_INVERTED, "flywheel follow 2", false, flywheelFollow2ConfigAlert);
@@ -412,8 +413,7 @@ inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatus
   // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
   // will always be populated.
 
-  if(SHOOTER_TUNING_MODE){
-
+  if(Constants.TUNING_MODE){ //If the entire robot is in tuning mode
     //Flywheel Lead
     inputs.flywheelLeadClosedLoopReferenceVelocity =
         RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
@@ -425,6 +425,7 @@ inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatus
         RotationsPerSecond.of(flywheelFollow1.getClosedLoopReference().getValue());
     inputs.flywheelFollow1ClosedLoopErrorVelocity =
         RotationsPerSecond.of(flywheelFollow1.getClosedLoopError().getValue());
+
     //Flywheel Follow2
     inputs.flywheelFollow2ClosedLoopReferenceVelocity =
         RotationsPerSecond.of(flywheelFollow2.getClosedLoopReference().getValue());
@@ -501,7 +502,7 @@ inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatus
     hoodMotionMagicCruiseVelocity);
 
   // The last step in the updateInputs method is to update the simulation.
-  if (Constants.getMode() == Constants.Mode.SIM) {
+  if (Constants.getMode() == Constants.Mode.SIM) { //If the entire robot is in simulation
     flywheelLeadSim.updateSim();
     turretLeadSim.updateSim();
     hoodLeadSim.updateSim();
@@ -510,18 +511,16 @@ inputs.flywheelFollow2ReferenceVelocity = flywheelFollow2ReferenceVelocityStatus
   }
 }
 
-// implementation of IO methods that uses commaands that we import
-
 @Override
 public void setFlywheelLeadVelocity(AngularVelocity velocity) {
-  flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocity));
+  flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocity)); // velocities for followers should be set automatically
   // To improve performance, we store the reference velocity as an instance variable to avoid
   // having to retrieve the status signal object from the device in the updateInputs method.
 }
 
 @Override
 public void setFlywheelLeadTorqueCurrent(Current amps) {
-    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(amps));
+    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(amps)); //current for followers should be set automatically
 }
 
 @Override
@@ -631,8 +630,6 @@ private void configHood(TalonFX hood, boolean isInverted, String motorName, Aler
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
 }
     
-    
-
 }
 
 
