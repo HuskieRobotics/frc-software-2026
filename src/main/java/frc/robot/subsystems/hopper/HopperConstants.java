@@ -16,7 +16,7 @@ public class HopperConstants {
     public static final double ROLLER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value
 
     public static final double SPINDEXER_GEAR_RATIO = 10.0; 
-    public static final double ROLLER_GEAR_RATIO = 1.0; // FIXME: Update value
+    public static final double ROLLER_GEAR_RATIO = 1.0; 
 
     public static final boolean SPINDEXER_MOTOR_INVERTED = false;
     public static final boolean ROLLER_MOTOR_INVERTED = false;

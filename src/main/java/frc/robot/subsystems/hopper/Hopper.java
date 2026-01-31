@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team6328.util.LoggedTracer;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Voltage;
@@ -38,8 +40,8 @@ public class Hopper extends SubsystemBase {
     private CurrentSpikeDetector spindexerSpikeDetector = new CurrentSpikeDetector(SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS, SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS);
     private CurrentSpikeDetector rollerSpikeDetector = new CurrentSpikeDetector(ROLLER_CURRENT_SPIKE_THRESHHOLD_AMPS, ROLLER_CURRENT_SPIKE_THRESHOLD_SECONDS);
 
-    private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
-    private Alert rollerJammedAlert = new Alert("Kicker jam detected. This is the motor that kicks fuel from hopper into shooter.", AlertType.kError);
+    //private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
+    //private Alert rollerJammedAlert = new Alert("Kicker jam detected. This is the motor that kicks fuel from hopper into shooter.", AlertType.kError);
     
     public Hopper(HopperIO io){
         this.io = io;
@@ -47,40 +49,25 @@ public class Hopper extends SubsystemBase {
         FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getHopperSystemCheckCommand());
     }
 
-    public void setRollerVelocity(double velocity) {
-        io.setRollerVelocity(Units.RotationsPerSecond.of(velocity));
-    }
-    
-    public void setSpindexerVelocity(double velocity) {
-         io.setSpindexerVelocity(Units.RotationsPerSecond.of(velocity));
-    }
-
     public void periodic() {
         io.updateInputs(inputs);
 
         Logger.processInputs(SUBSYSTEM_NAME, inputs);
-
-        if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrentAmps.in(Amps)))) {
-            CommandScheduler.getInstance()
-                .schedule(
-                    Commands.sequence(
-                        Commands.runOnce(() -> HopperIO.setSpindexerVelocity(0.0)), this)
-                        Commands.run(
-                            () -> LEDs.getInstance().requestState(null);)
-                    )
-                );
-        }
         
         if (testingMode.get()==1){
             if(spindexerVelocity.get()!=0){
                 setSpindexerVelocity(spindexerVelocity.get());
             }
+            if(rollerVelocity.get()!=0) {
+                setRollerVelocity(rollerVelocity.get());
+            }
         }
 
+        LoggedTracer.record(SUBSYSTEM_NAME);
     }
 
-    private Command getHopperSystemCheckCommand() { // FIXME: This entire method may need to be updated. We are not sure of 
-        return Command.sequence( // FIXME
+    private Command getHopperSystemCheckCommand() { // FIXME: This entire method may need to be updated. We are not sure of it.
+        return Commands.sequence(
             Commands.runOnce(()->io.setRollerVoltage(ROLLER_MOTOR_MANUAL_CONTROL_VOLTAGE)), // FIXME
             Commands.waitSeconds(1.0),
             Commands.runOnce(
@@ -105,8 +92,24 @@ public class Hopper extends SubsystemBase {
                 .andThen(Commands.runOnce(() -> io.setRollerVoltage(0.0))));
             
             
-        }
-    
     }
+
+    public void setRollerVelocity(double velocity) {
+        io.setRollerVelocity(Units.RotationsPerSecond.of(velocity));
+    }
+    
+    public void setSpindexerVelocity(double velocity) {
+         io.setSpindexerVelocity(Units.RotationsPerSecond.of(velocity));
+    }
+
+    public double getRollerVelocity() {
+        return rollerVelocity.get();
+    }
+
+    public double getSpindexerVelocity() {
+        return spindexerVelocity.get();
+    }
+    
+}
 
 
