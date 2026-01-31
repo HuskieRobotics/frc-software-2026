@@ -66,7 +66,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
-    inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
+    inputs.positionInches = inputs.positionRotations * Math.PI;
   }
 
   @Override
