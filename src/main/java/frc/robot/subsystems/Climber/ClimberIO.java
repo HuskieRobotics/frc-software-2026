@@ -1,5 +1,9 @@
 package frc.robot.subsystems.climber;
 
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
@@ -7,18 +11,19 @@ public interface ClimberIO {
   @AutoLog
   public static class ClimberIOInputs {
     // logging values
-    double voltageSupplied = 0.0;
-    double statorCurrentAmps = 0.0;
-    double supplyCurrentAmps = 0.0;
-    double tempCelsius = 0.0;
+    public boolean connected = false;
+    public double voltage = 0.0;
+    public double statorCurrentAmps = 0.0;
+    public double supplyCurrentAmps = 0.0;
+    public double tempCelsius = 0.0;
+    public double positionRotations = 0.0;
+    public double positionInches = 0.0;
 
-    boolean cageCatcherLimitSwitchEngaged = false;
+    public Angle closedLoopError = Rotations.of(0.0);
+    public Angle closedLoopReference = Rotations.of(0.0);
 
-    Angle closedLoopError = Rotations.of(0.0);
-    Angle closedLoopReference = Rotations.of(0.0);
-
-    Distance linearPosition = Meters.of(0.0);
-    Angle angularPosition = Rotations.of(0.0);
+    public Distance linearPosition = Meters.of(0.0);
+    public Angle angularPosition = Rotations.of(0.0);
   }
 
   public default void setPosition(Distance position) {}
