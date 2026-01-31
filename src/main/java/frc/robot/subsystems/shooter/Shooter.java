@@ -147,9 +147,9 @@ private final SysIdRoutine flywheelIdRoutine =
     .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
     .andThen(
       Commands.runOnce(() -> { //FIXME: set to safe positions/velocities
-        io.setFlywheelLeadVelocity(RotationsPerSecond.of(0.0));
-        io.setHoodPosition(Degrees.of(0.0));
-        io.setTurretPosition(Degrees.of(0.0));
+        io.setFlywheelLeadVelocity(RotationsPerSecond.of(5));
+        io.setHoodPosition(Degrees.of(30));
+        io.setTurretPosition(Degrees.of(30));
       })
     );
  }
@@ -272,6 +272,10 @@ public void checkPosition(double hoodIntendedPositionDegrees, double turretInten
 
 public void setFlywheelLeadVelocity(AngularVelocity velocity){      
    io.setFlywheelLeadVelocity(velocity);
+ }
+
+ public void setIdleVelocity(){ //when shooting modes are NOT determining the necessary velocity for the flywheels
+  io.setFlywheelLeadVelocity(RotationsPerSecond.of(ShooterConstants.SHOOTER_IDLE_VELOCITY_RPS));
  }
 
  public void setTurretPosition(Angle position){
