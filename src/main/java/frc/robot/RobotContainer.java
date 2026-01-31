@@ -78,7 +78,7 @@ public class RobotContainer {
   private Shooter shooter;
   private RobotVisualization visualization;
 
-  private final ShooterModes shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+  private final ShooterModes shooterModes;
 
   private Trigger rotateNearBumpTrigger;
   private Trigger runHopperOTMandAZTrigger;
@@ -100,12 +100,6 @@ public class RobotContainer {
      * that use it directly or indirectly. If this isn't done, a null pointer exception will result.
      */
     createRobotConfig();
-    Field2d.getInstance().populateAllianceZone();
-    Field2d.getInstance().logAllianceZonePoints();
-    Field2d.getInstance().populateTrenchZone();
-    Field2d.getInstance().logTrenchZonePoints();
-    Field2d.getInstance().populateBumpZone();
-    Field2d.getInstance().logBumpZonePoints();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -166,6 +160,10 @@ public class RobotContainer {
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
       visualization = new RobotVisualization(elevator);
+
+      shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+
+
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -353,6 +351,13 @@ public class RobotContainer {
    */
   private void constructField() {
     Field2d.getInstance().setRegions(new Region2d[] {});
+
+    Field2d.getInstance().populateAllianceZone();
+    Field2d.getInstance().logAllianceZonePoints();
+    Field2d.getInstance().populateTrenchZone();
+    Field2d.getInstance().logTrenchZonePoints();
+    Field2d.getInstance().populateBumpZone();
+    Field2d.getInstance().logBumpZonePoints();
   }
 
   /**
@@ -387,6 +392,8 @@ public class RobotContainer {
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
           oi, swerveDrivetrain, vision, arm, elevator, manipulator, shooter, shooterModes);
+
+      configureRobotContainerTriggers();
     }
 
     // Endgame alerts
