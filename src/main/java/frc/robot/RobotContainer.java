@@ -78,7 +78,7 @@ public class RobotContainer {
   private Shooter shooter;
   private RobotVisualization visualization;
 
-  private final ShooterModes shooterModes;
+  private ShooterModes shooterModes;
 
   private Trigger rotateNearBumpTrigger;
   private Trigger runHopperOTMandAZTrigger;
@@ -162,8 +162,6 @@ public class RobotContainer {
       visualization = new RobotVisualization(elevator);
 
       shooterModes = new ShooterModes(swerveDrivetrain, shooter);
-
-
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration

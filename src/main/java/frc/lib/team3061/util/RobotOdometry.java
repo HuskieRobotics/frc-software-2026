@@ -6,6 +6,7 @@ import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import java.util.Optional;
@@ -24,6 +25,8 @@ import org.littletonrobotics.junction.Logger;
 public abstract class RobotOdometry {
   private static RobotOdometry robotOdometry;
   private CustomPoseEstimator customEstimator = null;
+
+  private ChassisSpeeds chassisSpeeds = null;
 
   /**
    * When tuning vision, it is useful to log vision pose estimates and display them in
@@ -120,6 +123,34 @@ public abstract class RobotOdometry {
         Logger.recordOutput("RobotOdometry/visionPoseDiff", diff);
       }
     }
+  }
+
+  /**
+   * Sets the ChassisSpeeds for RobotOdometry (called from the drive train)
+   *
+   * @param customOdometry
+   */
+  public void updateChassisSpeeds(ChassisSpeeds speeds) {
+    this.chassisSpeeds = speeds;
+  }
+
+  /**
+   * Returns the ChassisSpeeds for RobotOdometry
+   *
+   * @return ChassisSpeeds
+   */
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return this.chassisSpeeds;
+  }
+
+  /**
+   * Returns the Field Relative ChassisSpeeds for RobotOdometry
+   *
+   * @param customOdometry
+   */
+  public ChassisSpeeds getFieldRelativeSpeeds() {
+    return ChassisSpeeds.fromFieldRelativeSpeeds(
+        this.chassisSpeeds, this.getEstimatedPose().getRotation());
   }
 
   /**

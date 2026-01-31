@@ -2,10 +2,13 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.shooter.Shooter;
@@ -183,5 +186,37 @@ public class ShooterModes extends Command {
                     && isHubActive());
 
     canShootTrigger.onTrue(Commands.runOnce(() -> setShooterMode(ShooterMode.MANUAL_SHOOT)));
+  }
+
+  private Double[] calculateShootOnTheMove(double v, Angle theta, Angle phi) {
+    // speeds need to be field relative
+    ChassisSpeeds fieldRelativeSpeeds = RobotOdometry.getInstance().getFieldRelativeSpeeds();
+    double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
+    double robotVy = fieldRelativeSpeeds.vyMetersPerSecond;
+
+    // v prime
+    double newFlywheelVelocity =
+        Math.sqrt(
+            Math.pow(v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
+                + Math.pow(v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)
+                + Math.pow(v * Math.sin(theta.in(Radians)), 2));
+
+    double newHoodAngle =
+        Math.atan(
+            (v * Math.sin(theta.in(Radians)))
+                / Math.sqrt(
+                    Math.pow(
+                            v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx,
+                            2)
+                        + Math.pow(
+                            v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy,
+                            2)));
+
+    double newTurretAngle =
+        Math.atan(
+            (v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy)
+                / (v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx));
+
+    return new Double[] {newFlywheelVelocity, newHoodAngle, newTurretAngle};
   }
 }

@@ -690,6 +690,9 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
     // Record cycle time
     LoggedTracer.record("Drivetrain");
+
+    // give chassis speeds to odometry for public access throughout the robot
+    RobotOdometry.getInstance().updateChassisSpeeds(this.getRobotRelativeSpeeds());
   }
 
   /**
