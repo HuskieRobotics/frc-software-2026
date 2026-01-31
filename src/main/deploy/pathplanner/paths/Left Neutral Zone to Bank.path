@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.439727164887308,
-        "y": 0.6189561091340454
+        "x": 7.7535587188558335,
+        "y": 4.589098457893872
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.688398576512456,
-        "y": 0.7373072360616835
+        "x": 6.720676156583631,
+        "y": 8.580759193357059
       },
       "isLocked": false,
-      "linkedName": "Right Starting Point"
+      "linkedName": "Real Neutral Zone"
     },
     {
       "anchor": {
-        "x": 7.6997627520759195,
-        "y": 3.3625504151838665
+        "x": 3.150488888895933,
+        "y": 7.421133333332437
       },
       "prevControl": {
-        "x": 7.850391459074734,
-        "y": 0.03795966785290705
+        "x": 4.924177777784822,
+        "y": 7.249811111110215
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Neutral Zone"
+      "linkedName": "Left Bank"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Neutral Zone+Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

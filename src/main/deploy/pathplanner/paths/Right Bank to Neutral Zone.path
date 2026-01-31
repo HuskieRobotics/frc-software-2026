@@ -3,34 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.635,
-        "y": 1.193
+        "x": 3.0094,
+        "y": 0.6488666666666665
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.537164887307236,
-        "y": 0.32845788849347646
+        "x": 7.393233333333333,
+        "y": 0.42715555555555634
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Bank"
     },
     {
       "anchor": {
-        "x": 2.7070666666666665,
-        "y": 2.1504555555555553
+        "x": 7.6997627520759195,
+        "y": 3.3625504151838665
       },
       "prevControl": {
-        "x": 2.3039555555555555,
-        "y": 0.25583333333333247
+        "x": 7.695566666666668,
+        "y": 0.6085555555555562
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Neutral Zone"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.6,
       "rotationDegrees": 90.0
     }
   ],
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 43.531
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Neutral Zone x2",
