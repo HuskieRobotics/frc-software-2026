@@ -114,7 +114,6 @@ public class CrossSubsystemsCommandsFactory {
 
     manualShootTrigger
         .and(shooterModes::manualShootEnabled)
-        .and(Field2d.getInstance()::inAllianceZone)
         .whileTrue(unloadShooter(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
@@ -155,7 +154,7 @@ public class CrossSubsystemsCommandsFactory {
           double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
 
           double nearest45DegreeAngle =
-              (Math.round((currentRotationPose - 45.0) / 90.0) * 90.0) + 45.0;
+              (Math.round((currentRotationPose / 45) * 45) + 45.0); // find nearest 45 degree angle
           Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
           drivetrain.driveFacingAngle(

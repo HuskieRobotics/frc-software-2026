@@ -144,10 +144,14 @@ public class ShooterModes extends Command {
 
   private void configureShooterModeTriggers() {
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
-    nearTrenchTrigger.whileTrue(
-        Commands.startEnd(
-            () -> setShooterMode(ShooterMode.NEAR_TRENCH),
-            () -> setShooterMode(null) // set it back so that it returns to automatic modes?
+    nearTrenchTrigger.whileTrue(Commands.run(() -> setShooterMode(ShooterMode.NEAR_TRENCH)));
+    nearTrenchTrigger.onFalse(
+        Commands.runOnce(
+            () ->
+                setShooterMode(
+                    null) // I think we will need this to reset the mode when leaving trench. I
+            // think it should correct itself based on other triggers but just in
+            // case.
             ));
 
     passModeTrigger =
