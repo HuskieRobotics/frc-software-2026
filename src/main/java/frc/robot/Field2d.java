@@ -48,13 +48,15 @@ public class Field2d {
   private Region2d transformedRightTrenchZoneBLUE;
   private Region2d transformedLeftTrenchZoneRED;
   private Region2d transformedRightTrenchZoneRED;
-  private Region2d transformedLeftBumpZone;
-  private Region2d transformedRightBumpZone;
+  private Region2d transformedLeftBumpZoneBLUE;
+  private Region2d transformedRightBumpZoneBLUE;
+  private Region2d transformedLeftBumpZoneRED;
+  private Region2d transformedRightBumpZoneRED;
   private final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
 
   private final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
 
-  private final double BUMP_ZONE_BUFFER_X_INCHES = 6;
+  private final double BUMP_ZONE_BUFFER_X_INCHES = 7;
 
   private final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
 
@@ -236,8 +238,20 @@ public class Field2d {
               FieldConstants.LinesHorizontal.rightBumpStart)
         };
 
-    this.transformedLeftBumpZone = new Region2d(leftBumpEdges);
-    this.transformedRightBumpZone = new Region2d(rightBumpEdges);
+    Translation2d[] leftBumpEdgesRED = new Translation2d[leftBumpEdges.length];
+    Translation2d[] rightBumpEdgesRED = new Translation2d[rightBumpEdges.length];
+
+    for (int i = 0; i < leftBumpEdges.length; i++) {
+      leftBumpEdgesRED[i] = FlippingUtil.flipFieldPosition(leftBumpEdges[i]);
+    }
+    for (int i = 0; i < rightBumpEdges.length; i++) {
+      rightBumpEdgesRED[i] = FlippingUtil.flipFieldPosition(rightBumpEdges[i]);
+    }
+
+    this.transformedLeftBumpZoneBLUE = new Region2d(leftBumpEdges);
+    this.transformedRightBumpZoneBLUE = new Region2d(rightBumpEdges);
+    this.transformedLeftBumpZoneRED = new Region2d(leftBumpEdgesRED);
+    this.transformedRightBumpZoneRED = new Region2d(rightBumpEdgesRED);
   }
 
   public void logAllianceZonePoints() {
@@ -252,8 +266,10 @@ public class Field2d {
   }
 
   public void logBumpZonePoints() {
-    transformedLeftBumpZone.logPoints("leftBumpZone");
-    transformedRightBumpZone.logPoints("rightBumpZone");
+    transformedLeftBumpZoneBLUE.logPoints("leftBumpZone BLUE");
+    transformedRightBumpZoneBLUE.logPoints("rightBumpZone BLUE");
+    transformedLeftBumpZoneRED.logPoints("leftBumpZone RED");
+    transformedRightBumpZoneRED.logPoints("rightBumpZone RED");
   }
 
   /**
@@ -439,7 +455,10 @@ public class Field2d {
       pose = FlippingUtil.flipFieldPose(pose);
     }
 
-    return transformedLeftBumpZone.contains(pose) || transformedRightBumpZone.contains(pose);
+    return transformedLeftBumpZoneBLUE.contains(pose)
+        || transformedRightBumpZoneBLUE.contains(pose)
+        || transformedLeftBumpZoneRED.contains(pose)
+        || transformedRightBumpZoneRED.contains(pose);
   }
 
   public Pose2d getNearestBank() {

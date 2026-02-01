@@ -150,24 +150,24 @@ public class CrossSubsystemsCommandsFactory {
   // this will rotate our robot into a diamond shape while we are near the bump zone
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
 
-    double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
-
-    double nearest45DegreeAngle =
-        Math.round(currentRotationPose / 45.0) * 45.0; // find nearest 45 degree angle
-
-    Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
-
     return Commands.run(
-        () ->
-            drivetrain.driveFacingAngle(
-                RobotConfig.getInstance()
-                    .getRobotMaxVelocity()
-                    .times(OISelector.getOperatorInterface().getTranslateX()),
-                RobotConfig.getInstance()
-                    .getRobotMaxVelocity()
-                    .times(OISelector.getOperatorInterface().getTranslateY()),
-                targetRotation,
-                false));
+        () -> {
+          double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
+
+          double nearest45DegreeAngle =
+              (Math.round((currentRotationPose - 45.0) / 90.0) * 90.0) + 45.0;
+          Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
+
+          drivetrain.driveFacingAngle(
+              RobotConfig.getInstance()
+                  .getRobotMaxVelocity()
+                  .times(OISelector.getOperatorInterface().getTranslateX()),
+              RobotConfig.getInstance()
+                  .getRobotMaxVelocity()
+                  .times(OISelector.getOperatorInterface().getTranslateY()),
+              targetRotation,
+              false);
+        });
   }
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in

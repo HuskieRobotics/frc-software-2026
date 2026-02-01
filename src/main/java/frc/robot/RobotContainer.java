@@ -101,6 +101,8 @@ public class RobotContainer {
      */
     createRobotConfig();
 
+    constructField();
+
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
 
@@ -160,14 +162,12 @@ public class RobotContainer {
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
       visualization = new RobotVisualization(elevator);
-
-      shooterModes = new ShooterModes(swerveDrivetrain, shooter);
     }
+
+    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
-
-    constructField();
 
     updateOI();
 
@@ -471,7 +471,7 @@ public class RobotContainer {
   public void configureRobotContainerTriggers() {
 
     rotateNearBumpTrigger = new Trigger(() -> Field2d.getInstance().inBumpZone());
-    rotateNearBumpTrigger.onTrue(
+    rotateNearBumpTrigger.whileTrue(
         CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
 
     runHopperOTMandAZTrigger =
