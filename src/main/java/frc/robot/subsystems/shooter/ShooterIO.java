@@ -1,4 +1,5 @@
 package frc.robot.subsystems.shooter;
+
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
@@ -76,7 +77,7 @@ public interface ShooterIO {
     Angle hoodClosedLoopReferencePosition = Degrees.of(0.0);
     Angle hoodClosedLoopErrorPosition = Degrees.of(0.0);
     Temperature hoodTemperature = Celsius.of(0.0);
-    
+
     Angle encoderAngleDegrees = Degrees.of(0.0);
     AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
   }
@@ -85,13 +86,16 @@ public interface ShooterIO {
 
   // Flywheel IO methods
   public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
+
   public default void setFlywheelLeadTorqueCurrent(Current amps) {}
-  
+
   // Turret IO methods
   public default void setTurretPosition(Angle position) {}
-  public default void setTurretVoltage(Voltage voltage) {} 
+
+  public default void setTurretVoltage(Voltage voltage) {}
 
   // Hood IO methods
   public default void setHoodPosition(Angle position) {}
+
   public default void setHoodVoltage(Voltage voltage) {}
 }
