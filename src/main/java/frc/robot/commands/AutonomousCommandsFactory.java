@@ -119,6 +119,14 @@ public class AutonomousCommandsFactory {
     autoChooser.addOption( // start by driving slowing in a circle to align wheels
         "Drive Wheel Radius Characterization",
         this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
+
+    autoChooser.addOption(
+        "Left Neutral Zone Hopper and Climb",
+        leftNeutralZoneHopperAndClimb(drivetrain, null)); // add shooter later
+
+    autoChooser.addOption(
+        "Right Neutral Zone Hopper and Climb",
+        rightNeutralZoneHopperAndClimb(drivetrain, null)); // add shooter later
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain, Vision vision) {
