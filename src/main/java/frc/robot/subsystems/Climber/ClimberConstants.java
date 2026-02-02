@@ -29,4 +29,6 @@ public class ClimberConstants {
     public static final double GEAR_RATIO = 0.0;
     public static final double CLIMB_VOLTAGE = 0.0;
     public static final double RETRACT_VOLTAGE_SLOW = 0.0;
+    public static final double CIRFUMFERENCE_INCHES = 0.0;
+    public static final double MAX_HEIGHT_INCHES = 0.0;
 }
