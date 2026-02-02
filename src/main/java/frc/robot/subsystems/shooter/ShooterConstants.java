@@ -1,5 +1,9 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public class ShooterConstants {
 
   private static final String CONSTRUCTOR_EXCEPTION = "constant class";
@@ -69,7 +73,7 @@ public class ShooterConstants {
   // Motion magic PID constants
   public static final double ROTATION_EXPO_KV = 0.0;
 
-  public static final double VELOCITY_TOLERANCE = 5.0;
+  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
   public static final double POSITION_TOLERANCE = 2.0;
 
   // Hood and turret position setpoints
@@ -82,11 +86,11 @@ public class ShooterConstants {
   public static final double TURRET_SETPOINT_3_DEGREES = 0.0;
 
   // Velocity setpoints for lead flywheel
-  public static final double FLYWHEEL_VELOCITY_SETPOINT_1_RPS = 0.0;
-  public static final double FLYWHEEL_VELOCITY_SETPOINT_2_RPS = 0.0;
-  public static final double FLYWHEEL_VELOCITY_SETPOINT_3_RPS = 0.0;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_1_RPS = 30;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_2_RPS = 60;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_3_RPS = 90;
 
-  public static final double SHOOTER_IDLE_VELOCITY_RPS = 100.0; // idle velocity when not shooting
+  public static final double SHOOTER_IDLE_VELOCITY_RPS = 5; // idle velocity when not shooting
 
-  public static final double COMMAND_WAIT_TIME_SECONDS = 0.5; // time to wait between commands
+  public static final double COMMAND_WAIT_TIME_SECONDS = 3; // time to wait between commands
 }
