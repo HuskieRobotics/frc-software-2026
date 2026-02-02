@@ -1,9 +1,15 @@
 package frc.robot.subsystems.climber;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team6328.util.LoggedTracer;
-import frc.lib.team6328.util.LoggedTunableNumber;
-import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
+import org.littletonrobotics.junction.AutoLog;
+
+
 
 public class Climber extends SubsystemBase {
   private ClimberIO io;

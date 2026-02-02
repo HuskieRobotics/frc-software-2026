@@ -1,4 +1,4 @@
-package frc.robot.subsystems.climber;
+package frc.robot.subsystems.Climber;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -11,10 +11,9 @@ public interface ClimberIO {
   @AutoLog
   public static class ClimberIOInputs {
     // logging values
-    public boolean connected = false;
-    public Voltage voltageSupplied = Voltage.of(0.0);
-    public Current statorCurrent = 0.0;
-    public Current supplyCurrent = 0.0;
+    public Voltage voltageSupplied = Volts.of(0.0);
+    public Current statorCurrent = Amps.of(0.0);
+    public Current supplyCurrent = Amps.of(0.0);
     public Temperature temperature = Temperature.of(0.0);
     public double positionRotations = 0.0;
     public double positionInches = inches.of(0.0);
