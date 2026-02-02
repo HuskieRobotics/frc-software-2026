@@ -33,7 +33,7 @@ public class ShooterModes extends Command {
     MANUAL_SHOOT, // Shoot only when we want
     SHOOT_OTM, // shoot on the move
     COLLECT_AND_HOLD, // collecting and holding fuel in hopper
-    NEAR_TRENCH, // near the trenh zone
+    NEAR_TRENCH, // near the trench zone
     PASS // passing mode
   }
 
@@ -77,7 +77,7 @@ public class ShooterModes extends Command {
     } else {
       if (OISelector.getOperatorInterface()
           .getPassToggle()
-          .getAsBoolean()) { // pass toggeled by perator
+          .getAsBoolean()) { // pass toggled by operator
         return ShooterMode.PASS;
       } else {
         return ShooterMode.COLLECT_AND_HOLD;

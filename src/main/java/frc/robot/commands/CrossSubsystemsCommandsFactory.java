@@ -110,11 +110,10 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
 
-    Trigger manualShootTrigger = oi.getManualShootButton();
-
-    manualShootTrigger
-        .and(shooterModes::manualShootEnabled)
-        .whileTrue(unloadShooter(swerveDrivetrain));
+    Trigger manualShootTrigger =
+        oi.getManualShootButton()
+            .and(shooterModes::manualShootEnabled)
+            .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -140,7 +139,7 @@ public class CrossSubsystemsCommandsFactory {
 
     return Commands.either(
         Commands.sequence(
-            getDriveToBankCommand(drivetrain), unloadShooter(drivetrain /*, hopper*/)),
+            getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/)),
         Commands.none(),
         /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
         () -> shooterModes.manualShootEnabled());
@@ -153,8 +152,8 @@ public class CrossSubsystemsCommandsFactory {
         () -> {
           double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
 
-          double nearest45DegreeAngle =
-              (Math.round((currentRotationPose / 45) * 45) + 45.0); // find nearest 45 degree angle
+          double nearest45DegreeAngle = (Math.round(((currentRotationPose - 45) / 90)) * 90) + 45; // this should grab the nearest diamond angle (45+90x)
+            
           Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
           drivetrain.driveFacingAngle(
@@ -171,9 +170,9 @@ public class CrossSubsystemsCommandsFactory {
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
-  public static Command unloadShooter(SwerveDrivetrain drivetrain /*, Hopper hopper */) {
+  public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain /*, Hopper hopper */) {
 
-    return Commands.parallel(Commands.run(drivetrain::holdXstance));
+    return Commands.sequence(Commands.runOnce(drivetrain::holdXstance));
     // add hopper kick method in parallel
   }
 

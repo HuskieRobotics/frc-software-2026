@@ -149,7 +149,7 @@ public abstract class RobotOdometry {
    * @param customOdometry
    */
   public ChassisSpeeds getFieldRelativeSpeeds() {
-    return ChassisSpeeds.fromFieldRelativeSpeeds(
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
         this.chassisSpeeds, this.getEstimatedPose().getRotation());
   }
 
