@@ -1,5 +1,9 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.units.measure.Angle;
+
+import static edu.wpi.first.units.Units.*;
+
 public class ShooterConstants {
 
   private static final String CONSTRUCTOR_EXCEPTION = "constant class";
@@ -11,7 +15,7 @@ public class ShooterConstants {
   public static final String SUBSYSTEM_NAME = "Shooter";
 
   // change the ids once we get the updated stuff
-  public static final int FLYWHEEL_LEAD_MOTOR_ID = 0;
+  public static final int FLYWHEEL_LEAD_MOTOR_ID = 0; //Updated in robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 0;
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 0;
   public static final int FLYWHEEL_FOLLOW_3_MOTOR_ID = 0;
@@ -48,6 +52,7 @@ public class ShooterConstants {
   public static final double HOOD_ROTATION_KP = 0.0;
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
+  public static final double HOOD_ROTATION_KG = 0.0;
   public static final double HOOD_ROTATION_EXPO_KV = 0.0;
   public static final double HOOD_ROTATION_EXPO_KA = 0.0;
   public static final double HOOD_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
@@ -55,10 +60,22 @@ public class ShooterConstants {
   public static final boolean HOOD_INVERTED = false;
   public static final double HOOD_GEAR_RATIO = 0;
 
+  // Hood angle limits
+  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(0.0);
+  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(0.0);
+
+  // Turret angle limits
+  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(0.0);
+  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0.0);
+
   // Current limits
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 40;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
   public static final int HOOD_PEAK_CURRENT_LIMIT = 20;
+  public static final int HOOD_CONTINUOUS_CURRENT_LIMIT = 15;
+  public static final int HOOD_PEAK_CURRENT_DURATION = 100;
+  public static final int TURRET_CONTINUOUS_CURRENT_LIMIT = 15;
+  public static final int TURRET_PEAK_CURRENT_DURATION = 100;
 
   // Hard coded non-tunable physics values
   public static final double MOTOR_KS = 0.0;

@@ -37,8 +37,6 @@ public class Shooter extends SubsystemBase {
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
       new LoggedTunableNumber("Shooter/FlyWheelLead Velocity", 0);
-  private final LoggedTunableNumber flywheelLeadTorqueCurrent =
-      new LoggedTunableNumber("Shooter/FlyWheelLead TorqueCurrent", 0);
   private final LoggedTunableNumber turretPosition =
       new LoggedTunableNumber("Shooter/Turret Position", 0);
   private final LoggedTunableNumber turretVoltage =
@@ -47,8 +45,6 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Hood Position", 0);
   private final LoggedTunableNumber hoodVoltage =
       new LoggedTunableNumber("Shooter/Hood Voltage", 0);
-  private final LoggedTunableBoolean isShooterConnected =
-      new LoggedTunableBoolean("Shooter/Is Shooter Connected", false);
 
   // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
   // be used for voltage control, we can apply a current instead and reinterpret the units when
@@ -82,26 +78,11 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(shooterInputs);
-    Logger.processInputs("Shooter", shooterInputs);
-    Logger.recordOutput("Shooter/IsShooterConnected", this.isShooterConnected.toString());
-    Logger.recordOutput("Shooter/TestingMode", this.testingMode.toString());
-    Logger.recordOutput("Shooter/HoodAngle", this.hoodPosition.toString());
-    Logger.recordOutput("Shooter/TurretAngle", this.turretPosition.toString());
-    Logger.recordOutput("Shooter/FlywheelLeadVelocity", this.flyWheelLeadVelocity.toString());
-    Logger.recordOutput("Shooter/ShooterConnected", isShooterConnected.get());
 
-    if (testingMode.get() == 1) { // If we are testing
-
-      // Set velocities/positions to reference (desired) values
-      io.setFlywheelLeadVelocity(shooterInputs.flywheelLeadReferenceVelocity);
-      io.setHoodPosition(shooterInputs.hoodReferencePosition);
-      io.setTurretPosition(shooterInputs.turretReferencePosition);
-
+    if (testingMode.get() == 1) { // If we are te
       // Flywheel Lead
       if (flyWheelLeadVelocity.get() != 0) {
         io.setFlywheelLeadVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
-      } else if (flywheelLeadTorqueCurrent.get() != 0) {
-        io.setFlywheelLeadTorqueCurrent(Amps.of(flywheelLeadTorqueCurrent.get()));
       } else if (turretPosition.get() != 0) {
         io.setTurretPosition(Degrees.of(turretPosition.get()));
       } else if (turretVoltage.get() != 0) {
@@ -116,14 +97,6 @@ public class Shooter extends SubsystemBase {
     // Log how long this subsystem takes to execute its periodic method.
     // This is useful for debugging performance issues.
     LoggedTracer.record("Shooter");
-  }
-
-  public boolean isShooterConnected() {
-    return (shooterInputs.flywheelLeadConnected
-        && shooterInputs.flywheelFollow1Connected
-        && shooterInputs.flywheelFollow2Connected
-        && shooterInputs.hoodConnected
-        && shooterInputs.turretConnected);
   }
 
   public Command getShooterSystemCheckCommand() {
