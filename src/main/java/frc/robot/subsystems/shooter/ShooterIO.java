@@ -26,12 +26,37 @@ public interface ShooterIO {
     boolean flywheelLeadConnected = false;
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
     Current flywheelLeadSupplyCurrent = Amps.of(0.0);
+    Current flywheelLeadTorqueCurrent = Amps.of(0.0);
     Voltage flywheelLeadVoltage = Volts.of(0.0);
     AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
     Temperature flywheelLeadTemperature = Celsius.of(0.0);
+
+    // FLYWHEEL FOLLOW 1
+    boolean flywheelFollow1Connected = false;
+    Current flywheelFollow1StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow1SupplyCurrent = Amps.of(0.0);
+    Current flywheelFollow1TorqueCurrent = Amps.of(0.0);
+    Voltage flywheelFollow1Voltage = Volts.of(0.0);
+    AngularVelocity flywheelFollow1Velocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow1ReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow1ClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow1ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow1Temperature = Celsius.of(0.0);
+
+    // FLYWHEEL FOLLOW 2
+    boolean flywheelFollow2Connected = false;
+    Current flywheelFollow2StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow2SupplyCurrent = Amps.of(0.0);
+    Current flywheelFollow2TorqueCurrent = Amps.of(0.0);
+    Voltage flywheelFollow2Voltage = Volts.of(0.0);
+    AngularVelocity flywheelFollow2Velocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow2ReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow2ClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelFollow2ClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow2Temperature = Celsius.of(0.0);
 
     boolean turretConnected = false;
     Current turretStatorCurrent = Amps.of(0.0);
@@ -60,8 +85,8 @@ public interface ShooterIO {
   public default void updateInputs(ShooterIOInputs inputs) {}
 
   // Flywheel IO methods
-  public default void setFlywheelVelocity(AngularVelocity velocity) {}
-  
+  public default void setFlywheelLeadVelocity(AngularVelocity velocity) {}
+
   public default void setFlywheelLeadTorqueCurrent(Current amps) {}
 
   // Turret IO methods

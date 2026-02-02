@@ -82,6 +82,13 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(shooterInputs);
+    Logger.processInputs("Shooter", shooterInputs);
+    Logger.recordOutput("Shooter/IsShooterConnected", this.isShooterConnected.toString());
+    Logger.recordOutput("Shooter/TestingMode", this.testingMode.toString());
+    Logger.recordOutput("Shooter/HoodAngle", this.hoodPosition.toString());
+    Logger.recordOutput("Shooter/TurretAngle", this.turretPosition.toString());
+    Logger.recordOutput("Shooter/FlywheelLeadVelocity", this.flyWheelLeadVelocity.toString());
+    Logger.recordOutput("Shooter/ShooterConnected", isShooterConnected.get());
 
     if (testingMode.get() == 1) { // If we are testing
 
