@@ -22,6 +22,9 @@ public class Climber extends SubsystemBase {
     this.io = io;
   }
 
+  FaultReporter.getInstance()
+        .registerSystemCheck(SUBSYSTEM_NAME, getClimberSystemCheckCommand());
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -30,6 +33,10 @@ public class Climber extends SubsystemBase {
       io.setVoltage(climberVoltage.get());
     }
     LoggedTracer.record("Climber");
+  }
+
+  public Command getClimberSystemCheckCommand() {
+    
   }
 
   public void climb() {
