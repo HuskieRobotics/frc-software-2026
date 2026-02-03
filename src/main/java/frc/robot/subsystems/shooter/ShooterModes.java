@@ -60,17 +60,17 @@ public class ShooterModes extends SubsystemBase {
     if (Field2d.getInstance().inAllianceZone()) {
       if (hubActive()
           && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-        setPrimaryShooterMode(ShooterMode.SHOOT_OTM);
+        setNormalShooterMode(ShooterMode.SHOOT_OTM);
       } else {
-        setPrimaryShooterMode(ShooterMode.MANUAL_SHOOT);
+        setNormalShooterMode(ShooterMode.MANUAL_SHOOT);
       }
     } else {
       if (OISelector.getOperatorInterface()
           .getPassToggle()
           .getAsBoolean()) { // pass toggled by operator
-        setPrimaryShooterMode(ShooterMode.PASS);
+        setNormalShooterMode(ShooterMode.PASS);
       } else {
-        setPrimaryShooterMode(ShooterMode.COLLECT_AND_HOLD);
+        setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD);
       }
     }
   }
@@ -135,7 +135,7 @@ public class ShooterModes extends SubsystemBase {
     return true;
   }
 
-  private void setPrimaryShooterMode(ShooterMode mode) {
+  private void setNormalShooterMode(ShooterMode mode) {
     this.primaryMode = mode;
     this.secondaryMode = mode;
   }
@@ -168,7 +168,7 @@ public class ShooterModes extends SubsystemBase {
                 OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
                     && !Field2d.getInstance().inAllianceZone());
 
-    passModeTrigger.onTrue(Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.PASS)));
+    passModeTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.PASS)));
 
     collectAndHoldTrigger =
         new Trigger(
@@ -177,7 +177,7 @@ public class ShooterModes extends SubsystemBase {
                     && !Field2d.getInstance().inAllianceZone());
 
     collectAndHoldTrigger.onTrue(
-        Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.COLLECT_AND_HOLD)));
+        Commands.runOnce(() -> setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD)));
 
     shootOTMTrigger =
         new Trigger(
@@ -187,7 +187,7 @@ public class ShooterModes extends SubsystemBase {
                     && !isNearTrenchEnabled()
                     && hubActive());
 
-    shootOTMTrigger.onTrue(Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.SHOOT_OTM)));
+    shootOTMTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOT_OTM)));
 
     canShootTrigger =
         new Trigger(
@@ -197,7 +197,7 @@ public class ShooterModes extends SubsystemBase {
                     && !isNearTrenchEnabled()
                     && hubActive());
 
-    canShootTrigger.onTrue(Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.MANUAL_SHOOT)));
+    canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
