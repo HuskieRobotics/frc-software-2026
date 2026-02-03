@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
-import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   // all subsystems receive a reference to their IO implementation when constructed
@@ -197,9 +195,12 @@ public class Shooter extends SubsystemBase {
       double flywheelFollow1IntendedVelocityRPS,
       double flywheelFollow2IntendedVelocityRPS) {
     // flywheel lead
-    if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond) - flywheelLeadIntendedVelocityRPS)
+    if (Math.abs(
+            shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond)
+                - flywheelLeadIntendedVelocityRPS)
         > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond)) - Math.abs(flywheelLeadIntendedVelocityRPS)
+      if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond))
+              - Math.abs(flywheelLeadIntendedVelocityRPS)
           < 0) {
         FaultReporter.getInstance()
             .addFault(
@@ -222,7 +223,9 @@ public class Shooter extends SubsystemBase {
     }
 
     // flywheel follow 1
-    if (Math.abs(shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond) - flywheelFollow1IntendedVelocityRPS)
+    if (Math.abs(
+            shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
+                - flywheelFollow1IntendedVelocityRPS)
         > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
       if (Math.abs(shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond))
               - Math.abs(flywheelFollow1IntendedVelocityRPS)
@@ -247,7 +250,9 @@ public class Shooter extends SubsystemBase {
       }
     }
     // flywheel follow 2
-    if (Math.abs(shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond) - flywheelFollow2IntendedVelocityRPS)
+    if (Math.abs(
+            shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
+                - flywheelFollow2IntendedVelocityRPS)
         > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
       if (Math.abs(shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond))
               - Math.abs(flywheelFollow2IntendedVelocityRPS)
@@ -276,7 +281,8 @@ public class Shooter extends SubsystemBase {
   public void checkPosition(
       double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees) {
     // Check if hood position is where it should be
-    if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees) > POSITION_TOLERANCE) {
+    if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees)
+        > POSITION_TOLERANCE) {
       if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(

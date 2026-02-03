@@ -1,10 +1,9 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.units.measure.Angle;
-
-import edu.wpi.first.units.measure.AngularVelocity;
-
 import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ShooterConstants {
 
@@ -17,7 +16,7 @@ public class ShooterConstants {
   public static final String SUBSYSTEM_NAME = "Shooter";
 
   // change the ids once we get the updated stuff
-  public static final int FLYWHEEL_LEAD_MOTOR_ID = 0; //Updated in robot devices and trackers sheet
+  public static final int FLYWHEEL_LEAD_MOTOR_ID = 0; // Updated in robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 0;
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 0;
   public static final int FLYWHEEL_FOLLOW_3_MOTOR_ID = 0;

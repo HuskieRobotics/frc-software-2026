@@ -500,7 +500,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     // having to retrieve the status signal object from the device in the updateInputs method.
   }
 
-  
   @Override
   public void setTurretPosition(Angle position) {
     turret.setControl(turretPositionRequest.withPosition(position));
@@ -562,12 +561,11 @@ public class ShooterIOTalonFX implements ShooterIO {
         ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit =
         ShooterConstants.TURRET_CONTINUOUS_CURRENT_LIMIT;
-    turretConfig.CurrentLimits.SupplyCurrentLowerTime = 
+    turretConfig.CurrentLimits.SupplyCurrentLowerTime =
         ShooterConstants.TURRET_PEAK_CURRENT_DURATION;
-    turretConfig.CurrentLimits.SupplyCurrentLimitEnable  = true;
+    turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.TorqueCurrent.PeakReverseTorqueCurrent =
         -ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;
-        
 
     turretConfig.Slot0.kP = turretKP.get();
     turretConfig.Slot0.kI = turretKI.get();
@@ -593,8 +591,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, turret);
   }
 
-
-
   private void configHood(TalonFX hood, boolean isInverted, String motorName, Alert configAlert) {
 
     TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
@@ -602,9 +598,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.TorqueCurrent.PeakForwardTorqueCurrent = ShooterConstants.HOOD_PEAK_CURRENT_LIMIT;
     hoodConfig.CurrentLimits.SupplyCurrentLowerLimit =
         ShooterConstants.HOOD_CONTINUOUS_CURRENT_LIMIT;
-    hoodConfig.CurrentLimits.SupplyCurrentLowerTime = 
-        ShooterConstants.HOOD_PEAK_CURRENT_DURATION;
-    hoodConfig.CurrentLimits.SupplyCurrentLimitEnable  = true;
+    hoodConfig.CurrentLimits.SupplyCurrentLowerTime = ShooterConstants.HOOD_PEAK_CURRENT_DURATION;
+    hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     hoodConfig.TorqueCurrent.PeakReverseTorqueCurrent = -ShooterConstants.HOOD_PEAK_CURRENT_LIMIT;
 
     hoodConfig.Slot0.kP = hoodKP.get();
@@ -618,14 +613,13 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    
+
     SoftwareLimitSwitchConfigs hoodLimitSwitches = hoodConfig.SoftwareLimitSwitch;
 
     hoodLimitSwitches.ForwardSoftLimitEnable = true;
     hoodLimitSwitches.ForwardSoftLimitThreshold = HOOD_UPPER_ANGLE_LIMIT.in(Rotations);
     hoodLimitSwitches.ReverseSoftLimitEnable = true;
     hoodLimitSwitches.ReverseSoftLimitThreshold = HOOD_LOWER_ANGLE_LIMIT.in(Rotations);
-    
 
     Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
 
