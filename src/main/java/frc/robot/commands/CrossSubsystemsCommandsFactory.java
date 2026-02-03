@@ -25,6 +25,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterModes;
 import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
@@ -152,8 +153,10 @@ public class CrossSubsystemsCommandsFactory {
         () -> {
           double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
 
-          double nearest45DegreeAngle = (Math.round(((currentRotationPose - 45) / 90)) * 90) + 45; // this should grab the nearest diamond angle (45+90x)
-            
+          double nearest45DegreeAngle =
+              (Math.round(((currentRotationPose - 45) / 90)) * 90)
+                  + 45; // this should grab the nearest diamond angle (45+90x)
+
           Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
           drivetrain.driveFacingAngle(

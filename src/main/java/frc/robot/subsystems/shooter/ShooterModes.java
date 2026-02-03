@@ -1,19 +1,18 @@
-package frc.robot.commands;
+package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
-import frc.robot.subsystems.shooter.Shooter;
 
-public class ShooterModes extends Command {
+public class ShooterModes extends SubsystemBase {
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
@@ -44,20 +43,7 @@ public class ShooterModes extends Command {
   }
 
   @Override
-  public void initialize() {
-    // Configure shooter settings here
-  }
-
-  @Override
-  public void execute() {}
-
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-  @Override
-  public void end(boolean interrupted) {}
+  public void periodic() {}
 
   private ShooterMode getMode() {
 
