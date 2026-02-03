@@ -500,6 +500,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     // having to retrieve the status signal object from the device in the updateInputs method.
   }
 
+  
   @Override
   public void setTurretPosition(Angle position) {
     turret.setControl(turretPositionRequest.withPosition(position));

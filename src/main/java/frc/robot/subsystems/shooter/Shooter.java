@@ -59,7 +59,7 @@ public class Shooter extends SubsystemBase {
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
           new SysIdRoutine.Mechanism(
-              output -> io.setFlywheelLeadTorqueCurrent(Amps.of(output.in(Volts))),
+              output -> io.setFlywheelLeadCurrent(Amps.of(output.in(Volts))),
               null,
               this)); // treat volts as amps
 
@@ -197,12 +197,9 @@ public class Shooter extends SubsystemBase {
       double flywheelFollow1IntendedVelocityRPS,
       double flywheelFollow2IntendedVelocityRPS) {
     // flywheel lead
-    if (Math.abs(
-            shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond)
-                - flywheelLeadIntendedVelocityRPS)
-        > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond))
-              - Math.abs(flywheelLeadIntendedVelocityRPS)
+    if (Math.abs(shooterInputs.flywheelLeadVelocity - flywheelLeadIntendedVelocityRPS)
+        > VELOCITY_TOLERANCE) {
+      if (Math.abs(shooterInputs.flywheelLeadVelocity) - Math.abs(flywheelLeadIntendedVelocityRPS)
           < 0) {
         FaultReporter.getInstance()
             .addFault(
@@ -211,7 +208,7 @@ public class Shooter extends SubsystemBase {
                     + flywheelLeadIntendedVelocityRPS
                     + " but is "
                     + shooterInputs.flywheelLeadVelocity);
-      } else if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond))
+      } else if (Math.abs(shooterInputs.flywheelLeadVelocity)
               - Math.abs(flywheelLeadIntendedVelocityRPS)
           > 0) {
         FaultReporter.getInstance()
@@ -225,11 +222,9 @@ public class Shooter extends SubsystemBase {
     }
 
     // flywheel follow 1
-    if (Math.abs(
-            shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
-                - flywheelFollow1IntendedVelocityRPS)
-        > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond))
+    if (Math.abs(shooterInputs.flywheelFollow1Velocity - flywheelFollow1IntendedVelocityRPS)
+        > VELOCITY_TOLERANCE) {
+      if (Math.abs(shooterInputs.flywheelFollow1Velocity)
               - Math.abs(flywheelFollow1IntendedVelocityRPS)
           < 0) {
         FaultReporter.getInstance()
@@ -239,7 +234,7 @@ public class Shooter extends SubsystemBase {
                     + flywheelFollow1IntendedVelocityRPS
                     + " but is "
                     + shooterInputs.flywheelFollow1Velocity);
-      } else if (Math.abs(shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond))
+      } else if (Math.abs(shooterInputs.flywheelFollow1Velocity)
               - Math.abs(flywheelFollow1IntendedVelocityRPS)
           > 0) {
         FaultReporter.getInstance()
@@ -252,11 +247,9 @@ public class Shooter extends SubsystemBase {
       }
     }
     // flywheel follow 2
-    if (Math.abs(
-            shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
-                - flywheelFollow2IntendedVelocityRPS)
-        > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond))
+    if (Math.abs(shooterInputs.flywheelFollow2Velocity - flywheelFollow2IntendedVelocityRPS)
+        > VELOCITY_TOLERANCE) {
+      if (Math.abs(shooterInputs.flywheelFollow2Velocity)
               - Math.abs(flywheelFollow2IntendedVelocityRPS)
           < 0) {
         FaultReporter.getInstance()
@@ -266,7 +259,7 @@ public class Shooter extends SubsystemBase {
                     + flywheelFollow2IntendedVelocityRPS
                     + " but is "
                     + shooterInputs.flywheelFollow2Velocity);
-      } else if (Math.abs(shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond))
+      } else if (Math.abs(shooterInputs.flywheelFollow2Velocity)
               - Math.abs(flywheelFollow2IntendedVelocityRPS)
           > 0) {
         FaultReporter.getInstance()
@@ -283,9 +276,8 @@ public class Shooter extends SubsystemBase {
   public void checkPosition(
       double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees) {
     // Check if hood position is where it should be
-    if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees)
-        > POSITION_TOLERANCE) {
-      if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees < 0) {
+    if (Math.abs(shooterInputs.hoodPosition - hoodIntendedPositionDegrees) > POSITION_TOLERANCE) {
+      if (shooterInputs.hoodPosition - hoodIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
@@ -293,7 +285,7 @@ public class Shooter extends SubsystemBase {
                     + hoodIntendedPositionDegrees
                     + " but is "
                     + shooterInputs.hoodPosition);
-      } else if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees > 0) {
+      } else if (shooterInputs.hoodPosition - hoodIntendedPositionDegrees > 0) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
@@ -305,9 +297,9 @@ public class Shooter extends SubsystemBase {
     }
 
     // Check if turret position is where it should be
-    if (Math.abs(shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees)
+    if (Math.abs(shooterInputs.turretPosition - turretIntendedPositionDegrees)
         > POSITION_TOLERANCE) {
-      if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees < 0) {
+      if (shooterInputs.turretPosition - turretIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
@@ -315,7 +307,7 @@ public class Shooter extends SubsystemBase {
                     + turretIntendedPositionDegrees
                     + " but is "
                     + shooterInputs.turretPosition);
-      } else if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees > 0) {
+      } else if (shooterInputs.turretPosition - turretIntendedPositionDegrees > 0) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
