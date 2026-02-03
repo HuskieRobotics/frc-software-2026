@@ -127,6 +127,22 @@ public class AutonomousCommandsFactory {
     autoChooser.addOption(
         "Right Neutral Zone Hopper and Climb",
         rightNeutralZoneHopperAndClimb(drivetrain, null)); // add shooter later
+
+    autoChooser.addOption(
+        "Middle Deopt Hopper and Climb", middleDepotHopperAndClimb(drivetrain, null));
+
+    autoChooser.addOption("Left Depot Hopper and Climb", leftDepotHopperAndClimb(drivetrain, null));
+
+    autoChooser.addOption("Middle Hopper and Climb", middleHopperAndClimb(drivetrain, null));
+
+    autoChooser.addOption(
+        "Right Hopper to Neutral Zone x2", rightHopperToNeutralZonex2(drivetrain, null));
+
+    autoChooser.addOption(
+        "Left Hopper to Neutral Zone x2", leftHopperToNeutralZonex2AndClimb(drivetrain, null));
+
+    autoChooser.addOption(
+        "Left Hopper Neutral Zone And Depot", leftHopperNeutralZoneAndDepot(drivetrain, null));
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain, Vision vision) {
@@ -401,7 +417,10 @@ public class AutonomousCommandsFactory {
     // follow path to tower
     // climb sequence
 
-    return Commands.none();
+    return Commands.sequence(
+        AutoBuilder.followPath(driveToDepot),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(depotToTower));
   }
 
   private Command leftDepotHopperAndClimb(
@@ -414,6 +433,8 @@ public class AutonomousCommandsFactory {
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
+
+      return Commands.none();
     }
     // 2nd Prority for Bluffs
     // follow path to depot
@@ -421,7 +442,11 @@ public class AutonomousCommandsFactory {
     // unload shooter
     // follow path to tower
     // climb sequence
-    return null;
+
+    return Commands.sequence(
+        AutoBuilder.followPath(driveToDepot),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(depotToTower));
   }
 
   private Command middleHopperAndClimb(
@@ -439,7 +464,7 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
-    return Commands.none();
+    return Commands.sequence(AutoBuilder.followPath(driveToTower));
   }
 
   private Command rightHopperToNeutralZonex2(
@@ -464,7 +489,14 @@ public class AutonomousCommandsFactory {
       // repeat
       return Commands.none();
     }
-    return Commands.none();
+    return Commands.sequence(
+        AutoBuilder.followPath(driveToNeutralZone),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToBank),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToNeutralZoneAgain),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToBankAgain));
   }
 
   private Command leftHopperToNeutralZonex2AndClimb(
@@ -490,7 +522,14 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
-    return Commands.none();
+    return Commands.sequence(
+        AutoBuilder.followPath(driveToNeutralZone),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToBank),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToNeutralZoneAgain),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToBankAgain));
   }
 
   private Command leftHopperNeutralZoneAndDepot(
@@ -518,6 +557,13 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
-    return Commands.none();
+    return Commands.sequence(
+        AutoBuilder.followPath(driveToNeutralZone),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToBank),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToDepot),
+        Commands.waitSeconds(1),
+        AutoBuilder.followPath(driveToBankAgain));
   }
 }
