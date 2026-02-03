@@ -58,19 +58,19 @@ public class ShooterModes extends SubsystemBase {
 
   private void setMode() {
     if (Field2d.getInstance().inAllianceZone()) {
-      if (isHubActive()
+      if (hubActive()
           && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-        setNormalShooterMode(ShooterMode.SHOOT_OTM);
+        setPrimaryShooterMode(ShooterMode.SHOOT_OTM);
       } else {
-        setNormalShooterMode(ShooterMode.MANUAL_SHOOT);
+        setPrimaryShooterMode(ShooterMode.MANUAL_SHOOT);
       }
     } else {
       if (OISelector.getOperatorInterface()
           .getPassToggle()
           .getAsBoolean()) { // pass toggled by operator
-        setNormalShooterMode(ShooterMode.PASS);
+        setPrimaryShooterMode(ShooterMode.PASS);
       } else {
-        setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD);
+        setPrimaryShooterMode(ShooterMode.COLLECT_AND_HOLD);
       }
     }
   }
@@ -106,9 +106,11 @@ public class ShooterModes extends SubsystemBase {
     } else if (this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {
       // model for aimed position
     } else if (this.primaryMode == ShooterMode.SHOOT_OTM) {
-      // model for OTM pos
+      // model for aimed position
+      // adjust for OTM
     } else if (this.primaryMode == ShooterMode.PASS) {
-      // model for aimed position, which would be the nearest position
+      // model for aimed position, which would be the nearest corner
+      // adjust for OTM
     }
   }
 
@@ -129,11 +131,11 @@ public class ShooterModes extends SubsystemBase {
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
   // and game data to see which hub was active first
   // add a t second offset for how long it takes the ball (on average) to actually enter the hub
-  public boolean isHubActive() {
+  public boolean hubActive() {
     return true;
   }
 
-  private void setNormalShooterMode(ShooterMode mode) {
+  private void setPrimaryShooterMode(ShooterMode mode) {
     this.primaryMode = mode;
     this.secondaryMode = mode;
   }
@@ -166,7 +168,7 @@ public class ShooterModes extends SubsystemBase {
                 OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
                     && !Field2d.getInstance().inAllianceZone());
 
-    passModeTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.PASS)));
+    passModeTrigger.onTrue(Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.PASS)));
 
     collectAndHoldTrigger =
         new Trigger(
@@ -175,7 +177,7 @@ public class ShooterModes extends SubsystemBase {
                     && !Field2d.getInstance().inAllianceZone());
 
     collectAndHoldTrigger.onTrue(
-        Commands.runOnce(() -> setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD)));
+        Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.COLLECT_AND_HOLD)));
 
     shootOTMTrigger =
         new Trigger(
@@ -183,9 +185,9 @@ public class ShooterModes extends SubsystemBase {
                 Field2d.getInstance().inAllianceZone()
                     && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
                     && !isNearTrenchEnabled()
-                    && isHubActive());
+                    && hubActive());
 
-    shootOTMTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOT_OTM)));
+    shootOTMTrigger.onTrue(Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.SHOOT_OTM)));
 
     canShootTrigger =
         new Trigger(
@@ -193,9 +195,9 @@ public class ShooterModes extends SubsystemBase {
                 !OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
                     && Field2d.getInstance().inAllianceZone()
                     && !isNearTrenchEnabled()
-                    && isHubActive());
+                    && hubActive());
 
-    canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
+    canShootTrigger.onTrue(Commands.runOnce(() -> setPrimaryShooterMode(ShooterMode.MANUAL_SHOOT)));
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
