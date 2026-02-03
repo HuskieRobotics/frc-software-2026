@@ -24,7 +24,9 @@ public class ShooterModes extends SubsystemBase {
   private Trigger shootOTMTrigger;
   private Trigger canShootTrigger;
 
-  private ShooterMode overrideMode = null;
+  // the primary mode and secondary mode will act unilaterally except for when NEAR_TRENCH
+  private ShooterMode primaryMode;
+  private ShooterMode secondaryMode;
 
   private String gameData;
 
@@ -39,82 +41,89 @@ public class ShooterModes extends SubsystemBase {
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
     this.drivetrain = drivetrain;
     this.shooter = shooter;
+
+    // no default value for now, change tbd?
+    this.primaryMode = null;
+    this.secondaryMode = null;
+
     configureShooterModeTriggers();
   }
 
   @Override
-  public void periodic() {}
-
-  private ShooterMode getMode() {
-
-    if (overrideMode != null) {
-      return overrideMode;
+  public void periodic() {
+    if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
+      setMode();
     }
+  }
 
-    if (nearTrenchTrigger.getAsBoolean()) {
-      return ShooterMode.NEAR_TRENCH;
-    } else if (Field2d.getInstance().inAllianceZone()) {
+  private void setMode() {
+    if (Field2d.getInstance().inAllianceZone()) {
       if (isHubActive()
           && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-        return ShooterMode.SHOOT_OTM;
+        setNormalShooterMode(ShooterMode.SHOOT_OTM);
       } else {
-        return ShooterMode.MANUAL_SHOOT;
+        setNormalShooterMode(ShooterMode.MANUAL_SHOOT);
       }
     } else {
       if (OISelector.getOperatorInterface()
           .getPassToggle()
           .getAsBoolean()) { // pass toggled by operator
-        return ShooterMode.PASS;
+        setNormalShooterMode(ShooterMode.PASS);
       } else {
-        return ShooterMode.COLLECT_AND_HOLD;
+        setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD);
       }
     }
   }
 
   public boolean isShootOnTheMoveEnabled() {
-    return getMode() == ShooterMode.SHOOT_OTM;
+    return this.primaryMode == ShooterMode.SHOOT_OTM;
   }
 
   public boolean isCollectAndHoldEnabled() {
-    return getMode() == ShooterMode.COLLECT_AND_HOLD;
+    return this.primaryMode == ShooterMode.COLLECT_AND_HOLD;
   }
 
   public boolean isNearTrenchEnabled() {
-    return getMode() == ShooterMode.NEAR_TRENCH;
+    return this.primaryMode == ShooterMode.NEAR_TRENCH;
   }
 
   public boolean isPassEnabled() {
-    return getMode() == ShooterMode.PASS;
+    return this.primaryMode == ShooterMode.PASS;
   }
 
   public boolean manualShootEnabled() {
-    return getMode() == ShooterMode.MANUAL_SHOOT;
+    return this.primaryMode == ShooterMode.MANUAL_SHOOT;
   }
 
   public void getTrajectory() {
-    if (getMode() == ShooterMode.NEAR_TRENCH) {
-      shooter.setIdleVelocity(); // FIXME: change to max hood angle
+    if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
       // set hood to max
-    } else if (getMode() == ShooterMode.MANUAL_SHOOT) {
+      // model for aimed position minus hood (should be an extra redundancy check w/i that method
+      // for NEAR_TRENCH)
+    } else if (this.primaryMode == ShooterMode.MANUAL_SHOOT) {
       // model for aimed position
       // x stance
-    } else if (getMode() == ShooterMode.COLLECT_AND_HOLD) {
+    } else if (this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {
       // model for aimed position
-    } else if (getMode() == ShooterMode.SHOOT_OTM) {
+    } else if (this.primaryMode == ShooterMode.SHOOT_OTM) {
       // model for OTM pos
-    } else if (getMode() == ShooterMode.PASS) {
+    } else if (this.primaryMode == ShooterMode.PASS) {
       // model for aimed position, which would be the nearest position
     }
   }
 
   public void getTurret() {
 
-    if (getMode() == ShooterMode.MANUAL_SHOOT || getMode() == ShooterMode.COLLECT_AND_HOLD) {
-    } // aim turret at hub
-    else if (getMode() == ShooterMode.SHOOT_OTM) {
-    } // aim the turret at transformed hub based on velocity
-    else if (getMode() == ShooterMode.PASS) {
-    } // aim turret at nearest corner
+    if (this.primaryMode == ShooterMode.MANUAL_SHOOT
+        || this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {
+      // aim turret at hub
+    } else if (this.primaryMode == ShooterMode.SHOOT_OTM) {
+      // aim turret at hub
+      // adjust for OTM
+    } else if (this.primaryMode == ShooterMode.PASS) {
+      // aim turret at nearest corner
+      // adjust for OTM
+    }
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
@@ -124,21 +133,32 @@ public class ShooterModes extends SubsystemBase {
     return true;
   }
 
-  private void setShooterMode(ShooterMode newMode) {
-    this.overrideMode = newMode;
+  private void setNormalShooterMode(ShooterMode mode) {
+    this.primaryMode = mode;
+    this.secondaryMode = mode;
+  }
+
+  /**
+   * This method sets the secondary mode as the current shooter mode before we entered the trench
+   * zone. It also replaces the primary mode with NEAR_TRENCH.
+   */
+  private void setNearTrenchActive() {
+    this.secondaryMode = this.primaryMode;
+    this.primaryMode = ShooterMode.NEAR_TRENCH;
+  }
+
+  /**
+   * This method returns the primary mode to the secondary mode that was active before entering the
+   * trench zone.
+   */
+  private void returnToPreviousMode() {
+    this.primaryMode = this.secondaryMode;
   }
 
   private void configureShooterModeTriggers() {
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
-    nearTrenchTrigger.whileTrue(Commands.run(() -> setShooterMode(ShooterMode.NEAR_TRENCH)));
-    nearTrenchTrigger.onFalse(
-        Commands.runOnce(
-            () ->
-                setShooterMode(
-                    null) // I think we will need this to reset the mode when leaving trench. I
-            // think it should correct itself based on other triggers but just in
-            // case.
-            ));
+    nearTrenchTrigger.onTrue(Commands.runOnce(this::setNearTrenchActive));
+    nearTrenchTrigger.onFalse(Commands.runOnce(this::returnToPreviousMode));
 
     passModeTrigger =
         new Trigger(
@@ -146,7 +166,7 @@ public class ShooterModes extends SubsystemBase {
                 OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
                     && !Field2d.getInstance().inAllianceZone());
 
-    passModeTrigger.onTrue(Commands.runOnce(() -> setShooterMode(ShooterMode.PASS)));
+    passModeTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.PASS)));
 
     collectAndHoldTrigger =
         new Trigger(
@@ -155,7 +175,7 @@ public class ShooterModes extends SubsystemBase {
                     && !Field2d.getInstance().inAllianceZone());
 
     collectAndHoldTrigger.onTrue(
-        Commands.runOnce(() -> setShooterMode(ShooterMode.COLLECT_AND_HOLD)));
+        Commands.runOnce(() -> setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD)));
 
     shootOTMTrigger =
         new Trigger(
@@ -165,7 +185,7 @@ public class ShooterModes extends SubsystemBase {
                     && !isNearTrenchEnabled()
                     && isHubActive());
 
-    shootOTMTrigger.onTrue(Commands.runOnce(() -> setShooterMode(ShooterMode.SHOOT_OTM)));
+    shootOTMTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOT_OTM)));
 
     canShootTrigger =
         new Trigger(
@@ -175,7 +195,7 @@ public class ShooterModes extends SubsystemBase {
                     && !isNearTrenchEnabled()
                     && isHubActive());
 
-    canShootTrigger.onTrue(Commands.runOnce(() -> setShooterMode(ShooterMode.MANUAL_SHOOT)));
+    canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
