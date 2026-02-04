@@ -48,7 +48,7 @@
   "folder": "Depot+Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -89.2439412242494
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
