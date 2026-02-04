@@ -15,18 +15,35 @@ public class OperatorDashboard implements OperatorInterface {
   // disabled.
   public final LoggedTunableBoolean enableVision =
       new LoggedTunableBoolean("operatorDashboard/Enable Vision", true, true);
-  public final LoggedTunableBoolean enablePrimaryIRSensors =
-      new LoggedTunableBoolean("operatorDashboard/Enable Primary IR Sensors", true, true);
+
+  public final LoggedTunableBoolean passToggle =
+      new LoggedTunableBoolean("operatorDashboard/Pass", false, true);
+
+  public final LoggedTunableBoolean shootOnTheMoveToggle =
+      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", true, true);
+
+  public final LoggedTunableBoolean objectDetectionToggle =
+      new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
 
   public OperatorDashboard() {}
 
   @Override
-  public Trigger getVisionIsEnabledTrigger() {
-    return new Trigger(() -> enableVision.get());
+  public Trigger getPassToggle() {
+    return new Trigger(() -> passToggle.get());
   }
 
   @Override
-  public Trigger getEnablePrimaryIRSensorsTrigger() {
-    return new Trigger(() -> enablePrimaryIRSensors.get());
+  public Trigger getShootOnTheMoveToggle() {
+    return new Trigger(() -> shootOnTheMoveToggle.get());
+  }
+
+  @Override
+  public Trigger getObjectDetectionToggle() {
+    return new Trigger(() -> objectDetectionToggle.get());
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledTrigger() {
+    return new Trigger(() -> enableVision.get());
   }
 }
