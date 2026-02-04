@@ -103,6 +103,8 @@ public class Shooter extends SubsystemBase {
       // Flywheel Lead
       if (flyWheelLeadVelocity.get() != 0) {
         io.setFlywheelVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
+      } else if (flywheelLeadCurrent.get() != 0) {
+        io.setFlywheelCurrent(Amps.of(flywheelLeadCurrent.get()));
       } else if (turretPosition.get() != 0) {
         io.setTurretPosition(Degrees.of(turretPosition.get()));
       } else if (turretVoltage.get() != 0) {
