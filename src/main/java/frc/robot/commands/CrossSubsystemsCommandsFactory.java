@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -16,6 +17,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -53,6 +55,8 @@ public class CrossSubsystemsCommandsFactory {
   private static final LoggedTunableNumber thetaKi =
       new LoggedTunableNumber(
           "DriveToPoseExample/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
+
+  private static final double WALL_SNAP_TOLERANCE_METERS = Units.inchesToMeters(30);
 
   private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
   private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
@@ -116,6 +120,19 @@ public class CrossSubsystemsCommandsFactory {
             .and(shooterModes::manualShootEnabled)
             .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
+    new Trigger(
+            () -> {
+              double currentYPose = swerveDrivetrain.getPose().getY();
+
+              // see which of the two walls we are closer to
+              boolean closerToLeft = currentYPose < WALL_SNAP_TOLERANCE_METERS;
+              boolean closerToRight =
+                  currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
+
+              return closerToLeft || closerToRight;
+            })
+        .whileTrue(getSnapToWallsCommand(swerveDrivetrain));
+
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
     registerSysIdCommands(oi);
@@ -169,6 +186,30 @@ public class CrossSubsystemsCommandsFactory {
               targetRotation,
               false);
         });
+  }
+
+  public static Command getSnapToWallsCommand(SwerveDrivetrain drivetrain) {
+    return Commands.run(
+            () -> {
+              Rotation2d currentRotation = drivetrain.getPose().getRotation();
+              double currentDegrees = currentRotation.getDegrees();
+
+              double nearest90DegreeAngle =
+                  Math.round(currentDegrees / 90.0) * 90.0; // nearest multiple of 90 degrees
+
+              Rotation2d targetRotation = Rotation2d.fromDegrees(nearest90DegreeAngle);
+
+              drivetrain.driveFacingAngle(
+                  RobotConfig.getInstance()
+                      .getRobotMaxVelocity()
+                      .times(OISelector.getOperatorInterface().getTranslateX()),
+                  RobotConfig.getInstance()
+                      .getRobotMaxVelocity()
+                      .times(OISelector.getOperatorInterface().getTranslateY()),
+                  targetRotation,
+                  false);
+            })
+        .withName("Auto Snap To 90 Degree While Near Wall Command");
   }
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
@@ -307,6 +348,4 @@ public class CrossSubsystemsCommandsFactory {
         thetaKi,
         thetaKd);
   }
-
-  private void confugreCrossSubsystemsTriggers() {}
 }
