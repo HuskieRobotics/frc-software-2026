@@ -16,6 +16,9 @@ import frc.robot.operator_interface.OISelector;
 
 public class ShooterModes extends SubsystemBase {
 
+  // constant to configure for when running practice matches with no game data
+  public final boolean WON_AUTO_PRACTICE_MATCH = true;
+
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
 
@@ -142,46 +145,65 @@ public class ShooterModes extends SubsystemBase {
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
   public boolean hubActive() {
-    // FIXME: add check for if running a real match or just cycles (practice or FMS vs. teleop)
+    // FIXME: add check for if normal teleop or auto enable
     // FIXME: add check for practice matches (override param, boolean practice)
 
+    // When connected to the real field, this number only changes in full integer increments, and
+    // always counts down.
+    // When the DS is in practice mode, this number is a floating point number, and counts down.
+    // When the DS is in teleop or autonomous mode, this number is a floating point number, and
+    // counts up.
 
-    // FIXME: getMatchTime returns different than expected, check for the new understanding of what it returns
     double timeRemaining = DriverStation.getMatchTime();
-    double timeIntoTeleop = 140 - timeRemaining;
 
+    // Real Field
+    double timeIntoScoringShifts;
     String gameData = DriverStation.getGameSpecificMessage();
 
-    // hub active in auto/transition period and endgame
-    if (timeIntoTeleop < 10 || timeIntoTeleop >= 110) {
+    // hub active in auto/transition period and endgame (// time < 30 = auto or endgame, time > 130
+    // = transition period)
+
+    // TODO: can add a check for DriverStation.isAutonomousEnabled but that will always fall under
+    // timeRemaining < 30
+    if (timeRemaining < 30 || timeRemaining > 130 /*|| DriverStation.isAutonomousEnabled() */) {
       return true;
+    } else {
+      timeIntoScoringShifts = 130 - timeRemaining;
     }
 
-    // FIXME: add x-second offset for ball travel time to hub
+    // TODO: add x-second offset for ball travel time to hub
     if (!gameData.isEmpty()) {
       switch (gameData.charAt(0)) {
         case 'B':
           // Blue is inactive first, so if we are blue alliance, we check if closer to 50 seconds
           // (2nd period)
           if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-            return timeIntoTeleop % 50 > 25;
+            return timeIntoScoringShifts % 50 > 25;
           } else {
-            return timeIntoTeleop % 50 <= 25;
+            return timeIntoScoringShifts % 50 <= 25;
           }
         case 'R':
           // Red is inactive first, so if we are red alliance, we check if closer to 50 seconds (2nd
           // period)
           if (Field2d.getInstance().getAlliance() == Alliance.Red) {
-            return timeIntoTeleop % 50 > 25;
+            return timeIntoScoringShifts % 50 > 25;
           } else {
-            return timeIntoTeleop % 50 <= 25;
+            return timeIntoScoringShifts % 50 <= 25;
           }
         default:
           // This is corrupt data
           return true;
       }
+    } else if (DriverStation.getMatchType() == DriverStation.MatchType.Practice) {
+      if (WON_AUTO_PRACTICE_MATCH) {
+        return timeIntoScoringShifts % 50 > 25;
+      } else {
+        return timeIntoScoringShifts % 50 <= 25;
+      }
     }
 
+    // TODO: add operator interface for manual override hub active/inactive for testing non-practice
+    // matches
     return true;
   }
 
