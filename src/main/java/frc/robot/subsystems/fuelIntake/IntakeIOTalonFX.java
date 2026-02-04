@@ -107,6 +107,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private StatusSignal<Angle> deployerPositionSS;
 
   private AngularVelocity rollerReferenceVelocity = RotationsPerSecond.of(0.0);
+  private Angle deployerReferencePosition = Rotations.of(0);
 
   // debouncers
   private final Debouncer connectedRollerDebouncer = new Debouncer(0.5);
@@ -188,6 +189,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.deployerStatorCurrentAmps = deployerStatorCurrentSS.getValue();
     inputs.deployerSupplyCurrentAmps = deployerSupplyCurrentSS.getValue();
     inputs.deployerTempCelsius = deployerTempSS.getValue();
+    inputs.deployerReferencePositionDeg = this.deployerReferencePosition.copy();
 
     if (Constants.TUNING_MODE) {
       inputs.rollerClosedLoopError =
@@ -292,6 +294,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void setDeployerPosition(Angle angularPosition) {
     deployerMotor.setControl(deployerPositionRequest.withPosition(angularPosition.in(Rotations)));
+    this.deployerReferencePosition = angularPosition.copy();
   }
 
   private void configDeployerMotor(TalonFX motor) {

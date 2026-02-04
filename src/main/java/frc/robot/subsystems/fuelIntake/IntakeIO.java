@@ -20,7 +20,6 @@ public interface IntakeIO {
     Current rollerStatorCurrentAmps = Amps.of(0);
     Current rollerSupplyCurrentAmps = Amps.of(0);
     Temperature rollerTempCelsius = Celsius.of(0);
-    AngularVelocity rollerReferenceVelocity = RotationsPerSecond.of(0);
     Angle rollerClosedLoopError = Rotations.of(0);
     Angle rollerClosedLoopReference = Rotations.of(0);
 
@@ -31,7 +30,7 @@ public interface IntakeIO {
     Current deployerStatorCurrentAmps = Amps.of(0);
     Current deployerSupplyCurrentAmps = Amps.of(0);
     Temperature deployerTempCelsius = Celsius.of(0);
-    Angle deployerReferencePosition = Rotations.of(0);
+    Angle deployerReferencePositionDeg = Rotations.of(0);
     Angle angularPosition = Rotations.of(0);
     AngularVelocity deployerClosedLoopError = RotationsPerSecond.of(0);
     AngularVelocity deployerClosedLoopReference = RotationsPerSecond.of(0);
