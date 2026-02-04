@@ -78,7 +78,7 @@ public interface ShooterIO {
   // Flywheel IO methods
   public default void setFlywheelVelocity(AngularVelocity velocity) {}
 
-  public default void setFlywheelCurrent(Current current) {}
+  public default void setFlywheelCurrent(Current amps) {}
 
   // Turret IO methods
   public default void setTurretPosition(Angle position) {}

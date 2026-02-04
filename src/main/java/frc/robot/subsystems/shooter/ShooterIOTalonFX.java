@@ -10,11 +10,12 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
+import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
@@ -39,10 +41,10 @@ public class ShooterIOTalonFX implements ShooterIO {
   private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
   private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
-  private MotionMagicExpoVoltage turretPositionRequest;
+  private PositionVoltage turretPositionRequest;
   private VoltageOut turretVoltageRequest;
 
-  private MotionMagicExpoVoltage hoodPositionRequest;
+  private PositionVoltage hoodPositionRequest;
   private VoltageOut hoodVoltageRequest;
 
   // Flywheel Lead Status Signals
@@ -127,6 +129,8 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Top kI", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KI);
   private final LoggedTunableNumber flywheelLeadKD =
       new LoggedTunableNumber("Shooter/Top kD", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KD);
+  private final LoggedTunableNumber flywheelLeadKS =
+      new LoggedTunableNumber("Shooter/Top kS", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KS);
   private final LoggedTunableNumber turretKP =
       new LoggedTunableNumber("Shooter/Turret kP", ShooterConstants.TURRET_ROTATION_KP);
   private final LoggedTunableNumber turretKI =
@@ -143,19 +147,25 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_ROTATION_KI);
   private final LoggedTunableNumber hoodKD =
       new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_ROTATION_KD);
-  private final LoggedTunableNumber hoodKV =
-      new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_EXPO_KV);
-  private final LoggedTunableNumber hoodKA =
-      new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_EXPO_KA);
+  private final LoggedTunableNumber hoodKS =
+      new LoggedTunableNumber("Shooter/Hood kS", ShooterConstants.HOOD_ROTATION_KS);
+  private final LoggedTunableNumber hoodKG =
+      new LoggedTunableNumber("Shooter/Hood kG", ShooterConstants.HOOD_ROTATION_KG);
+  private final LoggedTunableNumber hoodkVExpo =
+      new LoggedTunableNumber("Shooter/Hood kVExpo", ShooterConstants.HOOD_ROTATION_EXPO_KV);
+  private final LoggedTunableNumber hoodkAExpo =
+      new LoggedTunableNumber("Shooter/Hood kAExpo", ShooterConstants.HOOD_ROTATION_EXPO_KA);
 
   // It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
   // Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
+  private final LoggedTunableNumber simDetectorDistance =
+      new LoggedTunableNumber("Shooter/Sim Detector Distance (m)", 1.0);
 
   private VelocitySystemSim flywheelLeadSim;
   private VelocitySystemSim flywheelFollow1Sim;
   private VelocitySystemSim flywheelFollow2Sim;
-  private VelocitySystemSim turretLeadSim;
-  private VelocitySystemSim hoodLeadSim;
+  private VelocitySystemSim turretLeadSim; // FIXME: determine correct sim type for turret
+  private ArmSystemSim hoodLeadSim;
 
   public ShooterIOTalonFX() {
 
@@ -306,8 +316,16 @@ public class ShooterIOTalonFX implements ShooterIO {
             0.01,
             ShooterConstants.TURRET_GEAR_RATIO);
     this.hoodLeadSim =
-        new VelocitySystemSim(
-            hood, ShooterConstants.HOOD_INVERTED, 0.05, 0.01, ShooterConstants.HOOD_GEAR_RATIO);
+        new ArmSystemSim(
+            hood,
+            HOOD_INVERTED,
+            HOOD_GEAR_RATIO,
+            HOOD_LENGTH_METERS,
+            HOOD_MASS_KG,
+            HOOD_MIN_ANGLE_RAD,
+            HOOD_MAX_ANGLE_RAD,
+            HOOD_STARTING_ANGLE_RAD,
+            ShooterConstants.SUBSYSTEM_NAME + " Hood");
     this.flywheelFollow1Sim =
         new VelocitySystemSim(
             flywheelFollow1,
@@ -356,7 +374,8 @@ public class ShooterIOTalonFX implements ShooterIO {
                 hoodStatorCurrentStatusSignal,
                 hoodSupplyCurrentStatusSignal,
                 hoodTemperatureStatusSignal,
-                hoodVoltageStatusSignal));
+                hoodVoltageStatusSignal,
+                hoodPositionStatusSignal));
     inputs.turretConnected =
         turretConnectedDebouncer.calculate(
             BaseStatusSignal.isAllGood(
@@ -429,11 +448,13 @@ public class ShooterIOTalonFX implements ShooterIO {
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
+          config.kS = pid[3];
           flywheelLead.getConfigurator().apply(config);
         },
         flywheelLeadKP,
         flywheelLeadKI,
-        flywheelLeadKD);
+        flywheelLeadKD,
+        flywheelLeadKS);
     LoggedTunableNumber.ifChanged(
         hashCode(),
         pid -> {
@@ -463,23 +484,24 @@ public class ShooterIOTalonFX implements ShooterIO {
         hashCode(),
         pid -> {
           Slot0Configs config = new Slot0Configs();
-          MotionMagicConfigs mmConfig = new MotionMagicConfigs();
           hood.getConfigurator().refresh(config);
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
-          config.kV = pid[3];
-          config.kA = pid[4];
-          mmConfig.MotionMagicCruiseVelocity = pid[5];
+          config.kS = pid[3];
+          config.kV = pid[4];
+          config.kA = pid[5];
+          config.kG = pid[6];
 
           hood.getConfigurator().apply(config);
-          hood.getConfigurator().apply(mmConfig);
         },
         hoodKP,
         hoodKI,
         hoodKD,
-        hoodKV,
-        hoodKA);
+        hoodKS,
+        hoodkAExpo,
+        hoodkVExpo,
+        hoodKG);
 
     // The last step in the updateInputs method is to update the simulation.
     if (Constants.getMode() == Constants.Mode.SIM) { // If the entire robot is in simulation
@@ -498,6 +520,11 @@ public class ShooterIOTalonFX implements ShooterIO {
             velocity)); // velocities for followers should be set automatically
     // To improve performance, we store the reference velocity as an instance variable to avoid
     // having to retrieve the status signal object from the device in the updateInputs method.
+  }
+
+  @Override
+  public void setFlywheelCurrent(Current amps) {
+    flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(amps));
   }
 
   @Override
@@ -533,6 +560,7 @@ public class ShooterIOTalonFX implements ShooterIO {
       flywheelConfig.Slot0.kP = flywheelLeadKP.get();
       flywheelConfig.Slot0.kI = flywheelLeadKI.get();
       flywheelConfig.Slot0.kD = flywheelLeadKD.get();
+      flywheelConfig.Slot0.kS = flywheelLeadKS.get();
 
       flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
     }
@@ -605,8 +633,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.Slot0.kP = hoodKP.get();
     hoodConfig.Slot0.kI = hoodKI.get();
     hoodConfig.Slot0.kD = hoodKD.get();
-    hoodConfig.Slot0.kV = hoodKV.get();
-    hoodConfig.Slot0.kA = hoodKA.get();
+    hoodConfig.Slot0.kV = hoodkVExpo.get();
+    hoodConfig.Slot0.kA = hoodkAExpo.get();
+    hoodConfig.Slot0.kS = hoodKS.get();
+    hoodConfig.Slot0.kG = hoodKG.get();
+    hoodConfig.Slot0.withGravityType(GravityTypeValue.Arm_Cosine);
 
     hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
 

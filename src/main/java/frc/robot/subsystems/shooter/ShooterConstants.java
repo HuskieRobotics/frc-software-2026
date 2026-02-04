@@ -27,6 +27,7 @@ public class ShooterConstants {
   public static final double FLYWHEEL_LEAD_ROTATION_KP = 0.0;
   public static final double FLYWHEEL_LEAD_ROTATION_KI = 0.0;
   public static final double FLYWHEEL_LEAD_ROTATION_KD = 0.0;
+  public static final double FLYWHEEL_LEAD_ROTATION_KS = 0.0;
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = false;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.0;
@@ -54,12 +55,20 @@ public class ShooterConstants {
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
   public static final double HOOD_ROTATION_KG = 0.0;
+  public static final double HOOD_ROTATION_KS = 0.0;
+
   public static final double HOOD_ROTATION_EXPO_KV = 0.0;
   public static final double HOOD_ROTATION_EXPO_KA = 0.0;
   public static final double HOOD_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
 
+  //  Hood physical constants
   public static final boolean HOOD_INVERTED = false;
   public static final double HOOD_GEAR_RATIO = 0;
+  public static final double HOOD_LENGTH_METERS = 0.0;
+  public static final double HOOD_MASS_KG = 0.0;
+  public static final double HOOD_MIN_ANGLE_RAD = 0.0;
+  public static final double HOOD_MAX_ANGLE_RAD = 0.0;
+  public static final double HOOD_STARTING_ANGLE_RAD = 0.0;
 
   // Hood angle limits
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(0.0);

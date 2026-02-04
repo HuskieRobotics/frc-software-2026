@@ -35,6 +35,8 @@ public class Shooter extends SubsystemBase {
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
       new LoggedTunableNumber("Shooter/FlyWheelLead Velocity", 0);
+  private final LoggedTunableNumber flywheelLeadCurrent =
+      new LoggedTunableNumber("Shooter/FlywheelLead Current", 0);
   private final LoggedTunableNumber turretPosition =
       new LoggedTunableNumber("Shooter/Turret Position", 0);
   private final LoggedTunableNumber turretVoltage =
@@ -57,16 +59,36 @@ public class Shooter extends SubsystemBase {
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
           new SysIdRoutine.Mechanism(
-              output -> io.setFlywheelLeadCurrent(Amps.of(output.in(Volts))),
+              output -> io.setFlywheelCurrent(Amps.of(output.in(Volts))),
               null,
               this)); // treat volts as amps
+
+  private final SysIdRoutine hoodIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(0.5).per(Second), // override default ramp rate (1 V/s)
+              Volts.of(2.0), // override default step voltage (7 V)
+              null, // use default timeout (10 s)
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(output -> io.setHoodVoltage(output), null, this));
+
+  private final SysIdRoutine turretIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(0.5).per(Second), // override default ramp rate (1 V/s)
+              Volts.of(2.0), // override default step voltage (7 V)
+              null, // use default timeout (10 s)
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(output -> io.setTurretVoltage(output), null, this));
 
   public Shooter(ShooterIO io) {
     this.io = io;
 
     // Register this subsystem's SysId routine with the SysIdRoutineChooser. This allows
     // the routine to be selected and executed from the dashboard.
-    SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Top Current", flywheelIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Current", flywheelIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Hood Voltage", hoodIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Turret Voltage", turretIdRoutine);
 
     // Register this subsystem's system check command with the fault reporter. The system check
     // command can be added to the Elastic Dashboard to execute the system test.
