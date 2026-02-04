@@ -145,6 +145,8 @@ public class ShooterModes extends SubsystemBase {
     // FIXME: add check for if running a real match or just cycles (practice or FMS vs. teleop)
     // FIXME: add check for practice matches (override param, boolean practice)
 
+
+    // FIXME: getMatchTime returns different than expected, check for the new understanding of what it returns
     double timeRemaining = DriverStation.getMatchTime();
     double timeIntoTeleop = 140 - timeRemaining;
 
