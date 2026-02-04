@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,8 +30,6 @@ public class ShooterModes extends SubsystemBase {
   private ShooterMode primaryMode;
   private ShooterMode secondaryMode;
 
-  private String gameData;
-
   public enum ShooterMode {
     MANUAL_SHOOT, // Shoot only when we want
     SHOOT_OTM, // shoot on the move
@@ -51,6 +51,11 @@ public class ShooterModes extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // if (!timerStarted && DriverStation.isEnabled()) {
+    //   timerStarted = true;
+    //   matchStartTime = Timer.getFPGATimestamp();
+    // }
+
     if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
       setMode();
     }
@@ -131,7 +136,50 @@ public class ShooterModes extends SubsystemBase {
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
   // and game data to see which hub was active first
   // add a t second offset for how long it takes the ball (on average) to actually enter the hub
+
+  // The alliance will be provided as a single character representing the color of the alliance
+  // whose goal will go inactive first
+  // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
+
   public boolean hubActive() {
+    // FIXME: add check for if running a real match or just cycles (practice or FMS vs. teleop)
+    // FIXME: add check for practice matches (override param, boolean practice)
+
+    double timeRemaining = DriverStation.getMatchTime();
+    double timeIntoTeleop = 140 - timeRemaining;
+
+    String gameData = DriverStation.getGameSpecificMessage();
+
+    // hub active in auto/transition period and endgame
+    if (timeIntoTeleop < 10 || timeIntoTeleop >= 110) {
+      return true;
+    }
+
+    // FIXME: add x-second offset for ball travel time to hub
+    if (!gameData.isEmpty()) {
+      switch (gameData.charAt(0)) {
+        case 'B':
+          // Blue is inactive first, so if we are blue alliance, we check if closer to 50 seconds
+          // (2nd period)
+          if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
+            return timeIntoTeleop % 50 > 25;
+          } else {
+            return timeIntoTeleop % 50 <= 25;
+          }
+        case 'R':
+          // Red is inactive first, so if we are red alliance, we check if closer to 50 seconds (2nd
+          // period)
+          if (Field2d.getInstance().getAlliance() == Alliance.Red) {
+            return timeIntoTeleop % 50 > 25;
+          } else {
+            return timeIntoTeleop % 50 <= 25;
+          }
+        default:
+          // This is corrupt data
+          return true;
+      }
+    }
+
     return true;
   }
 
