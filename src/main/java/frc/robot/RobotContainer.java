@@ -73,7 +73,6 @@ public class RobotContainer {
   private Vision vision;
   private Arm arm;
   private Elevator elevator;
-  private Manipulator manipulator;
   private Shooter shooter;
   private RobotVisualization visualization;
 
@@ -235,7 +234,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
@@ -263,7 +261,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(elevator);
   }
@@ -296,7 +293,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
@@ -307,7 +303,6 @@ public class RobotContainer {
 
     arm = new Arm(new ArmIOXRP());
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(elevator);
   }
@@ -320,7 +315,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(elevator);
   }
@@ -349,7 +343,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
   }
 
@@ -377,7 +370,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(elevator);
   }
@@ -419,7 +411,7 @@ public class RobotContainer {
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, manipulator, shooter);
+          oi, swerveDrivetrain, vision, arm, elevator, shooter);
     }
 
     // Endgame alerts
