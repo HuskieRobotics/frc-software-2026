@@ -53,20 +53,20 @@ public interface ShooterIO {
     Current turretStatorCurrent = Amps.of(0.0);
     Current turretSupplyCurrent = Amps.of(0.0);
     Voltage turretVoltage = Volts.of(0.0);
-    Angle turretPosition = Degrees.of(0.0);
-    Angle turretReferencePosition = Degrees.of(0.0);
-    Angle turretClosedLoopReferencePosition = Degrees.of(0.0);
-    Angle turretClosedLoopErrorPosition = Degrees.of(0.0);
+    Angle turretPosition = Rotations.of(0.0);
+    Angle turretReferencePosition = Rotations.of(0.0);
+    Angle turretClosedLoopReferencePosition = Rotations.of(0.0);
+    Angle turretClosedLoopErrorPosition = Rotations.of(0.0);
     Temperature turretTemperature = Celsius.of(0.0);
 
     boolean hoodConnected = false;
     Current hoodStatorCurrent = Amps.of(0.0);
     Current hoodSupplyCurrent = Amps.of(0.0);
     Voltage hoodVoltage = Volts.of(0.0);
-    Angle hoodPosition = Degrees.of(0.0);
-    Angle hoodReferencePosition = Degrees.of(0.0);
-    Angle hoodClosedLoopReferencePosition = Degrees.of(0.0);
-    Angle hoodClosedLoopErrorPosition = Degrees.of(0.0);
+    Angle hoodPosition = Rotations.of(0.0);
+    Angle hoodReferencePosition = Rotations.of(0.0);
+    Angle hoodClosedLoopReferencePosition = Rotations.of(0.0);
+    Angle hoodClosedLoopErrorPosition = Rotations.of(0.0);
     Temperature hoodTemperature = Celsius.of(0.0);
 
     Angle encoderAngleDegrees = Degrees.of(0.0);

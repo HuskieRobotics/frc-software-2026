@@ -44,23 +44,33 @@ public class ShooterConstants {
   public static final double TURRET_ROTATION_KP = 0.0;
   public static final double TURRET_ROTATION_KI = 0.0;
   public static final double TURRET_ROTATION_KD = 0.0;
+  public static final double TURRET_ROTATION_KV = 0.0;
+  public static final double TURRET_ROTATION_KA = 0.0;
 
+// Turret motion magic pid constants
   public static final double TURRET_ROTATION_EXPO_KV = 0.0;
   public static final double TURRET_ROTATION_EXPO_KA = 0.0;
   public static final double TURRET_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
 
   public static final boolean TURRET_INVERTED = false;
   public static final double TURRET_GEAR_RATIO = 0;
+
   // Hood PID Constants (subject to change)
   public static final double HOOD_ROTATION_KP = 0.0;
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
   public static final double HOOD_ROTATION_KG = 0.0;
   public static final double HOOD_ROTATION_KS = 0.0;
+  public static final double HOOD_ROTATION_KV = 0.0;
+  public static final double HOOD_ROTATION_KA = 0.0;
 
   public static final double HOOD_ROTATION_EXPO_KV = 0.0;
   public static final double HOOD_ROTATION_EXPO_KA = 0.0;
   public static final double HOOD_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
+
+  // SIM KV and KA values
+  public static final double SIM_KV = 0.0;
+  public static final double SIM_KA = 0.0;
 
   //  Hood physical constants
   public static final boolean HOOD_INVERTED = false;
