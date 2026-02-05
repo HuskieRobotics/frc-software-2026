@@ -31,9 +31,6 @@ public class HopperIOTalonFX implements HopperIO {
     private TalonFX hopperSpindexerMotor;
     private TalonFX hopperRollerMotor;
 
-    private VoltageOut hopperSpindexerVoltageRequest;
-    private VoltageOut hopperRollerVoltageRequest;
-
     private MotionMagicVelocityVoltage hopperSpindexerVelocityRequest;
     private MotionMagicVelocityVoltage hopperRollerVelocityRequest;
     
@@ -75,9 +72,6 @@ public class HopperIOTalonFX implements HopperIO {
     public HopperIOTalonFX() {
         hopperSpindexerMotor = new TalonFX(HOPPER_SPINDEXER_ID, RobotConfig.getInstance().getCANBus());
         hopperRollerMotor = new TalonFX(HOPPER_ROLLER_ID, RobotConfig.getInstance().getCANBus());
-
-        hopperSpindexerVoltageRequest = new VoltageOut(0.0);
-        hopperRollerVoltageRequest = new VoltageOut(0.0);
 
         statorCurrentSpindexerStatusSignal = hopperSpindexerMotor.getStatorCurrent();
         supplyCurrentSpindexerStatusSignal = hopperSpindexerMotor.getSupplyCurrent();
@@ -138,30 +132,18 @@ public class HopperIOTalonFX implements HopperIO {
                     velocityRollerStatusSignal
                  ));
         
-        inputs.spindexerStatorCurrentAmps = statorCurrentSpindexerStatusSignal.getValue();
-        inputs.spindexerSupplyCurrentAmps = supplyCurrentSpindexerStatusSignal.getValue();
+        inputs.spindexerStatorCurrent = statorCurrentSpindexerStatusSignal.getValue();
+        inputs.spindexerSupplyCurrent = supplyCurrentSpindexerStatusSignal.getValue();
         inputs.spindexerTemperatureCelsius = tempSpindexerStatusSignal.getValue();
         inputs.spindexerVoltageSupplied = voltageSuppliedSpindexerStatusSignal.getValue();
         inputs.spindexerVelocity = velocitySpindexerStatusSignal.getValue();
         
-        inputs.rollerStatorCurrentAmps = statorCurrentRollerStatusSignal.getValue();
-        inputs.rollerSupplyCurrentAmps = supplyCurrentRollerStatusSignal.getValue();
+        inputs.rollerStatorCurrent = statorCurrentRollerStatusSignal.getValue();
+        inputs.rollerSupplyCurrent = supplyCurrentRollerStatusSignal.getValue();
         inputs.rollerTemperatureCelsius = tempRollerStatusSignal.getValue();
         inputs.rollerVoltageSupplied = voltageSuppliedRollerStatusSignal.getValue();
         inputs.rollerVelocity = velocityRollerStatusSignal.getValue();
         
-    }
-
-    @Override
-    public void setSpindexerVoltage(double volts) {
-        this.hopperSpindexerMotor.setControl(hopperSpindexerVoltageRequest.withOutput(volts));
-    }
-
-       
-    
-    @Override
-    public void setRollerVoltage(double volts) {
-        this.hopperRollerMotor.setControl(hopperRollerVoltageRequest.withOutput(volts));
     }
 
     @Override
