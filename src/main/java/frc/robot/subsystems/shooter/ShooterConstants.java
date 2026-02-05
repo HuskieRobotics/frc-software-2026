@@ -16,18 +16,21 @@ public class ShooterConstants {
   public static final String SUBSYSTEM_NAME = "Shooter";
 
   // change the ids once we get the updated stuff
-  public static final int FLYWHEEL_LEAD_MOTOR_ID = 0; // Updated in robot devices and trackers sheet
-  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 0;
-  public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 0;
-  public static final int FLYWHEEL_FOLLOW_3_MOTOR_ID = 0;
-  public static final int HOOD_MOTOR_ID = 0;
-  public static final int TURRET_MOTOR_ID = 0;
+  public static final int FLYWHEEL_LEAD_MOTOR_ID = 9; // Updated in robot devices and trackers sheet
+  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID =
+      10; // FIXME: update from robot devices and trackers sheet
+  public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 11;
+  public static final int FLYWHEEL_FOLLOW_3_MOTOR_ID = 12;
+  public static final int HOOD_MOTOR_ID = 13;
+  public static final int TURRET_MOTOR_ID = 14;
 
   // Flywheel PID Constants (subject to change)
-  public static final double FLYWHEEL_LEAD_ROTATION_KP = 0.0;
-  public static final double FLYWHEEL_LEAD_ROTATION_KI = 0.0;
-  public static final double FLYWHEEL_LEAD_ROTATION_KD = 0.0;
-  public static final double FLYWHEEL_LEAD_ROTATION_KS = 0.0;
+  public static final double FLYWHEEL_LEAD_ROTATION_KP = 19; // FIXME: update value
+  public static final double FLYWHEEL_LEAD_ROTATION_KI = 0;
+  public static final double FLYWHEEL_LEAD_ROTATION_KD = 0;
+  public static final double FLYWHEEL_LEAD_ROTATION_KS = 4;
+  public static final double FLYWHEEL_LEAD_ROTATION_KV = 0.39217; // FIXME: update value
+  public static final double FLYWHEEL_LEAD_ROTATION_KA = 0.022794; // FIXME: update value
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = false;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.0;
@@ -41,11 +44,11 @@ public class ShooterConstants {
   public static final double FLYWHEEL_FOLLOW_2_GEAR_RATIO = 1.0;
 
   // Turret PID Constants (subject to change)
-  public static final double TURRET_ROTATION_KP = 0.0;
+  public static final double TURRET_ROTATION_KP = 19; // FIXME: update value
   public static final double TURRET_ROTATION_KI = 0.0;
   public static final double TURRET_ROTATION_KD = 0.0;
-  public static final double TURRET_ROTATION_KV = 0.0;
-  public static final double TURRET_ROTATION_KA = 0.0;
+  public static final double TURRET_ROTATION_KV = 0.39217; // FIXME: update value
+  public static final double TURRET_ROTATION_KA = 0.022794; // FIXME: update value
 
   // Turret motion magic pid constants
   public static final double TURRET_ROTATION_EXPO_KV = 0.0;
@@ -56,21 +59,17 @@ public class ShooterConstants {
   public static final double TURRET_GEAR_RATIO = 0;
 
   // Hood PID Constants (subject to change)
-  public static final double HOOD_ROTATION_KP = 0.0;
+  public static final double HOOD_ROTATION_KP = 19;
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
-  public static final double HOOD_ROTATION_KG = 0.0;
-  public static final double HOOD_ROTATION_KS = 0.0;
-  public static final double HOOD_ROTATION_KV = 0.0;
-  public static final double HOOD_ROTATION_KA = 0.0;
+  public static final double HOOD_ROTATION_KG = 0.3024;
+  public static final double HOOD_ROTATION_KS = 7.2341;
+  public static final double HOOD_ROTATION_KV = 0.2342;
+  public static final double HOOD_ROTATION_KA = 0.23483;
 
-  public static final double HOOD_ROTATION_EXPO_KV = 0.0;
-  public static final double HOOD_ROTATION_EXPO_KA = 0.0;
+  public static final double HOOD_ROTATION_EXPO_KV = 0.2342;
+  public static final double HOOD_ROTATION_EXPO_KA = 0.20905;
   public static final double HOOD_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
-
-  // SIM KV and KA values
-  public static final double SIM_KV = 0.0;
-  public static final double SIM_KA = 0.0;
 
   //  Hood physical constants
   public static final boolean HOOD_INVERTED = false;
