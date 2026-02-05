@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
   // distances when shooting a game piece.
 
   // testing mode creation of variables
-  private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 1);
+  private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
       new LoggedTunableNumber("Shooter/FlyWheelLead Velocity", 0);
   private final LoggedTunableNumber flywheelLeadCurrent =
