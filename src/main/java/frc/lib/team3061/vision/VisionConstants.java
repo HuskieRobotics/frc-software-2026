@@ -72,8 +72,8 @@ public final class VisionConstants {
   // the standard deviation of the error in pixels for the simulated camera
   public static final double SIM_ERROR_STD_DEV_PIXELS = 0.05;
 
-  // the minimum confidence for a coral detection to be considered valid
-  public static final double CORAL_DETECT_CONFIDENCE_THRESHOLD = 0.35;
+  // the minimum confidence for a fuel detection to be considered valid
+  public static final double FUEL_DETECT_CONFIDENCE_THRESHOLD = 0.35;
 
   public static final int FUEL_DETECT_CAMERA_INDEX = 0;
 }

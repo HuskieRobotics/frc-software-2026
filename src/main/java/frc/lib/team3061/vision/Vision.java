@@ -79,7 +79,7 @@ public class Vision extends SubsystemBase {
   private List<Pose3d> allRobotPosesAccepted = new ArrayList<>();
   private List<Pose3d> allRobotPosesRejected = new ArrayList<>();
   private List<Pose3d> allTagPoses = new ArrayList<>();
-  private List<Pose3d> allCoralPoses = new ArrayList<>();
+  private List<Pose3d> allFuelPoses = new ArrayList<>();
 
   private List<List<Pose3d>> tagPoses;
   private List<List<Pose3d>> cameraPoses;
@@ -204,7 +204,7 @@ public class Vision extends SubsystemBase {
     this.allRobotPosesAccepted.clear();
     this.allRobotPosesRejected.clear();
     this.allTagPoses.clear();
-    this.allCoralPoses.clear();
+    this.allFuelPoses.clear();
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
       String cameraLocation = RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location();
@@ -368,39 +368,39 @@ public class Vision extends SubsystemBase {
 
     // Record fuel observations only from the color camera
 
-      // for each frame
-      for (int frameIndex = 0;
-          frameIndex < objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].timestamps.length;
-          frameIndex++) {
-        double[] frame = objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].frames[frameIndex];
-        for (int i = 0; i < frame.length; i += 10) {
-          if (frame[i + 1] > CORAL_DETECT_CONFIDENCE_THRESHOLD) {
-            double[] tx = new double[4];
-            double[] ty = new double[4];
-            for (int z = 0; z < 4; z++) {
-              tx[z] = frame[i + 2 + (2 * z)];
-              ty[z] = frame[i + 2 + (2 * z) + 1];
-            }
-            Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
-            Pose3d cameraPose =
-                currentRobotPose.plus(
-                    RobotConfig.getInstance()
-                        .getCameraConfigs()[VisionConstants.FUEL_DETECT_CAMERA_INDEX]
-                        .robotToCameraTransform());
-            Translation2d coralOffsetFromCamera = new Translation2d(1.0, tx[0]);
-            // convert the offset in the frame of the camera pose back into the field frame
-            Translation2d fieldRelativeCoralOffset =
-                coralOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
-            allCoralPoses.add(
-                cameraPose.plus(
-                    new Transform3d(
-                        fieldRelativeCoralOffset.getX(),
-                        fieldRelativeCoralOffset.getY(),
-                        0.0,
-                        cameraPose.getRotation())));
+    // for each frame
+    for (int frameIndex = 0;
+        frameIndex < objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].timestamps.length;
+        frameIndex++) {
+      double[] frame = objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].frames[frameIndex];
+      for (int i = 0; i < frame.length; i += 10) {
+        if (frame[i + 1] > FUEL_DETECT_CONFIDENCE_THRESHOLD) {
+          double[] tx = new double[4];
+          double[] ty = new double[4];
+          for (int z = 0; z < 4; z++) {
+            tx[z] = frame[i + 2 + (2 * z)];
+            ty[z] = frame[i + 2 + (2 * z) + 1];
           }
+          Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
+          Pose3d cameraPose =
+              currentRobotPose.plus(
+                  RobotConfig.getInstance()
+                      .getCameraConfigs()[VisionConstants.FUEL_DETECT_CAMERA_INDEX]
+                      .robotToCameraTransform());
+          Translation2d fuelOffsetFromCamera = new Translation2d(1.0, tx[0]);
+          // convert the offset in the frame of the camera pose back into the field frame
+          Translation2d fieldRelativeFuelOffset =
+              fuelOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
+          allFuelPoses.add(
+              cameraPose.plus(
+                  new Transform3d(
+                      fieldRelativeFuelOffset.getX(),
+                      fieldRelativeFuelOffset.getY(),
+                      0.0,
+                      cameraPose.getRotation())));
         }
       }
+    }
 
     // Log summary data
     if (ENABLE_DETAILED_LOGGING) {
@@ -430,9 +430,9 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
 
-    // Log coral poses
+    // Log fuel poses
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/CoralPoses", allCoralPoses.toArray(new Pose3d[allCoralPoses.size()]));
+        SUBSYSTEM_NAME + "/FuelPoses", allFuelPoses.toArray(new Pose3d[allFuelPoses.size()]));
 
     // Log tag poses
     if (ENABLE_DETAILED_LOGGING) {

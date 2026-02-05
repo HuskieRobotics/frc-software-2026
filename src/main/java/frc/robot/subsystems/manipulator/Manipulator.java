@@ -252,7 +252,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void execute(Manipulator subsystem) {
         subsystem.setState(
-            State.WAITING_FOR_GAME_PIECE); // default state to WAITING_FOR_CORAL_IN_FUNNEL state
+            State.WAITING_FOR_GAME_PIECE); // default state to WAITING_FOR_GAME_PIECE state
       }
 
       @Override
