@@ -43,13 +43,13 @@ public class SimDualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getScoreFromBankButton() {
-    return translateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[2];
   }
+
+  // @Override
+  // public Trigger getFieldRelativeButton() {
+  //   return translateJoystickButtons[2];
+  // }
 
   @Override
   public Trigger getResetPoseToVisionButton() {
