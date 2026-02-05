@@ -5,7 +5,6 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -34,7 +33,6 @@ import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
-import frc.robot.subsystems.arm.ArmConstants;
 
 public class ShooterIOTalonFX implements ShooterIO {
 
@@ -139,7 +137,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber turretKAExpo =
       new LoggedTunableNumber("Shooter/Turret kAExpo", ShooterConstants.TURRET_ROTATION_EXPO_KA);
   private final LoggedTunableNumber turretCruiseVelocity =
-      new LoggedTunableNumber("Shooter/Turret Cruise Velocity", ShooterConstants.TURRET_MOTION_MAGIC_CRUISE_VELOCITY);
+      new LoggedTunableNumber(
+          "Shooter/Turret Cruise Velocity", ShooterConstants.TURRET_MOTION_MAGIC_CRUISE_VELOCITY);
   private final LoggedTunableNumber hoodKP =
       new LoggedTunableNumber("Shooter/Hood kP", ShooterConstants.HOOD_ROTATION_KP);
   private final LoggedTunableNumber hoodKI =
@@ -152,14 +151,15 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Hood kG", ShooterConstants.HOOD_ROTATION_KG);
   private final LoggedTunableNumber hoodKV =
       new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_KV);
-    private final LoggedTunableNumber hoodKA =
+  private final LoggedTunableNumber hoodKA =
       new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_KA);
   private final LoggedTunableNumber hoodKVExpo =
       new LoggedTunableNumber("Shooter/Hood kVExpo", ShooterConstants.HOOD_ROTATION_EXPO_KV);
   private final LoggedTunableNumber hoodKAExpo =
       new LoggedTunableNumber("Shooter/Hood kAExpo", ShooterConstants.HOOD_ROTATION_EXPO_KA);
   private final LoggedTunableNumber hoodCruiseVelocity =
-      new LoggedTunableNumber("Shooter/Hood Cruise Velocity", ShooterConstants.HOOD_MOTION_MAGIC_CRUISE_VELOCITY);
+      new LoggedTunableNumber(
+          "Shooter/Hood Cruise Velocity", ShooterConstants.HOOD_MOTION_MAGIC_CRUISE_VELOCITY);
 
   // It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
   // Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
@@ -189,7 +189,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodPositionRequest = new DynamicMotionMagicExpoVoltage(0, hoodKVExpo.get(), hoodKAExpo.get());
 
     turretVoltageRequest = new VoltageOut(0.0);
-    turretPositionRequest = new DynamicMotionMagicExpoVoltage(0.0, turretKVExpo.get(), turretKAExpo.get());
+    turretPositionRequest =
+        new DynamicMotionMagicExpoVoltage(0.0, turretKVExpo.get(), turretKAExpo.get());
 
     // Set up the flywheels 1 and 2 as followers of the lead flywheel
     flywheelFollow1.setControl(
@@ -411,7 +412,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretPosition = turretPositionStatusSignal.getValue();
     inputs.turretReferencePosition = this.turretMotorReferenceAngle;
 
-
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
     inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValue();
@@ -463,8 +463,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     LoggedTunableNumber.ifChanged(
         hashCode(),
         motionMagic -> {
-
-            TalonFXConfiguration config = new TalonFXConfiguration();
+          TalonFXConfiguration config = new TalonFXConfiguration();
 
           turret.getConfigurator().refresh(config);
 
@@ -616,14 +615,14 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.Slot0.kD = turretKD.get();
     turretConfig.Slot0.kV = turretKV.get();
     turretConfig.Slot0.kA = turretKA.get();
-    
+
     turretConfig.MotionMagic.MotionMagicExpo_kA = turretKAExpo.get();
-    turretConfig.MotionMagic.MotionMagicExpo_kV = turretKVExpo.get(); 
+    turretConfig.MotionMagic.MotionMagicExpo_kV = turretKVExpo.get();
     turretConfig.Slot0.withGravityType(GravityTypeValue.Arm_Cosine);
 
     turretConfig.MotionMagic.MotionMagicCruiseVelocity =
         ShooterConstants.TURRET_MOTION_MAGIC_CRUISE_VELOCITY;
-    
+
     turretConfig.Feedback.SensorToMechanismRatio = ShooterConstants.TURRET_GEAR_RATIO;
 
     turretConfig.MotorOutput.Inverted =

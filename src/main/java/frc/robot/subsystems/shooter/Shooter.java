@@ -15,6 +15,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   // all subsystems receive a reference to their IO implementation when constructed
@@ -98,6 +99,8 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(shooterInputs);
+
+    Logger.processInputs(SUBSYSTEM_NAME, shooterInputs);
 
     if (testingMode.get() == 1) { // If we are te
       // Flywheel Lead

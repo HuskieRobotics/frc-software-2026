@@ -47,7 +47,7 @@ public class ShooterConstants {
   public static final double TURRET_ROTATION_KV = 0.0;
   public static final double TURRET_ROTATION_KA = 0.0;
 
-// Turret motion magic pid constants
+  // Turret motion magic pid constants
   public static final double TURRET_ROTATION_EXPO_KV = 0.0;
   public static final double TURRET_ROTATION_EXPO_KA = 0.0;
   public static final double TURRET_MOTION_MAGIC_CRUISE_VELOCITY = 0.0;
