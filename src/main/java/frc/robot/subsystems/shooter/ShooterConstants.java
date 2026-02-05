@@ -63,11 +63,11 @@ public class ShooterConstants {
 
   //  Hood physical constants
   public static final boolean HOOD_INVERTED = false;
-  public static final double HOOD_GEAR_RATIO = 0;
-  public static final double HOOD_LENGTH_METERS = 0.0;
-  public static final double HOOD_MASS_KG = 0.0;
+  public static final double HOOD_GEAR_RATIO = 240;
+  public static final double HOOD_LENGTH_METERS = 2;
+  public static final double HOOD_MASS_KG = 5;
   public static final double HOOD_MIN_ANGLE_RAD = 0.0;
-  public static final double HOOD_MAX_ANGLE_RAD = 0.0;
+  public static final double HOOD_MAX_ANGLE_RAD = 90;
   public static final double HOOD_STARTING_ANGLE_RAD = 0.0;
 
   // Hood angle limits

@@ -68,19 +68,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   // Angular Velocity Status Signals
   // For flywheel lead motor
   private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
-  private StatusSignal<AngularVelocity> flywheelLeadReferenceVelocityStatusSignal;
   private StatusSignal<AngularVelocity> flywheelFollow1VelocityStatusSignal;
   private StatusSignal<AngularVelocity> flywheelFollow2VelocityStatusSignal;
-  private StatusSignal<AngularVelocity> flywheelFollow1ReferenceVelocityStatusSignal;
-  private StatusSignal<AngularVelocity> flywheelFollow2ReferenceVelocityStatusSignal;
-
-  // Flywheel closed loop velocity signals as Double due to API limitations
-  private StatusSignal<Double> flywheelLeadClosedLoopReferenceVelocityStatusSignal;
-  private StatusSignal<Double> flywheelLeadClosedLoopErrorVelocityStatusSignal;
-  private StatusSignal<Double> flywheelFollow1ClosedLoopReferenceVelocityStatusSignal;
-  private StatusSignal<Double> flywheelFollow1ClosedLoopErrorVelocityStatusSignal;
-  private StatusSignal<Double> flywheelFollow2ClosedLoopReferenceVelocityStatusSignal;
-  private StatusSignal<Double> flywheelFollow2ClosedLoopErrorVelocityStatusSignal;
 
   private StatusSignal<Temperature> flywheelLeadTemperatureStatusSignal;
   private StatusSignal<Temperature> flywheelFollow1TemperatureStatusSignal;
@@ -193,9 +182,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
     flywheelLeadStatorCurrentStatusSignal = flywheelLead.getStatorCurrent();
     flywheelLeadVelocityStatusSignal = flywheelLead.getVelocity();
-    flywheelLeadReferenceVelocityStatusSignal = flywheelLead.getVelocity(); // reference, cached
-    flywheelLeadClosedLoopReferenceVelocityStatusSignal = flywheelLead.getClosedLoopReference();
-    flywheelLeadClosedLoopErrorVelocityStatusSignal = flywheelLead.getClosedLoopError();
     flywheelLeadTemperatureStatusSignal = flywheelLead.getDeviceTemp();
     flywheelLeadVoltageStatusSignal = flywheelLead.getMotorVoltage();
 
@@ -203,11 +189,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelFollow1SupplyCurrentStatusSignal = flywheelFollow1.getSupplyCurrent();
     flywheelFollow1StatorCurrentStatusSignal = flywheelFollow1.getStatorCurrent();
     flywheelFollow1VelocityStatusSignal = flywheelFollow1.getVelocity();
-    flywheelFollow1ReferenceVelocityStatusSignal =
-        flywheelFollow1.getVelocity(); // reference, cached
-    flywheelFollow1ClosedLoopReferenceVelocityStatusSignal =
-        flywheelFollow1.getClosedLoopReference();
-    flywheelFollow1ClosedLoopErrorVelocityStatusSignal = flywheelFollow1.getClosedLoopError();
     flywheelFollow1TemperatureStatusSignal = flywheelFollow1.getDeviceTemp();
     flywheelFollow1VoltageStatusSignal = flywheelFollow1.getMotorVoltage();
 
@@ -215,11 +196,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelFollow2SupplyCurrentStatusSignal = flywheelFollow2.getSupplyCurrent();
     flywheelFollow2StatorCurrentStatusSignal = flywheelFollow2.getStatorCurrent();
     flywheelFollow2VelocityStatusSignal = flywheelFollow2.getVelocity();
-    flywheelFollow2ReferenceVelocityStatusSignal =
-        flywheelFollow2.getVelocity(); // reference, cached
-    flywheelFollow2ClosedLoopReferenceVelocityStatusSignal =
-        flywheelFollow2.getClosedLoopReference();
-    flywheelFollow2ClosedLoopErrorVelocityStatusSignal = flywheelFollow2.getClosedLoopError();
     flywheelFollow2TemperatureStatusSignal = flywheelFollow2.getDeviceTemp();
     flywheelFollow2VoltageStatusSignal = flywheelFollow2.getMotorVoltage();
 
@@ -232,6 +208,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // Assign hood status signals
     hoodStatorCurrentStatusSignal = hood.getStatorCurrent();
+    hoodSupplyCurrentStatusSignal = hood.getSupplyCurrent();
     hoodTemperatureStatusSignal = hood.getDeviceTemp();
     hoodVoltageStatusSignal = hood.getMotorVoltage();
     hoodPositionStatusSignal = hood.getPosition();
@@ -245,9 +222,6 @@ public class ShooterIOTalonFX implements ShooterIO {
         flywheelLeadSupplyCurrentStatusSignal,
         flywheelLeadStatorCurrentStatusSignal,
         flywheelLeadVelocityStatusSignal,
-        flywheelLeadReferenceVelocityStatusSignal,
-        flywheelLeadClosedLoopReferenceVelocityStatusSignal,
-        flywheelLeadClosedLoopErrorVelocityStatusSignal,
         flywheelLeadTemperatureStatusSignal,
         flywheelLeadVoltageStatusSignal,
 
@@ -255,17 +229,15 @@ public class ShooterIOTalonFX implements ShooterIO {
         flywheelFollow1SupplyCurrentStatusSignal,
         flywheelFollow1StatorCurrentStatusSignal,
         flywheelFollow1VelocityStatusSignal,
-        flywheelFollow1ReferenceVelocityStatusSignal,
-        flywheelFollow1ClosedLoopReferenceVelocityStatusSignal,
-        flywheelFollow1ClosedLoopErrorVelocityStatusSignal,
+        flywheelFollow1TemperatureStatusSignal,
+        flywheelFollow1VoltageStatusSignal,
 
         // FLYWHEEL Follow 2
         flywheelFollow2SupplyCurrentStatusSignal,
         flywheelFollow2StatorCurrentStatusSignal,
         flywheelFollow2VelocityStatusSignal,
-        flywheelFollow2ReferenceVelocityStatusSignal,
-        flywheelFollow2ClosedLoopReferenceVelocityStatusSignal,
-        flywheelFollow2ClosedLoopErrorVelocityStatusSignal,
+        flywheelFollow2TemperatureStatusSignal,
+        flywheelFollow2VoltageStatusSignal,
 
         // TURRET
         turretStatorCurrentStatusSignal,
@@ -359,6 +331,7 @@ public class ShooterIOTalonFX implements ShooterIO {
             BaseStatusSignal.isAllGood(
                 flywheelFollow1StatorCurrentStatusSignal,
                 flywheelFollow1SupplyCurrentStatusSignal,
+                flywheelFollow1VelocityStatusSignal,
                 flywheelFollow1TemperatureStatusSignal,
                 flywheelFollow1VoltageStatusSignal));
     inputs.flywheelFollow2Connected =
@@ -366,6 +339,7 @@ public class ShooterIOTalonFX implements ShooterIO {
             BaseStatusSignal.isAllGood(
                 flywheelFollow2StatorCurrentStatusSignal,
                 flywheelFollow2SupplyCurrentStatusSignal,
+                flywheelFollow2VelocityStatusSignal,
                 flywheelFollow2TemperatureStatusSignal,
                 flywheelFollow2VoltageStatusSignal));
     inputs.hoodConnected =
@@ -382,7 +356,8 @@ public class ShooterIOTalonFX implements ShooterIO {
                 turretStatorCurrentStatusSignal,
                 turretSupplyCurrentStatusSignal,
                 turretTemperatureStatusSignal,
-                turretVoltageStatusSignal));
+                turretVoltageStatusSignal,
+                turretPositionStatusSignal));
 
     // Updates Flywheel Lead Motor Inputs
     inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValue();
@@ -390,7 +365,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.flywheelLeadVelocity = flywheelLeadVelocityStatusSignal.getValue();
     inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValue();
     inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValue();
-    inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocityStatusSignal.getValue();
 
     // Updates Flywheel Follow1 Motor Inputs
     inputs.flywheelFollow1StatorCurrent = flywheelFollow1StatorCurrentStatusSignal.getValue();
@@ -469,7 +443,6 @@ public class ShooterIOTalonFX implements ShooterIO {
           config.kD = pid[2];
           config.kV = pid[3];
           config.kA = pid[4];
-          mmConfig.MotionMagicCruiseVelocity = pid[5];
 
           turret.getConfigurator().apply(config);
           turret.getConfigurator().apply(mmConfig);
