@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -44,7 +45,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   private PositionVoltage turretPositionRequest;
   private VoltageOut turretVoltageRequest;
 
-  private PositionVoltage hoodPositionRequest;
+  private DynamicMotionMagicExpoVoltage hoodPositionRequest;
   private VoltageOut hoodVoltageRequest;
 
   // Flywheel Lead Status Signals
@@ -165,8 +166,15 @@ public class ShooterIOTalonFX implements ShooterIO {
         new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+
+
     flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
     flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
+
+    hoodVoltageRequest = new VoltageOut(0.0);
+    hoodPositionRequest = new DynamicMotionMagicExpoVoltage(0, hoodkVExpo.get(), hoodkAExpo.get());
+
+    
 
     // Set up the flywheels 1 and 2 as followers of the lead flywheel
     flywheelFollow1.setControl(
@@ -408,6 +416,14 @@ public class ShooterIOTalonFX implements ShooterIO {
           RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
       inputs.flywheelLeadClosedLoopErrorVelocity =
           RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
+      inputs.turretClosedLoopReferencePosition =
+          Degrees.of(turret.getClosedLoopReference().getValue());
+        inputs.turretClosedLoopErrorPosition =
+            Degrees.of(turret.getClosedLoopError().getValue());
+        inputs.hoodClosedLoopReferencePosition =
+            Degrees.of(hood.getClosedLoopReference().getValue());
+        inputs.hoodClosedLoopErrorPosition =
+            Degrees.of(hood.getClosedLoopError().getValue());
     }
 
     // In order for a tunable to be useful, there must be code that checks if its value has changed.
@@ -431,18 +447,18 @@ public class ShooterIOTalonFX implements ShooterIO {
         flywheelLeadKS);
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        pid -> {
+        motionMagic -> {
           Slot0Configs config = new Slot0Configs();
           MotionMagicConfigs mmConfig = new MotionMagicConfigs();
 
           turret.getConfigurator().refresh(config);
           turret.getConfigurator().refresh(mmConfig);
 
-          config.kP = pid[0];
-          config.kI = pid[1];
-          config.kD = pid[2];
-          config.kV = pid[3];
-          config.kA = pid[4];
+          config.kP = motionMagic[0];
+          config.kI = motionMagic[1];
+          config.kD = motionMagic[2];
+          config.kV = motionMagic[3];
+          config.kA = motionMagic[4];
 
           turret.getConfigurator().apply(config);
           turret.getConfigurator().apply(mmConfig);
