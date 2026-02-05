@@ -74,4 +74,6 @@ public final class VisionConstants {
 
   // the minimum confidence for a coral detection to be considered valid
   public static final double CORAL_DETECT_CONFIDENCE_THRESHOLD = 0.35;
+
+  public static final int FUEL_DETECT_CAMERA_INDEX = 0;
 }

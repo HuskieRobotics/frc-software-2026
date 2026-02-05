@@ -325,40 +325,6 @@ public class Vision extends SubsystemBase {
         }
       }
 
-      // Record coral observations
-      for (int frameIndex = 0;
-          frameIndex < objDetectInputs[cameraIndex].timestamps.length;
-          frameIndex++) {
-        double[] frame = objDetectInputs[cameraIndex].frames[frameIndex];
-        for (int i = 0; i < frame.length; i += 10) {
-          if (frame[i + 1] > CORAL_DETECT_CONFIDENCE_THRESHOLD) {
-            double[] tx = new double[4];
-            double[] ty = new double[4];
-            for (int z = 0; z < 4; z++) {
-              tx[z] = frame[i + 2 + (2 * z)];
-              ty[z] = frame[i + 2 + (2 * z) + 1];
-            }
-            Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
-            Pose3d cameraPose =
-                currentRobotPose.plus(
-                    RobotConfig.getInstance()
-                        .getCameraConfigs()[cameraIndex]
-                        .robotToCameraTransform());
-            Translation2d coralOffsetFromCamera = new Translation2d(1.0, tx[0]);
-            // convert the offset in the frame of the camera pose back into the field frame
-            Translation2d fieldRelativeCoralOffset =
-                coralOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
-            allCoralPoses.add(
-                cameraPose.plus(
-                    new Transform3d(
-                        fieldRelativeCoralOffset.getX(),
-                        fieldRelativeCoralOffset.getY(),
-                        0.0,
-                        cameraPose.getRotation())));
-          }
-        }
-      }
-
       // Log data for this camera
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
@@ -399,6 +365,42 @@ public class Vision extends SubsystemBase {
         allTagPoses.addAll(tagPoses.get(cameraIndex));
       }
     }
+
+    // Record fuel observations only from the color camera
+
+      // for each frame
+      for (int frameIndex = 0;
+          frameIndex < objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].timestamps.length;
+          frameIndex++) {
+        double[] frame = objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].frames[frameIndex];
+        for (int i = 0; i < frame.length; i += 10) {
+          if (frame[i + 1] > CORAL_DETECT_CONFIDENCE_THRESHOLD) {
+            double[] tx = new double[4];
+            double[] ty = new double[4];
+            for (int z = 0; z < 4; z++) {
+              tx[z] = frame[i + 2 + (2 * z)];
+              ty[z] = frame[i + 2 + (2 * z) + 1];
+            }
+            Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
+            Pose3d cameraPose =
+                currentRobotPose.plus(
+                    RobotConfig.getInstance()
+                        .getCameraConfigs()[VisionConstants.FUEL_DETECT_CAMERA_INDEX]
+                        .robotToCameraTransform());
+            Translation2d coralOffsetFromCamera = new Translation2d(1.0, tx[0]);
+            // convert the offset in the frame of the camera pose back into the field frame
+            Translation2d fieldRelativeCoralOffset =
+                coralOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
+            allCoralPoses.add(
+                cameraPose.plus(
+                    new Transform3d(
+                        fieldRelativeCoralOffset.getX(),
+                        fieldRelativeCoralOffset.getY(),
+                        0.0,
+                        cameraPose.getRotation())));
+          }
+        }
+      }
 
     // Log summary data
     if (ENABLE_DETAILED_LOGGING) {
