@@ -1,0 +1,77 @@
+package frc.robot.subsystems.Climber;
+
+import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
+import frc.lib.team6328.util.LoggedTunableNumber;
+
+
+import org.littletonrobotics.junction.AutoLog;
+
+
+
+public class Climber extends SubsystemBase {
+  private ClimberIO io;
+
+  private boolean isClimbing = false;
+
+  private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+
+  private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
+  
+  private final LoggedTunableNumber climberAngle =
+      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_ANGLE_DEGREES);
+
+  private final LoggedTunableNumber climberVoltage =
+      new LoggedTunableNumber("Climber/Voltage", 0.0);
+
+  public Climber(ClimberIO io) {
+    this.io = io;
+  }
+
+  FaultReporter.getInstance()
+        .registerSystemCheck(SUBSYSTEM_NAME, getClimberSystemCheckCommand());
+
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Climber", inputs);
+    if (testingMode.get() == 1) {
+      io.setVoltage(climberVoltage.get());
+    }
+    LoggedTracer.record("Climber");
+  }
+
+  public Command getClimberSystemCheckCommand() {
+    
+  }
+
+  public void climb() {
+    io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
+  }
+
+  public void retractSlow() {
+    io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
+  }
+
+  public void stop() {
+    io.setVoltage(0);
+  }
+
+  public void zero() {
+    io.zeroPosition();
+    this.isClimbing = false;
+  }
+
+  public boolean isClimbing() {
+    return this.isClimbing;
+  }
+
+  public double getPosition() {
+    return inputs.positionInches;
+  }
+}
