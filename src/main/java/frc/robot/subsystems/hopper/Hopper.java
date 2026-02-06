@@ -7,12 +7,10 @@ import static frc.robot.subsystems.hopper.HopperConstants.*;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team254.CurrentSpikeDetector;
-import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.hopper.HopperConstants.*;
@@ -44,7 +42,8 @@ public class Hopper extends SubsystemBase {
   public Hopper(HopperIO io) {
     this.io = io;
 
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getHopperSystemCheckCommand());
+    // FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME,
+    // getHopperSystemCheckCommand());
   }
 
   @Override
@@ -87,9 +86,8 @@ public class Hopper extends SubsystemBase {
     LoggedTracer.record(SUBSYSTEM_NAME);
   }
 
-  private Command
-      getHopperSystemCheckCommand() { // FIXME: This entire method may need to be updated. We are
-    // not sure of it.
+  /*  private Command
+      getHopperSystemCheckCommand() {
     return Commands.sequence(
         Commands.runOnce(
             () ->
@@ -117,7 +115,7 @@ public class Hopper extends SubsystemBase {
                 })
             .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
             .andThen(Commands.runOnce(() -> io.setKickerVelocity(RotationsPerSecond.of(0.0)))));
-  }
+  } */
 
   public void setKickerVelocity(AngularVelocity velocity) {
     io.setKickerVelocity(velocity);
