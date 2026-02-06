@@ -1,4 +1,4 @@
-package frc.robot.subsystems.climber;
+package frc.robot.subsystems.Climber;
 
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Angle;
@@ -7,6 +7,9 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.lib.team6328.util.LoggedTunableNumber;
+
+
 import org.littletonrobotics.junction.AutoLog;
 
 
@@ -17,9 +20,11 @@ public class Climber extends SubsystemBase {
   private boolean isClimbing = false;
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
-  private final LoggedTunableNumber maxHeight =
-      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_HEIGHT_INCHES);
+  
+  private final LoggedTunableNumber climberAngle =
+      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_ANGLE_DEGREES);
 
   private final LoggedTunableNumber climberVoltage =
       new LoggedTunableNumber("Climber/Voltage", 0.0);
