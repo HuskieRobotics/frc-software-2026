@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Climber;
+package frc.robot.subsystems.climber;
 
 public class ClimberConstants {
     public static final int CLIMBER_MOTOR_CAN_ID = 17;
@@ -6,20 +6,20 @@ public class ClimberConstants {
     public static final boolean CLIMBER_MOTOR_INVERTED = false;
     
     // PID constants
-    public static final double KP_SLOT0 = 0.0;
-    public static final double KI_SLOT0 = 0.0;
-    public static final double KD_SLOT0 = 0.0;
+    public static final double CLIMBER_KP = 0.0;
+    public static final double CLIMBER_KI = 0.0;
+    public static final double CLIMBER_KD = 0.0;
 
     // feed forward constants
-    public static final double KS_SLOT0 = 0.0;
-    public static final double KV_SLOT0 = 0.0;
-    public static final double KA_SLOT0 = 0.0;
-    public static final double KG_SLOT0 = 0.0;
+    public static final double CLIMBER_KS = 0.0;
+    public static final double CLIMBER_KV = 0.0;
+    public static final double CLIMBER_KA = 0.0;
+    public static final double CLIMBER_KG = 0.0;
 
     // Motion magic constants
-    public static final double KV_EXPO = 0.0;
-    public static final double KA_EXPO = 0.0;
-    public static final double CRUISE_VELOCITY = 0.0;
+    public static final double CLIMBER_KV_EXPO = 0.0;
+    public static final double CLIMBER_KA_EXPO = 0.0;
+    public static final double CLIMBER_CRUISE_VELOCITY = 0.0;
 
     // the following are determined based on the mechanical design of the climber
     public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT = 0.0;
