@@ -331,8 +331,8 @@ public class Vision extends SubsystemBase {
       }
 
       for (int frameIndex = 0;
-        frameIndex < objDetectInputs[cameraIndex].timestamps.length;
-        frameIndex++) {
+          frameIndex < objDetectInputs[cameraIndex].timestamps.length;
+          frameIndex++) {
         double[] frame = objDetectInputs[cameraIndex].frames[frameIndex];
         for (int i = 0; i < frame.length; i += 10) {
           if (frame[i + 1] > FUEL_DETECT_CONFIDENCE_THRESHOLD) {
@@ -342,7 +342,7 @@ public class Vision extends SubsystemBase {
               tx[z] = frame[i + 2 + (2 * z)];
               ty[z] = frame[i + 2 + (2 * z) + 1];
             }
-            
+
             // get the average of each point in the bounding box
             double avgTx = 0;
             double avgTy = 0;
@@ -352,10 +352,10 @@ public class Vision extends SubsystemBase {
             }
             avgTx /= 4;
             avgTy /= 4;
-            
+
             Translation2d fuelPoseInCameraFrame = new Translation2d(avgTx, avgTy);
             this.placeFuelInZone(fuelPoseInCameraFrame);
-            
+
             Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
             Pose3d cameraPose =
                 currentRobotPose.plus(
@@ -533,12 +533,12 @@ public class Vision extends SubsystemBase {
   }
 
   /**
-   * Populates the zones for fuel detection in the 640x640 frame.
-   * Option A: 32 zones of 80 wide (y), 160 tall (x) zones
-   * Option B: 25 zones of 120 wide (y), 120 tall (y) zones
-   * Zone numbering: start at 0, go across each row starting from top left
-   * Based on the assumption that the origin of the plane is in the center of the frame, with +x up and +y to the right
+   * Populates the zones for fuel detection in the 640x640 frame. Option A: 32 zones of 80 wide (y),
+   * 160 tall (x) zones Option B: 25 zones of 120 wide (y), 120 tall (y) zones Zone numbering: start
+   * at 0, go across each row starting from top left Based on the assumption that the origin of the
+   * plane is in the center of the frame, with +x up and +y to the right
    */
+  // Can change to log center of each zone and then compare exact points
   private void populateFuelDetectionZones() {
     int x = 0;
     int y = 0;
@@ -563,15 +563,38 @@ public class Vision extends SubsystemBase {
       }
     }
   }
-  
+
   /**
    * Chooses the zone to put the object in (in the 640x640 frame)
+   *
    * @param index
    * @param observation
    * @return
-    */
+   */
   private void placeFuelInZone(Translation2d fuelPoseInCameraFrame) {
+    // take the translation2d for the center of the fuel and determine which fuel zone it is in
+    for (Map.Entry<Integer, List<Translation2d>> entry : fuelZones.entrySet()) {
+      int zoneIndex = entry.getKey();
+      List<Translation2d> zoneCorners = entry.getValue();
+      if (isPointInZone(fuelPoseInCameraFrame, zoneCorners)) {
+        fuelCountsInZones.put(zoneIndex, fuelCountsInZones.getOrDefault(zoneIndex, 0) + 1);
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/FuelZoneCounts/Zone" + zoneIndex, fuelCountsInZones.get(zoneIndex));
+        break;
+      }
+    }
+  }
 
+  // 0: Top Left - x < getX, y > get Y
+  // 1: Top Right
+  // 2: Bottom Left
+  // 3: Bottom Right - x > getX, y < get Y
+  // using Top Left and Bottom Right should bound the entire zone
+  private boolean isPointInZone(Translation2d point, List<Translation2d> zoneCorners) {
+    return point.getX() < zoneCorners.get(0).getX()
+        && point.getY() > zoneCorners.get(0).getY()
+        && point.getX() > zoneCorners.get(3).getX()
+        && point.getY() < zoneCorners.get(3).getY();
   }
 
   /**
