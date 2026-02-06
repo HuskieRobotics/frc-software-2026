@@ -33,6 +33,7 @@ public class ShooterConstants {
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = false;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.0;
+  public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
   // Follow 1 Constants
   public static final boolean FLYWHEEL_FOLLOW_1_INVERTED = false;

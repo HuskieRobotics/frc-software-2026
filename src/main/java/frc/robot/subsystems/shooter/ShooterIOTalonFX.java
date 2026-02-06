@@ -30,6 +30,7 @@ import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
+import frc.lib.team3061.sim.FlywheelSystemSim;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
@@ -171,7 +172,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber simDetectorDistance =
       new LoggedTunableNumber("Shooter/Sim Detector Distance (m)", 1.0);
 
-  private VelocitySystemSim flywheelLeadSim;
+  private FlywheelSystemSim shooterSim;
   private VelocitySystemSim turretLeadSim; // FIXME: determine correct sim type for turret
   private ArmSystemSim hoodLeadSim;
 
@@ -300,20 +301,21 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // Create a simulation objects for the shooter. The specific parameters for the simulation
     // are determined based on the mechanical design of the shooter.
-    this.flywheelLeadSim =
-        new VelocitySystemSim(
+    this.shooterSim =
+        new FlywheelSystemSim(
+            ShooterConstants.FLYWHEEL_LEAD_ROTATION_KV,
+            ShooterConstants.FLYWHEEL_LEAD_ROTATION_KA,
+            ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO,
+            ShooterConstants.FLYWHEEL_MOMENT_OF_INERTIA,
             flywheelLead,
-            ShooterConstants.FLYWHEEL_LEAD_INVERTED,
-            ShooterConstants.FLYWHEEL_LEAD_ROTATION_KV, // update as needed
-            ShooterConstants.FLYWHEEL_LEAD_ROTATION_KA, // update as needed
-            ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO);
+            flywheelFollow1,
+            flywheelFollow2);
     this.turretLeadSim =
         new VelocitySystemSim(
-            turret,
-            ShooterConstants.TURRET_INVERTED,
             ShooterConstants.TURRET_ROTATION_KV,
             ShooterConstants.TURRET_ROTATION_KA,
-            ShooterConstants.TURRET_GEAR_RATIO);
+            ShooterConstants.TURRET_GEAR_RATIO,
+            turret);
     this.hoodLeadSim =
         new ArmSystemSim(
             hood,
@@ -512,7 +514,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // The last step in the updateInputs method is to update the simulation.
     if (Constants.getMode() == Constants.Mode.SIM) { // If the entire robot is in simulation
-      flywheelLeadSim.updateSim();
+      shooterSim.updateSim();
       turretLeadSim.updateSim();
       hoodLeadSim.updateSim();
     }
@@ -532,7 +534,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretPosition(Angle position) {
-    turret.setControl(turretPositionRequest.withPosition(position.in(Rotations)));
+    turret.setControl(turretPositionRequest.withPosition(position));
     this.turretMotorReferenceAngle = position;
   }
 
@@ -543,7 +545,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setHoodPosition(Angle angle) {
-    hood.setControl(hoodPositionRequest.withPosition(angle.in(Rotations)));
+    hood.setControl(hoodPositionRequest.withPosition(angle));
     this.hoodMotorReferenceAngle = angle;
   }
 
