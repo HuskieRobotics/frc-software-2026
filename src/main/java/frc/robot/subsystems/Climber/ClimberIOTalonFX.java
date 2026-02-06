@@ -88,7 +88,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
     
     climberVoltageRequest = new VoltageOut(0.0);
-    climberPositionRequest = new DynamicMotionMagicExpoVoltage(0, climberMotorKVExpo.get(), climberMotorKAExpo.get());
+    climberPositionRequest = new DynamicMotionMagicExpoVoltage(0);
 
     climberMotorVoltageStatusSignal = climberMotor.getMotorVoltage();
     climberMotorStatorCurrentStatusSignal = climberMotor.getStatorCurrent();
@@ -165,6 +165,8 @@ public class ClimberIOTalonFX implements ClimberIO {
         climberMotorKVExpo,
         climberMotorKAExpo,
         climberCruiseVelocity);
+
+        //FIMXE: Add sim stuff here
   }
 
   @Override
@@ -174,7 +176,12 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void zeroPosition() {
-    climberMotor.setPosition(0);
+    climberMotor.setControl(climberVoltageRequest.withLimitReverseMotion(true).withOutput(0));
+  }
+
+  @Override
+  public void setPosition(Angle angle){
+    climberMotor.setControl(climberPositionRequest.withPosition(angle.in(Rotations)));
   }
 
   private void configMotor() {
@@ -187,6 +194,19 @@ public class ClimberIOTalonFX implements ClimberIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    config.MotorOutput.Neutral = NeutralModeValue.Brake;
+    config.Slot0.kP = climberMotorkP.get();
+    config.Slot0.kI = climberMotorKI.get();
+    config.Slot0.kD = climberMotorKD.get();
+    config.Slot0.kS = climberMotorKS.get();
+    config.Slot0.kV = climberMotorKV.get();
+    config.Slot0.kA = climberMotorKA.get();
+    config.Slot0.kG = climberMotorKG.get();
+    config.MotionMagic.MotionMagicExpo_kV = climberMotorKVExpo.get();
+    config.MotionMagic.MotionMagicExpo_kA = climberMotorKAExpo.get();
+    config.MotionMagic.MotionMagicCruiseVelocity = climberCruiseVelocity.get();
+
 
     config.Feedback.SensorToMechanismRatio = ClimberConstants.GEAR_RATIO;
 
