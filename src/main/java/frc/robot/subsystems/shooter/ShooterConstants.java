@@ -82,10 +82,12 @@ public class ShooterConstants {
   // Hood angle limits
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(90.0); // FIXME: update value
+  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(1.5);
 
   // Turret angle limits
   public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(90);
+  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(1.5);
 
   // Current limits
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 40;

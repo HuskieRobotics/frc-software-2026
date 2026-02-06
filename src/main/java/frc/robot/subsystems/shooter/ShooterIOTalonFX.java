@@ -408,7 +408,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodTemperature = hoodTemperatureStatusSignal.getValue();
     inputs.hoodVoltage = hoodVoltageStatusSignal.getValue();
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
-    inputs.hoodReferencePosition = this.hoodMotorReferenceAngle;
+    inputs.hoodReferenceAngle = this.hoodMotorReferenceAngle;
 
     // Retrieve the closed loop reference status signals directly from the motor in this method
     // instead of retrieving in advance because the status signal returned depends on the current

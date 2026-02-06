@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -45,6 +47,9 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Hood Position", 0);
   private final LoggedTunableNumber hoodVoltage =
       new LoggedTunableNumber("Shooter/Hood Voltage", 0);
+
+  private final Debouncer hoodAtSetpointDebouncer = new Debouncer(0.1);
+  private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
 
   // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
   // be used for voltage control, we can apply a current instead and reinterpret the units when
@@ -349,6 +354,18 @@ public class Shooter extends SubsystemBase {
                     + shooterInputs.turretPosition);
       }
     }
+  }
+
+   public boolean isHoodAtSetPoint() {
+    return hoodAtSetpointDebouncer.calculate(
+        shooterInputs.hoodReferenceAngle.isNear(shooterInputs.hoodPosition, HOOD_TOLERANCE_ANGLE));
+  }
+
+  public boolean isTurretAtSetPoint(){
+
+    return turretAtSetpointDebouncer.calculate(
+        shooterInputs.turretReferencePosition.isNear(shooterInputs.turretPosition, TURRET_TOLERANCE_ANGLE));
+
   }
 
   // public void reverseShooter(double reverseAmps) { //FIXME: might not be needed
