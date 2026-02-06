@@ -87,6 +87,9 @@ public class Vision extends SubsystemBase {
   private List<List<Pose3d>> robotPosesAccepted;
   private List<List<Pose3d>> robotPosesRejected;
 
+  private Map<Integer, List<Translation2d>> fuelZones = new HashMap<>();
+  private Map<Integer, Integer> fuelCountsInZones = new HashMap<>();
+
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
@@ -117,6 +120,8 @@ public class Vision extends SubsystemBase {
     this.objDetectInputs = new ObjDetectVisionIOInputsAutoLogged[visionIOs.length];
     this.disconnectedAlerts = new Alert[visionIOs.length];
     this.camerasToConsider = new ArrayList<>();
+
+    this.populateFuelDetectionZones();
 
     tagPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
     cameraPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
@@ -325,6 +330,53 @@ public class Vision extends SubsystemBase {
         }
       }
 
+      for (int frameIndex = 0;
+        frameIndex < objDetectInputs[cameraIndex].timestamps.length;
+        frameIndex++) {
+        double[] frame = objDetectInputs[cameraIndex].frames[frameIndex];
+        for (int i = 0; i < frame.length; i += 10) {
+          if (frame[i + 1] > FUEL_DETECT_CONFIDENCE_THRESHOLD) {
+            double[] tx = new double[4];
+            double[] ty = new double[4];
+            for (int z = 0; z < 4; z++) {
+              tx[z] = frame[i + 2 + (2 * z)];
+              ty[z] = frame[i + 2 + (2 * z) + 1];
+            }
+            
+            // get the average of each point in the bounding box
+            double avgTx = 0;
+            double avgTy = 0;
+            for (int z = 0; z < 4; z++) {
+              avgTx += tx[z];
+              avgTy += ty[z];
+            }
+            avgTx /= 4;
+            avgTy /= 4;
+            
+            Translation2d fuelPoseInCameraFrame = new Translation2d(avgTx, avgTy);
+            this.placeFuelInZone(fuelPoseInCameraFrame);
+            
+            Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
+            Pose3d cameraPose =
+                currentRobotPose.plus(
+                    RobotConfig.getInstance()
+                        .getCameraConfigs()[cameraIndex]
+                        .robotToCameraTransform());
+            Translation2d fuelOffsetFromCamera = new Translation2d(1.0, tx[0]);
+            // convert the offset in the frame of the camera pose back into the field frame
+            Translation2d fieldRelativeFuelOffset =
+                fuelOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
+            allFuelPoses.add(
+                cameraPose.plus(
+                    new Transform3d(
+                        fieldRelativeFuelOffset.getX(),
+                        fieldRelativeFuelOffset.getY(),
+                        0.0,
+                        cameraPose.getRotation())));
+          }
+        }
+      }
+
       // Log data for this camera
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
@@ -363,42 +415,6 @@ public class Vision extends SubsystemBase {
         allRobotPosesAccepted.addAll(robotPosesAccepted.get(cameraIndex));
         allRobotPosesRejected.addAll(robotPosesRejected.get(cameraIndex));
         allTagPoses.addAll(tagPoses.get(cameraIndex));
-      }
-    }
-
-    // Record fuel observations only from the color camera
-
-    // for each frame
-    for (int frameIndex = 0;
-        frameIndex < objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].timestamps.length;
-        frameIndex++) {
-      double[] frame = objDetectInputs[VisionConstants.FUEL_DETECT_CAMERA_INDEX].frames[frameIndex];
-      for (int i = 0; i < frame.length; i += 10) {
-        if (frame[i + 1] > FUEL_DETECT_CONFIDENCE_THRESHOLD) {
-          double[] tx = new double[4];
-          double[] ty = new double[4];
-          for (int z = 0; z < 4; z++) {
-            tx[z] = frame[i + 2 + (2 * z)];
-            ty[z] = frame[i + 2 + (2 * z) + 1];
-          }
-          Pose3d currentRobotPose = new Pose3d(RobotOdometry.getInstance().getEstimatedPose());
-          Pose3d cameraPose =
-              currentRobotPose.plus(
-                  RobotConfig.getInstance()
-                      .getCameraConfigs()[VisionConstants.FUEL_DETECT_CAMERA_INDEX]
-                      .robotToCameraTransform());
-          Translation2d fuelOffsetFromCamera = new Translation2d(1.0, tx[0]);
-          // convert the offset in the frame of the camera pose back into the field frame
-          Translation2d fieldRelativeFuelOffset =
-              fuelOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
-          allFuelPoses.add(
-              cameraPose.plus(
-                  new Transform3d(
-                      fieldRelativeFuelOffset.getX(),
-                      fieldRelativeFuelOffset.getY(),
-                      0.0,
-                      cameraPose.getRotation())));
-        }
       }
     }
 
@@ -514,6 +530,48 @@ public class Vision extends SubsystemBase {
                 .minus(pose.getRotation().toRotation2d())
                 .getDegrees())
         < ROTATION_THRESHOLD_DEGREES;
+  }
+
+  /**
+   * Populates the zones for fuel detection in the 640x640 frame.
+   * Option A: 32 zones of 80 wide (y), 160 tall (x) zones
+   * Option B: 25 zones of 120 wide (y), 120 tall (y) zones
+   * Zone numbering: start at 0, go across each row starting from top left
+   * Based on the assumption that the origin of the plane is in the center of the frame, with +x up and +y to the right
+   */
+  private void populateFuelDetectionZones() {
+    int x = 0;
+    int y = 0;
+    for (int dy = 0; dy < 8; dy++) {
+      for (int dx = 0; dx < 4; dx++) {
+        int zoneIndex = dy * 4 + dx;
+        List<Translation2d> zoneCorners = new ArrayList<>();
+
+        // Top Left Corner of Zone
+        zoneCorners.add(new Translation2d((2 - dx) * 160, (-4 + dy) * 80));
+
+        // Top Right Corner of Zone
+        zoneCorners.add(new Translation2d((2 - dx) * 160, (-4 + dy) * 80 + 80));
+
+        // Bottom Left Corner of Zone
+        zoneCorners.add(new Translation2d((2 - dx) * 160 - 160, (-4 + dy) * 80));
+
+        // Bottom Right Corner of Zone
+        zoneCorners.add(new Translation2d((2 - dx) * 160 - 160, (-4 + dy) * 80 + 80));
+
+        fuelZones.put(zoneIndex, zoneCorners);
+      }
+    }
+  }
+  
+  /**
+   * Chooses the zone to put the object in (in the 640x640 frame)
+   * @param index
+   * @param observation
+   * @return
+    */
+  private void placeFuelInZone(Translation2d fuelPoseInCameraFrame) {
+
   }
 
   /**

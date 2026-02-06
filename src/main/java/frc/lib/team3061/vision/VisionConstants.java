@@ -74,7 +74,4 @@ public final class VisionConstants {
 
   // the minimum confidence for a fuel detection to be considered valid
   public static final double FUEL_DETECT_CONFIDENCE_THRESHOLD = 0.35;
-
-  // FIXME: grab from robot config
-  public static final int FUEL_DETECT_CAMERA_INDEX = 0;
 }
