@@ -85,8 +85,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Angle> turretPositionStatusSignal;
   private StatusSignal<Angle> hoodPositionStatusSignal;
 
-  private Angle hoodMotorReferenceAngle = Rotations.of(0.0);
-  private Angle turretMotorReferenceAngle = Rotations.of(0.0);
+  private Angle hoodMotorReferenceAngle = Degrees.of(0.0);
+  private Angle turretMotorReferenceAngle = Degrees.of(0.0);
+  private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
 
   private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
@@ -377,6 +378,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.flywheelLeadVelocity = flywheelLeadVelocityStatusSignal.getValue();
     inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValue();
     inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValue();
+    inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocity.copy();
 
     // Updates Flywheel Follow1 Motor Inputs
     inputs.flywheelFollow1StatorCurrent = flywheelFollow1StatorCurrentStatusSignal.getValue();
@@ -518,11 +520,9 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setFlywheelVelocity(AngularVelocity velocity) {
-    flywheelLead.setControl(
-        flywheelLeadVelocityRequest.withVelocity(
-            velocity)); // velocities for followers should be set automatically
-    // To improve performance, we store the reference velocity as an instance variable to avoid
-    // having to retrieve the status signal object from the device in the updateInputs method.
+    flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocity));
+
+    this.flywheelLeadReferenceVelocity = velocity.copy();
   }
 
   @Override

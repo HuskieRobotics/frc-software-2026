@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
 
   // all subsystems create the IO inputs instance for this subsystem
   private final ShooterIOInputsAutoLogged shooterInputs =
-      new ShooterIOInputsAutoLogged(); // error will be removed once we build the code
+      new ShooterIOInputsAutoLogged();
 
   // When initially testing a mechanism, it is best to manually provide a voltage or current to
   // verify the mechanical functionality. At times, this can be done via Phoenix Tuner. However,
