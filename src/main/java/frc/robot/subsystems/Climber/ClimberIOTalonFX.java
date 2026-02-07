@@ -9,6 +9,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -32,7 +33,7 @@ import frc.robot.Constants;
 public class ClimberIOTalonFX implements ClimberIO {
 
   private VoltageOut climberVoltageRequest;
-  private DynamicMotionMagicExpoVoltage climberPositionRequest;
+  private MotionMagicExpoVoltage climberPositionRequest;
 
   private StatusSignal<Voltage> climberMotorVoltageStatusSignal;
   private StatusSignal<Current> climberMotorStatorCurrentStatusSignal;
@@ -89,8 +90,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     climberMotor = new TalonFX(CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
 
     climberVoltageRequest = new VoltageOut(0.0);
-    climberPositionRequest =
-        new DynamicMotionMagicExpoVoltage(0, climberMotorKVExpo.get(), climberMotorKAExpo.get());
+    climberPositionRequest = new MotionMagicExpoVoltage(0.0);
 
     climberMotorVoltageStatusSignal = climberMotor.getMotorVoltage();
     climberMotorStatorCurrentStatusSignal = climberMotor.getStatorCurrent();
