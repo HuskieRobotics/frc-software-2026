@@ -8,8 +8,8 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -41,10 +41,11 @@ public class ShooterIOTalonFX implements ShooterIO {
   private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
   private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
-  private DynamicMotionMagicExpoVoltage turretPositionRequest;
+  private MotionMagicExpoVoltage
+      turretPositionRequest; // potentially change type to PositionVoltage
   private VoltageOut turretVoltageRequest;
 
-  private DynamicMotionMagicExpoVoltage hoodPositionRequest;
+  private MotionMagicExpoVoltage hoodPositionRequest; // potentially change type to PositionVoltage
   private VoltageOut hoodVoltageRequest;
 
   // Flywheel Lead Status Signals
@@ -185,12 +186,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
 
     hoodVoltageRequest = new VoltageOut(0.0);
-    hoodPositionRequest = new DynamicMotionMagicExpoVoltage(0, hoodKVExpo.get(), hoodKAExpo.get());
+    hoodPositionRequest = new MotionMagicExpoVoltage(0.0);
 
     turretVoltageRequest = new VoltageOut(0.0);
-    turretPositionRequest =
-        new DynamicMotionMagicExpoVoltage(0.0, turretKVExpo.get(), turretKAExpo.get());
-
+    turretPositionRequest = new MotionMagicExpoVoltage(0.0);
     // Set up the flywheels 1 and 2 as followers of the lead flywheel
     flywheelFollow1.setControl(
         new Follower(
@@ -529,7 +528,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretPosition(Angle position) {
-    turret.setControl(turretPositionRequest.withPosition(position));
+    turret.setControl(turretPositionRequest.withPosition(position.in(Rotations)));
     this.turretMotorReferencePosition = position;
   }
 
@@ -539,9 +538,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
 
   @Override
-  public void setHoodPosition(Angle angle) {
-    hood.setControl(hoodPositionRequest.withPosition(angle));
-    this.hoodMotorReferencePosition = angle;
+  public void setHoodPosition(Angle position) {
+    hood.setControl(hoodPositionRequest.withPosition(position.in(Rotations)));
+    this.hoodMotorReferencePosition = position;
   }
 
   @Override
