@@ -358,18 +358,18 @@ public class Shooter extends SubsystemBase {
 
    public boolean isHoodAtSetPoint() {
     return hoodAtSetpointDebouncer.calculate(
-        shooterInputs.hoodReferenceAngle.isNear(shooterInputs.hoodPosition, HOOD_TOLERANCE_ANGLE));
+        shooterInputs.hoodPosition.isNear(shooterInputs.hoodReferencePosition, HOOD_TOLERANCE_ANGLE));
   }
 
   public boolean isTurretAtSetPoint(){
 
     return turretAtSetpointDebouncer.calculate(
-        shooterInputs.turretReferencePosition.isNear(shooterInputs.turretPosition, TURRET_TOLERANCE_ANGLE));
+        shooterInputs.turretPosition.isNear(shooterInputs.turretReferencePosition, TURRET_TOLERANCE_ANGLE));
 
   }
 
   // public void reverseShooter(double reverseAmps) { //FIXME: might not be needed
-  //  io.setFlywheelTorqueCurrent(-ShooterConstants.SHOOTER_CURRENT);
+  //  io.setFlywheelTorqueCurrent();
   // }
 
   public void setFlywheelLeadVelocity(AngularVelocity velocity) {

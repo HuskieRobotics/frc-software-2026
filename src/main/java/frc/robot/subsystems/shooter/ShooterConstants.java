@@ -45,8 +45,8 @@ public class ShooterConstants {
 
   // Turret PID Constants (subject to change)
   public static final double TURRET_ROTATION_KP = 19; // FIXME: update value
-  public static final double TURRET_ROTATION_KI = 0.0;
-  public static final double TURRET_ROTATION_KD = 0.0;
+  public static final double TURRET_ROTATION_KI = 0.0; // FIXME: update value
+  public static final double TURRET_ROTATION_KD = 0.0; // FIXME: update value
   public static final double TURRET_ROTATION_KV = 0.12; // FIXME: update value
   public static final double TURRET_ROTATION_KA = 0.022794; // FIXME: update value
 

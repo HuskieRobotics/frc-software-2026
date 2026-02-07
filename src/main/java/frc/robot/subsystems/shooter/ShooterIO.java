@@ -64,7 +64,7 @@ public interface ShooterIO {
     Current hoodSupplyCurrent = Amps.of(0.0);
     Voltage hoodVoltage = Volts.of(0.0);
     Angle hoodPosition = Rotations.of(0.0);
-    Angle hoodReferenceAngle = Rotations.of(0.0);
+    Angle hoodReferencePosition = Rotations.of(0.0);
     Angle hoodClosedLoopReferencePosition = Rotations.of(0.0);
     Angle hoodClosedLoopErrorPosition = Rotations.of(0.0);
     Temperature hoodTemperature = Celsius.of(0.0);

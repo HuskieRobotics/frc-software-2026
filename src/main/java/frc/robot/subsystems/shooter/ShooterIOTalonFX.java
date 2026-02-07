@@ -86,8 +86,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Angle> turretPositionStatusSignal;
   private StatusSignal<Angle> hoodPositionStatusSignal;
 
-  private Angle hoodMotorReferenceAngle = Degrees.of(0.0);
-  private Angle turretMotorReferenceAngle = Degrees.of(0.0);
+  private Angle hoodMotorReferencePosition = Degrees.of(0.0);
+  private Angle turretMotorReferencePosition = Degrees.of(0.0);
   private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
 
   private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
@@ -166,11 +166,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber hoodCruiseVelocity =
       new LoggedTunableNumber(
           "Shooter/Hood Cruise Velocity", ShooterConstants.HOOD_MOTION_MAGIC_CRUISE_VELOCITY);
-
-  // It is a bit more challenging to simulate a CANrange sensor compared to a DIO sensor. Using a
-  // Tunable to simulate the distance to a game piece, requires that TUNING is set to true.
-  private final LoggedTunableNumber simDetectorDistance =
-      new LoggedTunableNumber("Shooter/Sim Detector Distance (m)", 1.0);
 
   private FlywheelSystemSim shooterSim;
   private VelocitySystemSim turretLeadSim; // FIXME: determine correct sim type for turret
@@ -402,7 +397,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretTemperature = turretTemperatureStatusSignal.getValue();
     inputs.turretVoltage = turretVoltageStatusSignal.getValue();
     inputs.turretPosition = turretPositionStatusSignal.getValue();
-    inputs.turretReferencePosition = this.turretMotorReferenceAngle;
+    inputs.turretReferencePosition = this.turretMotorReferencePosition;
 
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
@@ -410,7 +405,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodTemperature = hoodTemperatureStatusSignal.getValue();
     inputs.hoodVoltage = hoodVoltageStatusSignal.getValue();
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
-    inputs.hoodReferenceAngle = this.hoodMotorReferenceAngle;
+    inputs.hoodReferencePosition = this.hoodMotorReferencePosition;
 
     // Retrieve the closed loop reference status signals directly from the motor in this method
     // instead of retrieving in advance because the status signal returned depends on the current
@@ -535,7 +530,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void setTurretPosition(Angle position) {
     turret.setControl(turretPositionRequest.withPosition(position));
-    this.turretMotorReferenceAngle = position;
+    this.turretMotorReferencePosition = position;
   }
 
   @Override
@@ -546,7 +541,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void setHoodPosition(Angle angle) {
     hood.setControl(hoodPositionRequest.withPosition(angle));
-    this.hoodMotorReferenceAngle = angle;
+    this.hoodMotorReferencePosition = angle;
   }
 
   @Override
