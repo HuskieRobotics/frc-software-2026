@@ -8,7 +8,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -87,7 +86,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   public ClimberIOTalonFX() {
 
-    climberMotor = new TalonFX(CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
+    climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
 
     climberVoltageRequest = new VoltageOut(0.0);
     climberPositionRequest = new MotionMagicExpoVoltage(0.0);
