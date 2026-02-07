@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.subsystems.hopper.HopperConstants.*;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -20,10 +21,14 @@ public class Hopper extends SubsystemBase {
   private HopperIO io;
   private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
 
-  private final LoggedTunableNumber spindexerVelocity =
+  private final LoggedTunableNumber spindexerVelocityRPS =
       new LoggedTunableNumber("Hopper/SpindexerVelocity", 0);
-  private final LoggedTunableNumber kickerVelocity =
+  private final LoggedTunableNumber spindexerCurrent =
+      new LoggedTunableNumber("Hopper/Spindexer Current", 0);
+  private final LoggedTunableNumber kickerVelocityRPS =
       new LoggedTunableNumber("Hopper/KickerVelocity", 0);
+  private final LoggedTunableNumber kickerCurrent =
+      new LoggedTunableNumber("Hopper/Kicker Current", 0);
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Hopper/TestingMode", 0);
 
   private CurrentSpikeDetector spindexerSpikeDetector =
@@ -75,11 +80,14 @@ public class Hopper extends SubsystemBase {
     }
 
     if (testingMode.get() == 1) {
-      if (spindexerVelocity.get() != 0) {
-        setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocity.get()));
-      }
-      if (kickerVelocity.get() != 0) {
-        setKickerVelocity(RotationsPerSecond.of(kickerVelocity.get()));
+      if (spindexerVelocityRPS.get() != 0) {
+        io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
+      } else if (spindexerCurrent.get() != 0) {
+        io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
+      } else if (kickerVelocityRPS.get() != 0) {
+        io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
+      } else if (kickerCurrent.get() != 0) {
+        io.setKickerCurrent(Amps.of(kickerCurrent.get()));
       }
     }
 
@@ -125,11 +133,19 @@ public class Hopper extends SubsystemBase {
     io.setSpindexerVelocity(velocity);
   }
 
-  public double getKickerVelocity() {
-    return kickerVelocity.get();
+  public void setKickerCurrent(Current amps) {
+    io.setKickerCurrent(amps);
   }
 
-  public double getSpindexerVelocity() {
-    return spindexerVelocity.get();
+  public void setSpindexerCurrent(Current amps) {
+    io.setSpindexerCurrent(amps);
+  }
+
+  public double getKickerVelocityRPS() {
+    return kickerVelocityRPS.get();
+  }
+
+  public double getSpindexerVelocityRPS() {
+    return spindexerVelocityRPS.get();
   }
 }

@@ -270,8 +270,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // The last step in the updateInputs method is to update the simulation.
     if (Constants.getMode() == Constants.Mode.SIM) {
-      this.shootMotorBottomSim.updateSim();
-      this.shootMotorTopSim.updateSim();
       this.gamePieceDetector.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
       this.gamePieceDetector.getSimState().setDistance(simDetectorDistance.get());
     }

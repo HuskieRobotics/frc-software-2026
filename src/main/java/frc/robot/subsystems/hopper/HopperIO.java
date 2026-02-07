@@ -43,16 +43,23 @@ public interface HopperIO {
     AngularVelocity spindexerVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity kickerVelocity = RotationsPerSecond.of(0.0);
 
+    AngularVelocity spindexerReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
+
     AngularVelocity closedLoopErrorSpindexer = RotationsPerSecond.of(0.0);
     AngularVelocity closedLoopErrorKicker = RotationsPerSecond.of(0.0);
 
-    AngularVelocity closedLoopReferenceSpindexer = RotationsPerSecond.of(0.0);
-    AngularVelocity closedLoopReferenceKicker = RotationsPerSecond.of(0.0);
+    AngularVelocity closedLoopReferenceVelocitySpindexer = RotationsPerSecond.of(0.0);
+    AngularVelocity closedLoopReferenceVelocityKicker = RotationsPerSecond.of(0.0);
   }
 
   public default void setSpindexerVelocity(AngularVelocity velocity) {}
 
   public default void setKickerVelocity(AngularVelocity velocity) {}
+
+  public default void setSpindexerCurrent(Current amps) {}
+
+  public default void setKickerCurrent(Current amps) {}
 
   public default void updateInputs(HopperIOInputs inputs) {}
 }

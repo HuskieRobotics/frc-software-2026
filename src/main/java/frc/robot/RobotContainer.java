@@ -49,6 +49,9 @@ import frc.robot.subsystems.arm.ArmIOXRP;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperIO;
+import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
@@ -78,6 +81,7 @@ public class RobotContainer {
   private Elevator elevator;
   private Manipulator manipulator;
   private Shooter shooter;
+  private Hopper hopper;
   private RobotVisualization visualization;
 
   private final LoggedNetworkNumber endgameAlert1 =
@@ -160,6 +164,7 @@ public class RobotContainer {
       elevator = new Elevator(new ElevatorIO() {});
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
+      hopper = new Hopper(new HopperIO() {});
       visualization = new RobotVisualization(elevator);
     }
 
@@ -241,6 +246,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIOTalonFX());
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
+    hopper = new Hopper(new HopperIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -269,6 +275,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -302,6 +309,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIOTalonFX());
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
+    hopper = new Hopper(new HopperIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -326,6 +334,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -355,6 +364,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    hopper = new Hopper(new HopperIO() {});
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -383,6 +393,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(elevator);
   }
 

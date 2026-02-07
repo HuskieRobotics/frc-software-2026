@@ -7,6 +7,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -27,14 +28,17 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 
 public class HopperIOTalonFX implements HopperIO {
-  private TalonFX hopperSpindexerMotor;
-  private TalonFX hopperKickerMotor;
+  private TalonFX spindexerMotor;
+  private TalonFX kickerMotor;
 
   private VelocitySystemSim hopperSpindexerVelocitySystemSim;
   private FlywheelSystemSim hopperKickerSim;
 
-  private VelocityTorqueCurrentFOC hopperSpindexerVelocityRequest;
-  private VelocityTorqueCurrentFOC hopperKickerVelocityRequest;
+  private VelocityTorqueCurrentFOC spindexerVelocityRequest;
+  private VelocityTorqueCurrentFOC kickerVelocityRequest;
+
+  private TorqueCurrentFOC spindexerCurrentRequest;
+  private TorqueCurrentFOC kickerCurrentRequest;
 
   private StatusSignal<Voltage> voltageSuppliedSpindexerStatusSignal;
   private StatusSignal<Voltage> voltageSuppliedKickerStatusSignal;
@@ -50,6 +54,9 @@ public class HopperIOTalonFX implements HopperIO {
 
   private StatusSignal<AngularVelocity> velocitySpindexerStatusSignal;
   private StatusSignal<AngularVelocity> velocityKickerStatusSignal;
+
+  private AngularVelocity spindexerReferenceVelocity = RotationsPerSecond.of(0.0);
+  private AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
 
   private Alert hopperSpindexerConfigAlert =
       new Alert("Failed to apply configuration for hopper spindexer.", AlertType.kError);
@@ -87,26 +94,29 @@ public class HopperIOTalonFX implements HopperIO {
   private final Debouncer connectedKickerDebouncer = new Debouncer(0.5);
 
   public HopperIOTalonFX() {
-    hopperSpindexerMotor = new TalonFX(HOPPER_SPINDEXER_ID, RobotConfig.getInstance().getCANBus());
-    hopperKickerMotor = new TalonFX(HOPPER_KICKER_ID, RobotConfig.getInstance().getCANBus());
+    spindexerMotor = new TalonFX(HOPPER_SPINDEXER_ID, RobotConfig.getInstance().getCANBus());
+    kickerMotor = new TalonFX(HOPPER_KICKER_ID, RobotConfig.getInstance().getCANBus());
 
-    statorCurrentSpindexerStatusSignal = hopperSpindexerMotor.getStatorCurrent();
-    supplyCurrentSpindexerStatusSignal = hopperSpindexerMotor.getSupplyCurrent();
-    tempSpindexerStatusSignal = hopperSpindexerMotor.getDeviceTemp();
-    voltageSuppliedSpindexerStatusSignal = hopperSpindexerMotor.getMotorVoltage();
-    velocitySpindexerStatusSignal = hopperSpindexerMotor.getVelocity();
+    spindexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
+    kickerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
 
-    statorCurrentKickerStatusSignal = hopperKickerMotor.getStatorCurrent();
-    supplyCurrentKickerStatusSignal = hopperKickerMotor.getSupplyCurrent();
-    tempKickerStatusSignal = hopperKickerMotor.getDeviceTemp();
-    voltageSuppliedKickerStatusSignal = hopperKickerMotor.getMotorVoltage();
-    velocityKickerStatusSignal = hopperKickerMotor.getVelocity();
+    spindexerCurrentRequest = new TorqueCurrentFOC(0.0);
+    kickerCurrentRequest = new TorqueCurrentFOC(0.0);
 
-    hopperSpindexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
-    hopperKickerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
+    statorCurrentSpindexerStatusSignal = spindexerMotor.getStatorCurrent();
+    supplyCurrentSpindexerStatusSignal = spindexerMotor.getSupplyCurrent();
+    tempSpindexerStatusSignal = spindexerMotor.getDeviceTemp();
+    voltageSuppliedSpindexerStatusSignal = spindexerMotor.getMotorVoltage();
+    velocitySpindexerStatusSignal = spindexerMotor.getVelocity();
+
+    statorCurrentKickerStatusSignal = kickerMotor.getStatorCurrent();
+    supplyCurrentKickerStatusSignal = kickerMotor.getSupplyCurrent();
+    tempKickerStatusSignal = kickerMotor.getDeviceTemp();
+    voltageSuppliedKickerStatusSignal = kickerMotor.getMotorVoltage();
+    velocityKickerStatusSignal = kickerMotor.getVelocity();
 
     Phoenix6Util.registerSignals(
-        false,
+        true,
         statorCurrentSpindexerStatusSignal,
         supplyCurrentSpindexerStatusSignal,
         tempSpindexerStatusSignal,
@@ -118,16 +128,14 @@ public class HopperIOTalonFX implements HopperIO {
         voltageSuppliedKickerStatusSignal,
         velocityKickerStatusSignal);
 
-    configHopperSpindexerMotor(hopperSpindexerMotor);
-    configHopperKickerMotor(hopperKickerMotor);
+    configHopperSpindexerMotor(spindexerMotor);
+    configHopperKickerMotor(kickerMotor);
 
     hopperSpindexerVelocitySystemSim =
-        new VelocitySystemSim(
-            SPINDEXER_KV, SPINDEXER_KA, SPINDEXER_GEAR_RATIO, hopperSpindexerMotor);
+        new VelocitySystemSim(SPINDEXER_KV, SPINDEXER_KA, SPINDEXER_GEAR_RATIO, spindexerMotor);
 
     hopperKickerSim =
-        new FlywheelSystemSim(
-            KICKER_KV, KICKER_KA, KICKER_MOI, KICKER_GEAR_RATIO, hopperKickerMotor);
+        new FlywheelSystemSim(KICKER_KV, KICKER_KA, KICKER_MOI, KICKER_GEAR_RATIO, kickerMotor);
   }
 
   @Override
@@ -155,30 +163,32 @@ public class HopperIOTalonFX implements HopperIO {
     inputs.spindexerTemperatureCelsius = tempSpindexerStatusSignal.getValue();
     inputs.spindexerVoltageSupplied = voltageSuppliedSpindexerStatusSignal.getValue();
     inputs.spindexerVelocity = velocitySpindexerStatusSignal.getValue();
+    inputs.spindexerReferenceVelocity = this.spindexerReferenceVelocity.copy();
 
     inputs.kickerStatorCurrent = statorCurrentKickerStatusSignal.getValue();
     inputs.kickerSupplyCurrent = supplyCurrentKickerStatusSignal.getValue();
     inputs.kickerTemperatureCelsius = tempKickerStatusSignal.getValue();
     inputs.kickerVoltageSupplied = voltageSuppliedKickerStatusSignal.getValue();
     inputs.kickerVelocity = velocityKickerStatusSignal.getValue();
+    inputs.kickerReferenceVelocity = this.kickerReferenceVelocity.copy();
 
     if (Constants.TUNING_MODE) {
       inputs.closedLoopErrorSpindexer =
-          RotationsPerSecond.of(hopperSpindexerMotor.getClosedLoopError().getValueAsDouble());
+          RotationsPerSecond.of(spindexerMotor.getClosedLoopError().getValueAsDouble());
       inputs.closedLoopErrorKicker =
-          RotationsPerSecond.of(hopperKickerMotor.getClosedLoopError().getValueAsDouble());
+          RotationsPerSecond.of(kickerMotor.getClosedLoopError().getValueAsDouble());
 
-      inputs.closedLoopReferenceSpindexer =
-          RotationsPerSecond.of(hopperSpindexerMotor.getClosedLoopReference().getValueAsDouble());
-      inputs.closedLoopReferenceKicker =
-          RotationsPerSecond.of(hopperKickerMotor.getClosedLoopReference().getValueAsDouble());
+      inputs.closedLoopReferenceVelocitySpindexer =
+          RotationsPerSecond.of(spindexerMotor.getClosedLoopReference().getValueAsDouble());
+      inputs.closedLoopReferenceVelocityKicker =
+          RotationsPerSecond.of(kickerMotor.getClosedLoopReference().getValueAsDouble());
     }
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
         pid -> {
           Slot0Configs config = new Slot0Configs();
-          this.hopperKickerMotor.getConfigurator().refresh(config);
+          this.kickerMotor.getConfigurator().refresh(config);
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
@@ -186,7 +196,7 @@ public class HopperIOTalonFX implements HopperIO {
           config.kS = pid[4];
           config.kA = pid[5];
 
-          this.hopperKickerMotor.getConfigurator().apply(config);
+          this.kickerMotor.getConfigurator().apply(config);
         },
         kickerMotorKP,
         kickerMotorKI,
@@ -199,7 +209,7 @@ public class HopperIOTalonFX implements HopperIO {
         hashCode(),
         pid -> {
           Slot0Configs config = new Slot0Configs();
-          this.hopperSpindexerMotor.getConfigurator().refresh(config);
+          this.spindexerMotor.getConfigurator().refresh(config);
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
@@ -207,7 +217,7 @@ public class HopperIOTalonFX implements HopperIO {
           config.kS = pid[4];
           config.kA = pid[5];
 
-          this.hopperSpindexerMotor.getConfigurator().apply(config);
+          this.spindexerMotor.getConfigurator().apply(config);
         },
         spindexerMotorKP,
         spindexerMotorKI,
@@ -216,18 +226,33 @@ public class HopperIOTalonFX implements HopperIO {
         spindexerMotorKS,
         spindexerMotorKA);
 
-    hopperSpindexerVelocitySystemSim.updateSim();
-    hopperKickerSim.updateSim();
+    if (Constants.getMode() == Constants.Mode.SIM) {
+
+      hopperSpindexerVelocitySystemSim.updateSim();
+      hopperKickerSim.updateSim();
+    }
   }
 
   @Override
   public void setSpindexerVelocity(AngularVelocity velocity) {
-    hopperSpindexerMotor.setControl(hopperSpindexerVelocityRequest.withVelocity(velocity));
+    spindexerMotor.setControl(spindexerVelocityRequest.withVelocity(velocity));
+    this.spindexerReferenceVelocity = velocity.copy();
   }
 
   @Override
   public void setKickerVelocity(AngularVelocity velocity) {
-    hopperKickerMotor.setControl(hopperKickerVelocityRequest.withVelocity(velocity));
+    kickerMotor.setControl(kickerVelocityRequest.withVelocity(velocity));
+    this.kickerReferenceVelocity = velocity.copy();
+  }
+
+  @Override
+  public void setSpindexerCurrent(Current amps) {
+    spindexerMotor.setControl(spindexerCurrentRequest.withOutput(amps));
+  }
+
+  @Override
+  public void setKickerCurrent(Current amps) {
+    kickerMotor.setControl(kickerCurrentRequest.withOutput(amps));
   }
 
   private void configHopperSpindexerMotor(TalonFX motor) {
