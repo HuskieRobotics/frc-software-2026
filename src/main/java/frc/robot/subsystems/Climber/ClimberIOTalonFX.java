@@ -46,6 +46,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private ArmSystemSim climberSim;
 
+  private final TalonFX climberMotor;
+
   private Alert configAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
@@ -82,13 +84,9 @@ public class ClimberIOTalonFX implements ClimberIO {
       new LoggedTunableNumber(
           "Climber/MotorCruiseVelocity", ClimberConstants.CLIMBER_CRUISE_VELOCITY);
 
-  private final TalonFX climberMotor;
-
   public ClimberIOTalonFX() {
 
-    climberMotor =
-        new TalonFX(
-            ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
+    climberMotor = new TalonFX(CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
 
     climberVoltageRequest = new VoltageOut(0.0);
     climberPositionRequest =
@@ -115,7 +113,7 @@ public class ClimberIOTalonFX implements ClimberIO {
             climberMotor,
             CLIMBER_MOTOR_INVERTED,
             CLIMBER_GEAR_RATIO,
-            Units.inchesToMeters(CLIMBER_LENGTH_INCHES),
+            CLIMBER_LENGTH_INCHES,
             CLIMBER_MASS_KG,
             Units.degreesToRadians(MIN_ANGLE_DEGREES.in(Degrees)),
             Units.degreesToRadians(MAX_ANGLE_DEGREES.in(Degrees)),
@@ -138,8 +136,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.voltageSupplied = climberMotorVoltageStatusSignal.getValue();
     inputs.statorCurrent = climberMotorStatorCurrentStatusSignal.getValue();
     inputs.supplyCurrent = climberMotorSupplyCurrentStatusSignal.getValue();
-    inputs.temperature = climberMotorTemperatureStatusSignal.getValue();
-    inputs.positionRotations = climberMotorPositionRotationsStatusSignal.getValue();
+    inputs.motorTemperature = climberMotorTemperatureStatusSignal.getValue();
+    inputs.climberAngle = climberMotorPositionRotationsStatusSignal.getValue();
 
     inputs.referenceAngle = this.climberReferenceAngle;
 
@@ -192,6 +190,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void setClimberAngle(Angle angle) {
+    this.climberReferenceAngle = angle;
     climberMotor.setControl(climberPositionRequest.withPosition(angle.in(Rotations)));
   }
 

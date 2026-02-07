@@ -3,6 +3,7 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ClimberConstants {
 
@@ -12,7 +13,7 @@ public class ClimberConstants {
 
   public static final boolean CLIMBER_MOTOR_INVERTED = false;
 
-  public static final double CLIMBER_GEAR_RATIO = 5;
+  public static final double CLIMBER_GEAR_RATIO = 144;
 
   // PID constants
   public static final double CLIMBER_KP = 10;
@@ -32,10 +33,10 @@ public class ClimberConstants {
 
   // the following are determined based on the mechanical design of the climber
   public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT = 30;
-  public static final double CLIMBER_PEAK_CURRENT_LIMIT = 0.0;
-  public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.0;
+  public static final double CLIMBER_PEAK_CURRENT_LIMIT = 60;
+  public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.1;
 
-  public static final double RETRACT_VOLTAGE_SLOW = 0.0;
+  public static final Voltage RETRACT_VOLTAGE_SLOW = Volts.of(0.0);
 
   public static final Angle MIN_ANGLE_DEGREES = Degrees.of(0.0);
 
@@ -43,7 +44,8 @@ public class ClimberConstants {
 
   public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(1.5);
 
-  public static final double CLIMBER_LENGTH_INCHES = 7;
+  public static final double CLIMBER_LENGTH_INCHES =
+      7; // FIXME: determine this value based on the mechanical design of the climber
 
-  public static final double CLIMBER_MASS_KG = 1.0;
+  public static final double CLIMBER_MASS_KG = 2.0;
 }

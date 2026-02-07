@@ -46,6 +46,9 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.arm.ArmIOXRP;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -76,6 +79,7 @@ public class RobotContainer {
   private Vision vision;
   private Arm arm;
   private Elevator elevator;
+  private Climber climber;
   private Manipulator manipulator;
   private Shooter shooter;
   private RobotVisualization visualization;
@@ -160,6 +164,7 @@ public class RobotContainer {
       elevator = new Elevator(new ElevatorIO() {});
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
+      climber = new Climber(new ClimberIO() {});
       visualization = new RobotVisualization(elevator);
     }
 
@@ -241,6 +246,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIOTalonFX());
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
+    climber = new Climber(new ClimberIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -269,6 +275,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -302,6 +309,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIOTalonFX());
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
+    climber = new Climber(new ClimberIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -313,6 +321,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -326,6 +335,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -355,6 +365,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    climber = new Climber(new ClimberIO() {});
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -383,6 +394,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(elevator);
   }
 

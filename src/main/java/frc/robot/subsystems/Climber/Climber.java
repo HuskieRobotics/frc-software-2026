@@ -22,7 +22,7 @@ public class Climber extends SubsystemBase {
 
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
   private final LoggedTunableNumber climberAngleDegrees =
-      new LoggedTunableNumber("Climber/MaxHeight", MIN_ANGLE_DEGREES.in(Degrees));
+      new LoggedTunableNumber("Climber/AngleDegrees", MIN_ANGLE_DEGREES.in(Degrees));
   private final LoggedTunableNumber climberVoltage =
       new LoggedTunableNumber("Climber/Voltage", 0.0);
 
@@ -51,7 +51,7 @@ public class Climber extends SubsystemBase {
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
     if (testingMode.get() == 1) {
-      if (climberAngleDegrees.get() != 0) {
+      if (climberAngleDegrees.get() != MIN_ANGLE_DEGREES.in(Degrees)) {
         io.setClimberAngle(Degrees.of(climberAngleDegrees.get()));
       } else if (climberVoltage.get() != 0) {
         io.setClimberVoltage(Volts.of(climberVoltage.get()));
@@ -76,7 +76,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void retractSlow() {
-    io.setClimberVoltage(Volts.of(RETRACT_VOLTAGE_SLOW));
+    io.setClimberVoltage(RETRACT_VOLTAGE_SLOW);
   }
 
   public void stop() {
