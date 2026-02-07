@@ -17,10 +17,10 @@ public class ShooterConstants {
 
   // change the ids once we get the updated stuff
   public static final int FLYWHEEL_LEAD_MOTOR_ID = 9; // Updated in robot devices and trackers sheet
-  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID =
+  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 21;
       10; // FIXME: update from robot devices and trackers sheet
-  public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 11;
-  public static final int HOOD_MOTOR_ID = 13;
+  public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
+  public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
 
   // Flywheel PID Constants (subject to change)
