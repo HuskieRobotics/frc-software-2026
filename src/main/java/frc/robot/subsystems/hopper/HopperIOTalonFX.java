@@ -5,8 +5,9 @@ import static frc.robot.subsystems.hopper.HopperConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -31,8 +32,8 @@ public class HopperIOTalonFX implements HopperIO {
   private VelocitySystemSim hopperSpindexerVelocitySystemSim;
   private VelocitySystemSim hopperKickerVelocitySystemSim;
 
-  private MotionMagicVelocityVoltage hopperSpindexerVelocityRequest;
-  private MotionMagicVelocityVoltage hopperKickerVelocityRequest;
+  private VelocityTorqueCurrentFOC hopperSpindexerVelocityRequest;
+  private VelocityTorqueCurrentFOC hopperKickerVelocityRequest;
 
   private StatusSignal<Voltage> voltageSuppliedSpindexerStatusSignal;
   private StatusSignal<Voltage> voltageSuppliedKickerStatusSignal;
@@ -67,10 +68,6 @@ public class HopperIOTalonFX implements HopperIO {
       new LoggedTunableNumber("Hopper/SPINDEXER_KS", HopperConstants.SPINDEXER_KS);
   private final LoggedTunableNumber spindexerMotorKA =
       new LoggedTunableNumber("Hopper/SPINDEXER_KA", HopperConstants.SPINDEXER_KA);
-  private final LoggedTunableNumber spindexerMotorCruiseVelocity =
-      new LoggedTunableNumber(
-          "Hopper/SPINDEXER_CRUISEVELOCITY",
-          HopperConstants.SPINDEXER_MOTION_MAGIC_CRUISE_VELOCITY);
 
   private final LoggedTunableNumber kickerMotorKP =
       new LoggedTunableNumber("Hopper/KICKER_KP", HopperConstants.KICKER_KP);
@@ -84,9 +81,6 @@ public class HopperIOTalonFX implements HopperIO {
       new LoggedTunableNumber("Hopper/KICKER_KS", HopperConstants.KICKER_KS);
   private final LoggedTunableNumber kickerMotorKA =
       new LoggedTunableNumber("Hopper/KICKER_KA", HopperConstants.KICKER_KA);
-  private final LoggedTunableNumber kickerMotorCruiseVelocity =
-      new LoggedTunableNumber(
-          "Hopper/KICKER_CRUISEVELOCITY", HopperConstants.KICKER_MOTION_MAGIC_CRUISE_VELOCITY);
 
   private final Debouncer connectedSpindexerDebouncer = new Debouncer(0.5);
   private final Debouncer connectedKickerDebouncer = new Debouncer(0.5);
@@ -107,8 +101,8 @@ public class HopperIOTalonFX implements HopperIO {
     voltageSuppliedKickerStatusSignal = hopperKickerMotor.getMotorVoltage();
     velocityKickerStatusSignal = hopperKickerMotor.getVelocity();
 
-    hopperSpindexerVelocityRequest = new MotionMagicVelocityVoltage(0.0);
-    hopperKickerVelocityRequest = new MotionMagicVelocityVoltage(0.0);
+    hopperSpindexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
+    hopperKickerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
 
     Phoenix6Util.registerSignals(
         false,
@@ -185,49 +179,45 @@ public class HopperIOTalonFX implements HopperIO {
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        motionMagic -> {
-          TalonFXConfiguration config = new TalonFXConfiguration();
+        pid -> {
+          Slot0Configs config = new Slot0Configs();
           this.hopperKickerMotor.getConfigurator().refresh(config);
-          config.Slot0.kP = motionMagic[0];
-          config.Slot0.kI = motionMagic[1];
-          config.Slot0.kD = motionMagic[2];
-          config.Slot0.kV = motionMagic[3];
-          config.Slot0.kS = motionMagic[4];
-          config.Slot0.kA = motionMagic[5];
-          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[6];
+          config.kP = pid[0];
+          config.kI = pid[1];
+          config.kD = pid[2];
+          config.kV = pid[3];
+          config.kS = pid[4];
+          config.kA = pid[5];
 
-          this.hopperKickerMotor.getConfigurator().refresh(config);
+          this.hopperKickerMotor.getConfigurator().apply(config);
         },
         kickerMotorKP,
         kickerMotorKI,
         kickerMotorKD,
         kickerMotorKV,
         kickerMotorKS,
-        kickerMotorKA,
-        kickerMotorCruiseVelocity);
+        kickerMotorKA);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        motionMagic -> {
-          TalonFXConfiguration config = new TalonFXConfiguration();
+        pid -> {
+          Slot0Configs config = new Slot0Configs();
           this.hopperSpindexerMotor.getConfigurator().refresh(config);
-          config.Slot0.kP = motionMagic[0];
-          config.Slot0.kI = motionMagic[1];
-          config.Slot0.kP = motionMagic[2];
-          config.Slot0.kV = motionMagic[3];
-          config.Slot0.kS = motionMagic[4];
-          config.Slot0.kA = motionMagic[5];
-          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[6];
+          config.kP = pid[0];
+          config.kI = pid[1];
+          config.kD = pid[2];
+          config.kV = pid[3];
+          config.kS = pid[4];
+          config.kA = pid[5];
 
-          this.hopperSpindexerMotor.getConfigurator().refresh(config);
+          this.hopperSpindexerMotor.getConfigurator().apply(config);
         },
         spindexerMotorKP,
         spindexerMotorKI,
         spindexerMotorKD,
         spindexerMotorKV,
         spindexerMotorKS,
-        spindexerMotorKA,
-        spindexerMotorCruiseVelocity);
+        spindexerMotorKA);
 
     hopperSpindexerVelocitySystemSim.updateSim();
     hopperKickerVelocitySystemSim.updateSim();
@@ -246,11 +236,10 @@ public class HopperIOTalonFX implements HopperIO {
   private void configHopperSpindexerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerLimit = SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerTime = 0;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
+    config.TorqueCurrent.PeakForwardTorqueCurrent =
+        HopperConstants.SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -HopperConstants.SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
 
     config.Feedback.SensorToMechanismRatio = SPINDEXER_GEAR_RATIO;
 
@@ -258,7 +247,7 @@ public class HopperIOTalonFX implements HopperIO {
         SPINDEXER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.Slot0.kP = spindexerMotorKP.get();
     config.Slot0.kI = spindexerMotorKI.get();
@@ -275,19 +264,17 @@ public class HopperIOTalonFX implements HopperIO {
   private void configHopperKickerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = KICKER_MOTOR_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLimit = KICKER_MOTOR_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerTime = 0;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = KICKER_MOTOR_PEAK_CURRENT_LIMIT;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = HopperConstants.KICKER_MOTOR_PEAK_CURRENT_LIMIT;
+    config.TorqueCurrent.PeakReverseTorqueCurrent =
+        -HopperConstants.KICKER_MOTOR_PEAK_CURRENT_LIMIT;
 
-    config.Feedback.SensorToMechanismRatio = SPINDEXER_GEAR_RATIO;
+    config.Feedback.SensorToMechanismRatio = KICKER_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
         KICKER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.Slot0.kP = kickerMotorKP.get();
     config.Slot0.kI = kickerMotorKI.get();

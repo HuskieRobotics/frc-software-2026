@@ -48,7 +48,4 @@ public class HopperConstants {
   public static final AngularVelocity KICKER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
           0.0); // <-- Should be negative (rotations per second) // FIXME: Update value
-
-  public static final double SPINDEXER_MOTION_MAGIC_CRUISE_VELOCITY = 0.0; // FIXME: Update value
-  public static final double KICKER_MOTION_MAGIC_CRUISE_VELOCITY = 0.0; // FIXME: Update value
 }
