@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -356,16 +355,17 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-   public boolean isHoodAtSetPoint() {
+  public boolean isHoodAtSetPoint() {
     return hoodAtSetpointDebouncer.calculate(
-        shooterInputs.hoodPosition.isNear(shooterInputs.hoodReferencePosition, HOOD_TOLERANCE_ANGLE));
+        shooterInputs.hoodPosition.isNear(
+            shooterInputs.hoodReferencePosition, HOOD_TOLERANCE_ANGLE));
   }
 
-  public boolean isTurretAtSetPoint(){
+  public boolean isTurretAtSetPoint() {
 
     return turretAtSetpointDebouncer.calculate(
-        shooterInputs.turretPosition.isNear(shooterInputs.turretReferencePosition, TURRET_TOLERANCE_ANGLE));
-
+        shooterInputs.turretPosition.isNear(
+            shooterInputs.turretReferencePosition, TURRET_TOLERANCE_ANGLE));
   }
 
   // public void reverseShooter(double reverseAmps) { //FIXME: might not be needed

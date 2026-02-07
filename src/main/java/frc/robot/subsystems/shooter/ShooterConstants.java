@@ -18,17 +18,17 @@ public class ShooterConstants {
   // change the ids once we get the updated stuff
   public static final int FLYWHEEL_LEAD_MOTOR_ID = 9; // Updated in robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 21;
-      10; // FIXME: update from robot devices and trackers sheet
+  ; // FIXME: update from robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
 
   // Flywheel PID Constants (subject to change)
   public static final double FLYWHEEL_LEAD_ROTATION_KP = 19; // FIXME: update value
-  public static final double FLYWHEEL_LEAD_ROTATION_KI = 0;
-  public static final double FLYWHEEL_LEAD_ROTATION_KD = 0;
-  public static final double FLYWHEEL_LEAD_ROTATION_KS = 4;
-  public static final double FLYWHEEL_LEAD_ROTATION_KV = 0.39217; // FIXME: update value
+  public static final double FLYWHEEL_LEAD_ROTATION_KI = 0.0;
+  public static final double FLYWHEEL_LEAD_ROTATION_KD = 0.0;
+  public static final double FLYWHEEL_LEAD_ROTATION_KS = 0.39217;
+  public static final double FLYWHEEL_LEAD_ROTATION_KV = 0.086186; // FIXME: update value
   public static final double FLYWHEEL_LEAD_ROTATION_KA = 0.022794; // FIXME: update value
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = false;
@@ -59,13 +59,13 @@ public class ShooterConstants {
   public static final double TURRET_GEAR_RATIO = 15;
 
   // Hood PID Constants (subject to change)
-  public static final double HOOD_ROTATION_KP = 19;
+  public static final double HOOD_ROTATION_KP = 400;
   public static final double HOOD_ROTATION_KI = 0.0;
   public static final double HOOD_ROTATION_KD = 0.0;
-  public static final double HOOD_ROTATION_KG = 0.3024;
-  public static final double HOOD_ROTATION_KS = 7.2341;
-  public static final double HOOD_ROTATION_KV = 0.2342;
-  public static final double HOOD_ROTATION_KA = 0.23483;
+  public static final double HOOD_ROTATION_KG = 0.0;
+  public static final double HOOD_ROTATION_KS = 0.50489;
+  public static final double HOOD_ROTATION_KV = 21.619;
+  public static final double HOOD_ROTATION_KA = 0.83438;
 
   public static final double HOOD_ROTATION_EXPO_KV = 0.2342;
   public static final double HOOD_ROTATION_EXPO_KA = 0.20905;
@@ -73,16 +73,16 @@ public class ShooterConstants {
 
   //  Hood physical constants
   public static final boolean HOOD_INVERTED = false;
-  public static final double HOOD_GEAR_RATIO = 240;
+  public static final double HOOD_GEAR_RATIO = 144.0;
   public static final double HOOD_LENGTH_METERS = 0.2;
-  public static final double HOOD_MASS_KG = 5;
-  public static final double HOOD_MIN_ANGLE_RAD = 0.0;
-  public static final double HOOD_MAX_ANGLE_RAD = 90;
-  public static final double HOOD_STARTING_ANGLE_RAD = 0.0;
+  public static final double HOOD_MASS_KG = 2.0;
+  public static final double HOOD_MIN_ANGLE = 52.0; // IFIXME: Is this even necessary?
+  public static final double HOOD_MAX_ANGLE = 90;
+  public static final double HOOD_STARTING_ANGLE = 20.0;
 
   // Hood angle limits
-  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
-  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(90.0); // FIXME: update value
+  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0); // FIXME: update value
+  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
   public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(1.5);
 
   // Turret angle limits
@@ -93,11 +93,11 @@ public class ShooterConstants {
   // Current limits
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 40;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
-  public static final int HOOD_PEAK_CURRENT_LIMIT = 20;
+  public static final double HOOD_PEAK_CURRENT_LIMIT = 20.0;
   public static final int HOOD_CONTINUOUS_CURRENT_LIMIT = 15;
-  public static final int HOOD_PEAK_CURRENT_DURATION = 100;
+  public static final double HOOD_PEAK_CURRENT_DURATION = 0.1;
   public static final int TURRET_CONTINUOUS_CURRENT_LIMIT = 15;
-  public static final int TURRET_PEAK_CURRENT_DURATION = 100;
+  public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
 
   public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
   public static final double POSITION_TOLERANCE = 2.0;
