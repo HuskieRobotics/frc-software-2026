@@ -36,13 +36,11 @@ public class ClimberConstants {
   public static final double CLIMBER_PEAK_CURRENT_LIMIT = 60;
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.1;
 
-  public static final Voltage RETRACT_VOLTAGE_SLOW =
-      Volts.of(-2.0); // FIXME: determine this value based on testing of the climber
+  public static final Voltage RETRACT_VOLTAGE_SLOW = Volts.of(-2.0); // FIXME: determine this value based on testing of the climber
 
   public static final Angle MIN_ANGLE_DEGREES = Degrees.of(0.0);
 
-  public static final Angle MAX_ANGLE_DEGREES =
-      Degrees.of(90); // FIXME: determine this value based on the mechanical design of the climber
+  public static final Angle MAX_ANGLE_DEGREES = Degrees.of(90); // FIXME: determine this value based on the mechanical design of the climber
 
   public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(1.5);
 

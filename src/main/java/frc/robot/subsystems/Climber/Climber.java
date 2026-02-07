@@ -14,7 +14,7 @@ import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public class climber extends SubsystemBase {
+public class Climber extends SubsystemBase {
 
   private ClimberIO io;
 
@@ -37,7 +37,7 @@ public class climber extends SubsystemBase {
               state -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(output -> io.setClimberVoltage(output), null, this));
 
-  public climber(ClimberIO io) {
+  public Climber(ClimberIO io) {
     this.io = io;
 
     SysIdRoutineChooser.getInstance().addOption("Climber Voltage", sysIdRoutine);
