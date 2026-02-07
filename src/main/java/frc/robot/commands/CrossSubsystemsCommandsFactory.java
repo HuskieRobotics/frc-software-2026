@@ -276,6 +276,10 @@ public class CrossSubsystemsCommandsFactory {
     return Field2d.getInstance().getNearestBank();
   }
 
+  private static Pose2d getTargetPassingZonePose() {
+    return Field2d.getInstance().getNearestPassingZone();
+  }
+
   private static void updatePIDConstants(Transform2d poseDifference) {
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(

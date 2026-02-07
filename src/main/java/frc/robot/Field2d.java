@@ -41,6 +41,8 @@ public class Field2d {
   // for all four possible banks depending on alliance
   private Pose2d[] banks = new Pose2d[4];
 
+  private Pose2d[] passingZones = new Pose2d[4];
+
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
@@ -142,6 +144,32 @@ public class Field2d {
 
     // red right bank
     banks[3] = FlippingUtil.flipFieldPose(banks[1]);
+  }
+
+  public void populatePassingZones() {
+
+    double PZ_BUFFER_X = RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
+    double PZ_BUFFER_Y = RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
+
+    // blue left passing zone
+    passingZones[0] =
+        new Pose2d(
+            PZ_BUFFER_X,
+            FieldConstants.fieldWidth - PZ_BUFFER_Y,
+            Rotation2d.fromDegrees(0)); // FIXME: should this be our target rotation of where we want to pass to?
+
+    // blue right passing zone
+    passingZones[1] =
+        new Pose2d(
+            PZ_BUFFER_X,
+            PZ_BUFFER_Y,
+            Rotation2d.fromDegrees(0)); // FIXME: should this be our target rotation of where we want to pass to?
+
+    // red left passing zone
+    passingZones[2] = FlippingUtil.flipFieldPose(passingZones[0]);
+
+    // red right passing zone
+    passingZones[3] = FlippingUtil.flipFieldPose(passingZones[1]);
   }
 
   public void populateTrenchZone() {
@@ -465,6 +493,12 @@ public class Field2d {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
     return pose.nearest(Arrays.asList(banks));
+  }
+
+  public Pose2d getNearestPassingZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    return pose.nearest(Arrays.asList(passingZones));
   }
 
   public enum Side {
