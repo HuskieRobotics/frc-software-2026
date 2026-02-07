@@ -22,22 +22,22 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 37;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 61;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.117676);
+  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.117676 + 0.5);
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 40;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 25;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.028809);
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.028809 + 0.5);
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 39;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 60;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.378906);
+  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.378906 + 0.5);
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 38;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 59;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959);
+  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959 - 0.5);
 
   private static final int GYRO_ID = 3;
 
@@ -63,7 +63,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.18755;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 12.0; // 0.40997
+  private static final double DRIVE_KP = 15.0; // determined after manual tuning
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
@@ -107,59 +107,78 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   private static final int LED_COUNT = 85;
 
-  private static final String CAMERA_NAME_0 = "40686739";
-  private static final String CAMERA_NAME_1 = "40708569";
-  private static final String CAMERA_NAME_2 = "40708556";
-  private static final String CAMERA_NAME_3 = "40708542";
+  private static final String FR_CAMERA_SERIAL_NUMBER = "40686739";
+  private static final String BR_CAMERA_NAME = "40708542";
+  private static final String FL_CAMERA_NAME = "40708556";
+  private static final String BL_CAMERA_NAME = "40708569";
+  private static final String CENTER_CAMERA_NAME = "25249734";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 17.5;
   private static final double MONO_DENOISE = 1.0;
 
+  private static final int COLOR_EXPOSURE = 4500;
+  private static final double COLOR_GAIN = 5.0;
+
   // Front right camera
-  private static final Transform3d ROBOT_TO_CAMERA_0 =
+  // x, y, z, pitch, yaw
+  // 11.4425	-8.0165	6.436	60	-52.239
+  private static final Transform3d ROBOT_TO_FR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(10.609),
-              Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(8.2085)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(18)));
-  // pitch 45 degrees
+              Units.inchesToMeters(-8.0165),
+              Units.inchesToMeters(11.4425),
+              Units.inchesToMeters(7.436)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-52.239)));
 
   // Back right camera
-  private static final Transform3d ROBOT_TO_CAMERA_1 =
+  // x, y, z, pitch, yaw
+  // -11.4425	-8.0165	6.436	60	-127.761
+  private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(-10.6095),
-              Units.inchesToMeters(8.052)),
-          new Rotation3d(
-              Units.degreesToRadians(0), Units.degreesToRadians(-30), Units.degreesToRadians(-90)));
+              Units.inchesToMeters(-8.0165),
+              Units.inchesToMeters(-11.4425),
+              Units.inchesToMeters(7.436)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-127.761)));
 
   // Front left camera
-  private static final Transform3d ROBOT_TO_CAMERA_2 =
+  // x, y, z, pitch, yaw
+  // 11.4425	8.0165	6.436	60	52.239
+  private static final Transform3d ROBOT_TO_FL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(10.778),
-              Units.inchesToMeters(10.6085),
-              Units.inchesToMeters(8.2085)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-18)));
-
+              Units.inchesToMeters(8.0165),
+              Units.inchesToMeters(11.4425),
+              Units.inchesToMeters(7.436)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(52.239)));
   // Back left camera
-  private static final Transform3d ROBOT_TO_CAMERA_3 =
+  // x, y, z, pitch, yaw
+  // -11.4425	8.0165	6.436	60	142.239
+  private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.6095),
-              Units.inchesToMeters(10.778),
-              Units.inchesToMeters(8.052)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
+              Units.inchesToMeters(8.0165),
+              Units.inchesToMeters(-11.4425),
+              Units.inchesToMeters(7.436)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
+
+  // center camera
+  // for testing, this camera is currently mounted on the back left
+  private static final Transform3d ROBOT_TO_CENTER_CAMERA =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(8.0165),
+              Units.inchesToMeters(-11.4425),
+              Units.inchesToMeters(7.436)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
 
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_0)
-          .id(CAMERA_NAME_0)
+          .robotToCameraTransform(ROBOT_TO_FR_CAMERA)
+          .id(FR_CAMERA_SERIAL_NUMBER)
           .location("FR")
           .width(1920)
           .height(1200)
@@ -169,8 +188,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_1)
-          .id(CAMERA_NAME_1)
+          .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
+          .id(BR_CAMERA_NAME)
           .location("BR")
           .width(1920)
           .height(1200)
@@ -180,8 +199,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_2)
-          .id(CAMERA_NAME_2)
+          .robotToCameraTransform(ROBOT_TO_FL_CAMERA)
+          .id(FL_CAMERA_NAME)
           .location("FL")
           .width(1920)
           .height(1200)
@@ -191,14 +210,13 @@ public class NewPracticeRobotConfig extends RobotConfig {
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_3)
-          .id(CAMERA_NAME_3)
-          .location("BL")
-          .width(1920)
-          .height(1200)
-          .exposure(MONO_EXPOSURE)
-          .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .robotToCameraTransform(ROBOT_TO_CENTER_CAMERA)
+          .id(CENTER_CAMERA_NAME)
+          .location("center")
+          .width(1280)
+          .height(960)
+          .exposure(COLOR_EXPOSURE)
+          .gain(COLOR_GAIN)
           .stdDevFactor(1.0)
           .build(),
     };
