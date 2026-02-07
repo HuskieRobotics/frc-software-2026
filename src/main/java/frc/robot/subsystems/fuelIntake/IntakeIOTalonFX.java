@@ -50,12 +50,6 @@ public class IntakeIOTalonFX implements IntakeIO {
       new LoggedTunableNumber("Intake/Roller/kI", IntakeConstants.ROLLER_KI);
   private final LoggedTunableNumber rollerKd =
       new LoggedTunableNumber("Intake/Roller/kD", IntakeConstants.ROLLER_KD);
-  private final LoggedTunableNumber rollerKs =
-      new LoggedTunableNumber("Intake/Roller/kS", IntakeConstants.ROLLER_KS);
-  private final LoggedTunableNumber rollerKv =
-      new LoggedTunableNumber("Intake/Roller/kV", IntakeConstants.ROLLER_KV);
-  private final LoggedTunableNumber rollerKa =
-      new LoggedTunableNumber("Intake/Roller/kA", IntakeConstants.ROLLER_KA);
   private final LoggedTunableNumber rollerKvExpo =
       new LoggedTunableNumber("Intake/Roller/kVExpo", IntakeConstants.ROLLER_KV_EXPO);
   private final LoggedTunableNumber rollerKaExpo =
@@ -63,8 +57,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final LoggedTunableNumber rollerCruiseVelocity =
       new LoggedTunableNumber(
           "Intake/Roller/cruiseVelocity", IntakeConstants.ROLLER_CRUISE_VELOCITY);
-  private final LoggedTunableNumber rollerJerk =
-      new LoggedTunableNumber("Intake/Roller/Jerk", IntakeConstants.ROLLER_JERK);
+ 
 
   private final LoggedTunableNumber deployerKp =
       new LoggedTunableNumber("Intake/Deployer/kP", IntakeConstants.DEPLOYER_KP);
@@ -72,14 +65,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       new LoggedTunableNumber("Intake/Deployer/kI", IntakeConstants.DEPLOYER_KI);
   private final LoggedTunableNumber deployerKd =
       new LoggedTunableNumber("Intake/Deployer/kD", IntakeConstants.DEPLOYER_KD);
-  private final LoggedTunableNumber deployerKs =
-      new LoggedTunableNumber("Intake/Deployer/kS", IntakeConstants.DEPLOYER_KS);
-  private final LoggedTunableNumber deployerKv =
-      new LoggedTunableNumber("Intake/Deployer/kV", IntakeConstants.DEPLOYER_KV);
-  private final LoggedTunableNumber deployerKa =
-      new LoggedTunableNumber("Intake/Deployer/kA", IntakeConstants.DEPLOYER_KA);
-  private final LoggedTunableNumber deployerKg =
-      new LoggedTunableNumber("Intake/Deployer/kG", IntakeConstants.DEPLOYER_KG);
+  
 
   private final LoggedTunableNumber deployerKvExpo =
       new LoggedTunableNumber("Intake/Deployer/kVExpo", IntakeConstants.DEPLOYER_KV_EXPO);
@@ -214,25 +200,21 @@ public class IntakeIOTalonFX implements IntakeIO {
           config.Slot0.kP = motionMagic[0];
           config.Slot0.kI = motionMagic[1];
           config.Slot0.kD = motionMagic[2];
-          config.Slot0.kS = motionMagic[3];
-          config.Slot0.kV = motionMagic[4];
-          config.Slot0.kA = motionMagic[5];
-          config.Slot0.kG = motionMagic[6];
+          config.Slot0.kS = IntakeConstants.DEPLOYER_KS;
+          config.Slot0.kV = IntakeConstants.DEPLOYER_KV;
+          config.Slot0.kA = IntakeConstants.DEPLOYER_KA;
+          config.Slot0.kG = IntakeConstants.DEPLOYER_KG;
 
-          config.MotionMagic.MotionMagicExpo_kV = motionMagic[7];
-          config.MotionMagic.MotionMagicExpo_kA = motionMagic[8];
+          config.MotionMagic.MotionMagicExpo_kV = motionMagic[3];
+          config.MotionMagic.MotionMagicExpo_kA = motionMagic[4];
 
-          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[9];
+          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[5];
 
           this.deployerMotor.getConfigurator().apply(config);
         },
         deployerKp,
         deployerKi,
         deployerKd,
-        deployerKs,
-        deployerKv,
-        deployerKa,
-        deployerKg,
         deployerKvExpo,
         deployerKaExpo,
         deployerCruiseVelocity);
@@ -245,26 +227,21 @@ public class IntakeIOTalonFX implements IntakeIO {
           config.Slot0.kP = motionMagic[0];
           config.Slot0.kI = motionMagic[1];
           config.Slot0.kD = motionMagic[2];
-          config.Slot0.kS = motionMagic[3];
-          config.Slot0.kV = motionMagic[4];
-          config.Slot0.kA = motionMagic[5];
-          config.MotionMagic.MotionMagicExpo_kV = motionMagic[6];
-          config.MotionMagic.MotionMagicExpo_kA = motionMagic[7];
-          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[8];
-          config.MotionMagic.MotionMagicJerk = motionMagic[9];
+          config.Slot0.kS = IntakeConstants.ROLLER_KS;
+          config.Slot0.kV = IntakeConstants.ROLLER_KV;
+          config.Slot0.kA = IntakeConstants.ROLLER_KA;
+          config.MotionMagic.MotionMagicExpo_kV = motionMagic[3];
+          config.MotionMagic.MotionMagicExpo_kA = motionMagic[4];
+          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[5];
 
           this.rollerMotor.getConfigurator().apply(config);
         },
         rollerKp,
         rollerKi,
         rollerKd,
-        rollerKs,
-        rollerKv,
-        rollerKa,
         rollerKvExpo,
         rollerKaExpo,
-        rollerCruiseVelocity,
-        rollerJerk);
+        rollerCruiseVelocity);
 
     deployerSim.updateSim();
     rollerSim.updateSim();
@@ -306,6 +283,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = IntakeConstants.DEPLOYER_CONTINUOUS_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.MotorOutput.Inverted = IntakeConstants.DEPLOYER_MOTOR_INVERTED;
 
     config.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOYER_GEAR_RATIO;
 
@@ -313,10 +291,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.Slot0.kP = deployerKp.get();
     config.Slot0.kI = deployerKi.get();
     config.Slot0.kD = deployerKd.get();
-    config.Slot0.kS = deployerKs.get();
-    config.Slot0.kV = deployerKv.get();
-    config.Slot0.kA = deployerKa.get();
-    config.Slot0.kG = deployerKg.get();
+    config.Slot0.kS = IntakeConstants.DEPLOYER_KS;
+    config.Slot0.kV = IntakeConstants.DEPLOYER_KV;
+    config.Slot0.kA = IntakeConstants.DEPLOYER_KA;
+    config.Slot0.kG = IntakeConstants.DEPLOYER_KG;
     config.MotionMagic.MotionMagicExpo_kV = deployerKvExpo.get();
     config.MotionMagic.MotionMagicExpo_kA = deployerKaExpo.get();
 
@@ -337,17 +315,17 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.Feedback.SensorToMechanismRatio = IntakeConstants.ROLLER_GEAR_RATIO;
+    config.MotorOutput.Inverted = IntakeConstants.ROLLER_MOTOR_INVERTED;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Slot0.kP = rollerKp.get();
     config.Slot0.kI = rollerKi.get();
     config.Slot0.kD = rollerKd.get();
-    config.Slot0.kS = rollerKs.get();
-    config.Slot0.kV = rollerKv.get();
-    config.Slot0.kA = rollerKa.get();
+    config.Slot0.kS = IntakeConstants.ROLLER_KS;
+    config.Slot0.kV = IntakeConstants.ROLLER_KV;
+    config.Slot0.kA = IntakeConstants.ROLLER_KA;
     config.MotionMagic.MotionMagicExpo_kV = rollerKvExpo.get();
     config.MotionMagic.MotionMagicExpo_kA = rollerKaExpo.get();
-    config.MotionMagic.MotionMagicJerk = rollerJerk.get();
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, rollerConfigAlert);
 

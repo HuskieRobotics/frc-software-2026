@@ -3,6 +3,7 @@ package frc.robot.subsystems.fuelIntake;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 
@@ -34,7 +35,6 @@ public class IntakeConstants {
   public static final double ROLLER_KA = 0;
   public static final double ROLLER_KV_EXPO = 0;
   public static final double ROLLER_KA_EXPO = 0;
-  public static final double ROLLER_JERK = 0.0;
 
   public static final int ROLLER_MOTOR_ID = 57;
   public static final int DEPLOYER_MOTOR_ID = 55;
@@ -62,4 +62,9 @@ public class IntakeConstants {
 
   public static final double ROLLER_GEAR_RATIO = 0.0; // FIXME: set value
   public static final double DEPLOYER_GEAR_RATIO = 0.0; // FIXME: set value
+
+  public static final InvertedValue DEPLOYER_MOTOR_INVERTED =
+      InvertedValue.CounterClockwise_Positive; // FIXME: test and set correct direction
+  public static final InvertedValue ROLLER_MOTOR_INVERTED =
+      InvertedValue.CounterClockwise_Positive; // FIXME: test and set correct direction
 }
