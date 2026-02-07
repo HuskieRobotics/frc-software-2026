@@ -36,6 +36,7 @@ public class HopperConstants {
   public static final double KICKER_KV = 0.0; // FIXME: Update value
   public static final double KICKER_KA = 0.0; // FIXME: Update value
   public static final double KICKER_KS = 0.0; // FIXME: Update value
+  public static final double KICKER_MOI = 0.0; // FIXME: Update value
 
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 0.0; // FIXME: Update value
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.0; // FIXME: Update value
