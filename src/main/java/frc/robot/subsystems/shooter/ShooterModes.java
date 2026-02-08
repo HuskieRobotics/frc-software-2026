@@ -18,6 +18,7 @@ public class ShooterModes extends SubsystemBase {
 
   // constant to configure for when running practice matches with no game data
   public final boolean WON_AUTO_PRACTICE_MATCH = true;
+  private final double SHOOT_TIME_OFFSET_SECONDS = 2.0; // offset for ball travel time to hub
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
@@ -145,8 +146,9 @@ public class ShooterModes extends SubsystemBase {
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
   public boolean hubActive() {
-    // FIXME: add check for if normal teleop or auto enable
-    // FIXME: add check for practice matches (override param, boolean practice)
+    if (OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean()) {
+      return true;
+    }
 
     // When connected to the real field, this number only changes in full integer increments, and
     // always counts down.
@@ -156,6 +158,8 @@ public class ShooterModes extends SubsystemBase {
 
     double timeRemaining = DriverStation.getMatchTime();
 
+    // figure out if time is increasing or decreasing
+
     // Real Field
     double timeIntoScoringShifts;
     String gameData = DriverStation.getGameSpecificMessage();
@@ -163,7 +167,7 @@ public class ShooterModes extends SubsystemBase {
     // hub active in auto/transition period and endgame (// time < 30 = auto or endgame, time > 130
     // = transition period)
 
-    // TODO: can add a check for DriverStation.isAutonomousEnabled but that will always fall under
+    // can add a check for DriverStation.isAutonomousEnabled but that will always fall under
     // timeRemaining < 30
     if (timeRemaining < 30 || timeRemaining > 130 /*|| DriverStation.isAutonomousEnabled() */) {
       return true;
@@ -178,9 +182,9 @@ public class ShooterModes extends SubsystemBase {
           // Blue is inactive first, so if we are blue alliance, we check if closer to 50 seconds
           // (2nd period)
           if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-            return timeIntoScoringShifts % 50 > 25;
+            return (timeIntoScoringShifts + SHOOT_TIME_OFFSET_SECONDS) % 50 > 25;
           } else {
-            return timeIntoScoringShifts % 50 <= 25;
+            return (timeIntoScoringShifts + SHOOT_TIME_OFFSET_SECONDS) % 50 <= 25;
           }
         case 'R':
           // Red is inactive first, so if we are red alliance, we check if closer to 50 seconds (2nd
@@ -194,16 +198,8 @@ public class ShooterModes extends SubsystemBase {
           // This is corrupt data
           return true;
       }
-    } else if (DriverStation.getMatchType() == DriverStation.MatchType.Practice) {
-      if (WON_AUTO_PRACTICE_MATCH) {
-        return timeIntoScoringShifts % 50 > 25;
-      } else {
-        return timeIntoScoringShifts % 50 <= 25;
-      }
     }
 
-    // TODO: add operator interface for manual override hub active/inactive for testing non-practice
-    // matches
     return true;
   }
 

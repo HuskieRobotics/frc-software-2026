@@ -1,5 +1,6 @@
 package frc.robot.operator_interface;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 
@@ -24,6 +25,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean shootOnTheMoveToggle =
       new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", true, true);
 
+  public final LoggedTunableBoolean hubActiveAtHomeToggle =
+      new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", true, true);
+
   public OperatorDashboard() {}
 
   @Override
@@ -44,5 +48,10 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> enablePrimaryIRSensors.get());
+  }
+
+  @Override
+  public Trigger getHubActiveAtHomeToggle() {
+    return new Trigger(() -> (!DriverStation.isFMSAttached() && hubActiveAtHomeToggle.get()));
   }
 }

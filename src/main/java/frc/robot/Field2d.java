@@ -148,22 +148,26 @@ public class Field2d {
 
   public void populatePassingZones() {
 
-    double PZ_BUFFER_X = RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
-    double PZ_BUFFER_Y = RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
+    double PZ_BUFFER_X =
+        RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
+    double PZ_BUFFER_Y =
+        RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
 
     // blue left passing zone
     passingZones[0] =
         new Pose2d(
             PZ_BUFFER_X,
             FieldConstants.fieldWidth - PZ_BUFFER_Y,
-            Rotation2d.fromDegrees(0)); // FIXME: should this be our target rotation of where we want to pass to?
+            Rotation2d.fromDegrees(
+                0)); // FIXME: should this be our target rotation of where we want to pass to?
 
     // blue right passing zone
     passingZones[1] =
         new Pose2d(
             PZ_BUFFER_X,
             PZ_BUFFER_Y,
-            Rotation2d.fromDegrees(0)); // FIXME: should this be our target rotation of where we want to pass to?
+            Rotation2d.fromDegrees(
+                0)); // FIXME: should this be our target rotation of where we want to pass to?
 
     // red left passing zone
     passingZones[2] = FlippingUtil.flipFieldPose(passingZones[0]);
