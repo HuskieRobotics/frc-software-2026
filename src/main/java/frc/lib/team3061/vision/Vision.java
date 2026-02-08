@@ -89,14 +89,15 @@ public class Vision extends SubsystemBase {
 
   private Map<Integer, List<Translation2d>> fuelZones = new HashMap<>();
   private Map<Integer, Double> fuelCountsInZones = new HashMap<>();
-  
-  // Weight of each of 32 zones for fuel detection, from 0 to 1 based on proximity (translationally and rotationally)
+
+  // Weight of each of 32 zones for fuel detection, from 0 to 1 based on proximity (translationally
+  // and rotationally)
   // can be made into a function if needed
-  private Double[] fuelZoneWeights = {0.5, 0.6, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5,
-                                    0.6, 0.6, 0.7, 0.8, 0.8,  0.7, 0.6, 0.6,
-                                    0.6, 0.7, 0.8, 0.9, 0.9, 0.8, 0.7, 0.6,
-                                    0.7, 0.8, 0.9, 1.0, 1.0, 0.9, 0.8, 0.7};
-  
+  private Double[] fuelZoneWeights = {
+    0.5, 0.6, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5, 0.6, 0.6, 0.7, 0.8, 0.8, 0.7, 0.6, 0.6, 0.6, 0.7, 0.8,
+    0.9, 0.9, 0.8, 0.7, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 0.9, 0.8, 0.7
+  };
+
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
@@ -540,32 +541,31 @@ public class Vision extends SubsystemBase {
   }
 
   /**
-   * Populates the zones for fuel detection in the 640x640 frame.
-   * 32 zones, indexes 1-32 of 80 wide (y), 160 tall (x) zones, each weighted from 0 to 1 based on proximity (translationally and rotationally to the robot)
-   * For now, these are arbitrarily determined values, but can be made into a function for grid distance from 1.
-   * 
-   * Ordering for zone indexes is from the top left to the bottom right
+   * Populates the zones for fuel detection in the 640x640 frame. 32 zones, indexes 1-32 of 80 wide
+   * (y), 160 tall (x) zones, each weighted from 0 to 1 based on proximity (translationally and
+   * rotationally to the robot) For now, these are arbitrarily determined values, but can be made
+   * into a function for grid distance from 1.
+   *
+   * <p>Ordering for zone indexes is from the top left to the bottom right
    */
-  // Can change to log center of each zone and then compare exact points
   private void populateFuelDetectionZones() {
-    int x = 0;
-    int y = 0;
-    for (int dy = 0; dy < 8; dy++) {
-      for (int dx = 0; dx < 4; dx++) {
-        int zoneIndex = dy * 4 + dx + 1;
+    // Assumes origin of frame is in bottom left
+    for (int dx = 0; dx < 4; dx++) {
+      for (int dy = 0; dy < 8; dy++) {
+        int zoneIndex = dx * 8 + dy + 1;
         List<Translation2d> zoneCorners = new ArrayList<>();
 
         // Top Left Corner of Zone
-        zoneCorners.add(new Translation2d((2 - dx) * 160, (-4 + dy) * 80));
+        zoneCorners.add(new Translation2d((4 - dx) * 160, (dy) * 80));
 
         // Top Right Corner of Zone
-        zoneCorners.add(new Translation2d((2 - dx) * 160, (-4 + dy) * 80 + 80));
+        zoneCorners.add(new Translation2d((4 - dx) * 160, (dy) * 80 + 80));
 
         // Bottom Left Corner of Zone
-        zoneCorners.add(new Translation2d((2 - dx) * 160 - 160, (-4 + dy) * 80));
+        zoneCorners.add(new Translation2d((4 - dx) * 160 - 160, (dy) * 80));
 
         // Bottom Right Corner of Zone
-        zoneCorners.add(new Translation2d((2 - dx) * 160 - 160, (-4 + dy) * 80 + 80));
+        zoneCorners.add(new Translation2d((4 - dx) * 160 - 160, (dy) * 80 + 80));
 
         fuelZones.put(zoneIndex, zoneCorners);
       }
@@ -586,9 +586,12 @@ public class Vision extends SubsystemBase {
       List<Translation2d> zoneCorners = entry.getValue();
 
       if (isPointInZone(fuelPoseInCameraFrame, zoneCorners)) {
-        // If the fuel is in the zone, add the weight of that zone (incrementing by the weight rather than 1)
+        // If the fuel is in the zone, add the weight of that zone (incrementing by the weight
+        // rather than 1)
         // The furthest away zones (1 and 8), each fuel added is treated as 0.5 fuel.
-        fuelCountsInZones.put(zoneIndex, fuelCountsInZones.getOrDefault(zoneIndex, 0.0) + fuelZoneWeights[zoneIndex - 1]);
+        fuelCountsInZones.put(
+            zoneIndex,
+            fuelCountsInZones.getOrDefault(zoneIndex, 0.0) + fuelZoneWeights[zoneIndex - 1]);
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/FuelZoneCounts/Zone" + zoneIndex, fuelCountsInZones.get(zoneIndex));
         break;
