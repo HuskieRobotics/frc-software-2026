@@ -501,14 +501,14 @@ public class Field2d {
   }
 
   public Pose2d getNearestPassingZone() {
-     
+
     List<Pose2d> passingZoneList = Arrays.asList(passingZones);
 
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-    
-    if( getAlliance() == Alliance.Blue) {
-     passingZoneList.add(passingZones[0]);
-     passingZoneList.add(passingZones[1]);
+
+    if (getAlliance() == Alliance.Blue) {
+      passingZoneList.add(passingZones[0]);
+      passingZoneList.add(passingZones[1]);
     } else {
       passingZoneList.add(passingZones[2]);
       passingZoneList.add(passingZones[3]);
