@@ -8,8 +8,9 @@ public class HopperConstants {
 
   public static final String SUBSYSTEM_NAME = "Hopper";
 
-  public static final int HOPPER_SPINDEXER_ID = 46;
-  public static final int HOPPER_KICKER_ID = 71; // FIXME: Not at all correct
+  public static final int SPINDEXER_ID = 46;
+  public static final int KICKER_ID =
+      45; // FIXME: update value from Robot Devices and Trackers sheet
 
   public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value
   public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value

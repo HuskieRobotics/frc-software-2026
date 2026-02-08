@@ -19,6 +19,10 @@ public interface HopperIO {
   @AutoLog
   public static class HopperIOInputs {
 
+    // Connections
+    boolean kickerMotorConnected = false;
+    boolean spindexerMotorConnected = false;
+
     // Voltage
     Voltage kickerVoltageSupplied = Volts.of(0.0);
     Voltage spindexerVoltageSupplied = Volts.of(0.0);
@@ -26,10 +30,6 @@ public interface HopperIO {
     // Temp
     Temperature kickerTemperatureCelsius = Celsius.of(0.0);
     Temperature spindexerTemperatureCelsius = Celsius.of(0.0);
-
-    // Connections
-    boolean kickerMotorConnected = false;
-    boolean spindexerMotorConnected = false;
 
     // Stator
     Current spindexerStatorCurrent = Amps.of(0.0);

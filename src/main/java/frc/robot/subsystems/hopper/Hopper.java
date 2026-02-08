@@ -29,6 +29,7 @@ public class Hopper extends SubsystemBase {
       new LoggedTunableNumber("Hopper/KickerVelocity", 0);
   private final LoggedTunableNumber kickerCurrent =
       new LoggedTunableNumber("Hopper/Kicker Current", 0);
+
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Hopper/TestingMode", 0);
 
   private CurrentSpikeDetector spindexerSpikeDetector =
@@ -57,6 +58,18 @@ public class Hopper extends SubsystemBase {
 
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
+    if (testingMode.get() == 1) {
+      if (spindexerVelocityRPS.get() != 0) {
+        io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
+      } else if (spindexerCurrent.get() != 0) {
+        io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
+      } else if (kickerVelocityRPS.get() != 0) {
+        io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
+      } else if (kickerCurrent.get() != 0) {
+        io.setKickerCurrent(Amps.of(kickerCurrent.get()));
+      }
+    }
+
     if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
       CommandScheduler.getInstance()
           .schedule(
@@ -77,18 +90,6 @@ public class Hopper extends SubsystemBase {
       kickerJammedAlert.set(true);
     } else {
       kickerJammedAlert.set(false);
-    }
-
-    if (testingMode.get() == 1) {
-      if (spindexerVelocityRPS.get() != 0) {
-        io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
-      } else if (spindexerCurrent.get() != 0) {
-        io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
-      } else if (kickerVelocityRPS.get() != 0) {
-        io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
-      } else if (kickerCurrent.get() != 0) {
-        io.setKickerCurrent(Amps.of(kickerCurrent.get()));
-      }
     }
 
     LoggedTracer.record(SUBSYSTEM_NAME);

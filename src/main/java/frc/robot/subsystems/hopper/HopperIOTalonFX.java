@@ -31,8 +31,8 @@ public class HopperIOTalonFX implements HopperIO {
   private TalonFX spindexerMotor;
   private TalonFX kickerMotor;
 
-  private VelocitySystemSim hopperSpindexerVelocitySystemSim;
-  private FlywheelSystemSim hopperKickerSim;
+  private VelocitySystemSim spindexerVelocitySystemSim;
+  private FlywheelSystemSim kickerSim;
 
   private VelocityTorqueCurrentFOC spindexerVelocityRequest;
   private VelocityTorqueCurrentFOC kickerVelocityRequest;
@@ -58,10 +58,10 @@ public class HopperIOTalonFX implements HopperIO {
   private AngularVelocity spindexerReferenceVelocity = RotationsPerSecond.of(0.0);
   private AngularVelocity kickerReferenceVelocity = RotationsPerSecond.of(0.0);
 
-  private Alert hopperSpindexerConfigAlert =
+  private Alert spindexerConfigAlert =
       new Alert("Failed to apply configuration for hopper spindexer.", AlertType.kError);
 
-  private Alert hopperKickerConfigAlert =
+  private Alert kickerConfigAlert =
       new Alert("Failed to apply configuration for hopper kicker.", AlertType.kError);
 
   private final LoggedTunableNumber spindexerMotorKP =
@@ -94,8 +94,8 @@ public class HopperIOTalonFX implements HopperIO {
   private final Debouncer connectedKickerDebouncer = new Debouncer(0.5);
 
   public HopperIOTalonFX() {
-    spindexerMotor = new TalonFX(HOPPER_SPINDEXER_ID, RobotConfig.getInstance().getCANBus());
-    kickerMotor = new TalonFX(HOPPER_KICKER_ID, RobotConfig.getInstance().getCANBus());
+    spindexerMotor = new TalonFX(SPINDEXER_ID, RobotConfig.getInstance().getCANBus());
+    kickerMotor = new TalonFX(KICKER_ID, RobotConfig.getInstance().getCANBus());
 
     spindexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
     kickerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
@@ -128,14 +128,14 @@ public class HopperIOTalonFX implements HopperIO {
         voltageSuppliedKickerStatusSignal,
         velocityKickerStatusSignal);
 
-    configHopperSpindexerMotor(spindexerMotor);
-    configHopperKickerMotor(kickerMotor);
+    configSpindexerMotor(spindexerMotor);
+    configKickerMotor(kickerMotor);
 
-    hopperSpindexerVelocitySystemSim =
+    spindexerVelocitySystemSim =
         new VelocitySystemSim(SPINDEXER_KV, SPINDEXER_KA, SPINDEXER_GEAR_RATIO, spindexerMotor);
 
-    hopperKickerSim =
-        new FlywheelSystemSim(KICKER_KV, KICKER_KA, KICKER_MOI, KICKER_GEAR_RATIO, kickerMotor);
+    kickerSim =
+        new FlywheelSystemSim(KICKER_KV, KICKER_KA, KICKER_GEAR_RATIO, KICKER_MOI, kickerMotor);
   }
 
   @Override
@@ -226,11 +226,8 @@ public class HopperIOTalonFX implements HopperIO {
         spindexerMotorKS,
         spindexerMotorKA);
 
-    if (Constants.getMode() == Constants.Mode.SIM) {
-
-      hopperSpindexerVelocitySystemSim.updateSim();
-      hopperKickerSim.updateSim();
-    }
+    spindexerVelocitySystemSim.updateSim();
+    kickerSim.updateSim();
   }
 
   @Override
@@ -255,7 +252,7 @@ public class HopperIOTalonFX implements HopperIO {
     kickerMotor.setControl(kickerCurrentRequest.withOutput(amps));
   }
 
-  private void configHopperSpindexerMotor(TalonFX motor) {
+  private void configSpindexerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.TorqueCurrent.PeakForwardTorqueCurrent =
@@ -278,12 +275,12 @@ public class HopperIOTalonFX implements HopperIO {
     config.Slot0.kS = spindexerMotorKS.get();
     config.Slot0.kA = spindexerMotorKA.get();
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, hopperSpindexerConfigAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, spindexerConfigAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "hopper spindexer motor", motor);
   }
 
-  private void configHopperKickerMotor(TalonFX motor) {
+  private void configKickerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.TorqueCurrent.PeakForwardTorqueCurrent = HopperConstants.KICKER_MOTOR_PEAK_CURRENT_LIMIT;
@@ -305,7 +302,7 @@ public class HopperIOTalonFX implements HopperIO {
     config.Slot0.kS = kickerMotorKS.get();
     config.Slot0.kA = kickerMotorKA.get();
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, hopperKickerConfigAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, kickerConfigAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "hopper kicker motor", motor);
   }
