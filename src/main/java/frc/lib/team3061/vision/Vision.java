@@ -88,8 +88,15 @@ public class Vision extends SubsystemBase {
   private List<List<Pose3d>> robotPosesRejected;
 
   private Map<Integer, List<Translation2d>> fuelZones = new HashMap<>();
-  private Map<Integer, Integer> fuelCountsInZones = new HashMap<>();
-
+  private Map<Integer, Double> fuelCountsInZones = new HashMap<>();
+  
+  // Weight of each of 32 zones for fuel detection, from 0 to 1 based on proximity (translationally and rotationally)
+  // can be made into a function if needed
+  private Double[] fuelZoneWeights = {0.5, 0.6, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5,
+                                    0.6, 0.6, 0.7, 0.8, 0.8,  0.7, 0.6, 0.6,
+                                    0.6, 0.7, 0.8, 0.9, 0.9, 0.8, 0.7, 0.6,
+                                    0.7, 0.8, 0.9, 1.0, 1.0, 0.9, 0.8, 0.7};
+  
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
@@ -533,10 +540,11 @@ public class Vision extends SubsystemBase {
   }
 
   /**
-   * Populates the zones for fuel detection in the 640x640 frame. Option A: 32 zones of 80 wide (y),
-   * 160 tall (x) zones Option B: 25 zones of 120 wide (y), 120 tall (y) zones Zone numbering: start
-   * at 0, go across each row starting from top left Based on the assumption that the origin of the
-   * plane is in the center of the frame, with +x up and +y to the right
+   * Populates the zones for fuel detection in the 640x640 frame.
+   * 32 zones, indexes 1-32 of 80 wide (y), 160 tall (x) zones, each weighted from 0 to 1 based on proximity (translationally and rotationally to the robot)
+   * For now, these are arbitrarily determined values, but can be made into a function for grid distance from 1.
+   * 
+   * Ordering for zone indexes is from the top left to the bottom right
    */
   // Can change to log center of each zone and then compare exact points
   private void populateFuelDetectionZones() {
@@ -544,7 +552,7 @@ public class Vision extends SubsystemBase {
     int y = 0;
     for (int dy = 0; dy < 8; dy++) {
       for (int dx = 0; dx < 4; dx++) {
-        int zoneIndex = dy * 4 + dx;
+        int zoneIndex = dy * 4 + dx + 1;
         List<Translation2d> zoneCorners = new ArrayList<>();
 
         // Top Left Corner of Zone
@@ -576,8 +584,11 @@ public class Vision extends SubsystemBase {
     for (Map.Entry<Integer, List<Translation2d>> entry : fuelZones.entrySet()) {
       int zoneIndex = entry.getKey();
       List<Translation2d> zoneCorners = entry.getValue();
+
       if (isPointInZone(fuelPoseInCameraFrame, zoneCorners)) {
-        fuelCountsInZones.put(zoneIndex, fuelCountsInZones.getOrDefault(zoneIndex, 0) + 1);
+        // If the fuel is in the zone, add the weight of that zone (incrementing by the weight rather than 1)
+        // The furthest away zones (1 and 8), each fuel added is treated as 0.5 fuel.
+        fuelCountsInZones.put(zoneIndex, fuelCountsInZones.getOrDefault(zoneIndex, 0.0) + fuelZoneWeights[zoneIndex - 1]);
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/FuelZoneCounts/Zone" + zoneIndex, fuelCountsInZones.get(zoneIndex));
         break;
