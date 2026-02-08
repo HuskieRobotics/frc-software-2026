@@ -54,6 +54,7 @@ public class Field2d {
   private Region2d transformedRightBumpZoneBLUE;
   private Region2d transformedLeftBumpZoneRED;
   private Region2d transformedRightBumpZoneRED;
+
   private final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
 
   private final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
@@ -500,9 +501,20 @@ public class Field2d {
   }
 
   public Pose2d getNearestPassingZone() {
-    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+     
+    List<Pose2d> passingZoneList = Arrays.asList(passingZones);
 
-    return pose.nearest(Arrays.asList(passingZones));
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    
+    if( getAlliance() == Alliance.Blue) {
+     passingZoneList.add(passingZones[0]);
+     passingZoneList.add(passingZones[1]);
+    } else {
+      passingZoneList.add(passingZones[2]);
+      passingZoneList.add(passingZones[3]);
+    }
+
+    return pose.nearest(passingZoneList);
   }
 
   public enum Side {
