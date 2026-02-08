@@ -13,8 +13,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -326,11 +324,6 @@ public class FieldConstants {
     private final String name;
     private volatile AprilTagFieldLayout layout;
     private volatile String layoutString;
-    private Alert noAprilTagLayoutAlert =
-        new Alert(
-            "No AprilTag layout file found. Update APRILTAG_FIELD_LAYOUT_PATH in VisionConstants.java",
-            AlertType.kWarning);
-    private Alert unofficialAprilTagLayoutAlert = new Alert("", AlertType.kInfo);
 
     AprilTagLayoutType(String name) {
       this.name = name;
@@ -349,16 +342,7 @@ public class FieldConstants {
                       name + ".json");
               layout = new AprilTagFieldLayout(p);
               layoutString = new ObjectMapper().writeValueAsString(layout);
-              noAprilTagLayoutAlert.set(false);
-
-              // AprilTag layout alert
-              if (this != OFFICIAL) {
-                unofficialAprilTagLayoutAlert.set(true);
-                unofficialAprilTagLayoutAlert.setText(
-                    "Unofficial AprilTag layout in use (" + this.name + ").");
-              }
             } catch (IOException e) {
-              noAprilTagLayoutAlert.set(true);
               throw new RuntimeException(e);
             }
           }
