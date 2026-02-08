@@ -517,6 +517,18 @@ public class Field2d {
     return pose.nearest(passingZoneList);
   }
 
+  public Translation2d getHubCenter() {
+    // this should give us the x and y coordinates of the center of the hub
+    // and will ignore the z coordinate
+    Translation2d hub = FieldConstants.Hub.topCenterPoint.toTranslation2d();
+
+    if (getAlliance() == Alliance.Red) {
+      hub = FlippingUtil.flipFieldPosition(hub);
+    }
+
+    return hub;
+  }
+
   public enum Side {
     LEFT,
     RIGHT
