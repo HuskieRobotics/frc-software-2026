@@ -357,9 +357,9 @@ public class ShooterModes extends SubsystemBase {
     InterpolatingDoubleTreeMap hoodMap;
 
     // target should be set as the center of the hub
-      targetLandingPosition = Field2d.getInstance().getHubCenter();
-      velocityMap = hubDistanceToVelocityMap;
-      hoodMap = hubDistanceToHoodMap;
+    targetLandingPosition = Field2d.getInstance().getHubCenter();
+    velocityMap = hubDistanceToVelocityMap;
+    hoodMap = hubDistanceToHoodMap;
 
     // find our distances to target in x, y and theta
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
@@ -393,9 +393,9 @@ public class ShooterModes extends SubsystemBase {
     InterpolatingDoubleTreeMap hoodMap;
 
     // target should be set as the center of the hub
-      targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
-      velocityMap = passDistanceToVelocityMap;
-      hoodMap = passDistanceToHoodMap;
+    targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
+    velocityMap = passDistanceToVelocityMap;
+    hoodMap = passDistanceToHoodMap;
 
     // find our distances to target in x, y and theta
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
@@ -420,7 +420,6 @@ public class ShooterModes extends SubsystemBase {
       this.turretAngle = idealTurretAngle;
     }
   }
-
 
   private Double[] calculateShootOnTheMove(double v, Angle theta, Angle phi) {
     // speeds need to be field relative
