@@ -338,6 +338,7 @@ public class Vision extends SubsystemBase {
         }
       }
 
+      fuelCountsInZones.clear();
       for (int frameIndex = 0;
           frameIndex < objDetectInputs[cameraIndex].timestamps.length;
           frameIndex++) {
@@ -609,6 +610,18 @@ public class Vision extends SubsystemBase {
         && point.getY() > zoneCorners.get(0).getY()
         && point.getX() > zoneCorners.get(3).getX()
         && point.getY() < zoneCorners.get(3).getY();
+  }
+
+  public int getDensestFuelZone() {
+    int densestZone = -1;
+    double maxCount = 0.0;
+    for (Map.Entry<Integer, Double> entry : fuelCountsInZones.entrySet()) {
+      if (entry.getValue() > maxCount) {
+        maxCount = entry.getValue();
+        densestZone = entry.getKey();
+      }
+    }
+    return densestZone;
   }
 
   /**
