@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -115,6 +116,8 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
 
+    oi.getSnakeDriveButton().onTrue(getSnakeDriveCommand(swerveDrivetrain));
+
     Trigger manualShootTrigger =
         oi.getManualShootButton()
             .and(shooterModes::manualShootEnabled)
@@ -210,6 +213,26 @@ public class CrossSubsystemsCommandsFactory {
                   false);
             })
         .withName("Auto Snap To 90 Degree While Near Wall Command");
+  }
+
+  public static Command getSnakeDriveCommand(SwerveDrivetrain drivetrain) {
+    return Commands.run(
+            () -> {
+              LinearVelocity vX =
+                  RobotConfig.getInstance()
+                      .getRobotMaxVelocity()
+                      .times(OISelector.getOperatorInterface().getTranslateX());
+              LinearVelocity vY =
+                  RobotConfig.getInstance()
+                      .getRobotMaxVelocity()
+                      .times(OISelector.getOperatorInterface().getTranslateY());
+
+              Rotation2d targetRotation = new Rotation2d(vX.in(MetersPerSecond), vY.in(MetersPerSecond));
+
+              drivetrain.driveFacingAngle(
+                  vX, vY, targetRotation, false);
+            })
+        .withName("Snake Drive Command");
   }
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
