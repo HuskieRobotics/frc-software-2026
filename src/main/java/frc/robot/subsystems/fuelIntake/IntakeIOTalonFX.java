@@ -2,6 +2,7 @@ package frc.robot.subsystems.fuelIntake;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static frc.robot.subsystems.fuelIntake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -11,6 +12,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
@@ -131,6 +133,21 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerTempSS,
         deployerTempSS,
         deployerPositionSS);
+
+    this.rollerSim =
+        new VelocitySystemSim(
+            rollerMotor, ROLLER_MOTOR_INVERTED, ROLLER_KV, ROLLER_KA, ROLLER_GEAR_RATIO);
+    this.deployerSim =
+        new ArmSystemSim(
+            deployerMotor,
+            DEPLOYER_MOTOR_INVERTED,
+            DEPLOYER_GEAR_RATIO,
+            DEPLOYER_LENGTH_METERS,
+            DEPLOYER_MASS_KG,
+            DEPLOYER_MIN_ANGLE,
+            DEPLOYER_MAX_ANGLE,
+            DEPLOYER_MIN_ANGLE,
+            "Intake Deployer");
 
     rollerVelocityRequest = new VelocityTorqueCurrentFOC(0);
     rollerCurrentRequest = new TorqueCurrentFOC(0);
@@ -281,7 +298,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = IntakeConstants.DEPLOYER_CONTINUOUS_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.Inverted = IntakeConstants.DEPLOYER_MOTOR_INVERTED;
+    config.MotorOutput.Inverted =
+        DEPLOYER_MOTOR_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
 
     config.Feedback.SensorToMechanismRatio = IntakeConstants.DEPLOYER_GEAR_RATIO;
 
@@ -313,7 +333,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.Feedback.SensorToMechanismRatio = IntakeConstants.ROLLER_GEAR_RATIO;
-    config.MotorOutput.Inverted = IntakeConstants.ROLLER_MOTOR_INVERTED;
+    config.MotorOutput.Inverted =
+        ROLLER_MOTOR_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Slot0.kP = rollerKp.get();
