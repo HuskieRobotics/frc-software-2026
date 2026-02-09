@@ -49,6 +49,9 @@ import frc.robot.subsystems.arm.ArmIOXRP;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.fuelIntake.Intake;
+import frc.robot.subsystems.fuelIntake.IntakeIO;
+import frc.robot.subsystems.fuelIntake.IntakeIOTalonFX;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
@@ -78,6 +81,7 @@ public class RobotContainer {
   private Elevator elevator;
   private Manipulator manipulator;
   private Shooter shooter;
+  private Intake intake;
   private RobotVisualization visualization;
 
   private final LoggedNetworkNumber endgameAlert1 =
@@ -160,6 +164,7 @@ public class RobotContainer {
       elevator = new Elevator(new ElevatorIO() {});
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
+      intake = new Intake(new IntakeIO() {});
       visualization = new RobotVisualization(elevator);
     }
 
@@ -241,6 +246,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIOTalonFX());
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
+    intake = new Intake(new IntakeIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -269,6 +275,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -302,6 +309,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIOTalonFX());
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
+    intake = new Intake(new IntakeIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -313,6 +321,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -326,6 +335,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
@@ -354,6 +364,7 @@ public class RobotContainer {
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
+    intake = new Intake(new IntakeIO() {});
     shooter = new Shooter(new ShooterIO() {});
   }
 
@@ -383,6 +394,7 @@ public class RobotContainer {
     elevator = new Elevator(new ElevatorIO() {});
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(elevator);
   }
 
