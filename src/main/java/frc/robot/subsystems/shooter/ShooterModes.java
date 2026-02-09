@@ -92,11 +92,12 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/PrimaryMode", primaryMode);
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
 
-    applyShotCalculation();
-
     if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
       setMode();
     }
+
+    applyShotCalculation();
+
   }
 
   private void setMode() {
@@ -149,7 +150,7 @@ public class ShooterModes extends SubsystemBase {
     return this.primaryMode == ShooterMode.MANUAL_SHOOT;
   }
 
-  public void applyShotCalculation() {
+  private void applyShotCalculation() {
     if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
       // set hood to min
       shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(maxHoodAngle)
@@ -353,23 +354,19 @@ public class ShooterModes extends SubsystemBase {
 
     // create a target to shoot at, could be passing corner or hub
     Translation2d targetLandingPosition;
-    InterpolatingDoubleTreeMap velocityMap;
-    InterpolatingDoubleTreeMap hoodMap;
 
     // target should be set as the center of the hub
     targetLandingPosition = Field2d.getInstance().getHubCenter();
-    velocityMap = hubDistanceToVelocityMap;
-    hoodMap = hubDistanceToHoodMap;
 
     // find our distances to target in x, y and theta
-    Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
+    Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose(); //FIXME: may want to add a shooter offset to this pose to get the actual position of the shooter instead of the center of the robot
     double deltaX = targetLandingPosition.getX() - robotPose.getX();
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
     double distance = Math.hypot(deltaX, deltaY);
 
-    double idealShotVelocity = velocityMap.get(distance); // FIXME: may need to add velocity offset
-    Angle idealTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
-    Angle idealHoodAngle = Degrees.of(hoodMap.get(distance));
+    double idealShotVelocity = this.hubDistanceToVelocityMap.get(distance); // FIXME: may need to add velocity offset
+    Angle idealTurretAngle = Radians.of(Math.atan2(deltaX, deltaY));
+    Angle idealHoodAngle = Degrees.of(this.hubDistanceToHoodMap.get(distance));
 
     if (this.primaryMode == ShooterMode.PASS || this.primaryMode == ShooterMode.SHOOT_OTM) {
       Double[] otmShot =
@@ -387,15 +384,8 @@ public class ShooterModes extends SubsystemBase {
 
   private void calculateIdealPassShot() {
 
-    // create a target to shoot at, could be passing corner or hub
-    Translation2d targetLandingPosition;
-    InterpolatingDoubleTreeMap velocityMap;
-    InterpolatingDoubleTreeMap hoodMap;
-
     // target should be set as the center of the hub
-    targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
-    velocityMap = passDistanceToVelocityMap;
-    hoodMap = passDistanceToHoodMap;
+    Translation2d targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
 
     // find our distances to target in x, y and theta
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
@@ -403,9 +393,9 @@ public class ShooterModes extends SubsystemBase {
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
     double distance = Math.hypot(deltaX, deltaY);
 
-    double idealShotVelocity = velocityMap.get(distance); // FIXME: may need to add velocity offset
-    Angle idealTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
-    Angle idealHoodAngle = Degrees.of(hoodMap.get(distance));
+    double idealShotVelocity = this.passDistanceToVelocityMap.get(distance); // FIXME: may need to add velocity offset
+    Angle idealTurretAngle = Radians.of(Math.atan2(deltaX, deltaY));
+    Angle idealHoodAngle = Degrees.of(this.passDistanceToHoodMap.get(distance));
 
     if (this.primaryMode == ShooterMode.PASS || this.primaryMode == ShooterMode.SHOOT_OTM) {
       Double[] otmShot =
