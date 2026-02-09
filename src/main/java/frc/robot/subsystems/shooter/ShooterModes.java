@@ -151,7 +151,7 @@ public class ShooterModes extends SubsystemBase {
 
   public void applyShotCalculation() {
     if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
-      // set hood to max
+      // set hood to min
       shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(maxHoodAngle)
       // model for aimed position minus hood (should be an extra redundancy check w/i that method
       // for NEAR_TRENCH)
