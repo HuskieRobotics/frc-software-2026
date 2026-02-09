@@ -57,7 +57,6 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final LoggedTunableNumber rollerCruiseVelocity =
       new LoggedTunableNumber(
           "Intake/Roller/cruiseVelocity", IntakeConstants.ROLLER_CRUISE_VELOCITY);
- 
 
   private final LoggedTunableNumber deployerKp =
       new LoggedTunableNumber("Intake/Deployer/kP", IntakeConstants.DEPLOYER_KP);
@@ -65,7 +64,6 @@ public class IntakeIOTalonFX implements IntakeIO {
       new LoggedTunableNumber("Intake/Deployer/kI", IntakeConstants.DEPLOYER_KI);
   private final LoggedTunableNumber deployerKd =
       new LoggedTunableNumber("Intake/Deployer/kD", IntakeConstants.DEPLOYER_KD);
-  
 
   private final LoggedTunableNumber deployerKvExpo =
       new LoggedTunableNumber("Intake/Deployer/kVExpo", IntakeConstants.DEPLOYER_KV_EXPO);
@@ -331,5 +329,16 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     FaultReporter.getInstance()
         .registerHardware(IntakeConstants.SUBSYSTEM_NAME, "Roller Motor", motor);
+  }
+
+  public void setDeployerHoldCurrentLimit(boolean isDeployed) {
+    double limit =
+        isDeployed
+            ? IntakeConstants.DEPLOYER_HOLD_POSITION_CURRENT_LIMIT
+            : IntakeConstants.DEPLOYER_CONTINUOUS_CURRENT_LIMIT;
+    var currentLimits = new com.ctre.phoenix6.configs.CurrentLimitsConfigs();
+    currentLimits.StatorCurrentLimit = limit;
+    currentLimits.StatorCurrentLimitEnable = true;
+    deployerMotor.getConfigurator().apply(currentLimits);
   }
 }

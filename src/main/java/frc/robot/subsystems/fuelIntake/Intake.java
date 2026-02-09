@@ -151,6 +151,9 @@ public class Intake extends SubsystemBase {
                 .div(IntakeConstants.DEPLOYER_CIRCUMFERENCE)
                 .magnitude());
     io.setDeployerPosition(angularSetpoint);
+    if (io instanceof IntakeIOTalonFX) {
+      ((IntakeIOTalonFX) io).setDeployerHoldCurrentLimit(true);
+    }
   }
 
   public void retractIntake() {
@@ -160,6 +163,9 @@ public class Intake extends SubsystemBase {
                 .div(IntakeConstants.DEPLOYER_CIRCUMFERENCE)
                 .magnitude());
     io.setDeployerPosition(angularSetpoint);
+    if (io instanceof IntakeIOTalonFX) {
+      ((IntakeIOTalonFX) io).setDeployerHoldCurrentLimit(false);
+    }
   }
 
   public Distance getDeployerPosition() {
