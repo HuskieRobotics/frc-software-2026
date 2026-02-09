@@ -121,6 +121,7 @@ public class ArmIOTalonFX implements ArmIO {
             Units.degreesToRadians(10.0),
             Units.degreesToRadians(120.0),
             Units.degreesToRadians(10.0),
+            true,
             SUBSYSTEM_NAME);
   }
 

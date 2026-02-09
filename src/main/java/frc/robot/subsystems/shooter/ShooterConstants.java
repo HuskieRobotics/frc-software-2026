@@ -57,6 +57,9 @@ public class ShooterConstants {
 
   public static final boolean TURRET_INVERTED = false;
   public static final double TURRET_GEAR_RATIO = 15;
+  public static final double TURRET_LENGTH_METERS =
+      1.0; // this doesn't is irrelevant for the simulation since gravity doesn't affect the model
+  public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
 
   // Hood PID Constants (subject to change)
   public static final double HOOD_ROTATION_KP = 400;

@@ -31,7 +31,6 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.FlywheelSystemSim;
-import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 
@@ -169,7 +168,7 @@ public class ShooterIOTalonFX implements ShooterIO {
           "Shooter/Hood Cruise Velocity", ShooterConstants.HOOD_MOTION_MAGIC_CRUISE_VELOCITY);
 
   private FlywheelSystemSim shooterSim;
-  private VelocitySystemSim turretLeadSim; // FIXME: determine correct sim type for turret
+  private ArmSystemSim turretLeadSim;
   private ArmSystemSim hoodLeadSim;
 
   public ShooterIOTalonFX() {
@@ -305,11 +304,17 @@ public class ShooterIOTalonFX implements ShooterIO {
             flywheelFollow1,
             flywheelFollow2);
     this.turretLeadSim =
-        new VelocitySystemSim(
-            ShooterConstants.TURRET_ROTATION_KV,
-            ShooterConstants.TURRET_ROTATION_KA,
+        new ArmSystemSim(
+            turret,
+            ShooterConstants.TURRET_INVERTED,
             ShooterConstants.TURRET_GEAR_RATIO,
-            turret);
+            ShooterConstants.TURRET_LENGTH_METERS,
+            ShooterConstants.TURRET_MASS_KG,
+            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Degrees),
+            ShooterConstants.TURRET_UPPER_ANGLE_LIMIT.in(Degrees),
+            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Degrees),
+            false,
+            ShooterConstants.SUBSYSTEM_NAME + " Turret");
     this.hoodLeadSim =
         new ArmSystemSim(
             hood,
@@ -320,6 +325,7 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.HOOD_MIN_ANGLE,
             ShooterConstants.HOOD_MAX_ANGLE,
             ShooterConstants.HOOD_STARTING_ANGLE,
+            true,
             ShooterConstants.SUBSYSTEM_NAME + " Hood");
   }
 
@@ -589,7 +595,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
     turretConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;
+        ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;  
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit =
         ShooterConstants.TURRET_CONTINUOUS_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerTime =
