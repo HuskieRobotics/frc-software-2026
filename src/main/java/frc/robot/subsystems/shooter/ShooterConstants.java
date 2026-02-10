@@ -14,9 +14,14 @@ public class ShooterConstants {
     throw new IllegalStateException(CONSTRUCTOR_EXCEPTION);
   }
 
+  /* =======================
+   *  Subsystem Info
+   * ======================= */
   public static final String SUBSYSTEM_NAME = "Shooter";
 
-  // change the ids once we get the updated stuff
+  /* =======================
+   *  CAN IDs
+   * ======================= */
   public static final int FLYWHEEL_LEAD_MOTOR_ID = 9; // Updated in robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 21;
   // FIXME: update from robot devices and trackers sheet
@@ -24,11 +29,13 @@ public class ShooterConstants {
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
 
-  // Flywheel PID Constants (subject to change)
+  /* =======================
+   *  Flywheel PID Constants
+   * ======================= */
   public static final double FLYWHEEL_LEAD_ROTATION_KP = 19; // FIXME: update value
-  public static final double FLYWHEEL_LEAD_ROTATION_KI = 0.0; //FIXME: update value
-  public static final double FLYWHEEL_LEAD_ROTATION_KD = 0.0; //FIXME: update value
-  public static final double FLYWHEEL_LEAD_ROTATION_KS = 0.39217; //FIXME: update value
+  public static final double FLYWHEEL_LEAD_ROTATION_KI = 0.0; // FIXME: update value
+  public static final double FLYWHEEL_LEAD_ROTATION_KD = 0.0; // FIXME: update value
+  public static final double FLYWHEEL_LEAD_ROTATION_KS = 0.39217; // FIXME: update value
   public static final double FLYWHEEL_LEAD_ROTATION_KV = 0.086186; // FIXME: update value
   public static final double FLYWHEEL_LEAD_ROTATION_KA = 0.022794; // FIXME: update value
 
@@ -37,6 +44,9 @@ public class ShooterConstants {
       1.0; // FIXME: Currently 3:2, could be 2:1 or 1:1
   public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
+  /* =======================
+   *  Flywheel Follower Constants
+   * ======================= */
   // Follow 1 Constants
   public static final MotorAlignmentValue FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD =
       MotorAlignmentValue.Aligned; // FIXME: change to opposed if reversed
@@ -45,14 +55,18 @@ public class ShooterConstants {
   public static final MotorAlignmentValue FLYWHEEL_FOLLOW_2_INVERTED_FROM_LEAD =
       MotorAlignmentValue.Aligned; // FIXME: change to opposed if reversed
 
-  // Turret PID Constants (subject to change)
+  /* =======================
+   *  Turret PID Constants
+   * ======================= */
   public static final double TURRET_ROTATION_KP = 19; // FIXME: update value
   public static final double TURRET_ROTATION_KI = 0.0; // FIXME: update value
   public static final double TURRET_ROTATION_KD = 0.0; // FIXME: update value
   public static final double TURRET_ROTATION_KV = 0.12; // FIXME: update value
   public static final double TURRET_ROTATION_KA = 0.022794; // FIXME: update value
 
-  // Turret motion magic pid constants
+  /* =======================
+   *  Turret Motion Magic Constants
+   * ======================= */
   public static final double TURRET_ROTATION_EXPO_KV = 5;
   public static final double TURRET_ROTATION_EXPO_KA = 5; // FIXME: update values when tuning
   public static final double TURRET_MOTION_MAGIC_CRUISE_VELOCITY =
@@ -60,12 +74,15 @@ public class ShooterConstants {
 
   public static final boolean TURRET_INVERTED =
       false; // FIXME: update when first running the turret
-  public static final double TURRET_GEAR_RATIO = 15; // FIXME: way to low ask Noga for correct
+  public static final double TURRET_GEAR_RATIO =
+      15; // FIXME: way too low ask Noga for correct
   public static final double TURRET_LENGTH_METERS =
-      1.0; // this doesn't is irrelevant for the simulation since gravity doesn't affect the model
+      1.0; // this is irrelevant for simulation since gravity doesn't affect the model
   public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
 
-  // Hood PID Constants (subject to change)
+  /* =======================
+   *  Hood PID Constants
+   * ======================= */
   public static final double HOOD_ROTATION_KP = 400; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KI = 0.0; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KD = 0.0; // FIXME: update values when tuning
@@ -74,7 +91,9 @@ public class ShooterConstants {
   public static final double HOOD_ROTATION_KV = 21.619; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KA = 0.83438; // FIXME: update values when tuning
 
-  //  Hood physical constants
+  /* =======================
+   *  Hood Physical Constants
+   * ======================= */
   public static final boolean HOOD_INVERTED = false;
   public static final double HOOD_GEAR_RATIO = 144.0;
   public static final double HOOD_LENGTH_METERS = 0.2;
@@ -83,29 +102,48 @@ public class ShooterConstants {
   public static final double HOOD_MAX_ANGLE = 90;
   public static final double HOOD_STARTING_ANGLE = 20.0;
 
-  // Hood angle limits
+  /* =======================
+   *  Hood Angle Limits
+   * ======================= */
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0); // FIXME: update value
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
-  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle HOOD_TOLERANCE_ANGLE =
+      Degrees.of(0.25); // FIXME: update when tuning
 
+  /* =======================
+   *  Turret Angle Limits
+   * ======================= */
   public static final double TURRET_STARTING_ANGLE = 0.0;
-  // Turret angle limits
+
   public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(90);
-  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle TURRET_TOLERANCE_ANGLE =
+      Degrees.of(0.25); // FIXME: update when tuning
 
-  // Current limits
+  /* =======================
+   *  Current Limits
+   * ======================= */
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
+
   public static final double HOOD_PEAK_CURRENT_LIMIT = 20.0;
   public static final int HOOD_CONTINUOUS_CURRENT_LIMIT = 15;
   public static final double HOOD_PEAK_CURRENT_DURATION = 0.1;
+
   public static final int TURRET_CONTINUOUS_CURRENT_LIMIT = 15;
   public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
 
-  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
+  /* =======================
+   *  Tolerances
+   * ======================= */
+  public static final AngularVelocity VELOCITY_TOLERANCE =
+      RotationsPerSecond.of(0.5);
+
   public static final double POSITION_TOLERANCE = 2.0;
 
+  /* =======================
+   *  Setpoints
+   * ======================= */
   // Hood and turret position setpoints
   public static final double HOOD_SETPOINT_1_DEGREES = 0.0; // FIXME: determine test points
   public static final double HOOD_SETPOINT_2_DEGREES = 0.0; // FIXME: determine test points
@@ -117,16 +155,16 @@ public class ShooterConstants {
 
   // Velocity setpoints for lead flywheel
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_1_RPS =
-      RotationsPerSecond.of(
-          30); // FIXME: determine test points, test speed for close, farthest, and money shot
+      RotationsPerSecond.of(30); // FIXME: determine test points
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_2_RPS =
-      RotationsPerSecond.of(
-          60); // FIXME: determine test points, test speed for close, farthest, and money shot
+      RotationsPerSecond.of(60); // FIXME: determine test points
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_3_RPS =
-      RotationsPerSecond.of(
-          90); // FIXME: determine test points, test speed for close, farthest, and money shot
+      RotationsPerSecond.of(90); // FIXME: determine test points
 
-  public static final double COMMAND_WAIT_TIME_SECONDS = 3; // time to wait between commands
+  /* =======================
+   *  Timing & Jam Detection
+   * ======================= */
+  public static final double COMMAND_WAIT_TIME_SECONDS = 3;
 
   public static final double HOOD_CURRENT_THRESHOLD_AMPS = 35.0;
   public static final double HOOD_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
