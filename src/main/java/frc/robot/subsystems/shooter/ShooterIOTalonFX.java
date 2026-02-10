@@ -401,13 +401,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
     inputs.hoodReferencePosition = this.hoodMotorReferencePosition;
 
-    // Retrieve the closed loop reference status signals directly from the motor in this method
-    // instead of retrieving in advance because the status signal returned depends on the current
-    // control mode. To eliminate the performance hit, only retrieve the closed loop reference
-    // signals if the tuning mode is enabled. It is critical that these input values are only used
-    // for tuning and not used elsewhere in the subsystem. For example, the
-    // shootMotorTopReferenceVelocityRPS property should be used throughout the subsystem since it
-    // will always be populated.
+
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
@@ -422,9 +416,7 @@ public class ShooterIOTalonFX implements ShooterIO {
       inputs.hoodClosedLoopErrorPosition = Degrees.of(hood.getClosedLoopError().getValue());
     }
 
-    // In order for a tunable to be useful, there must be code that checks if its value has changed.
-    // When a subsystem has multiple tunables that are related, the ifChanged method is a convenient
-    // to check and apply changes from multiple tunables at once.
+
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -490,7 +482,6 @@ public class ShooterIOTalonFX implements ShooterIO {
         hoodKA,
         hoodKG);
 
-    // The last step in the updateInputs method is to update the simulation.
     if (Constants.getMode() == Constants.Mode.SIM) { // If the entire robot is in simulation
       flywheelSim.updateSim();
       turretLeadSim.updateSim();
@@ -533,18 +524,12 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
   @Override
   public void zeroHoodPosition() {
-    // Invoking the setPosition method results in a configuration call, which may take significant
-    // time. As a workaround, we the withLimitReverseMotion decorator that is intended to be used
-    // with external hardware limit switches to reset the position.
-    hood.setControl(hoodPositionRequest.withLimitReverseMotion(true).withPosition(0.0));
+    hood.setControl(hoodVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
   }
 
   @Override
   public void zeroTurretPosition() {
-    // Invoking the setPosition method results in a configuration call, which may take significant
-    // time. As a workaround, we the withLimitReverseMotion decorator that is intended to be used
-    // with external hardware limit switches to reset the position.
-    turret.setControl(turretPositionRequest.withLimitReverseMotion(true).withPosition(0.0));
+    turret.setControl(turretVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
   }
 
 
@@ -565,14 +550,9 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
 
-    // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-    // method will apply the configuration, read back the configuration, and ensure that it is
-    // correct. If not, it will reattempt five times and eventually, generate an alert.
+
     Phoenix6Util.applyAndCheckConfiguration(flywheelLead, flywheelConfig, configAlert);
 
-    // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-    // devices for faults periodically when the robot is disabled and generate alerts if any faults
-    // are found.
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, flywheelLead);
   }
 
@@ -587,14 +567,9 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
 
-    // It is critical that devices are successfully configured. The applyAndCheckConfiguration
-    // method will apply the configuration, read back the configuration, and ensure that it is
-    // correct. If not, it will reattempt five times and eventually, generate an alert.
+
     Phoenix6Util.applyAndCheckConfiguration(flywheelFollow, flywheelConfig, configAlert);
 
-    // A subsystem needs to register each device with FaultReporter. FaultReporter will check
-    // devices for faults periodically when the robot is disabled and generate alerts if any faults
-    // are found.
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, flywheelFollow);
   }
 
