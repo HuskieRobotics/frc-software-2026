@@ -101,16 +101,15 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes
       /*, Hopper hopper */ ) {
 
+    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes);
+
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
 
-    Trigger manualShootTrigger =
-        oi.getManualShootButton()
-            .and(shooterModes::manualShootEnabled)
-            .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+    oi.getManualShootButton().whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -131,14 +130,10 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi,
       ShooterModes shooterModes) {
 
-    // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
-    // shoot_otm && in AZ
-
     return Commands.either(
         Commands.sequence(
             getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/)),
         Commands.none(),
-        /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
         () -> shooterModes.manualShootEnabled());
   }
 
@@ -306,5 +301,11 @@ public class CrossSubsystemsCommandsFactory {
         thetaKd);
   }
 
-  private void confugreCrossSubsystemsTriggers() {}
+  private static void configureCrossSubsystemsTriggers(
+      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, ShooterModes shooterModes) {
+    Trigger manualShootTrigger =
+        oi.getManualShootButton()
+            .and(shooterModes::manualShootEnabled)
+            .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+  }
 }

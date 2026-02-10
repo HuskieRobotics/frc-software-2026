@@ -351,7 +351,8 @@ public class ShooterModes extends SubsystemBase {
         shooter.setIdleVelocity(); // FIXME: change to
         // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
         shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(Radians.of(otmShot[1]))
-        shooter.setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(Radians.of(otmShot[2]))
+        shooter
+            .setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(Radians.of(otmShot[2]))
         shooter.setIdleVelocity(); // FIXME: change to setKickerVelocity(-----);
       }
     } else if (this.primaryMode == ShooterMode.PASS) {
@@ -376,7 +377,8 @@ public class ShooterModes extends SubsystemBase {
       Double[] otmShot =
           calculateShootOnTheMove(idealShotVelocity, idealHoodAngle, idealTurretAngle);
 
-      shooter.setIdleVelocity(); // FIXME: change to shooter.setFlywheelVelocity(RotationsPerSecond.of(idealShotVelocity))
+      shooter.setIdleVelocity(); // FIXME: change to
+      // shooter.setFlywheelVelocity(RotationsPerSecond.of(idealShotVelocity))
       shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(idealHoodAngle)
       shooter.setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(idealTurretAngle)
     }
