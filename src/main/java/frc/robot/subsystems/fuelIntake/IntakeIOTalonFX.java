@@ -258,8 +258,10 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerKaExpo,
         rollerCruiseVelocity);
 
-    deployerSim.updateSim();
-    rollerSim.updateSim();
+    if (Constants.getMode() != Constants.Mode.SIM) {
+      deployerSim.updateSim();
+      rollerSim.updateSim();
+    }
   }
 
   @Override
