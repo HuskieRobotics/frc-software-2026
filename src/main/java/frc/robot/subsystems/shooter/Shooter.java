@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
+import javax.swing.text.Position;
+
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
@@ -53,7 +55,6 @@ public class Shooter extends SubsystemBase {
 
   private boolean hoodJam = false;
   private boolean turretJam = false;
-
    private CurrentSpikeDetector hoodJamDetector =
       new CurrentSpikeDetector(
           HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
@@ -343,30 +344,33 @@ public class Shooter extends SubsystemBase {
 public boolean detectHoodJam() {
   if (turretJamDetector.getAsBoolean()) {
     hoodJam = true;
-    return true;
+    return hoodJam;
   }
-  return false;
+  hoodJam = false;
+  return hoodJam;
 }
 
 
 public boolean detectTurretJam() {
   if (turretJamDetector.getAsBoolean()) {
     turretJam = true;
-    return true;
+    return turretJam;
   }
-  return false;
+  turretJam = false;
+  return turretJam;
 }
 
 
   public void zeroHood(boolean hoodJam) {
     if (hoodJam) {
-      // logic to zero hood
+      io.zeroHoodPosition();
     }
+    
   }
 
    public void zeroTurret(boolean turretJam) {
     if (turretJam) {
-      // logic to zero turret
+      io.zeroTurretPosition();
     }
    }
 

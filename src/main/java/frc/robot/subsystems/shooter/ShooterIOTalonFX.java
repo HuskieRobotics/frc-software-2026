@@ -531,6 +531,22 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void setHoodVoltage(Voltage voltage) {
     hood.setControl(hoodVoltageRequest.withOutput(voltage));
   }
+  @Override
+  public void zeroHoodPosition() {
+    // Invoking the setPosition method results in a configuration call, which may take significant
+    // time. As a workaround, we the withLimitReverseMotion decorator that is intended to be used
+    // with external hardware limit switches to reset the position.
+    hood.setControl(hoodPositionRequest.withLimitReverseMotion(true).withPosition(0.0));
+  }
+
+  @Override
+  public void zeroTurretPosition() {
+    // Invoking the setPosition method results in a configuration call, which may take significant
+    // time. As a workaround, we the withLimitReverseMotion decorator that is intended to be used
+    // with external hardware limit switches to reset the position.
+    turret.setControl(turretPositionRequest.withLimitReverseMotion(true).withPosition(0.0));
+  }
+
 
   private void configFlywheelLead(TalonFX flywheelLead, String motorName, Alert configAlert) {
 
