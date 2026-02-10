@@ -59,7 +59,8 @@ public class ShooterModes extends SubsystemBase {
     SHOOT_OTM, // shoot on the move
     COLLECT_AND_HOLD, // collecting and holding fuel in hopper
     NEAR_TRENCH, // near the trench zone
-    PASS // passing mode
+    PASS, // passing mode,
+    UNINITIALIZED
   }
 
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
@@ -68,8 +69,8 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     // FIXME: no default value for now, change tbd?
-    this.primaryMode = ShooterMode.COLLECT_AND_HOLD;
-    this.secondaryMode = ShooterMode.COLLECT_AND_HOLD;
+    this.primaryMode = ShooterMode.UNINITIALIZED;
+    this.secondaryMode = ShooterMode.UNINITIALIZED;
 
     configureShooterModeTriggers();
 
@@ -287,7 +288,6 @@ public class ShooterModes extends SubsystemBase {
 
     collectAndHoldTrigger.onTrue(
         Commands.runOnce(() -> setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD)));
-
     shootOTMTrigger =
         new Trigger(
             () ->
