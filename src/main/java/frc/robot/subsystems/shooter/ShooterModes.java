@@ -27,6 +27,8 @@ public class ShooterModes extends SubsystemBase {
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
 
+  private boolean hubActive;
+
   /*
   Create interpolating tree map for data points
   First tree map is for our shoot on the move mode
@@ -63,6 +65,7 @@ public class ShooterModes extends SubsystemBase {
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
     this.drivetrain = drivetrain;
     this.shooter = shooter;
+    this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     // FIXME: no default value for now, change tbd?
     this.primaryMode = null;
@@ -79,9 +82,12 @@ public class ShooterModes extends SubsystemBase {
     //   timerStarted = true;
     //   matchStartTime = Timer.getFPGATimestamp();
     // }
+    this.hubActive = hubActive();
 
     Logger.recordOutput("ShooterModes/PrimaryMode", primaryMode);
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
+
+    Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
 
     if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
       setMode();
@@ -91,7 +97,7 @@ public class ShooterModes extends SubsystemBase {
 
   private void setMode() {
     if (Field2d.getInstance().inAllianceZone()) {
-      if (hubActive()
+      if (this.hubActive
           && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
         setNormalShooterMode(ShooterMode.SHOOT_OTM);
       } else {
@@ -181,8 +187,9 @@ public class ShooterModes extends SubsystemBase {
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
   public boolean hubActive() {
-    if (OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean()) {
-      return true;
+    if (!OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean()
+        && !DriverStation.isFMSAttached()) {
+      return false;
     }
 
     // When connected to the real field, this number only changes in full integer increments, and
@@ -287,7 +294,7 @@ public class ShooterModes extends SubsystemBase {
                 Field2d.getInstance().inAllianceZone()
                     && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
                     && !isNearTrenchEnabled()
-                    && hubActive());
+                    && this.hubActive);
 
     shootOTMTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOT_OTM)));
 
@@ -297,7 +304,7 @@ public class ShooterModes extends SubsystemBase {
                 !OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
                     && Field2d.getInstance().inAllianceZone()
                     && !isNearTrenchEnabled()
-                    && hubActive());
+                    && this.hubActive);
 
     canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
   }
