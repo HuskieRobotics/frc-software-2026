@@ -529,6 +529,12 @@ public class Field2d {
     return hub;
   }
 
+  public Pose2d getNearestBank() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    return pose.nearest(Arrays.asList(banks));
+  }
+
   public enum Side {
     LEFT,
     RIGHT

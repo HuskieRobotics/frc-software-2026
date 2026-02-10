@@ -232,7 +232,7 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
     return new DriveToBank(
             drivetrain,
-            CrossSubsystemsCommandsFactory::getTargetBankPose,
+            () -> Field2d.getInstance().getNearestBank(),
             xController,
             yController,
             thetaController,
