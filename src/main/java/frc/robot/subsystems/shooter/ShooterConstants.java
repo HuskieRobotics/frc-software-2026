@@ -23,8 +23,8 @@ public class ShooterConstants {
    *  CAN IDs
    * ======================= */
   public static final int FLYWHEEL_LEAD_MOTOR_ID = 9; // Updated in robot devices and trackers sheet
-  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 21;
-  // FIXME: update from robot devices and trackers sheet
+  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID =
+      21; // FIXME: update from robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
@@ -74,8 +74,7 @@ public class ShooterConstants {
 
   public static final boolean TURRET_INVERTED =
       false; // FIXME: update when first running the turret
-  public static final double TURRET_GEAR_RATIO =
-      15; // FIXME: way too low ask Noga for correct
+  public static final double TURRET_GEAR_RATIO = 15; // FIXME: way too low ask Noga for correct
   public static final double TURRET_LENGTH_METERS =
       1.0; // this is irrelevant for simulation since gravity doesn't affect the model
   public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
@@ -107,8 +106,7 @@ public class ShooterConstants {
    * ======================= */
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0); // FIXME: update value
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
-  public static final Angle HOOD_TOLERANCE_ANGLE =
-      Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
   /* =======================
    *  Turret Angle Limits
@@ -117,8 +115,7 @@ public class ShooterConstants {
 
   public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(90);
-  public static final Angle TURRET_TOLERANCE_ANGLE =
-      Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
   /* =======================
    *  Current Limits
@@ -136,8 +133,7 @@ public class ShooterConstants {
   /* =======================
    *  Tolerances
    * ======================= */
-  public static final AngularVelocity VELOCITY_TOLERANCE =
-      RotationsPerSecond.of(0.5);
+  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
 
   public static final double POSITION_TOLERANCE = 2.0;
 

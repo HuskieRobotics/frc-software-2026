@@ -3,8 +3,6 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
-import javax.swing.text.Position;
-
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
@@ -13,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
-import frc.lib.team254.CurrentSpikeDetector;
 
 public class Shooter extends SubsystemBase {
   // all subsystems receive a reference to their IO implementation when constructed
@@ -55,9 +53,8 @@ public class Shooter extends SubsystemBase {
 
   private boolean hoodJam = false;
   private boolean turretJam = false;
-   private CurrentSpikeDetector hoodJamDetector =
-      new CurrentSpikeDetector(
-          HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
+  private CurrentSpikeDetector hoodJamDetector =
+      new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
 
   private CurrentSpikeDetector turretJamDetector =
       new CurrentSpikeDetector(
@@ -151,8 +148,10 @@ public class Shooter extends SubsystemBase {
         .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(
             Commands.runOnce(
-                () -> { 
-                  io.setFlywheelVelocity(RotationsPerSecond.of(5)); //FIXME: determine necessary velocity for systems check
+                () -> {
+                  io.setFlywheelVelocity(
+                      RotationsPerSecond.of(
+                          5)); // FIXME: determine necessary velocity for systems check
                   io.zeroHoodPosition();
                   io.zeroTurretPosition();
                 }));
@@ -343,38 +342,33 @@ public class Shooter extends SubsystemBase {
     io.setHoodPosition(position);
   }
 
-public boolean detectHoodJam() {
-  if (turretJamDetector.getAsBoolean()) {
-    hoodJam = true;
+  public boolean detectHoodJam() {
+    if (turretJamDetector.getAsBoolean()) {
+      hoodJam = true;
+      return hoodJam;
+    }
+    hoodJam = false;
     return hoodJam;
   }
-  hoodJam = false;
-  return hoodJam;
-}
 
-
-public boolean detectTurretJam() {
-  if (turretJamDetector.getAsBoolean()) {
-    turretJam = true;
+  public boolean detectTurretJam() {
+    if (turretJamDetector.getAsBoolean()) {
+      turretJam = true;
+      return turretJam;
+    }
+    turretJam = false;
     return turretJam;
   }
-  turretJam = false;
-  return turretJam;
-}
-
 
   public void zeroHood(boolean hoodJam) {
     if (hoodJam) {
       io.zeroHoodPosition();
     }
-    
   }
 
-   public void zeroTurret(boolean turretJam) {
+  public void zeroTurret(boolean turretJam) {
     if (turretJam) {
       io.zeroTurretPosition();
     }
-   }
-
-
+  }
 }

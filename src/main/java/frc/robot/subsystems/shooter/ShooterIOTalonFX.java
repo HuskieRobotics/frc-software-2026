@@ -14,7 +14,6 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
@@ -25,7 +24,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -401,8 +399,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
     inputs.hoodReferencePosition = this.hoodMotorReferencePosition;
 
-
-
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
       inputs.flywheelLeadClosedLoopReferenceVelocity =
@@ -415,8 +411,6 @@ public class ShooterIOTalonFX implements ShooterIO {
       inputs.hoodClosedLoopReferencePosition = Degrees.of(hood.getClosedLoopReference().getValue());
       inputs.hoodClosedLoopErrorPosition = Degrees.of(hood.getClosedLoopError().getValue());
     }
-
-
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -522,7 +516,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void setHoodVoltage(Voltage voltage) {
     hood.setControl(hoodVoltageRequest.withOutput(voltage));
   }
-  
+
   @Override
   public void zeroHoodPosition() {
     hood.setControl(hoodVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
@@ -550,7 +544,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
 
-
     Phoenix6Util.applyAndCheckConfiguration(flywheelLead, flywheelConfig, configAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, flywheelLead);
@@ -566,7 +559,6 @@ public class ShooterIOTalonFX implements ShooterIO {
         -ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
 
     flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
-
 
     Phoenix6Util.applyAndCheckConfiguration(flywheelFollow, flywheelConfig, configAlert);
 
