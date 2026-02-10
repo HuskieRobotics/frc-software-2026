@@ -77,7 +77,6 @@ public class RobotContainer {
   private ShooterModes shooterModes;
 
   private Trigger rotateNearBumpTrigger;
-  private Trigger runHopperOTMandAZTrigger;
 
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
@@ -462,11 +461,5 @@ public class RobotContainer {
     rotateNearBumpTrigger = new Trigger(() -> Field2d.getInstance().inBumpZone());
     rotateNearBumpTrigger.whileTrue(
         CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
-
-    runHopperOTMandAZTrigger =
-        new Trigger(
-            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
-    runHopperOTMandAZTrigger.onTrue(
-        Commands.run(() -> shooter.setIdleVelocity())); // FIXME: change to run hopper
   }
 }

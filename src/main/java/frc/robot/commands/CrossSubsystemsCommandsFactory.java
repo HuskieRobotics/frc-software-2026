@@ -101,7 +101,7 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes
       /*, Hopper hopper */ ) {
 
-    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes);
+    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter);
 
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
@@ -109,7 +109,9 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
 
-    oi.getManualShootButton().whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+    oi.getManualShootButton()
+        .and(shooterModes::manualShootEnabled)
+        .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -302,10 +304,15 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static void configureCrossSubsystemsTriggers(
-      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, ShooterModes shooterModes) {
-    Trigger manualShootTrigger =
-        oi.getManualShootButton()
-            .and(shooterModes::manualShootEnabled)
-            .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+      OperatorInterface oi,
+      SwerveDrivetrain swerveDrivetrain,
+      ShooterModes shooterModes,
+      Shooter shooter) {
+
+    Trigger unloadHopperOnTheMoveTrigger =
+        new Trigger(
+            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
+    unloadHopperOnTheMoveTrigger.onTrue(
+        Commands.run(() -> shooter.setIdleVelocity())); // FIXME: run hopper
   }
 }

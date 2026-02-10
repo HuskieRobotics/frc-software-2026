@@ -22,7 +22,7 @@ public class ShooterModes extends SubsystemBase {
 
   // constant to configure for when running practice matches with no game data
   public final boolean WON_AUTO_PRACTICE_MATCH = true;
-  private final double SHOOT_TIME_OFFSET_SECONDS = 2.0; // offset for ball travel time to hub
+  private static final double SHOOT_TIME_OFFSET_SECONDS = 2.0; // offset for ball travel time to hub
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
@@ -210,7 +210,6 @@ public class ShooterModes extends SubsystemBase {
       timeIntoScoringShifts = 130 - timeRemaining;
     }
 
-    // TODO: add x-second offset for ball travel time to hub
     if (!gameData.isEmpty()) {
       switch (gameData.charAt(0)) {
         case 'B':
