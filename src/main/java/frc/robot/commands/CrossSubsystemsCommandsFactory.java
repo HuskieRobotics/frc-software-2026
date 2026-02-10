@@ -227,10 +227,10 @@ public class CrossSubsystemsCommandsFactory {
                       .getRobotMaxVelocity()
                       .times(OISelector.getOperatorInterface().getTranslateY());
 
-              Rotation2d targetRotation = new Rotation2d(vX.in(MetersPerSecond), vY.in(MetersPerSecond));
+              Rotation2d targetRotation =
+                  new Rotation2d(vX.in(MetersPerSecond), vY.in(MetersPerSecond));
 
-              drivetrain.driveFacingAngle(
-                  vX, vY, targetRotation, false);
+              drivetrain.driveFacingAngle(vX, vY, targetRotation, false);
             })
         .withName("Snake Drive Command");
   }

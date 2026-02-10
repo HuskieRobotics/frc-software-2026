@@ -58,7 +58,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getSnakeDriveButton() {
-    return translateJoystickButtons[4];
+    return translateJoystickButtons[4]; 
   }
 
   // rotation joystick
