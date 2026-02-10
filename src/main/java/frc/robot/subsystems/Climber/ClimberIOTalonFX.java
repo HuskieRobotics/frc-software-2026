@@ -49,7 +49,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX climberMotor;
 
   private Alert configAlert =
-      new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
+      new Alert("Failed to apply configuration for Climber.", AlertType.kError);
 
   // climber tunable numbers
 
@@ -200,6 +200,8 @@ public class ClimberIOTalonFX implements ClimberIO {
         ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLowerTime = ClimberConstants.CLIMBER_PEAK_CURRENT_DURATION;
+    config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CLIMBER_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;

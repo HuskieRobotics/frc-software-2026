@@ -16,38 +16,35 @@ public class ClimberConstants {
   public static final double CLIMBER_GEAR_RATIO = 144;
 
   // PID constants
-  public static final double CLIMBER_KP = 12;
-  public static final double CLIMBER_KI = 0.0;
-  public static final double CLIMBER_KD = 0.0;
+  public static final double CLIMBER_KP = 12; //FIXME: determine this value based on tuning of the climber
+  public static final double CLIMBER_KI = 0.0; //FIXME: determine this value based on tuning of the climber
+  public static final double CLIMBER_KD = 0.0; //FIXME: determine this value based on tuning of the climber
 
   // feed forward constants
-  public static final double CLIMBER_KS = 0.13;
-  public static final double CLIMBER_KV = 0.3;
-  public static final double CLIMBER_KA = 0.123;
-  public static final double CLIMBER_KG = 1.5;
+  public static final double CLIMBER_KS = 0.13; //FIXME: determine this value based on testing of the climber
+  public static final double CLIMBER_KV = 0.3; //FIXME: determine this value based on testing of the climber
+  public static final double CLIMBER_KA = 0.123; //FIXME: determine this value based on testing of the climber
+  public static final double CLIMBER_KG = 1.5; //FIXME: determine this value based on testing of the climber
 
   // Motion magic constants
-  public static final double CLIMBER_KV_EXPO = 0.5;
-  public static final double CLIMBER_KA_EXPO = 0.15;
-  public static final double CLIMBER_CRUISE_VELOCITY = 0;
+  public static final double CLIMBER_KV_EXPO = 0.5; //FIXME: determine this value based on testing of the climber
+  public static final double CLIMBER_KA_EXPO = 0.15;  //FIXME: determine this value based on testing of the climber
+  public static final double CLIMBER_CRUISE_VELOCITY = 0; //FIXME: determine this value based on testing of the climber
 
   // the following are determined based on the mechanical design of the climber
-  public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT = 30;
-  public static final double CLIMBER_PEAK_CURRENT_LIMIT = 60;
-  public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.1;
+  public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT = 40;
+  public static final double CLIMBER_PEAK_CURRENT_LIMIT = 80;
+  public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.5;
 
-  public static final Voltage RETRACT_VOLTAGE_SLOW =
-      Volts.of(-2.0); // FIXME: determine this value based on testing of the climber
-
-  public static final Angle MIN_ANGLE_DEGREES = Degrees.of(0.0);
+  public static final Angle MIN_ANGLE_DEGREES = Degrees.of(-72.6); //FIXME: determine this value based on the mechanical design of the climber
 
   public static final Angle MAX_ANGLE_DEGREES =
       Degrees.of(90); // FIXME: determine this value based on the mechanical design of the climber
 
-  public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(1.5);
+  public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(.5);
 
   public static final double CLIMBER_LENGTH_INCHES =
       7; // FIXME: determine this value based on the mechanical design of the climber
 
-  public static final double CLIMBER_MASS_KG = 1.0;
+  public static final double CLIMBER_MASS_KG = 0.69444992;
 }
