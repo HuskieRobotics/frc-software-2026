@@ -27,6 +27,7 @@ public interface ShooterIO {
     Current flywheelLeadStatorCurrent = Amps.of(0.0);
     Current flywheelLeadSupplyCurrent = Amps.of(0.0);
     Voltage flywheelLeadVoltage = Volts.of(0.0);
+    Current flywheelLeadTorqueCurrent = Amps.of(0.0);
     AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
     AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
@@ -38,6 +39,7 @@ public interface ShooterIO {
     Current flywheelFollow1StatorCurrent = Amps.of(0.0);
     Current flywheelFollow1SupplyCurrent = Amps.of(0.0);
     Voltage flywheelFollow1Voltage = Volts.of(0.0);
+    Current flywheelFollow1TorqueCurrent = Amps.of(0.0);
     AngularVelocity flywheelFollow1Velocity = RotationsPerSecond.of(0.0);
     Temperature flywheelFollow1Temperature = Celsius.of(0.0);
 
@@ -46,6 +48,7 @@ public interface ShooterIO {
     Current flywheelFollow2StatorCurrent = Amps.of(0.0);
     Current flywheelFollow2SupplyCurrent = Amps.of(0.0);
     Voltage flywheelFollow2Voltage = Volts.of(0.0);
+    Current flywheelFollow2TorqueCurrent = Amps.of(0.0);
     AngularVelocity flywheelFollow2Velocity = RotationsPerSecond.of(0.0);
     Temperature flywheelFollow2Temperature = Celsius.of(0.0);
 
@@ -68,9 +71,6 @@ public interface ShooterIO {
     Angle hoodClosedLoopReferencePosition = Rotations.of(0.0);
     Angle hoodClosedLoopErrorPosition = Rotations.of(0.0);
     Temperature hoodTemperature = Celsius.of(0.0);
-
-    Angle encoderAngleDegrees = Degrees.of(0.0);
-    AngularVelocity encoderAngularVelocityRPS = RotationsPerSecond.of(0.0);
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}

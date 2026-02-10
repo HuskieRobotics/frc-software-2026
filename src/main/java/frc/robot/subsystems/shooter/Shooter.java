@@ -7,7 +7,6 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +16,7 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import frc.lib.team254.CurrentSpikeDetector;
 
 public class Shooter extends SubsystemBase {
   // all subsystems receive a reference to their IO implementation when constructed
@@ -49,6 +49,18 @@ public class Shooter extends SubsystemBase {
 
   private final Debouncer hoodAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
+  private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
+
+  private boolean hoodJam = false;
+  private boolean turretJam = false;
+
+   private CurrentSpikeDetector hoodJamDetector =
+      new CurrentSpikeDetector(
+          HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
+
+  private CurrentSpikeDetector turretJamDetector =
+      new CurrentSpikeDetector(
+          TURRET_CURRENT_THRESHOLD_AMPS, TURRET_CURRENT_TIME_THRESHOLD_SECONDS);
 
   // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
   // be used for voltage control, we can apply a current instead and reinterpret the units when
@@ -111,11 +123,17 @@ public class Shooter extends SubsystemBase {
         io.setFlywheelVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
       } else if (flywheelLeadCurrent.get() != 0) {
         io.setFlywheelCurrent(Amps.of(flywheelLeadCurrent.get()));
-      } else if (turretPosition.get() != 0) {
+      }
+
+      // Turret
+      if (turretPosition.get() != 0) {
         io.setTurretPosition(Degrees.of(turretPosition.get()));
       } else if (turretVoltage.get() != 0) {
         io.setTurretVoltage(Volts.of(turretVoltage.get()));
-      } else if (hoodPosition.get() != 0) {
+      }
+
+      // Hood
+      if (hoodPosition.get() != 0) {
         io.setHoodPosition(Degrees.of(hoodPosition.get()));
       } else if (hoodVoltage.get() != 0) {
         io.setHoodVoltage(Volts.of(hoodVoltage.get()));
@@ -134,8 +152,6 @@ public class Shooter extends SubsystemBase {
             Commands.runOnce(
                 () -> { // FIXME: set to safe positions/velocities
                   io.setFlywheelVelocity(RotationsPerSecond.of(5));
-                  io.setHoodPosition(Degrees.of(30));
-                  io.setTurretPosition(Degrees.of(30));
                 }));
   }
 
@@ -143,42 +159,23 @@ public class Shooter extends SubsystemBase {
     return Commands.sequence(
         // check if the velocity is at setpoint 1
         Commands.runOnce(
-            () ->
-                io.setFlywheelVelocity(
-                    RotationsPerSecond.of(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS))),
+            () -> io.setFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
         Commands.waitSeconds(3),
         Commands.runOnce(
-            () ->
-                this.checkFlywheelVelocity(
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS,
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS,
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
-
+            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
         // check if the velocity is at setpoint 2
         Commands.runOnce(
-            () ->
-                io.setFlywheelVelocity(
-                    RotationsPerSecond.of(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS))),
+            () -> io.setFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
         Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () ->
-                this.checkFlywheelVelocity(
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS,
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS,
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
 
         // check if the velocity is at setpoint 3
         Commands.runOnce(
-            () ->
-                io.setFlywheelVelocity(
-                    RotationsPerSecond.of(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS))),
+            () -> io.setFlywheelVelocity((ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS))),
         Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () ->
-                this.checkFlywheelVelocity(
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS,
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS,
-                    ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
+            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
   }
 
   public Command getTestPositionCommand() {
@@ -220,91 +217,38 @@ public class Shooter extends SubsystemBase {
                     ShooterConstants.TURRET_SETPOINT_3_DEGREES)));
   }
 
-  public void checkFlywheelVelocity(
-      double flywheelLeadIntendedVelocityRPS,
-      double flywheelFollow1IntendedVelocityRPS,
-      double flywheelFollow2IntendedVelocityRPS) {
-    // flywheel lead
-    if (Math.abs(
-            shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond)
-                - flywheelLeadIntendedVelocityRPS)
-        > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond))
-              - Math.abs(flywheelLeadIntendedVelocityRPS)
-          < 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Flywheel lead velocity is too low, should be "
-                    + flywheelLeadIntendedVelocityRPS
-                    + " but is "
-                    + shooterInputs.flywheelLeadVelocity);
-      } else if (Math.abs(shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond))
-              - Math.abs(flywheelLeadIntendedVelocityRPS)
-          > 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Flywheel lead velocity is too high, should be "
-                    + flywheelLeadIntendedVelocityRPS
-                    + " but is "
-                    + shooterInputs.flywheelLeadVelocity);
-      }
+  public void checkFlywheelVelocity(AngularVelocity flywheelTargetVelocity) {
+    if (shooterInputs.flywheelLeadVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "flywheel lead is out of tolerance, should be "
+                  + flywheelTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond)
+                  + " RPS");
     }
 
-    // flywheel follow 1
-    if (Math.abs(
-            shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
-                - flywheelFollow1IntendedVelocityRPS)
-        > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond))
-              - Math.abs(flywheelFollow1IntendedVelocityRPS)
-          < 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Flywheel follow 1 velocity is too low, should be "
-                    + flywheelFollow1IntendedVelocityRPS
-                    + " but is "
-                    + shooterInputs.flywheelFollow1Velocity);
-      } else if (Math.abs(shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond))
-              - Math.abs(flywheelFollow1IntendedVelocityRPS)
-          > 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Flywheel follow 1 velocity is too high, should be "
-                    + flywheelFollow1IntendedVelocityRPS
-                    + " but is "
-                    + shooterInputs.flywheelFollow1Velocity);
-      }
+    if (shooterInputs.flywheelFollow1Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "flywheel follow 1 is out of tolerance, should be "
+                  + flywheelTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
+                  + " RPS");
     }
-    // flywheel follow 2
-    if (Math.abs(
-            shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
-                - flywheelFollow2IntendedVelocityRPS)
-        > VELOCITY_TOLERANCE.in(RotationsPerSecond)) {
-      if (Math.abs(shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond))
-              - Math.abs(flywheelFollow2IntendedVelocityRPS)
-          < 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Flywheel follow 2 velocity is too low, should be "
-                    + flywheelFollow2IntendedVelocityRPS
-                    + " but is "
-                    + shooterInputs.flywheelFollow2Velocity);
-      } else if (Math.abs(shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond))
-              - Math.abs(flywheelFollow2IntendedVelocityRPS)
-          > 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Flywheel follow 2 velocity is too high, should be "
-                    + flywheelFollow2IntendedVelocityRPS
-                    + " but is "
-                    + shooterInputs.flywheelFollow2Velocity);
-      }
+
+    if (shooterInputs.flywheelFollow2Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "flywheel follow 2 is out of tolerance, should be "
+                  + flywheelTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
+                  + " RPS");
     }
   }
 
@@ -368,19 +312,25 @@ public class Shooter extends SubsystemBase {
             shooterInputs.turretReferencePosition, TURRET_TOLERANCE_ANGLE));
   }
 
+  public boolean isFlywheelAtSetPoint() {
+    return flywheelAtSetpointDebouncer.calculate(
+        shooterInputs.flywheelLeadVelocity.isNear(
+            shooterInputs.flywheelLeadReferenceVelocity, VELOCITY_TOLERANCE));
+  }
+
   // public void reverseShooter(double reverseAmps) { //FIXME: might not be needed
   //  io.setFlywheelTorqueCurrent();
   // }
 
-  public void setFlywheelLeadVelocity(AngularVelocity velocity) {
+  public void setFlywheelVelocity(AngularVelocity velocity) {
     io.setFlywheelVelocity(velocity);
   }
 
-  public void
-      setIdleVelocity() { // when shooting modes are NOT determining the necessary velocity for the
-    // flywheels
-    io.setFlywheelVelocity(RotationsPerSecond.of(ShooterConstants.SHOOTER_IDLE_VELOCITY_RPS));
-  }
+  // public void setIdleVelocity() { // when shooting modes are NOT determining the necessary
+  // velocity for the
+  //   // flywheels
+  //   io.setFlywheelVelocity(RotationsPerSecond.of(ShooterConstants.SHOOTER_IDLE_VELOCITY_RPS));
+  // }
 
   public void setTurretPosition(Angle position) {
     io.setTurretPosition(position);
@@ -390,7 +340,35 @@ public class Shooter extends SubsystemBase {
     io.setHoodPosition(position);
   }
 
-  public void setHoodVoltage(Voltage voltage) {
-    io.setHoodVoltage(voltage);
+public boolean detectHoodJam() {
+  if (turretJamDetector.getAsBoolean()) {
+    hoodJam = true;
+    return true;
   }
+  return false;
+}
+
+
+public boolean detectTurretJam() {
+  if (turretJamDetector.getAsBoolean()) {
+    turretJam = true;
+    return true;
+  }
+  return false;
+}
+
+
+  public void zeroHood(boolean hoodJam) {
+    if (hoodJam) {
+      // logic to zero hood
+    }
+  }
+
+   public void zeroTurret(boolean turretJam) {
+    if (turretJam) {
+      // logic to zero turret
+    }
+   }
+
+
 }
