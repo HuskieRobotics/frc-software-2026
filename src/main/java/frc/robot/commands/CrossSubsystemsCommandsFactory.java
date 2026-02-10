@@ -104,7 +104,7 @@ public class CrossSubsystemsCommandsFactory {
             getInterruptAllCommand(
                 swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
 
-    oi.getScoreFromBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain, shooter, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
