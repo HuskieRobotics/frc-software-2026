@@ -106,7 +106,6 @@ public class ShooterConstants {
    * ======================= */
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0); // FIXME: update value
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
-  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
   /* =======================
    *  Turret Angle Limits
@@ -115,7 +114,6 @@ public class ShooterConstants {
 
   public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(90);
-  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
   /* =======================
    *  Current Limits
@@ -134,8 +132,9 @@ public class ShooterConstants {
    *  Tolerances
    * ======================= */
   public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
+  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
-  public static final double POSITION_TOLERANCE = 2.0;
 
   /* =======================
    *  Setpoints

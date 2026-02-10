@@ -258,7 +258,7 @@ public class Shooter extends SubsystemBase {
       double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees) {
     // Check if hood position is where it should be
     if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees)
-        > POSITION_TOLERANCE) {
+        > ShooterConstants.HOOD_TOLERANCE_ANGLE.in(Degrees)) {
       if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(
@@ -280,7 +280,7 @@ public class Shooter extends SubsystemBase {
 
     // Check if turret position is where it should be
     if (Math.abs(shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees)
-        > POSITION_TOLERANCE) {
+        > ShooterConstants.TURRET_TOLERANCE_ANGLE.in(Degrees)) {
       if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(
