@@ -74,4 +74,12 @@ public final class VisionConstants {
 
   // the minimum confidence for a fuel detection to be considered valid
   public static final double FUEL_DETECT_CONFIDENCE_THRESHOLD = 0.35;
+
+  // PID Constants for Fuel Collection
+  public static final double FUEL_Y_KP = 0.01;
+  public static final double FUEL_Y_KI = 0.0;
+  public static final double FUEL_Y_KD = 0.0;
+
+  // the tolerance in meters for the fuel PID controller (unit???)
+  public static final double FUEL_DETECT_TOLERANCE = 0.05;
 }

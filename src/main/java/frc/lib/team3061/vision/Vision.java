@@ -5,6 +5,7 @@ import static frc.lib.team3061.vision.VisionConstants.*;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -98,6 +99,12 @@ public class Vision extends SubsystemBase {
     0.9, 0.9, 0.8, 0.7, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 0.9, 0.8, 0.7
   };
 
+  private final LoggedTunableNumber fuelKP = new LoggedTunableNumber("Vision/FuelKP", FUEL_Y_KP);
+  private final LoggedTunableNumber fuelKI = new LoggedTunableNumber("Vision/FuelKI", FUEL_Y_KI);
+  private final LoggedTunableNumber fuelKD = new LoggedTunableNumber("Vision/FuelKD", FUEL_Y_KD);
+  private PIDController fuelYController =
+      new PIDController(fuelKP.get(), fuelKI.get(), fuelKD.get());
+
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
@@ -149,6 +156,8 @@ public class Vision extends SubsystemBase {
       robotPoses.add(new ArrayList<>());
       robotPosesAccepted.add(new ArrayList<>());
       robotPosesRejected.add(new ArrayList<>());
+
+      fuelYController.reset();
     }
 
     // load and log all of the AprilTags in the field layout file
@@ -386,6 +395,16 @@ public class Vision extends SubsystemBase {
         }
       }
 
+      // Log Fuel Zones and Counts in Each Zone
+      for (int zoneIndex = 1; zoneIndex <= 32; zoneIndex++) {
+        double countInZone = 0;
+        if (fuelCountsInZones.containsKey(zoneIndex)) {
+          countInZone = fuelCountsInZones.get(zoneIndex).doubleValue();
+        }
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/FuelZone" + zoneIndex + "Count", countInZone);
+      }
+
       // Log data for this camera
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
@@ -613,7 +632,7 @@ public class Vision extends SubsystemBase {
   }
 
   public int getDensestFuelZone() {
-    int densestZone = -1;
+    int densestZone = Integer.MIN_VALUE;
     double maxCount = 0.0;
     for (Map.Entry<Integer, Double> entry : fuelCountsInZones.entrySet()) {
       if (entry.getValue() > maxCount) {
@@ -622,6 +641,29 @@ public class Vision extends SubsystemBase {
       }
     }
     return densestZone;
+  }
+
+  public double getFuelAdjustment() {
+    int targetZone = getDensestFuelZone();
+    Translation2d targetPt;
+    if (targetZone != Integer.MIN_VALUE) {
+      targetPt = getCenter(fuelZones.get(targetZone - 1));
+      return fuelYController.calculate(targetPt.getX());
+    }
+
+    return 0.0;
+  }
+
+  private Translation2d getCenter(List<Translation2d> corners) {
+    double avgX = 0.0;
+    double avgY = 0.0;
+    for (Translation2d corner : corners) {
+      avgX += corner.getX();
+      avgY += corner.getY();
+    }
+    avgX /= corners.size();
+    avgY /= corners.size();
+    return new Translation2d(avgX, avgY);
   }
 
   /**
