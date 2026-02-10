@@ -46,10 +46,10 @@ public class Field2d {
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
-  private Region2d transformedLeftTrenchZoneBLUE;
-  private Region2d transformedRightTrenchZoneBLUE;
-  private Region2d transformedLeftTrenchZoneRED;
-  private Region2d transformedRightTrenchZoneRED;
+  private Region2d blueLeftTrenchZone;
+  private Region2d blueRightTrenchZone;
+  private Region2d redLeftTrenchZone;
+  private Region2d redRightTrenchZone;
   private Region2d transformedLeftBumpZoneBLUE;
   private Region2d transformedRightBumpZoneBLUE;
   private Region2d transformedLeftBumpZoneRED;
@@ -57,7 +57,7 @@ public class Field2d {
 
   private final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
 
-  private final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
+  private final double TRENCH_ZONE_BUFFER_X_INCHES = 24;
 
   private final double BUMP_ZONE_BUFFER_X_INCHES = 7;
 
@@ -181,7 +181,7 @@ public class Field2d {
 
     double bufferTrenchX = Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES);
 
-    Translation2d[] leftTrenchEdgesBLUE =
+    Translation2d[] blueLeftTrenchEdges =
         new Translation2d[] {
 
           // Left Trench
@@ -199,7 +199,7 @@ public class Field2d {
               FieldConstants.LinesHorizontal.leftTrenchOpenStart),
         };
 
-    Translation2d[] rightTrenchEdgesBLUE =
+    Translation2d[] blueRightTrenchEdges =
         new Translation2d[] {
           // Right Trench
           new Translation2d(
@@ -216,20 +216,20 @@ public class Field2d {
               FieldConstants.LinesHorizontal.rightTrenchOpenEnd),
         };
 
-    Translation2d[] leftTrenchEdgesRED = new Translation2d[leftTrenchEdgesBLUE.length];
-    Translation2d[] rightTrenchEdgesRED = new Translation2d[rightTrenchEdgesBLUE.length];
+    Translation2d[] redLeftTrenchEdges = new Translation2d[blueLeftTrenchEdges.length];
+    Translation2d[] redRightTrenchEdges = new Translation2d[blueRightTrenchEdges.length];
 
-    for (int i = 0; i < leftTrenchEdgesBLUE.length; i++) {
-      leftTrenchEdgesRED[i] = FlippingUtil.flipFieldPosition(leftTrenchEdgesBLUE[i]);
+    for (int i = 0; i < blueLeftTrenchEdges.length; i++) {
+      redLeftTrenchEdges[i] = FlippingUtil.flipFieldPosition(blueLeftTrenchEdges[i]);
     }
-    for (int i = 0; i < rightTrenchEdgesBLUE.length; i++) {
-      rightTrenchEdgesRED[i] = FlippingUtil.flipFieldPosition(rightTrenchEdgesBLUE[i]);
+    for (int i = 0; i < blueRightTrenchEdges.length; i++) {
+      redRightTrenchEdges[i] = FlippingUtil.flipFieldPosition(blueRightTrenchEdges[i]);
     }
 
-    this.transformedLeftTrenchZoneBLUE = new Region2d(leftTrenchEdgesBLUE);
-    this.transformedRightTrenchZoneBLUE = new Region2d(rightTrenchEdgesBLUE);
-    this.transformedLeftTrenchZoneRED = new Region2d(leftTrenchEdgesRED);
-    this.transformedRightTrenchZoneRED = new Region2d(rightTrenchEdgesRED);
+    this.blueLeftTrenchZone = new Region2d(blueLeftTrenchEdges);
+    this.blueRightTrenchZone = new Region2d(blueRightTrenchEdges);
+    this.redLeftTrenchZone = new Region2d(redLeftTrenchEdges);
+    this.redRightTrenchZone = new Region2d(redRightTrenchEdges);
   }
 
   public void populateBumpZone() {
@@ -292,10 +292,10 @@ public class Field2d {
   }
 
   public void logTrenchZonePoints() {
-    transformedLeftTrenchZoneBLUE.logPoints("leftTrenchZone BLUE");
-    transformedRightTrenchZoneBLUE.logPoints("rightTrenchZone BLUE");
-    transformedLeftTrenchZoneRED.logPoints("leftTrenchZone RED");
-    transformedRightTrenchZoneRED.logPoints("rightTrenchZone RED");
+    blueLeftTrenchZone.logPoints("leftTrenchZone BLUE");
+    blueRightTrenchZone.logPoints("rightTrenchZone BLUE");
+    redLeftTrenchZone.logPoints("leftTrenchZone RED");
+    redRightTrenchZone.logPoints("rightTrenchZone RED");
   }
 
   public void logBumpZonePoints() {
@@ -475,10 +475,10 @@ public class Field2d {
   public boolean inTrenchZone() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    return transformedLeftTrenchZoneBLUE.contains(pose)
-        || transformedRightTrenchZoneBLUE.contains(pose)
-        || transformedLeftTrenchZoneRED.contains(pose)
-        || transformedRightTrenchZoneRED.contains(pose);
+    return blueLeftTrenchZone.contains(pose)
+        || blueRightTrenchZone.contains(pose)
+        || redLeftTrenchZone.contains(pose)
+        || redRightTrenchZone.contains(pose);
   }
 
   public boolean inBumpZone() {

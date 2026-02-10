@@ -68,8 +68,8 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     // FIXME: no default value for now, change tbd?
-    this.primaryMode = null;
-    this.secondaryMode = null;
+    this.primaryMode = ShooterMode.COLLECT_AND_HOLD;
+    this.secondaryMode = ShooterMode.COLLECT_AND_HOLD;
 
     configureShooterModeTriggers();
 
@@ -89,9 +89,6 @@ public class ShooterModes extends SubsystemBase {
 
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
 
-    if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
-      setMode();
-    }
     calculateIdealShot();
   }
 
@@ -245,7 +242,10 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private void setNormalShooterMode(ShooterMode mode) {
-    this.primaryMode = mode;
+    if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
+      this.primaryMode = mode;
+    }
+
     this.secondaryMode = mode;
   }
 
