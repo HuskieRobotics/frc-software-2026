@@ -1,5 +1,6 @@
 package frc.robot.operator_interface;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 
@@ -47,7 +48,7 @@ public class OperatorDashboard implements OperatorInterface {
 
   @Override
   public Trigger getHubActiveAtHomeToggle() {
-    return new Trigger(() -> (hubActiveAtHomeToggle.get()));
+    return new Trigger(() -> (!DriverStation.isFMSAttached() && hubActiveAtHomeToggle.get()));
   }
 
   public Trigger getObjectDetectionToggle() {
