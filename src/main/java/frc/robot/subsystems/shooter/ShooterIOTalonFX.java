@@ -133,6 +133,8 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Turret kI", ShooterConstants.TURRET_ROTATION_KI);
   private final LoggedTunableNumber turretKD =
       new LoggedTunableNumber("Shooter/Turret kD", ShooterConstants.TURRET_ROTATION_KD);
+  private final LoggedTunableNumber turretKS =
+      new LoggedTunableNumber("Shooter/Turret kS", ShooterConstants.TURRET_ROTATION_KS);
   private final LoggedTunableNumber turretKV =
       new LoggedTunableNumber("Shooter/Turret kV", ShooterConstants.TURRET_ROTATION_KV);
   private final LoggedTunableNumber turretKA =
@@ -450,6 +452,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         turretKP,
         turretKI,
         turretKD,
+        turretKS,
         turretKV,
         turretKA);
 
