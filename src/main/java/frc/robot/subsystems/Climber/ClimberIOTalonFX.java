@@ -6,16 +6,19 @@ import static frc.robot.subsystems.climber.ClimberConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -28,6 +31,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
+import frc.robot.subsystems.arm.ArmConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
 
@@ -47,6 +51,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   private ArmSystemSim climberSim;
 
   private final TalonFX climberMotor;
+  private final CANcoder angleEncoder;
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for Climber.", AlertType.kError);
@@ -84,9 +89,14 @@ public class ClimberIOTalonFX implements ClimberIO {
       new LoggedTunableNumber(
           "Climber/MotorCruiseVelocity", ClimberConstants.CLIMBER_CRUISE_VELOCITY);
 
+  // Cancoder tunable numbers
+  private final LoggedTunableNumber rotationEncoderMagnetOffset =
+      new LoggedTunableNumber("Arm/ROTATION_MAGNET_OFFSET", ArmConstants.MAGNET_OFFSET);
+
   public ClimberIOTalonFX() {
 
     climberMotor = new TalonFX(CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
+    angleEncoder = new CANcoder(ANGLE_ENCODER_ID, RobotConfig.getInstance().getCANBus());
 
     climberVoltageRequest = new VoltageOut(0.0);
     climberPositionRequest = new MotionMagicExpoVoltage(0.0);
@@ -105,18 +115,20 @@ public class ClimberIOTalonFX implements ClimberIO {
         climberMotorTemperatureStatusSignal,
         climberMotorPositionRotationsStatusSignal);
 
-    configClimberMotor(climberMotor);
+    configClimberMotor(climberMotor, angleEncoder);
 
     climberSim =
         new ArmSystemSim(
             climberMotor,
+            angleEncoder,
             CLIMBER_MOTOR_INVERTED,
             CLIMBER_GEAR_RATIO,
+            ENCODER_GEAR_RATIO,
             CLIMBER_LENGTH_INCHES,
             CLIMBER_MASS_KG,
-            Units.degreesToRadians(MIN_ANGLE_DEGREES.in(Degrees)),
-            Units.degreesToRadians(MAX_ANGLE_DEGREES.in(Degrees)),
-            Units.degreesToRadians(MIN_ANGLE_DEGREES.in(Degrees)),
+            MIN_ANGLE_DEGREES.in(Degrees),
+            MAX_ANGLE_DEGREES.in(Degrees),
+            MIN_ANGLE_DEGREES.in(Degrees),
             SUBSYSTEM_NAME);
   }
 
@@ -174,6 +186,14 @@ public class ClimberIOTalonFX implements ClimberIO {
         climberMotorKAExpo,
         climberCruiseVelocity);
 
+    // CANcoder configuration update
+    if (rotationEncoderMagnetOffset.hasChanged(hashCode())) {
+      CANcoderConfiguration angleCANCoderConfig = new CANcoderConfiguration();
+      angleEncoder.getConfigurator().refresh(angleCANCoderConfig);
+      angleCANCoderConfig.MagnetSensor.MagnetOffset = rotationEncoderMagnetOffset.get();
+      angleEncoder.getConfigurator().apply(angleCANCoderConfig);
+    }
+
     climberSim.updateSim();
   }
 
@@ -193,8 +213,17 @@ public class ClimberIOTalonFX implements ClimberIO {
     climberMotor.setControl(climberPositionRequest.withPosition(angle.in(Rotations)));
   }
 
-  private void configClimberMotor(TalonFX motor) {
+  private void configClimberMotor(TalonFX motor, CANcoder angleEncoder) {
     TalonFXConfiguration config = new TalonFXConfiguration();
+
+    TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
+
+    // CANcoder configuration
+    CANcoderConfiguration angleCANCoderConfig = new CANcoderConfiguration();
+    angleCANCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
+    angleCANCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    angleCANCoderConfig.MagnetSensor.MagnetOffset = rotationEncoderMagnetOffset.get();
+    Phoenix6Util.applyAndCheckConfiguration(angleEncoder, angleCANCoderConfig, configAlert);
 
     config.CurrentLimits.SupplyCurrentLowerLimit =
         ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
@@ -224,6 +253,12 @@ public class ClimberIOTalonFX implements ClimberIO {
     angleMotorLimitSwitches.ReverseSoftLimitEnable = true;
     angleMotorLimitSwitches.ReverseSoftLimitThreshold = MIN_ANGLE_DEGREES.in(Rotations);
 
+    // For the most accurate measurement of the arm's position, fuse the CANcoder with the encoder
+    // in the TalonFX.
+    angleMotorConfig.Feedback.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
+    angleMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    angleMotorConfig.Feedback.SensorToMechanismRatio = ArmConstants.SENSOR_TO_MECHANISM_RATIO;
+    angleMotorConfig.Feedback.RotorToSensorRatio = ArmConstants.ANGLE_MOTOR_GEAR_RATIO;
     config.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
@@ -234,5 +269,6 @@ public class ClimberIOTalonFX implements ClimberIO {
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "AngleMotor", motor);
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "AngleCANcoder", angleEncoder);
   }
 }
