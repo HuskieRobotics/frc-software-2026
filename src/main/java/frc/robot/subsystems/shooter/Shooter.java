@@ -53,6 +53,7 @@ public class Shooter extends SubsystemBase {
 
   private boolean hoodJam = false;
   private boolean turretJam = false;
+
   private CurrentSpikeDetector hoodJamDetector =
       new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
 
@@ -342,22 +343,20 @@ public class Shooter extends SubsystemBase {
     io.setHoodPosition(position);
   }
 
-  public boolean detectHoodJam() {
-    if (turretJamDetector.getAsBoolean()) {
-      hoodJam = true;
-      return hoodJam;
+  public void detectHoodJam() {
+    if (hoodJamDetector.getAsBoolean()) {
+      this.hoodJam = true;
+    } else {
+      this.hoodJam = false;
     }
-    hoodJam = false;
-    return hoodJam;
   }
 
-  public boolean detectTurretJam() {
+  public void detectTurretJam() {
     if (turretJamDetector.getAsBoolean()) {
-      turretJam = true;
-      return turretJam;
+      this.turretJam = true;
+    } else {
+      this.turretJam = false;
     }
-    turretJam = false;
-    return turretJam;
   }
 
   public void zeroHood(boolean hoodJam) {
