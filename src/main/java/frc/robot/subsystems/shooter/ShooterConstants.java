@@ -86,7 +86,6 @@ public class ShooterConstants {
   public static final double HOOD_ROTATION_KP = 400; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KI = 0.0; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KD = 0.0; // FIXME: update values when tuning
-  public static final double HOOD_ROTATION_KG = 0.0; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KS = 0.50489; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KV = 21.619; // FIXME: update values when tuning
   public static final double HOOD_ROTATION_KA = 0.83438; // FIXME: update values when tuning
@@ -135,7 +134,6 @@ public class ShooterConstants {
   public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
   public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
   public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
-
 
   /* =======================
    *  Setpoints

@@ -147,8 +147,6 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_ROTATION_KD);
   private final LoggedTunableNumber hoodKS =
       new LoggedTunableNumber("Shooter/Hood kS", ShooterConstants.HOOD_ROTATION_KS);
-  private final LoggedTunableNumber hoodKG =
-      new LoggedTunableNumber("Shooter/Hood kG", ShooterConstants.HOOD_ROTATION_KG);
   private final LoggedTunableNumber hoodKV =
       new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_KV);
   private final LoggedTunableNumber hoodKA =
@@ -467,7 +465,6 @@ public class ShooterIOTalonFX implements ShooterIO {
           config.kS = pid[3];
           config.kV = pid[4];
           config.kA = pid[5];
-          config.kG = pid[6];
 
           hood.getConfigurator().apply(config);
         },
@@ -476,8 +473,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         hoodKD,
         hoodKS,
         hoodKV,
-        hoodKA,
-        hoodKG);
+        hoodKA);
 
     if (Constants.getMode() == Constants.Mode.SIM) { // If the entire robot is in simulation
       flywheelSim.updateSim();
@@ -620,7 +616,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.Slot0.kV = hoodKV.get();
     hoodConfig.Slot0.kA = hoodKA.get();
     hoodConfig.Slot0.kS = hoodKS.get();
-    hoodConfig.Slot0.kG = hoodKG.get();
 
     hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
 
