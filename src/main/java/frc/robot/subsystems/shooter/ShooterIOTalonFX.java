@@ -522,6 +522,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void setHoodVoltage(Voltage voltage) {
     hood.setControl(hoodVoltageRequest.withOutput(voltage));
   }
+  
   @Override
   public void zeroHoodPosition() {
     hood.setControl(hoodVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
@@ -531,7 +532,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void zeroTurretPosition() {
     turret.setControl(turretVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
   }
-
 
   private void configFlywheelLead(TalonFX flywheelLead, String motorName, Alert configAlert) {
 

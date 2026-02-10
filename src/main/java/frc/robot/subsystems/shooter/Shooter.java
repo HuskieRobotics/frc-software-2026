@@ -151,8 +151,10 @@ public class Shooter extends SubsystemBase {
         .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(
             Commands.runOnce(
-                () -> { // FIXME: set to safe positions/velocities
-                  io.setFlywheelVelocity(RotationsPerSecond.of(5));
+                () -> { 
+                  io.setFlywheelVelocity(RotationsPerSecond.of(5)); //FIXME: determine necessary velocity for systems check
+                  io.zeroHoodPosition();
+                  io.zeroTurretPosition();
                 }));
   }
 
