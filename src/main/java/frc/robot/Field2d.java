@@ -57,7 +57,7 @@ public class Field2d {
 
   private final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
 
-  private final double TRENCH_ZONE_BUFFER_X_INCHES = 24;
+  private final double TRENCH_ZONE_BUFFER_X_INCHES = 6;
 
   private final double BUMP_ZONE_BUFFER_X_INCHES = 7;
 

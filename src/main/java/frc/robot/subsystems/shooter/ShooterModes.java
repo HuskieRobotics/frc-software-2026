@@ -87,8 +87,10 @@ public class ShooterModes extends SubsystemBase {
 
     Logger.recordOutput("ShooterModes/PrimaryMode", primaryMode);
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
-
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
+
+    Logger.recordOutput("Debug/InTrench", Field2d.getInstance().inTrenchZone());
+    Logger.recordOutput("Debug/InAlliance", Field2d.getInstance().inAllianceZone());
 
     calculateIdealShot();
   }
@@ -293,7 +295,7 @@ public class ShooterModes extends SubsystemBase {
             () ->
                 Field2d.getInstance().inAllianceZone()
                     && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
-                    && !isNearTrenchEnabled()
+                    && !Field2d.getInstance().inTrenchZone()
                     && this.hubActive);
 
     shootOTMTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOT_OTM)));
@@ -303,7 +305,7 @@ public class ShooterModes extends SubsystemBase {
             () ->
                 !OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
                     && Field2d.getInstance().inAllianceZone()
-                    && !isNearTrenchEnabled()
+                    && !Field2d.getInstance().inTrenchZone()
                     && this.hubActive);
 
     canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
