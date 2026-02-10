@@ -42,7 +42,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final int GYRO_ID = 3;
 
   private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
-  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
+  private static final Distance WHEELBASE = Meters.of(0.050165); // 22.75
   private static final Distance WHEEL_RADIUS = Meters.of(0.0508);
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
 
