@@ -46,6 +46,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getEnableActiveFuelDetectionButton() {
+    return translateJoystickButtons[2];
+  }
+
+  @Override
   public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
   }
