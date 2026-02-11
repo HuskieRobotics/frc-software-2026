@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hopper.HopperConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
