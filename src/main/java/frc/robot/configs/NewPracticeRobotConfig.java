@@ -107,11 +107,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   private static final int LED_COUNT = 85;
 
-  private static final String FR_CAMERA_SERIAL_NUMBER = "40686739";
   private static final String BR_CAMERA_NAME = "40708542";
-  private static final String FL_CAMERA_NAME = "40708556";
   private static final String BL_CAMERA_NAME = "40708569";
-  private static final String CENTER_CAMERA_NAME = "25249734";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 17.5;
@@ -119,17 +116,6 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   private static final int COLOR_EXPOSURE = 4500;
   private static final double COLOR_GAIN = 5.0;
-
-  // Front right camera
-  // x, y, z, pitch, yaw
-  // 11.4425	-8.0165	6.436	60	-52.239
-  private static final Transform3d ROBOT_TO_FR_CAMERA =
-      new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(8.0165),
-              Units.inchesToMeters(-11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-52.239)));
 
   // Back right camera
   // x, y, z, pitch, yaw
@@ -142,16 +128,6 @@ public class NewPracticeRobotConfig extends RobotConfig {
               Units.inchesToMeters(7.436)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-127.761)));
 
-  // Front left camera
-  // x, y, z, pitch, yaw
-  // 11.4425	8.0165	6.436	60	52.239
-  private static final Transform3d ROBOT_TO_FL_CAMERA =
-      new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(8.0165),
-              Units.inchesToMeters(11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(52.239)));
   // Back left camera
   // x, y, z, pitch, yaw
   // -11.4425	8.0165	6.436	60	142.239
@@ -163,30 +139,9 @@ public class NewPracticeRobotConfig extends RobotConfig {
               Units.inchesToMeters(7.436)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
 
-  // center camera
-  // for testing, this camera is currently mounted on the back left
-  private static final Transform3d ROBOT_TO_CENTER_CAMERA =
-      new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
-
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
-      CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_FR_CAMERA)
-          .id(FR_CAMERA_SERIAL_NUMBER)
-          .location("FR")
-          .width(1920)
-          .height(1200)
-          .exposure(MONO_EXPOSURE)
-          .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
-          .stdDevFactor(1.0)
-          .build(),
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
           .id(BR_CAMERA_NAME)
@@ -199,24 +154,14 @@ public class NewPracticeRobotConfig extends RobotConfig {
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_FL_CAMERA)
-          .id(FL_CAMERA_NAME)
-          .location("FL")
+          .robotToCameraTransform(ROBOT_TO_BL_CAMERA)
+          .id(BL_CAMERA_NAME)
+          .location("BL")
           .width(1920)
           .height(1200)
           .exposure(MONO_EXPOSURE)
           .gain(MONO_GAIN)
           .denoise(MONO_DENOISE)
-          .stdDevFactor(1.0)
-          .build(),
-      CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CENTER_CAMERA)
-          .id(CENTER_CAMERA_NAME)
-          .location("center")
-          .width(1280)
-          .height(960)
-          .exposure(COLOR_EXPOSURE)
-          .gain(COLOR_GAIN)
           .stdDevFactor(1.0)
           .build(),
     };
