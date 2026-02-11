@@ -60,7 +60,6 @@ public class ShooterModes extends SubsystemBase {
     COLLECT_AND_HOLD, // collecting and holding fuel in hopper
     NEAR_TRENCH, // near the trench zone
     PASS, // passing mode,
-    UNINITIALIZED
   }
 
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
@@ -69,8 +68,8 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     // FIXME: no default value for now, change tbd?
-    this.primaryMode = ShooterMode.UNINITIALIZED;
-    this.secondaryMode = ShooterMode.UNINITIALIZED;
+    this.primaryMode = ShooterMode.COLLECT_AND_HOLD;
+    this.secondaryMode = ShooterMode.COLLECT_AND_HOLD;
 
     populateShootingMap();
   }
@@ -91,25 +90,6 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("Debug/InAlliance", Field2d.getInstance().inAllianceZone());
 
     calculateIdealShot();
-  }
-
-  private void setMode() {
-    if (Field2d.getInstance().inAllianceZone()) {
-      if (this.hubActive
-          && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-        setNormalShooterMode(ShooterMode.SHOOT_OTM);
-      } else {
-        setNormalShooterMode(ShooterMode.MANUAL_SHOOT);
-      }
-    } else {
-      if (OISelector.getOperatorInterface()
-          .getPassToggle()
-          .getAsBoolean()) { // pass toggled by operator
-        setNormalShooterMode(ShooterMode.PASS);
-      } else {
-        setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD);
-      }
-    }
   }
 
   private void populateShootingMap() {
@@ -142,39 +122,6 @@ public class ShooterModes extends SubsystemBase {
   public boolean manualShootEnabled() {
     return this.primaryMode == ShooterMode.MANUAL_SHOOT;
   }
-
-  // public void getTrajectory() {
-  //   if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
-  //     // set hood to max
-  //     // model for aimed position minus hood (should be an extra redundancy check w/i that method
-  //     // for NEAR_TRENCH)
-  //   } else if (this.primaryMode == ShooterMode.MANUAL_SHOOT) {
-  //     // model for aimed position
-  //     // x stance
-  //   } else if (this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {
-  //     // model for aimed position
-  //   } else if (this.primaryMode == ShooterMode.SHOOT_OTM) {
-  //     // model for aimed position
-  //     // adjust for OTM
-  //   } else if (this.primaryMode == ShooterMode.PASS) {
-  //     // model for aimed position, which would be the nearest corner
-  //     // adjust for OTM
-  //   }
-  // }
-
-  // public void getTurret() {
-
-  //   if (this.primaryMode == ShooterMode.MANUAL_SHOOT
-  //       || this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {
-  //     // aim turret at hub
-  //   } else if (this.primaryMode == ShooterMode.SHOOT_OTM) {
-  //     // aim turret at hub
-  //     // adjust for OTM
-  //   } else if (this.primaryMode == ShooterMode.PASS) {
-  //     // aim turret at nearest corner
-  //     // adjust for OTM
-  //   }
-  // }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
   // and game data to see which hub was active first
@@ -283,8 +230,9 @@ public class ShooterModes extends SubsystemBase {
     collectAndHoldTrigger =
         new Trigger(
             () ->
-                !OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
-                    && !Field2d.getInstance().inAllianceZone());
+                (!OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
+                        && !Field2d.getInstance().inAllianceZone())
+                    || (!this.hubActive && Field2d.getInstance().inAllianceZone()));
 
     collectAndHoldTrigger.onTrue(
         Commands.runOnce(() -> setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD)));
