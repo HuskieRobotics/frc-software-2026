@@ -53,6 +53,8 @@ public interface HopperIO {
     AngularVelocity closedLoopReferenceVelocityKicker = RotationsPerSecond.of(0.0);
   }
 
+  public default void updateInputs(HopperIOInputs inputs) {}
+
   public default void setSpindexerVelocity(AngularVelocity velocity) {}
 
   public default void setKickerVelocity(AngularVelocity velocity) {}
@@ -60,6 +62,4 @@ public interface HopperIO {
   public default void setSpindexerCurrent(Current amps) {}
 
   public default void setKickerCurrent(Current amps) {}
-
-  public default void updateInputs(HopperIOInputs inputs) {}
 }

@@ -1,9 +1,9 @@
 package frc.robot.subsystems.hopper;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hopper.HopperConstants.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
@@ -11,14 +11,18 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
+import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.hopper.HopperConstants.*;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
+
   private HopperIO io;
+
   private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
 
   private final LoggedTunableNumber spindexerVelocityRPS =
@@ -35,20 +39,49 @@ public class Hopper extends SubsystemBase {
   private CurrentSpikeDetector spindexerSpikeDetector =
       new CurrentSpikeDetector(
           SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS, SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS);
+
   private CurrentSpikeDetector kickerSpikeDetector =
       new CurrentSpikeDetector(
           KICKER_CURRENT_SPIKE_THRESHOLD_AMPS, KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS);
 
   private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
+
   private Alert kickerJammedAlert =
       new Alert(
           "Kicker jam detected. This is the motor that kicks fuel from hopper into shooter.",
           AlertType.kError);
 
+  private final SysIdRoutine kickerSysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
+              Volts.of(10), // will actually be a step to 10 A
+              Seconds.of(5), // override default timeout (10 s)
+              // Log state with SignalLogger class
+              state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              output -> io.setKickerCurrent(Amps.of(output.in(Volts))),
+              null,
+              this)); // treat volts as amps
+
+  private final SysIdRoutine spindexerSysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
+              Volts.of(10), // will actually be a step to 10 A
+              Seconds.of(5), // override default timeout (10 s)
+              state -> SignalLogger.writeString("SysIdRotationCurrent_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              output -> io.setSpindexerCurrent(Amps.of(output.in(Volts))),
+              null,
+              this)); // treat volts as amps
+
   public Hopper(HopperIO io) {
     this.io = io;
 
-    // FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME,
+    SysIdRoutineChooser.getInstance().addOption("Kicker Current", kickerSysIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Spindexer Current", spindexerSysIdRoutine);
+
     // getHopperSystemCheckCommand());
   }
 
@@ -63,7 +96,9 @@ public class Hopper extends SubsystemBase {
         io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
       } else if (spindexerCurrent.get() != 0) {
         io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
-      } else if (kickerVelocityRPS.get() != 0) {
+      }
+
+      if (kickerVelocityRPS.get() != 0) {
         io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
       } else if (kickerCurrent.get() != 0) {
         io.setKickerCurrent(Amps.of(kickerCurrent.get()));
