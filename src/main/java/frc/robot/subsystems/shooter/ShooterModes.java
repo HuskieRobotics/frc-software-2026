@@ -72,8 +72,6 @@ public class ShooterModes extends SubsystemBase {
     this.primaryMode = ShooterMode.UNINITIALIZED;
     this.secondaryMode = ShooterMode.UNINITIALIZED;
 
-    configureShooterModeTriggers();
-
     populateShootingMap();
   }
 
@@ -269,7 +267,7 @@ public class ShooterModes extends SubsystemBase {
     this.primaryMode = this.secondaryMode;
   }
 
-  private void configureShooterModeTriggers() {
+  public void configureShooterModeTriggers() {
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
     nearTrenchTrigger.onTrue(Commands.runOnce(this::setNearTrenchActive));
     nearTrenchTrigger.onFalse(Commands.runOnce(this::returnToPreviousMode));
