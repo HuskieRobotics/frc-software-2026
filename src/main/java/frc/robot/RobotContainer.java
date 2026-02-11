@@ -165,7 +165,7 @@ public class RobotContainer {
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
       climber = new Climber(new ClimberIO() {});
-      visualization = new RobotVisualization(elevator);
+      visualization = new RobotVisualization(climber);
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -247,7 +247,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(climber);
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -276,7 +276,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(climber);
   }
 
   private void createCTRESimSubsystems() {
@@ -310,7 +310,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(climber);
   }
 
   private void createXRPSubsystems() {
@@ -322,7 +322,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(climber);
   }
 
   private void createPracticeBoardSubsystems() {
@@ -336,7 +336,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(climber);
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -395,7 +395,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(climber);
   }
 
   /**

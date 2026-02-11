@@ -75,6 +75,10 @@ public class Climber extends SubsystemBase {
         inputs.referenceAngle.isNear(inputs.climberAngle, ANGLE_TOLERANCE_DEGREES));
   }
 
+  public Angle getAngle() {
+    return inputs.climberAngle;
+  }
+
   public void stop() {
     io.setClimberVoltage(Volts.of(0));
   }
