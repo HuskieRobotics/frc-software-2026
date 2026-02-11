@@ -101,7 +101,8 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
-    oi.getEnableActiveFuelDetectionButton().onTrue(getActiveFuelDetectionCommand(swerveDrivetrain, vision, oi));
+    oi.getEnableActiveFuelDetectionButton()
+        .onTrue(getActiveFuelDetectionCommand(swerveDrivetrain, vision, oi));
 
     registerSysIdCommands(oi);
   }
@@ -170,8 +171,10 @@ public class CrossSubsystemsCommandsFactory {
         .withName("drive to pose");
   }
 
-  private static Command getActiveFuelDetectionCommand(SwerveDrivetrain drivetrain, Vision vision, OperatorInterface oi) {
-    return new TeleopSwerveCollectFuel(drivetrain, vision, oi::getTranslateX).withName("teleopswerve collect fuel");
+  private static Command getActiveFuelDetectionCommand(
+      SwerveDrivetrain drivetrain, Vision vision, OperatorInterface oi) {
+    return new TeleopSwerveCollectFuel(drivetrain, vision, oi::getTranslateX)
+        .withName("teleopswerve collect fuel");
   }
 
   private static Command getDriveToPoseOverrideCommand(

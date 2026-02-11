@@ -158,6 +158,7 @@ public class Vision extends SubsystemBase {
       robotPosesRejected.add(new ArrayList<>());
 
       fuelYController.reset();
+      fuelYController.setSetpoint(320.0);
     }
 
     // load and log all of the AprilTags in the field layout file
@@ -395,16 +396,6 @@ public class Vision extends SubsystemBase {
         }
       }
 
-      // Log Fuel Zones and Counts in Each Zone
-      for (int zoneIndex = 1; zoneIndex <= 32; zoneIndex++) {
-        double countInZone = 0;
-        if (fuelCountsInZones.containsKey(zoneIndex)) {
-          countInZone = fuelCountsInZones.get(zoneIndex).doubleValue();
-        }
-        Logger.recordOutput(
-            SUBSYSTEM_NAME + "/" + cameraLocation + "/FuelZone" + zoneIndex + "Count", countInZone);
-      }
-
       // Log data for this camera
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
@@ -444,6 +435,15 @@ public class Vision extends SubsystemBase {
         allRobotPosesRejected.addAll(robotPosesRejected.get(cameraIndex));
         allTagPoses.addAll(tagPoses.get(cameraIndex));
       }
+    }
+
+    // Log Fuel Zones and Counts in Each Zone
+    for (int zoneIndex = 1; zoneIndex <= 32; zoneIndex++) {
+      double countInZone = 0;
+      if (fuelCountsInZones.containsKey(zoneIndex)) {
+        countInZone = fuelCountsInZones.get(zoneIndex).doubleValue();
+      }
+      Logger.recordOutput(SUBSYSTEM_NAME + "/FuelZones/" + "Zone " + zoneIndex, countInZone);
     }
 
     // Log summary data
@@ -569,23 +569,23 @@ public class Vision extends SubsystemBase {
    * <p>Ordering for zone indexes is from the top left to the bottom right
    */
   private void populateFuelDetectionZones() {
-    // Assumes origin of frame is in bottom left
-    for (int dx = 0; dx < 4; dx++) {
-      for (int dy = 0; dy < 8; dy++) {
-        int zoneIndex = dx * 8 + dy + 1;
+    // Assumes origin of frame is in bottom left, and x+ is right, y+ is left
+    for (int dy = 0; dy < 4; dy++) {
+      for (int dx = 0; dx < 8; dx++) {
+        int zoneIndex = dy * 8 + dx + 1;
         List<Translation2d> zoneCorners = new ArrayList<>();
 
         // Top Left Corner of Zone
-        zoneCorners.add(new Translation2d((4 - dx) * 160, (dy) * 80));
+        zoneCorners.add(new Translation2d(dx * 80, (4 - dy) * 160));
 
         // Top Right Corner of Zone
-        zoneCorners.add(new Translation2d((4 - dx) * 160, (dy) * 80 + 80));
+        zoneCorners.add(new Translation2d((dx + 1) * 80, (4 - dy) * 160));
 
         // Bottom Left Corner of Zone
-        zoneCorners.add(new Translation2d((4 - dx) * 160 - 160, (dy) * 80));
+        zoneCorners.add(new Translation2d(dx * 80, (4 - dy - 1) * 160));
 
         // Bottom Right Corner of Zone
-        zoneCorners.add(new Translation2d((4 - dx) * 160 - 160, (dy) * 80 + 80));
+        zoneCorners.add(new Translation2d((dx + 1) * 80, (4 - dy - 1) * 160));
 
         fuelZones.put(zoneIndex, zoneCorners);
       }
@@ -625,10 +625,10 @@ public class Vision extends SubsystemBase {
   // 3: Bottom Right - x > getX, y < get Y
   // using Top Left and Bottom Right should bound the entire zone
   private boolean isPointInZone(Translation2d point, List<Translation2d> zoneCorners) {
-    return point.getX() < zoneCorners.get(0).getX()
-        && point.getY() > zoneCorners.get(0).getY()
-        && point.getX() > zoneCorners.get(3).getX()
-        && point.getY() < zoneCorners.get(3).getY();
+    return point.getX() > zoneCorners.get(0).getX()
+        && point.getY() < zoneCorners.get(0).getY()
+        && point.getX() < zoneCorners.get(3).getX()
+        && point.getY() > zoneCorners.get(3).getY();
   }
 
   public int getDensestFuelZone() {
