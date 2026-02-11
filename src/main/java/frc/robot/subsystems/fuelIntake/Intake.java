@@ -20,7 +20,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.subsystems.elevator.ElevatorConstants.Positions;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -172,7 +171,7 @@ public class Intake extends SubsystemBase {
     return IntakeConstants.DEPLOYER_CIRCUMFERENCE.times(inputs.angularPosition.in(Rotations));
   }
 
-  public boolean isDeployed(Positions position) {
+  public boolean isDeployed() {
     return deployerDeployedDebouncer.calculate(
         getDeployerPosition()
             .isNear(

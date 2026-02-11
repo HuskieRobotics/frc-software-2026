@@ -165,7 +165,7 @@ public class RobotContainer {
       manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
       intake = new Intake(new IntakeIO() {});
-      visualization = new RobotVisualization(elevator);
+      visualization = new RobotVisualization(intake);
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -247,7 +247,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     intake = new Intake(new IntakeIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -276,7 +276,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTRESimSubsystems() {
@@ -310,7 +310,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     intake = new Intake(new IntakeIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(intake);
   }
 
   private void createXRPSubsystems() {
@@ -322,7 +322,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(intake);
   }
 
   private void createPracticeBoardSubsystems() {
@@ -336,7 +336,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(intake);
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -395,7 +395,7 @@ public class RobotContainer {
     manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization(intake);
   }
 
   /**
