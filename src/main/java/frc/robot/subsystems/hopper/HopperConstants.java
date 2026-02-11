@@ -30,13 +30,17 @@ public class HopperConstants {
   public static final double SPINDEXER_KA = 0.027564; // FIXME: Update value
   public static final double SPINDEXER_KS = 0.01; // FIXME: Update value
 
+  public static final AngularVelocity SPINDEXER_VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5); // FIXME: Update value
+
   public static final double KICKER_KP = 12.0; // FIXME: Update value
   public static final double KICKER_KI = 0.0; // FIXME: Update value
   public static final double KICKER_KD = 0.0; // FIXME: Update vlaue
   public static final double KICKER_KV = 0.67505; // FIXME: Update value
   public static final double KICKER_KA = 0.027564; // FIXME: Update value
-  public static final double KICKER_KS = 0.67505; // FIXME: Update value
+  public static final double KICKER_KS = 0.01; // FIXME: Update value
   public static final double KICKER_MOI = 0.5; // FIXME: Update value
+  
+  public static final AngularVelocity KICKER_VELOCITY_TOLERANCE = RotationsPerSecond.of(5); // FIXME: Update value
 
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 0.0; // FIXME: Update value
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.0; // FIXME: Update value
@@ -45,8 +49,8 @@ public class HopperConstants {
 
   public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
-          0.0); // <-- Should be negative (rotations per second) // FIXME: Update value
+          -5); // <-- Should be negative (rotations per second) // FIXME: Update value
   public static final AngularVelocity KICKER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
-          0.0); // <-- Should be negative (rotations per second) // FIXME: Update value
+          -5); // <-- Should be negative (rotations per second) // FIXME: Update value
 }

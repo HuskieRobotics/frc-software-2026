@@ -226,10 +226,12 @@ public class HopperIOTalonFX implements HopperIO {
         spindexerMotorKS,
         spindexerMotorKA);
 
+    if (Constants.getMode() == Constants.Mode.SIM){
     spindexerVelocitySystemSim.updateSim();
     kickerSim.updateSim();
+    }
   }
-
+  
   @Override
   public void setSpindexerVelocity(AngularVelocity velocity) {
     spindexerMotor.setControl(spindexerVelocityRequest.withVelocity(velocity));

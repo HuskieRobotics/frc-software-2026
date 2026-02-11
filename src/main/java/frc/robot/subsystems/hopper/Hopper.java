@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.hopper.HopperConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
@@ -44,12 +46,12 @@ public class Hopper extends SubsystemBase {
       new CurrentSpikeDetector(
           KICKER_CURRENT_SPIKE_THRESHOLD_AMPS, KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS);
 
+  private final Debouncer spindexerAtSetpointDebouncer = new Debouncer(0.2);
+  private final Debouncer kickerAtSetpointDebouncer = new Debouncer(0.2);
+
   private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
 
-  private Alert kickerJammedAlert =
-      new Alert(
-          "Kicker jam detected. This is the motor that kicks fuel from hopper into shooter.",
-          AlertType.kError);
+  private Alert kickerJammedAlert = new Alert("Kicker jam detected.", AlertType.kError);
 
   private final SysIdRoutine kickerSysIdRoutine =
       new SysIdRoutine(
@@ -161,6 +163,17 @@ public class Hopper extends SubsystemBase {
             .andThen(Commands.runOnce(() -> io.setKickerVelocity(RotationsPerSecond.of(0.0)))));
   } */
 
+  public boolean isSpindexerAtVelocity() {
+    return spindexerAtSetpointDebouncer.calculate(
+        inputs.spindexerVelocity.isNear(
+            inputs.spindexerReferenceVelocity, SPINDEXER_VELOCITY_TOLERANCE));
+  }
+
+  public boolean isKickerAtVelocity() {
+    return kickerAtSetpointDebouncer.calculate(
+        inputs.kickerVelocity.isNear(inputs.kickerReferenceVelocity, KICKER_VELOCITY_TOLERANCE));
+  }
+
   public void setKickerVelocity(AngularVelocity velocity) {
     io.setKickerVelocity(velocity);
   }
@@ -177,11 +190,19 @@ public class Hopper extends SubsystemBase {
     io.setSpindexerCurrent(amps);
   }
 
-  public double getKickerVelocityRPS() {
-    return kickerVelocityRPS.get();
+  public AngularVelocity getKickerVelocityRPS() {
+    return inputs.kickerVelocity;
   }
 
-  public double getSpindexerVelocityRPS() {
-    return spindexerVelocityRPS.get();
+  public AngularVelocity getSpindexerVelocityRPS() {
+    return inputs.spindexerVelocity;
+  }
+
+  public void stopSpindexer() {
+    io.setSpindexerVelocity(RotationsPerSecond.of(0.0));
+  }
+
+  public void stopKicker() {
+    io.setKickerVelocity(RotationsPerSecond.of(0.0));
   }
 }
