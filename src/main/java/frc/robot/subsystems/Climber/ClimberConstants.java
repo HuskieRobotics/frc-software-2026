@@ -49,11 +49,9 @@ public class ClimberConstants {
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.5;
 
   public static final Angle MIN_ANGLE_DEGREES =
-      Degrees.of(
-          -72.6); // FIXME: determine this value based on the mechanical design of the climber
-
+      Degrees.of(-72.6);
   public static final Angle MAX_ANGLE_DEGREES =
-      Degrees.of(90); // FIXME: determine this value based on the mechanical design of the climber
+      Degrees.of(144.232895);
 
   public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(.5);
 
