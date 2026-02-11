@@ -59,7 +59,7 @@ public class Field2d {
 
   private final double TRENCH_ZONE_BUFFER_X_INCHES = 6;
 
-  private final double BUMP_ZONE_BUFFER_X_INCHES = 15;
+  private final double BUMP_ZONE_BUFFER_X_INCHES = 30;
 
   private final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
 
