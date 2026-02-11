@@ -5,6 +5,10 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -138,6 +143,19 @@ public class Shooter extends SubsystemBase {
         io.setHoodVoltage(Volts.of(hoodVoltage.get()));
       }
     }
+
+    Transform3d shooterPose =
+        new Transform3d(
+            Units.inchesToMeters(-4.5),
+            Units.inchesToMeters(2.5),
+            Units.inchesToMeters(22.0),
+            new Rotation3d(
+                0.0,
+                -shooterInputs.hoodPosition.in(Radians),
+                shooterInputs.turretPosition.in(Radians)));
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/pose",
+        new Pose3d(RobotOdometry.getInstance().getEstimatedPose()).plus(shooterPose));
 
     // Log how long this subsystem takes to execute its periodic method.
     // This is useful for debugging performance issues.
