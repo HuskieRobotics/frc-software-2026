@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
-import frc.robot.subsystems.fuelIntake.Intake;
+import frc.robot.subsystems.intake.Intake;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
