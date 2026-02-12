@@ -103,10 +103,17 @@ public class Intake extends SubsystemBase {
     Logger.processInputs(IntakeConstants.SUBSYSTEM_NAME, inputs);
 
     if (testingMode.get() == 1) {
-      io.setRollerVelocity(RotationsPerSecond.of(rollerVelocityRPS.get()));
-      io.setRollerVoltage(Volts.of(rollerVoltage.get()));
-      io.setDeployerVoltage(Volts.of(deployerVoltage.get()));
-      io.setDeployerPosition(Rotations.of(deployerPositionRotations.get()));
+      if (deployerVoltage.get() != 0) {
+        io.setDeployerVoltage(Volts.of(deployerVoltage.get()));
+      } else if (deployerPositionRotations.get() != 0) {
+        io.setDeployerPosition(Rotations.of(deployerPositionRotations.get()));
+      }
+
+      if (rollerVoltage.get() != 0) {
+        io.setRollerVoltage(Volts.of(rollerVoltage.get()));
+      } else if (rollerVelocityRPS.get() != 0) {
+        io.setRollerVelocity(RotationsPerSecond.of(rollerVelocityRPS.get()));
+      }
     }
 
     if (rollerJamDetector.update(Math.abs(inputs.rollerStatorCurrentAmps.in(Amps)))) {
