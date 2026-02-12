@@ -1,4 +1,4 @@
-package frc.robot.subsystems.fuelIntake;
+package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;

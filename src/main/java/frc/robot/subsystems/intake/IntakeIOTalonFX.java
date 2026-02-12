@@ -1,8 +1,8 @@
-package frc.robot.subsystems.fuelIntake;
+package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static frc.robot.subsystems.fuelIntake.IntakeConstants.*;
+import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
