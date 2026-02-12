@@ -97,9 +97,9 @@ public class ShooterConstants {
   public static final double HOOD_GEAR_RATIO = 144.0;
   public static final double HOOD_LENGTH_METERS = 0.2;
   public static final double HOOD_MASS_KG = 2.0;
-  public static final double HOOD_MIN_ANGLE = 52.0; // FIXME: Is this even necessary?
-  public static final double HOOD_MAX_ANGLE = 90;
-  public static final double HOOD_STARTING_ANGLE = 20.0;
+  public static final Angle HOOD_MIN_ANGLE = Degrees.of(52.0); // FIXME: Is this even necessary?
+  public static final Angle HOOD_MAX_ANGLE = Degrees.of(90);
+  public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
 
   /* =======================
    *  Hood Angle Limits

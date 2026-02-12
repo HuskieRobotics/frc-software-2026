@@ -176,14 +176,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretPositionRequest = new PositionVoltage(0.0);
     // Set up the flywheels 1 and 2 as followers of the lead flywheel
     flywheelFollow1.setControl(
-        new Follower(
-            FLYWHEEL_LEAD_MOTOR_ID,
-            FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD));
+        new Follower(FLYWHEEL_LEAD_MOTOR_ID, FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD));
     // reversed
     flywheelFollow2.setControl(
-        new Follower(
-            FLYWHEEL_LEAD_MOTOR_ID,
-            FLYWHEEL_FOLLOW_2_INVERTED_FROM_LEAD));
+        new Follower(FLYWHEEL_LEAD_MOTOR_ID, FLYWHEEL_FOLLOW_2_INVERTED_FROM_LEAD));
     // reversed
     // Assign FLYWHEEL LEAD status signals
     flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
@@ -303,9 +299,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.HOOD_GEAR_RATIO,
             ShooterConstants.HOOD_LENGTH_METERS,
             ShooterConstants.HOOD_MASS_KG,
-            ShooterConstants.HOOD_MIN_ANGLE,
-            ShooterConstants.HOOD_MAX_ANGLE,
-            ShooterConstants.HOOD_STARTING_ANGLE,
+            ShooterConstants.HOOD_MIN_ANGLE.in(Degrees),
+            ShooterConstants.HOOD_MAX_ANGLE.in(Degrees),
+            ShooterConstants.HOOD_STARTING_ANGLE.in(Degrees),
             false,
             ShooterConstants.SUBSYSTEM_NAME + " Hood");
   }
