@@ -134,86 +134,75 @@ public class Hopper extends SubsystemBase {
 
   private Command getHopperSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
-      .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
-      .andThen(
-        Commands.runOnce(
-          () -> {
-            io.setKickerVelocity(
-              RotationsPerSecond.of(5)); // FIXME: Determine necessary velocity for systems check
-            io.setSpindexerVelocity(
-              RotationsPerSecond.of(5)); // FIXME: Determine necessary velocity for systems check
-          }));
+        .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
+        .andThen(
+            Commands.runOnce(
+                () -> {
+                  io.setKickerVelocity(
+                      RotationsPerSecond.of(
+                          5)); // FIXME: Determine necessary velocity for systems check
+                  io.setSpindexerVelocity(
+                      RotationsPerSecond.of(
+                          5)); // FIXME: Determine necessary velocity for systems check
+                }));
   }
 
   public Command getTestVelocityCommand() {
     return Commands.sequence(
-      // check if spindexer velocity is at setpoint 1
-      Commands.runOnce(
-        () -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
+        // check if spindexer velocity is at setpoint 1
+        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-          () -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
-      
-      // check if spindexer velocity is at setpoint 2
-      Commands.runOnce(
-        () -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
+
+        // check if spindexer velocity is at setpoint 2
+        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-          () -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
 
         // check if spindexer velocity is at setpoint 3
-      Commands.runOnce(
-        () -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-          () -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
 
-      // check if kicker velocity is at setpoint 1
-      Commands.runOnce(
-        () -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS)),
+        // check if kicker velocity is at setpoint 1
+        Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-          () -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS)),
-      
-      // check if kicker velocity is at setpoint 2
-      Commands.runOnce(
-        () -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS)),
+
+        // check if kicker velocity is at setpoint 2
+        Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_2_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-          () -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_2_RPS)),
 
         // check if kicker velocity is at setpoint 3
-      Commands.runOnce(
-        () -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-          () -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS))
-
-        
-    );
+        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS)));
   }
 
   public void checkSpindexerVelocity(AngularVelocity spindexerTargetVelocity) {
     if (inputs.spindexerVelocity.isNear(spindexerTargetVelocity, SPINDEXER_VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
-        .addFault(SUBSYSTEM_NAME, 
-        "Spindexer is out of tolerance, should be "
-          + spindexerTargetVelocity.in(RotationsPerSecond)
-          + " RPS but is "
-          + inputs.spindexerVelocity.in(RotationsPerSecond)
-          + " RPS");
+          .addFault(
+              SUBSYSTEM_NAME,
+              "Spindexer is out of tolerance, should be "
+                  + spindexerTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + inputs.spindexerVelocity.in(RotationsPerSecond)
+                  + " RPS");
     }
   }
 
   public void checkKickerVelocity(AngularVelocity kickerTargetVelocity) {
     if (inputs.kickerVelocity.isNear(kickerTargetVelocity, SPINDEXER_VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
-        .addFault(SUBSYSTEM_NAME, 
-        "Kicker (hopper) is out of tolerance, should be "
-          + kickerTargetVelocity.in(RotationsPerSecond)
-          + " RPS but is "
-          + inputs.kickerVelocity.in(RotationsPerSecond)
-          + " RPS");
+          .addFault(
+              SUBSYSTEM_NAME,
+              "Kicker (hopper) is out of tolerance, should be "
+                  + kickerTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + inputs.kickerVelocity.in(RotationsPerSecond)
+                  + " RPS");
     }
   }
 
