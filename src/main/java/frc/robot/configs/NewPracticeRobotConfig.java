@@ -38,12 +38,11 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 59;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
   private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959 - 0.5);
-
   private static final int GYRO_ID = 3;
 
   private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
-  private static final Distance WHEELBASE = Meters.of(0.050165); // 22.75
-  private static final Distance WHEEL_RADIUS = Meters.of(0.0508);
+  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
+  private static final Distance WHEEL_RADIUS = Meters.of(0.050165);
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
 
   private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
