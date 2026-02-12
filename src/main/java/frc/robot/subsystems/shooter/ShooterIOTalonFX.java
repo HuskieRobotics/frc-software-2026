@@ -491,7 +491,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretPosition(Angle position) {
-    turret.setControl(turretPositionRequest.withPosition(position.in(Rotations)));
+    turret.setControl(turretPositionRequest.withPosition(position.in(Degrees)));
     this.turretReferencePosition = position.copy();
   }
 
@@ -502,7 +502,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setHoodPosition(Angle position) {
-    hood.setControl(hoodPositionRequest.withPosition(position.in(Rotations)));
+    hood.setControl(hoodPositionRequest.withPosition(position.in(Degrees)));
     this.hoodReferencePosition = position.copy();
   }
 
