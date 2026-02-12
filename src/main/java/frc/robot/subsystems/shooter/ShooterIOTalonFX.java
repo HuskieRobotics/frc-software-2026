@@ -34,7 +34,6 @@ import frc.robot.Constants;
 
 public class ShooterIOTalonFX implements ShooterIO {
 
-  // We usually use VelocityTorqueCurrentFOC to control the velocity of a wheel.
   private VelocityTorqueCurrentFOC flywheelLeadVelocityRequest;
   private TorqueCurrentFOC flywheelLeadCurrentRequest;
 
@@ -111,9 +110,6 @@ public class ShooterIOTalonFX implements ShooterIO {
       new Alert("Failed to apply configuration for hood motor.", AlertType.kError);
   private Alert turretConfigAlert =
       new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
-
-  // The following enables tuning of the PID and feedforward values by changing values
-  // via AdvantageScope and not needing to change values in code, compile, and re-deploy.
 
   private final LoggedTunableNumber flywheelLeadKP =
       new LoggedTunableNumber("Shooter/Flywheel kP", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KP);
@@ -219,9 +215,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodVoltageStatusSignal = hood.getMotorVoltage();
     hoodPositionStatusSignal = hood.getPosition();
 
-    // To improve performance, subsystems register all their signals with Phoenix6Util. All signals
-    // on the entire CAN bus will be refreshed at the same time by Phoenix6Util; so, there is no
-    // need to refresh any StatusSignals in this class.
     Phoenix6Util.registerSignals(
         true,
         // FLYWHEEL LEAD
@@ -269,8 +262,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
     configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
 
-    // Create a simulation objects for the shooter. The specific parameters for the simulation
-    // are determined based on the mechanical design of the shooter.
+
     this.flywheelSim =
         new FlywheelSystemSim(
             ShooterConstants.FLYWHEEL_LEAD_ROTATION_KV,
@@ -308,8 +300,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    // Determine if the motors for the shooter are still connected (i.e., reachable on the CAN bus).
-    // We do this by verifying that none of the status signals for the device report an error.
     inputs.flywheelLeadConnected =
         flywheelLeadConnectedDebouncer.calculate(
             BaseStatusSignal.isAllGood(

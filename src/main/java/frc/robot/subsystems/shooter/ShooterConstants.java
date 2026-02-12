@@ -14,9 +14,6 @@ public class ShooterConstants {
     throw new IllegalStateException(CONSTRUCTOR_EXCEPTION);
   }
 
-  /* =======================
-   *  Subsystem Info
-   * ======================= */
   public static final String SUBSYSTEM_NAME = "Shooter";
 
   /* =======================
@@ -44,10 +41,6 @@ public class ShooterConstants {
       2; // FIXME: Currently 2:1, could be 3:2 or 1:1
   public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
-  /* =======================
-   *  Flywheel Follower Constants
-   * ======================= */
-  // Follow 1 Constants
   public static final MotorAlignmentValue FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD =
       MotorAlignmentValue.Aligned; // FIXME: change to opposed if reversed
 

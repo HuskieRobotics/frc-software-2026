@@ -24,18 +24,11 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  // all subsystems receive a reference to their IO implementation when constructed
+
   private ShooterIO io;
 
-  // all subsystems create the IO inputs instance for this subsystem
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
-  // When initially testing a mechanism, it is best to manually provide a voltage or current to
-  // verify the mechanical functionality. At times, this can be done via Phoenix Tuner. However,
-  // when multiple motors are involved, that is not possible. Using a tunables to enable testing
-  // mode and, for the shooter, specifying current or velocity is convenient. This feature is also
-  // an efficient approach when, for example, empirically tuning the velocity for different
-  // distances when shooting a game piece.
 
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
@@ -65,10 +58,6 @@ public class Shooter extends SubsystemBase {
   private CurrentSpikeDetector turretJamDetector =
       new CurrentSpikeDetector(
           TURRET_CURRENT_THRESHOLD_AMPS, TURRET_CURRENT_TIME_THRESHOLD_SECONDS);
-
-  // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
-  // be used for voltage control, we can apply a current instead and reinterpret the units when
-  // performing the analysis in SysId.
 
   private final SysIdRoutine flywheelIdRoutine =
       new SysIdRoutine(
@@ -104,14 +93,10 @@ public class Shooter extends SubsystemBase {
   public Shooter(ShooterIO io) {
     this.io = io;
 
-    // Register this subsystem's SysId routine with the SysIdRoutineChooser. This allows
-    // the routine to be selected and executed from the dashboard.
     SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Current", flywheelIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Hood Voltage", hoodIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Turret Voltage", turretIdRoutine);
 
-    // Register this subsystem's system check command with the fault reporter. The system check
-    // command can be added to the Elastic Dashboard to execute the system test.
     FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getShooterSystemCheckCommand());
   }
 
@@ -121,7 +106,7 @@ public class Shooter extends SubsystemBase {
 
     Logger.processInputs(SUBSYSTEM_NAME, shooterInputs);
 
-    if (testingMode.get() == 1) { // If we are te
+    if (testingMode.get() == 1) {
       // Flywheel Lead
       if (flyWheelLeadVelocity.get() != 0) {
         io.setFlywheelVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
@@ -157,8 +142,6 @@ public class Shooter extends SubsystemBase {
         SUBSYSTEM_NAME + "/pose",
         new Pose3d(RobotOdometry.getInstance().getEstimatedPose()).plus(shooterPose));
 
-    // Log how long this subsystem takes to execute its periodic method.
-    // This is useful for debugging performance issues.
     LoggedTracer.record("Shooter");
   }
 
@@ -339,19 +322,9 @@ public class Shooter extends SubsystemBase {
             shooterInputs.flywheelLeadReferenceVelocity, VELOCITY_TOLERANCE));
   }
 
-  // public void reverseShooter(double reverseAmps) { //FIXME: might not be needed
-  //  io.setFlywheelTorqueCurrent();
-  // }
-
   public void setFlywheelVelocity(AngularVelocity velocity) {
     io.setFlywheelVelocity(velocity);
   }
-
-  // public void setIdleVelocity() { // when shooting modes are NOT determining the necessary
-  // velocity for the
-  //   // flywheels
-  //   io.setFlywheelVelocity(RotationsPerSecond.of(ShooterConstants.SHOOTER_IDLE_VELOCITY_RPS));
-  // }
 
   public void setTurretPosition(Angle position) {
     io.setTurretPosition(position);

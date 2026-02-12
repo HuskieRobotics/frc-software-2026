@@ -10,16 +10,7 @@ import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
-
-  // The inputs class for a subsystem usually contains the stator and supply currents, temperature,
-  // voltage (or current), and, depending on the control mode, additional fields related to position
-  // or velocity (both measured and reference). The first property is always `connected` and logs if
-  // each device is reachable. Due to logging limitations, properties cannot be a subtype of
-  // Measure. Therefore all properties are suffix with their unit to mitigate bugs due to unit
-  // mismatches.
-
   @AutoLog
-  // IO Inputs are below
   public static class ShooterIOInputs {
 
     // FLYWHEEL LEAD
