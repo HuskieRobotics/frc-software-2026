@@ -85,8 +85,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Angle> turretPositionStatusSignal;
   private StatusSignal<Angle> hoodPositionStatusSignal;
 
-  private Angle hoodMotorReferencePosition = Degrees.of(0.0);
-  private Angle turretMotorReferencePosition = Degrees.of(0.0);
+  private Angle hoodReferencePosition = Degrees.of(0.0);
+  private Angle turretReferencePosition = Degrees.of(0.0);
   private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
 
   private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
@@ -306,7 +306,7 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.HOOD_MIN_ANGLE,
             ShooterConstants.HOOD_MAX_ANGLE,
             ShooterConstants.HOOD_STARTING_ANGLE,
-            true,
+            false,
             ShooterConstants.SUBSYSTEM_NAME + " Hood");
   }
 
@@ -389,15 +389,14 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretTemperature = turretTemperatureStatusSignal.getValue();
     inputs.turretVoltage = turretVoltageStatusSignal.getValue();
     inputs.turretPosition = turretPositionStatusSignal.getValue();
-    inputs.turretReferencePosition = this.turretMotorReferencePosition;
-
+    inputs.turretReferencePosition = turretReferencePosition.copy();
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
     inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValue();
     inputs.hoodTemperature = hoodTemperatureStatusSignal.getValue();
     inputs.hoodVoltage = hoodVoltageStatusSignal.getValue();
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
-    inputs.hoodReferencePosition = this.hoodMotorReferencePosition;
+    inputs.hoodReferencePosition = hoodReferencePosition.copy();
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
@@ -497,7 +496,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void setTurretPosition(Angle position) {
     turret.setControl(turretPositionRequest.withPosition(position.in(Rotations)));
-    this.turretMotorReferencePosition = position;
+    this.turretReferencePosition = position.copy();
   }
 
   @Override
@@ -508,7 +507,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public void setHoodPosition(Angle position) {
     hood.setControl(hoodPositionRequest.withPosition(position.in(Rotations)));
-    this.hoodMotorReferencePosition = position;
+    this.hoodReferencePosition = position.copy();
   }
 
   @Override
