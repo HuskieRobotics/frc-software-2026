@@ -41,7 +41,7 @@ public class ShooterConstants {
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = true;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO =
-      1.0; // FIXME: Currently 3:2, could be 2:1 or 1:1
+      2; // FIXME: Currently 2:1, could be 3:2 or 1:1
   public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
   /* =======================
@@ -75,7 +75,7 @@ public class ShooterConstants {
 
   public static final boolean TURRET_INVERTED =
       false; // FIXME: update when first running the turret
-  public static final double TURRET_GEAR_RATIO = 15; // FIXME: way too low ask Noga for correct
+  public static final double TURRET_GEAR_RATIO = 41.666; // FIXME: way too low ask Noga for correct
   public static final double TURRET_LENGTH_METERS =
       1.0; // this is irrelevant for simulation since gravity doesn't affect the model
   public static final double TURRET_MASS_KG = 1.0; // FIXME: update value

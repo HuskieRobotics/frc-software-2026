@@ -178,12 +178,12 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelFollow1.setControl(
         new Follower(
             FLYWHEEL_LEAD_MOTOR_ID,
-            FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD)); // FIXME: change from aligned to opposed if
+            FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD));
     // reversed
     flywheelFollow2.setControl(
         new Follower(
             FLYWHEEL_LEAD_MOTOR_ID,
-            FLYWHEEL_FOLLOW_2_INVERTED_FROM_LEAD)); // FIXME: change from aligned to opposed if
+            FLYWHEEL_FOLLOW_2_INVERTED_FROM_LEAD));
     // reversed
     // Assign FLYWHEEL LEAD status signals
     flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
