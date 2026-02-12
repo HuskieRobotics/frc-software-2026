@@ -19,7 +19,6 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.subsystems.hopper.HopperConstants.*;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
