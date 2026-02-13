@@ -245,13 +245,23 @@ public class VisionIONorthstar implements VisionIO {
           Rotation2d currentRotation = RobotOdometry.getInstance().getEstimatedPose().getRotation();
           Rotation2d visionRotation0 = robotPose0.toPose2d().getRotation();
           Rotation2d visionRotation1 = robotPose1.toPose2d().getRotation();
-          if (Math.abs(currentRotation.minus(visionRotation0).getRadians())
-              < Math.abs(currentRotation.minus(visionRotation1).getRadians())) {
-            cameraPose = cameraPose0;
-            ambiguity = error0;
+          if (DriverStation.isEnabled()) {
+            if (Math.abs(currentRotation.minus(visionRotation0).getRadians())
+                < Math.abs(currentRotation.minus(visionRotation1).getRadians())) {
+              cameraPose = cameraPose0;
+              ambiguity = error0;
+            } else {
+              cameraPose = cameraPose1;
+              ambiguity = error1;
+            }
           } else {
-            cameraPose = cameraPose1;
-            ambiguity = error1;
+            if (error0 < error1) {
+              cameraPose = cameraPose0;
+              ambiguity = error0;
+            } else {
+              cameraPose = cameraPose1;
+              ambiguity = error1;
+            }
           }
         }
         break;
