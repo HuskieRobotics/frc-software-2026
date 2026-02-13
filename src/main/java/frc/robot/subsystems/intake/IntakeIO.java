@@ -16,9 +16,9 @@ public interface IntakeIO {
     // rollers
     Voltage rollerVoltage = Volts.of(0);
     AngularVelocity rollerVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity rollerReferenceVelocityRadPerSec = RotationsPerSecond.of(0.0);
-    Current rollerStatorCurrentAmps = Amps.of(0);
-    Current rollerSupplyCurrentAmps = Amps.of(0);
+    AngularVelocity rollerReferenceVelocity = RotationsPerSecond.of(0.0);
+    Current rollerStatorCurrent = Amps.of(0);
+    Current rollerSupplyCurrent = Amps.of(0);
     Temperature rollerTempCelsius = Celsius.of(0);
     Angle rollerClosedLoopError = Rotations.of(0);
     Angle rollerClosedLoopReference = Rotations.of(0);
@@ -26,23 +26,21 @@ public interface IntakeIO {
     boolean rollerConnected = false;
 
     // deployer
+    boolean deployerConnected = false;
+    Current deployerStatorCurrent = Amps.of(0);
+    Current deployerSupplyCurrent = Amps.of(0);
     Voltage deployerVoltage = Volts.of(0);
-    Current deployerStatorCurrentAmps = Amps.of(0);
-    Current deployerSupplyCurrentAmps = Amps.of(0);
     Temperature deployerTempCelsius = Celsius.of(0);
-    Angle deployerReferencePositionDeg = Rotations.of(0);
-    Angle angularPosition = Rotations.of(0);
+    Angle deployerReferencePosition = Rotations.of(0);
+    Angle deployerAngularPosition = Rotations.of(0);
+
     AngularVelocity deployerClosedLoopError = RotationsPerSecond.of(0);
     AngularVelocity deployerClosedLoopReference = RotationsPerSecond.of(0);
-
-    boolean deployerConnected = false;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}
 
   public default void setRollerVelocity(AngularVelocity velocity) {}
-
-  public default void setRollerVoltage(Voltage volts) {}
 
   public default void setRollerCurrent(Current amps) {}
 
