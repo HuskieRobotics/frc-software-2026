@@ -153,6 +153,12 @@ public class Intake extends SubsystemBase {
         inputs.rollerVelocity.isNear(velocity, IntakeConstants.ROLLER_VELOCITY_TOLERANCE));
   }
 
+  public boolean isDeployerAtSetpoint (Distance linearDistance) {
+    return deployerDeployedDebouncer.calculate(
+      this.deployerLinearPosition.isNear(linearDistance, DEPLOYER_LINEAR_POSITION_TOLERANCE)
+    );
+  }
+
   public boolean isDeployed() {
     return deployerDeployedDebouncer.calculate(
         inputs.deployerAngularPosition.isNear(DEPLOYED_POSITION, DEPLOYER_POSITION_TOLERANCE));

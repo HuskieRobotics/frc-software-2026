@@ -18,8 +18,6 @@ public class IntakeConstants {
   public static final double DEPLOYER_KV = 0.37;
   public static final double DEPLOYER_KA = 0.583;
   public static final double DEPLOYER_KG = 0.45;
-  public static final double DEPLOYER_KV_EXPO = 0.113;
-  public static final double DEPLOYER_KA_EXPO = 0.3721;
 
   public static final double DEPLOYER_GEAR_RATIO = 50.0; // FIXME: set value
   public static final boolean DEPLOYER_MOTOR_INVERTED = false; // FIXME: check direction
@@ -33,14 +31,15 @@ public class IntakeConstants {
 
   public static final Angle DEPLOYED_POSITION = Rotations.of(0.25); // FIXME: set value
   public static final Angle RETRACTED_POSITION = Rotations.of(0); // FIXME: set value
-  public static final Angle DEPLOYER_POSITION_TOLERANCE = Rotations.of(0.05);
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.2);
+  public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(1.5);
+  public static final Angle DEPLOYER_POSITION_TOLERANCE = Rotations.of(0.05);
 
   public static final AngularVelocity DEPLOYER_CRUISE_VELOCITY = RotationsPerSecond.of(1.0);
   public static final Voltage DEPLOYER_RETRACT_VOLTAGE = Volts.of(-3);
 
-  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 40;
-  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 30;
+  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 80;
+  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 50;
   public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
 
   public static final double ROLLER_KP = 0.1; // FIXME: tune value
@@ -49,8 +48,6 @@ public class IntakeConstants {
   public static final double ROLLER_KS = 0.25;
   public static final double ROLLER_KV = 0.12;
   public static final double ROLLER_KA = 0.01;
-  public static final double ROLLER_KV_EXPO = 0.112;
-  public static final double ROLLER_KA_EXPO = 0.4832;
 
   public static final double ROLLER_GEAR_RATIO = 2.0; // FIXME: set value
   public static final boolean ROLLER_MOTOR_INVERTED = false; // FIXME: check direction
