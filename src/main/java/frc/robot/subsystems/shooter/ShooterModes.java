@@ -311,7 +311,7 @@ public class ShooterModes extends SubsystemBase {
       }
     } else if (this.primaryMode == ShooterMode.PASS) {
 
-      Translation2d targetLandingPosition = Field2d.getInstance().getHubCenter();
+      Translation2d targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
 
       // find our distances to target in x, y and theta
       Pose2d robotPose =
