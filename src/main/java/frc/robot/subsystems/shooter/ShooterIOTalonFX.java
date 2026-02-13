@@ -17,6 +17,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -262,7 +263,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
     configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
 
-
     this.flywheelSim =
         new FlywheelSystemSim(
             ShooterConstants.FLYWHEEL_LEAD_ROTATION_KV,
@@ -279,9 +279,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.TURRET_GEAR_RATIO,
             ShooterConstants.TURRET_LENGTH_METERS,
             ShooterConstants.TURRET_MASS_KG,
-            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Degrees),
-            ShooterConstants.TURRET_UPPER_ANGLE_LIMIT.in(Degrees),
-            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Degrees),
+            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Radians),
+            ShooterConstants.TURRET_UPPER_ANGLE_LIMIT.in(Radians),
+            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Radians),
             false,
             ShooterConstants.SUBSYSTEM_NAME + " Turret");
     this.hoodLeadSim =
@@ -291,9 +291,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.HOOD_GEAR_RATIO,
             ShooterConstants.HOOD_LENGTH_METERS,
             ShooterConstants.HOOD_MASS_KG,
-            ShooterConstants.HOOD_MIN_ANGLE.in(Degrees),
-            ShooterConstants.HOOD_MAX_ANGLE.in(Degrees),
-            ShooterConstants.HOOD_STARTING_ANGLE.in(Degrees),
+            ShooterConstants.HOOD_MIN_ANGLE.in(Radians),
+            ShooterConstants.HOOD_MAX_ANGLE.in(Radians),
+            ShooterConstants.HOOD_STARTING_ANGLE.in(Radians),
             false,
             ShooterConstants.SUBSYSTEM_NAME + " Hood");
   }
@@ -375,14 +375,14 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretTemperature = turretTemperatureStatusSignal.getValue();
     inputs.turretVoltage = turretVoltageStatusSignal.getValue();
     inputs.turretPosition = turretPositionStatusSignal.getValue();
-    inputs.turretReferencePosition = turretReferencePosition.copy();
+    inputs.turretReferencePosition = this.turretReferencePosition;
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
     inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValue();
     inputs.hoodTemperature = hoodTemperatureStatusSignal.getValue();
     inputs.hoodVoltage = hoodVoltageStatusSignal.getValue();
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
-    inputs.hoodReferencePosition = hoodReferencePosition.copy();
+    inputs.hoodReferencePosition = this.hoodReferencePosition;
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
@@ -481,7 +481,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretPosition(Angle position) {
-    turret.setControl(turretPositionRequest.withPosition(position.in(Degrees)));
+    turret.setControl(
+        turretPositionRequest.withPosition(Units.degreesToRotations(position.in(Degrees))));
     this.turretReferencePosition = position.copy();
   }
 
@@ -492,7 +493,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setHoodPosition(Angle position) {
-    hood.setControl(hoodPositionRequest.withPosition(position.in(Degrees)));
+    hood.setControl(
+        hoodPositionRequest.withPosition(Units.degreesToRotations(position.in(Degrees))));
     this.hoodReferencePosition = position.copy();
   }
 
@@ -554,12 +556,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
-    turretConfig.CurrentLimits.SupplyCurrentLowerLimit =
-        ShooterConstants.TURRET_CONTINUOUS_CURRENT_LIMIT;
-    turretConfig.CurrentLimits.SupplyCurrentLowerTime =
-        ShooterConstants.TURRET_PEAK_CURRENT_DURATION;
     turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    turretConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.TURRET_PEAK_CURRENT_LIMIT;
+    turretConfig.CurrentLimits.SupplyCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
+    turretConfig.CurrentLimits.SupplyCurrentLowerLimit = TURRET_CONTINUOUS_CURRENT_LIMIT;
+    turretConfig.CurrentLimits.SupplyCurrentLowerTime = TURRET_PEAK_CURRENT_DURATION;
+    turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    turretConfig.CurrentLimits.StatorCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
 
     turretConfig.Slot0.kP = turretKP.get();
     turretConfig.Slot0.kI = turretKI.get();
@@ -589,11 +591,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
 
-    hoodConfig.CurrentLimits.SupplyCurrentLowerLimit =
-        ShooterConstants.HOOD_CONTINUOUS_CURRENT_LIMIT;
-    hoodConfig.CurrentLimits.SupplyCurrentLowerTime = ShooterConstants.HOOD_PEAK_CURRENT_DURATION;
     hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    hoodConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.HOOD_PEAK_CURRENT_LIMIT;
+    hoodConfig.CurrentLimits.SupplyCurrentLimit = HOOD_PEAK_CURRENT_LIMIT;
+    hoodConfig.CurrentLimits.SupplyCurrentLowerLimit = HOOD_CONTINUOUS_CURRENT_LIMIT;
+    hoodConfig.CurrentLimits.SupplyCurrentLowerTime = HOOD_PEAK_CURRENT_DURATION;
+    hoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    hoodConfig.CurrentLimits.StatorCurrentLimit = HOOD_PEAK_CURRENT_LIMIT;
 
     hoodConfig.Slot0.kP = hoodKP.get();
     hoodConfig.Slot0.kI = hoodKI.get();

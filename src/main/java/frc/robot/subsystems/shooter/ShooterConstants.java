@@ -90,23 +90,22 @@ public class ShooterConstants {
   public static final double HOOD_GEAR_RATIO = 144.0;
   public static final double HOOD_LENGTH_METERS = 0.2;
   public static final double HOOD_MASS_KG = 2.0;
-  public static final Angle HOOD_MIN_ANGLE = Degrees.of(52.0); // FIXME: Is this even necessary?
-  public static final Angle HOOD_MAX_ANGLE = Degrees.of(90);
+  public static final Angle HOOD_MIN_ANGLE = Degrees.of(12.0);
+  public static final Angle HOOD_MAX_ANGLE = Degrees.of(52);
   public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
 
   /* =======================
    *  Hood Angle Limits
    * ======================= */
-  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0); // FIXME: update value
-  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
+  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22); // FIXME: update value
+  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50); // FIXME: update value
 
   /* =======================
    *  Turret Angle Limits
    * ======================= */
-  public static final double TURRET_STARTING_ANGLE = 0.0;
 
   public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
-  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(90);
+  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(360); // FIXME: update value
 
   /* =======================
    *  Current Limits

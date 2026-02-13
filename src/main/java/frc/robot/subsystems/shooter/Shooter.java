@@ -29,7 +29,6 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
-
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
@@ -91,6 +90,9 @@ public class Shooter extends SubsystemBase {
           new SysIdRoutine.Mechanism(output -> io.setTurretVoltage(output), null, this));
 
   public Shooter(ShooterIO io) {
+    if (io == null) {
+      throw new IllegalArgumentException("ShooterIO cannot be null");
+    }
     this.io = io;
 
     SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Current", flywheelIdRoutine);
@@ -122,6 +124,7 @@ public class Shooter extends SubsystemBase {
       }
 
       // Hood
+      // Hood
       if (hoodPosition.get() != 0) {
         io.setHoodPosition(Degrees.of(hoodPosition.get()));
       } else if (hoodVoltage.get() != 0) {
@@ -147,15 +150,18 @@ public class Shooter extends SubsystemBase {
 
   public Command getShooterSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand(), getTestPositionCommand())
-        .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
+        .until(() -> (FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(
             Commands.runOnce(
                 () -> {
-                  io.setFlywheelVelocity(
-                      RotationsPerSecond.of(
-                          5)); // FIXME: determine necessary velocity for systems check
-                  io.zeroHoodPosition();
-                  io.zeroTurretPosition();
+                  // Only reset if the sequence completed without faults
+                  if (FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()) {
+                    io.setFlywheelVelocity(
+                        RotationsPerSecond.of(
+                            5)); // FIXME: determine necessary velocity for systems check
+                    io.zeroHoodPosition();
+                    io.zeroTurretPosition();
+                  }
                 }));
   }
 
