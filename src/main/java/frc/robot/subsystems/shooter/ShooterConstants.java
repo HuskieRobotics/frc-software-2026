@@ -91,7 +91,7 @@ public class ShooterConstants {
   public static final double HOOD_LENGTH_METERS = 0.2;
   public static final double HOOD_MASS_KG = 2.0;
   public static final Angle HOOD_MIN_ANGLE = Degrees.of(12.0);
-  public static final Angle HOOD_MAX_ANGLE = Degrees.of(52);
+  public static final Angle HOOD_MAX_ANGLE = Degrees.of(90);
   public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
 
   /* =======================
@@ -111,9 +111,9 @@ public class ShooterConstants {
    *  Current Limits
    * ======================= */
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
-  public static final int TURRET_PEAK_CURRENT_LIMIT = 20;
+  public static final int TURRET_PEAK_CURRENT_LIMIT = 40;
 
-  public static final double HOOD_PEAK_CURRENT_LIMIT = 20.0;
+  public static final double HOOD_PEAK_CURRENT_LIMIT = 40;
   public static final int HOOD_CONTINUOUS_CURRENT_LIMIT = 15;
   public static final double HOOD_PEAK_CURRENT_DURATION = 0.1;
 

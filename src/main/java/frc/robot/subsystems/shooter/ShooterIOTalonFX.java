@@ -556,12 +556,13 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
-    turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    // turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.CurrentLimits.SupplyCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit = TURRET_CONTINUOUS_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerTime = TURRET_PEAK_CURRENT_DURATION;
-    turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.CurrentLimits.StatorCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
+    turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     turretConfig.Slot0.kP = turretKP.get();
     turretConfig.Slot0.kI = turretKI.get();
@@ -591,12 +592,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
 
-    hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     hoodConfig.CurrentLimits.SupplyCurrentLimit = HOOD_PEAK_CURRENT_LIMIT;
     hoodConfig.CurrentLimits.SupplyCurrentLowerLimit = HOOD_CONTINUOUS_CURRENT_LIMIT;
     hoodConfig.CurrentLimits.SupplyCurrentLowerTime = HOOD_PEAK_CURRENT_DURATION;
-    hoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     hoodConfig.CurrentLimits.StatorCurrentLimit = HOOD_PEAK_CURRENT_LIMIT;
+    hoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     hoodConfig.Slot0.kP = hoodKP.get();
     hoodConfig.Slot0.kI = hoodKI.get();
