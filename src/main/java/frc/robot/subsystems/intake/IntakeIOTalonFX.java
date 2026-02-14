@@ -132,7 +132,7 @@ public class IntakeIOTalonFX implements IntakeIO {
             DEPLOYER_MIN_ANGLE.in(Radians),
             DEPLOYER_MAX_ANGLE.in(Radians),
             DEPLOYER_MIN_ANGLE.in(Radians),
-            "Intake Deployer");
+            SUBSYSTEM_NAME);
 
     configDeployerMotor(deployerMotor);
     configRollerMotor(rollerMotor);
@@ -223,7 +223,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void setRollerVelocity(AngularVelocity velocity) {
     this.rollerMotor.setControl(rollerVelocityRequest.withVelocity(velocity));
-    this.rollerReferenceVelocity = velocity;
+    this.rollerReferenceVelocity = velocity.copy();
   }
 
   @Override

@@ -25,15 +25,14 @@ public class IntakeConstants {
   // Mechanical properties for simulation
   public static final double DEPLOYER_MOI = 0.25;
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
-  public static final double DEPLOYER_MASS_KG = 3.0;
+  public static final double DEPLOYER_MASS_KG = 1.5;
   public static final Angle DEPLOYER_MIN_ANGLE = Degrees.of(0);
   public static final Angle DEPLOYER_MAX_ANGLE = Degrees.of(90);
 
   public static final Distance DEPLOYED_LINEAR_POSITION = Inches.of(5); // FIXME: set value
   public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0); // FIXME: set value
-  public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.2);
-  public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(1.5);
-  public static final Angle DEPLOYER_POSITION_TOLERANCE = Rotations.of(0.05);
+  public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.2).times(Math.PI);
+  public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
 
   public static final AngularVelocity DEPLOYER_CRUISE_VELOCITY = RotationsPerSecond.of(1.0);
   public static final Voltage DEPLOYER_RETRACT_VOLTAGE = Volts.of(-3);
@@ -42,7 +41,7 @@ public class IntakeConstants {
   public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 50;
   public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
 
-  public static final double ROLLER_KP = 0.1; // FIXME: tune value
+  public static final double ROLLER_KP = 12; // FIXME: tune value
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
   public static final double ROLLER_KS = 0.25;

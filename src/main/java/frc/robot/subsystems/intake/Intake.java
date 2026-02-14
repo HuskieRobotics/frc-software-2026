@@ -45,6 +45,10 @@ public class Intake extends SubsystemBase {
 
   private final LoggedTunableNumber deployerPositionRotations =
       new LoggedTunableNumber("Intake/DeployerPositionRotations", 0.0);
+
+  private final LoggedTunableNumber deployerPositionLinearInches =
+      new LoggedTunableNumber("Intake/DeployerPositionLinearInches", 0.0);
+
   private final LoggedTunableNumber deployerVoltage =
       new LoggedTunableNumber("Intake/DeployerVoltage", 0.0);
 
@@ -95,6 +99,8 @@ public class Intake extends SubsystemBase {
         intakeIO.setDeployerVoltage(Volts.of(deployerVoltage.get()));
       } else if (deployerPositionRotations.get() != 0) {
         intakeIO.setDeployerPosition(Rotations.of(deployerPositionRotations.get()));
+      } else if (deployerPositionLinearInches.get() != 0) {
+        setLinearPosition(Inches.of(deployerPositionLinearInches.get()));
       }
 
       if (rollerCurrent.get() != 0) {
@@ -180,32 +186,41 @@ public class Intake extends SubsystemBase {
 
   private Command getSystemCheckCommand() {
     return Commands.sequence(
-            // Check Rollers
             Commands.runOnce(() -> intakeIO.setRollerVelocity(RotationsPerSecond.of(10))),
-            Commands.waitSeconds(1.0),
+            Commands.waitSeconds(0.5)
+                .andThen(Commands.waitUntil(() -> isRollerAtSetpoint(RotationsPerSecond.of(10)))),
             Commands.runOnce(
                 () -> {
-                  if (inputs.rollerVelocity.lt(RotationsPerSecond.of(5))) {
+                  if (inputs.rollerVelocity.lt(RotationsPerSecond.of(8))) {
                     FaultReporter.getInstance()
                         .addFault(SUBSYSTEM_NAME, "Roller failed to reach 10 RPS in System Check");
                   }
                 }),
             Commands.runOnce(this::stopRoller),
-
-            // Check Deployer (Small movement)
             Commands.runOnce(() -> intakeIO.setDeployerPosition(Rotations.of(0.1))),
-            Commands.waitSeconds(1.0),
+            Commands.waitSeconds(0.5)
+                .andThen(
+                    Commands.waitUntil(
+                        () ->
+                            isDeployerAtSetpoint(
+                                Inches.of(0.1 * DEPLOYER_CIRCUMFERENCE.in(Inches))))),
             Commands.runOnce(
                 () -> {
                   if (!inputs.deployerAngularPosition.isNear(
-                      Rotations.of(0.1), Rotations.of(0.05))) {
+                      Rotations.of(0.1), Rotations.of(0.02))) {
                     FaultReporter.getInstance()
                         .addFault(
                             SUBSYSTEM_NAME, "Deployer failed to reach 0.1 Rot in System Check");
                   }
                 }),
-            Commands.runOnce(this::retractIntake))
+            Commands.runOnce(this::retractIntake),
+            Commands.waitSeconds(0.5).andThen(Commands.waitUntil(this::isRetracted)))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(Commands.runOnce(this::stopRoller));
+        .andThen(
+            Commands.runOnce(
+                () -> {
+                  stopRoller();
+                  intakeIO.setDeployerPosition(inputs.deployerAngularPosition);
+                }));
   }
 }
