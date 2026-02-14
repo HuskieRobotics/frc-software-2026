@@ -44,10 +44,10 @@ public class HopperConstants {
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE =
       RotationsPerSecond.of(5); // FIXME: Update value
 
-  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 0.0; // FIXME: Update value
-  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.0; // FIXME: Update value
-  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS = 0.0; // FIXME: Update value
-  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.0; // FIXME: Update value
+  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 30; // FIXME: Update value
+  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.1;
+  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS = 30; // FIXME: Update value
+  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.1;
 
   public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
       RotationsPerSecond.of(

@@ -10,7 +10,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -98,36 +97,34 @@ public class Hopper extends SubsystemBase {
         io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
       } else if (spindexerCurrent.get() != 0) {
         io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
-      }
-
-      if (kickerVelocityRPS.get() != 0) {
+      } else if (kickerVelocityRPS.get() != 0) {
         io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
       } else if (kickerCurrent.get() != 0) {
         io.setKickerCurrent(Amps.of(kickerCurrent.get()));
       }
     }
 
-    if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
-      CommandScheduler.getInstance()
-          .schedule(
-              Commands.sequence(
-                  Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
-                      .withName("spindexer jammed")));
-      spindexerJammedAlert.set(true);
-    } else {
-      spindexerJammedAlert.set(false);
-    }
+    // if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           Commands.sequence(
+    //               Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
+    //                   .withName("spindexer jammed")));
+    //   spindexerJammedAlert.set(true);
+    // } else {
+    //   spindexerJammedAlert.set(false);
+    // }
 
-    if (kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps)))) {
-      CommandScheduler.getInstance()
-          .schedule(
-              Commands.sequence(
-                  Commands.runOnce(() -> io.setKickerVelocity(KICKER_UNJAM_VELOCITY))
-                      .withName("kicker jammed")));
-      kickerJammedAlert.set(true);
-    } else {
-      kickerJammedAlert.set(false);
-    }
+    // if (kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps)))) {
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           Commands.sequence(
+    //               Commands.runOnce(() -> io.setKickerVelocity(KICKER_UNJAM_VELOCITY))
+    //                   .withName("kicker jammed")));
+    //   kickerJammedAlert.set(true);
+    // } else {
+    //   kickerJammedAlert.set(false);
+    // }
 
     LoggedTracer.record(SUBSYSTEM_NAME);
   }
@@ -138,12 +135,8 @@ public class Hopper extends SubsystemBase {
         .andThen(
             Commands.runOnce(
                 () -> {
-                  io.setKickerVelocity(
-                      RotationsPerSecond.of(
-                          5)); // FIXME: Determine necessary velocity for systems check
-                  io.setSpindexerVelocity(
-                      RotationsPerSecond.of(
-                          5)); // FIXME: Determine necessary velocity for systems check
+                  io.setKickerVelocity(RotationsPerSecond.of(5));
+                  io.setSpindexerVelocity(RotationsPerSecond.of(5));
                 }));
   }
 
@@ -177,11 +170,16 @@ public class Hopper extends SubsystemBase {
         // check if kicker velocity is at setpoint 3
         Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS)));
+        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(
+            () -> {
+              stopKicker();
+              stopSpindexer();
+            }));
   }
 
   public void checkSpindexerVelocity(AngularVelocity spindexerTargetVelocity) {
-    if (inputs.spindexerVelocity.isNear(spindexerTargetVelocity, SPINDEXER_VELOCITY_TOLERANCE)) {
+    if (!inputs.spindexerVelocity.isNear(spindexerTargetVelocity, SPINDEXER_VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
@@ -194,11 +192,11 @@ public class Hopper extends SubsystemBase {
   }
 
   public void checkKickerVelocity(AngularVelocity kickerTargetVelocity) {
-    if (inputs.kickerVelocity.isNear(kickerTargetVelocity, SPINDEXER_VELOCITY_TOLERANCE)) {
+    if (!inputs.kickerVelocity.isNear(kickerTargetVelocity, KICKER_VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
-              "Kicker (hopper) is out of tolerance, should be "
+              "Kicker is out of tolerance, should be "
                   + kickerTargetVelocity.in(RotationsPerSecond)
                   + " RPS but is "
                   + inputs.kickerVelocity.in(RotationsPerSecond)
