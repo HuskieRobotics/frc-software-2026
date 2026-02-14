@@ -31,7 +31,6 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
-import frc.robot.subsystems.arm.ArmConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
 
@@ -91,11 +90,12 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   // Cancoder tunable numbers
   private final LoggedTunableNumber rotationEncoderMagnetOffset =
-      new LoggedTunableNumber("Arm/ROTATION_MAGNET_OFFSET", ArmConstants.MAGNET_OFFSET);
+      new LoggedTunableNumber(
+          "Climber/ROTATION_MAGNET_OFFSET", ClimberConstants.CLIMBER_MAGNET_OFFSET);
 
   public ClimberIOTalonFX() {
 
-    climberMotor = new TalonFX(CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
+    climberMotor = new TalonFX(CLIMBER_CAN_ID, RobotConfig.getInstance().getCANBus());
     angleEncoder = new CANcoder(ANGLE_ENCODER_ID, RobotConfig.getInstance().getCANBus());
 
     climberVoltageRequest = new VoltageOut(0.0);
@@ -122,8 +122,8 @@ public class ClimberIOTalonFX implements ClimberIO {
             climberMotor,
             angleEncoder,
             CLIMBER_MOTOR_INVERTED,
-            CLIMBER_GEAR_RATIO,
             ENCODER_GEAR_RATIO,
+            CLIMBER_GEAR_RATIO,
             CLIMBER_LENGTH_INCHES,
             CLIMBER_MASS_KG,
             MIN_ANGLE_DEGREES.in(Degrees),
@@ -216,8 +216,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   private void configClimberMotor(TalonFX motor, CANcoder angleEncoder) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
-
     // CANcoder configuration
     CANcoderConfiguration angleCANCoderConfig = new CANcoderConfiguration();
     angleCANCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
@@ -253,12 +251,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     angleMotorLimitSwitches.ReverseSoftLimitEnable = true;
     angleMotorLimitSwitches.ReverseSoftLimitThreshold = MIN_ANGLE_DEGREES.in(Rotations);
 
-    // For the most accurate measurement of the arm's position, fuse the CANcoder with the encoder
-    // in the TalonFX.
-    angleMotorConfig.Feedback.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
-    angleMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    angleMotorConfig.Feedback.SensorToMechanismRatio = ArmConstants.SENSOR_TO_MECHANISM_RATIO;
-    angleMotorConfig.Feedback.RotorToSensorRatio = ArmConstants.ANGLE_MOTOR_GEAR_RATIO;
+    config.Feedback.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    config.Feedback.RotorToSensorRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
+    config.Feedback.SensorToMechanismRatio = ClimberConstants.ENCODER_GEAR_RATIO;
     config.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
 
     config.MotorOutput.Inverted =

@@ -20,7 +20,7 @@ public interface ClimberIO {
     Current supplyCurrent = Amps.of(0.0);
     Temperature motorTemperature = Celsius.of(0.0);
     Angle referenceAngle = Rotations.of(0.0);
-    Angle climberAngle = Degrees.of(0.0);
+    Angle climberAngle = Rotations.of(0.0);
     Angle closedLoopError = Rotations.of(0.0);
     Angle closedLoopReference = Rotations.of(0.0);
   }
