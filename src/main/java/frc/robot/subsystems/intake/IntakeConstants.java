@@ -29,8 +29,8 @@ public class IntakeConstants {
   public static final Angle DEPLOYER_MIN_ANGLE = Degrees.of(0);
   public static final Angle DEPLOYER_MAX_ANGLE = Degrees.of(90);
 
-  public static final Angle DEPLOYED_POSITION = Rotations.of(0.25); // FIXME: set value
-  public static final Angle RETRACTED_POSITION = Rotations.of(0); // FIXME: set value
+  public static final Distance DEPLOYED_LINEAR_POSITION = Inches.of(5); // FIXME: set value
+  public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0); // FIXME: set value
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.2);
   public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(1.5);
   public static final Angle DEPLOYER_POSITION_TOLERANCE = Rotations.of(0.05);

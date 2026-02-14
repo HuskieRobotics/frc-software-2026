@@ -5,6 +5,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
@@ -108,8 +109,15 @@ public class Intake extends SubsystemBase {
     this.deployerLinearPosition =
         DEPLOYER_CIRCUMFERENCE.times(inputs.deployerAngularPosition.in(Rotations));
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "Intake/DeployerLinearPosition", deployerLinearPosition);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPosition);
     LoggedTracer.record("Intake");
+  }
+
+  public void setLinearPosition(Distance linearPosition) {
+
+    Angle angularPosition = Rotations.of(linearPosition.div(DEPLOYER_CIRCUMFERENCE).magnitude());
+
+    intakeIO.setDeployerPosition(angularPosition);
   }
 
   private void checkRollerJam() {
@@ -141,11 +149,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void deployIntake() {
-    intakeIO.setDeployerPosition(DEPLOYED_POSITION);
+    setLinearPosition(DEPLOYED_LINEAR_POSITION);
   }
 
   public void retractIntake() {
-    intakeIO.setDeployerPosition(RETRACTED_POSITION);
+    setLinearPosition(RETRACTED_LINEAR_POSITION);
   }
 
   public boolean isRollerAtSetpoint(AngularVelocity velocity) {
@@ -160,12 +168,14 @@ public class Intake extends SubsystemBase {
 
   public boolean isDeployed() {
     return deployerDeployedDebouncer.calculate(
-        inputs.deployerAngularPosition.isNear(DEPLOYED_POSITION, DEPLOYER_POSITION_TOLERANCE));
+        this.deployerLinearPosition.isNear(
+            DEPLOYED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
   }
 
   public boolean isRetracted() {
     return deployerRetractedDebouncer.calculate(
-        inputs.deployerAngularPosition.isNear(RETRACTED_POSITION, DEPLOYER_POSITION_TOLERANCE));
+        this.deployerLinearPosition.isNear(
+            RETRACTED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
   }
 
   private Command getSystemCheckCommand() {
@@ -194,7 +204,7 @@ public class Intake extends SubsystemBase {
                             SUBSYSTEM_NAME, "Deployer failed to reach 0.1 Rot in System Check");
                   }
                 }),
-            Commands.runOnce(() -> intakeIO.setDeployerPosition(RETRACTED_POSITION)))
+            Commands.runOnce(this::retractIntake))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(this::stopRoller));
   }
