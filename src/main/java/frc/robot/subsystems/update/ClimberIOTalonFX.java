@@ -1,8 +1,8 @@
-package frc.robot.subsystems.climber;
+package frc.robot.subsystems.update;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
-import static frc.robot.subsystems.climber.ClimberConstants.*;
+import static frc.robot.subsystems.update.ClimberConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;

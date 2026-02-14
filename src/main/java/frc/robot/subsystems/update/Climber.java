@@ -1,7 +1,7 @@
-package frc.robot.subsystems.climber;
+package frc.robot.subsystems.update;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.climber.ClimberConstants.*;
+import static frc.robot.subsystems.update.ClimberConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
