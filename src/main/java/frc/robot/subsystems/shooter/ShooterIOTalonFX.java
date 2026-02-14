@@ -488,7 +488,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretVoltage(Voltage voltage) {
-    turret.setControl(turretVoltageRequest.withOutput(voltage));
+    turret.setControl(turretVoltageRequest.withLimitReverseMotion(false).withOutput(voltage));
   }
 
   @Override
@@ -500,7 +500,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setHoodVoltage(Voltage voltage) {
-    hood.setControl(hoodVoltageRequest.withOutput(voltage));
+    hood.setControl(hoodVoltageRequest.withLimitReverseMotion(false).withOutput(voltage));
   }
 
   @Override
@@ -583,6 +583,13 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretLimitSwitches.ReverseSoftLimitEnable = true;
     turretLimitSwitches.ReverseSoftLimitThreshold = TURRET_LOWER_ANGLE_LIMIT.in(Rotations);
 
+    // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
+    // limit switch, but we will set it using a control request
+    turretConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
+    turretConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue =
+        TURRET_LOWER_ANGLE_LIMIT.in(Rotations);
+    turretConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
+
     Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, turret);
@@ -618,6 +625,12 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodLimitSwitches.ForwardSoftLimitThreshold = HOOD_UPPER_ANGLE_LIMIT.in(Rotations);
     hoodLimitSwitches.ReverseSoftLimitEnable = true;
     hoodLimitSwitches.ReverseSoftLimitThreshold = HOOD_LOWER_ANGLE_LIMIT.in(Rotations);
+
+    // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
+    // limit switch, but we will set it using a control request
+    hoodConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
+    hoodConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = HOOD_MIN_ANGLE.in(Rotations);
+    hoodConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
 
