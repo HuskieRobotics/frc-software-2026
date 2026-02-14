@@ -39,8 +39,10 @@ public class ClimberConstants {
   public static final double CLIMBER_KA_EXPO = 0.15; // FIXME: tune
   public static final double CLIMBER_CRUISE_VELOCITY = 0; // don't limit cruise velocity
 
-  public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT = 40;
-  public static final double CLIMBER_PEAK_CURRENT_LIMIT = 80;
+  public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT =
+      100; // keep this higher as we will be supporting the weight of the robot
+  public static final double CLIMBER_PEAK_CURRENT_LIMIT =
+      120; // keep this higher as we will be supporting the weight of the robot
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.5;
 
   public static final Angle MIN_ANGLE_DEGREES = Degrees.of(-72.6);

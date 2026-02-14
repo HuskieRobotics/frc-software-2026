@@ -246,16 +246,19 @@ public class ClimberIOTalonFX implements ClimberIO {
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     SoftwareLimitSwitchConfigs angleMotorLimitSwitches = config.SoftwareLimitSwitch;
-    angleMotorLimitSwitches.ForwardSoftLimitEnable = true;
-    angleMotorLimitSwitches.ForwardSoftLimitThreshold = MAX_ANGLE_DEGREES.in(Rotations);
     angleMotorLimitSwitches.ReverseSoftLimitEnable = true;
     angleMotorLimitSwitches.ReverseSoftLimitThreshold = MIN_ANGLE_DEGREES.in(Rotations);
+    angleMotorLimitSwitches.ForwardSoftLimitEnable = true;
+    angleMotorLimitSwitches.ForwardSoftLimitThreshold = MAX_ANGLE_DEGREES.in(Rotations);
 
     config.Feedback.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    config.Feedback.RotorToSensorRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
-    config.Feedback.SensorToMechanismRatio = ClimberConstants.ENCODER_GEAR_RATIO;
+    config.Feedback.RotorToSensorRatio = ClimberConstants.ENCODER_GEAR_RATIO;
     config.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
+
+    config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
+    config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0.0;
+    config.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     config.MotorOutput.Inverted =
         ClimberConstants.CLIMBER_MOTOR_INVERTED
