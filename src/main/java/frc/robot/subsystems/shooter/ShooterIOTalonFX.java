@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
@@ -86,6 +88,12 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Angle> turretPositionStatusSignal;
   private StatusSignal<Angle> hoodPositionStatusSignal;
 
+  // status signals for detector
+  private StatusSignal<Distance> fuelDetectorDistanceStatusSignal;
+  private StatusSignal<Double> fuelDetectorSignalStrengthStatusSignal;
+  private StatusSignal<Boolean> fuelDetectorDetectedStatusSignal;
+
+
   private Angle hoodReferencePosition = Degrees.of(0.0);
   private Angle turretReferencePosition = Degrees.of(0.0);
   private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
@@ -95,12 +103,14 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final Debouncer flywheelFollow2ConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer hoodConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer turretConnectedDebouncer = new Debouncer(0.5);
+  private final Debouncer fuelDetectorConnectedDebouncer = new Debouncer(0.5);
 
   private TalonFX flywheelLead;
   private TalonFX flywheelFollow1;
   private TalonFX flywheelFollow2;
   private TalonFX turret;
   private TalonFX hood;
+  private CANrange fuelDetector;
 
   private Alert flywheelLeadConfigAlert =
       new Alert("Failed to apply configuration for fly wheel lead motor.", AlertType.kError);
@@ -112,6 +122,8 @@ public class ShooterIOTalonFX implements ShooterIO {
       new Alert("Failed to apply configuration for hood motor.", AlertType.kError);
   private Alert turretConfigAlert =
       new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
+  private Alert fuelDetectorConfigAlert =
+      new Alert("Failed to apply configuration for fuel detector CANrange.", AlertType.kError);
 
   private final LoggedTunableNumber flywheelLeadKP =
       new LoggedTunableNumber("Shooter/Flywheel kP", ShooterConstants.FLYWHEEL_KP);
@@ -149,6 +161,10 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_KV);
   private final LoggedTunableNumber hoodKA =
       new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_KA);
+  private final LoggedTunableNumber fuelDetectorMinSignalStrength =
+      new LoggedTunableNumber("Shooter/Fuel Detector Min Signal Strength", FUEL_DETECTOR_MIN_SIGNAL_STRENGTH);
+  private final LoggedTunableNumber fuelDetectorEmptyDistance =
+      new LoggedTunableNumber("Shooter/Fuel Detector Empty Distance", FUEL_DETECTOR_EMPTY_DISTANCE);
 
   private FlywheelSystemSim flywheelSim;
   private ArmSystemSim turretLeadSim;
@@ -163,6 +179,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    fuelDetector = new CANrange(FUEL_DETECTOR_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
     flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
     flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
@@ -225,6 +242,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodVoltageStatusSignal = hood.getMotorVoltage();
     hoodPositionStatusSignal = hood.getPosition();
 
+    // Assign fuel detector status signals
+    fuelDetectorDistanceStatusSignal = fuelDetector.getDistance();
+    fuelDetectorSignalStrengthStatusSignal = fuelDetector.getSignalStrength();
+    fuelDetectorDetectedStatusSignal = fuelDetector.getIsDetected();
+
     Phoenix6Util.registerSignals(
         true,
         // FLYWHEEL LEAD
@@ -263,7 +285,12 @@ public class ShooterIOTalonFX implements ShooterIO {
         hoodSupplyCurrentStatusSignal,
         hoodTemperatureStatusSignal,
         hoodVoltageStatusSignal,
-        hoodPositionStatusSignal);
+        hoodPositionStatusSignal,
+
+        // FUEL DETECTOR
+        fuelDetectorDistanceStatusSignal,
+        fuelDetectorSignalStrengthStatusSignal,
+        fuelDetectorDetectedStatusSignal);
 
     // Configure all motors
     configFlywheelLead(flywheelLead, "flywheel lead", flywheelLeadConfigAlert);
@@ -271,6 +298,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     configFlywheelFollow(flywheelFollow2, "flywheel follow 2", flywheelFollow2ConfigAlert);
     configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
     configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
+    configFuelDetector(fuelDetector, fuelDetectorConfigAlert);
 
     this.flywheelSim =
         new FlywheelSystemSim(
@@ -352,6 +380,12 @@ public class ShooterIOTalonFX implements ShooterIO {
                 turretTemperatureStatusSignal,
                 turretVoltageStatusSignal,
                 turretPositionStatusSignal));
+    inputs.sensorConnected = 
+        fuelDetectorConnectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                fuelDetectorDistanceStatusSignal,
+                fuelDetectorSignalStrengthStatusSignal,
+                fuelDetectorDetectedStatusSignal));
 
     // Updates Flywheel Lead Motor Inputs
     inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValue();
@@ -393,6 +427,14 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodPosition = hoodPositionStatusSignal.getValue();
     inputs.hoodReferencePosition = this.hoodReferencePosition;
 
+    // Updates Fuel Detector Inputs
+    inputs.sensorConnected = fuelDetector.isConnected();
+    inputs.distanceToFuel = fuelDetectorDistanceStatusSignal.getValue();
+    inputs.signalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
+    inputs.hasFuel = inputs.sensorConnected
+        && inputs.signalStrength >= fuelDetectorMinSignalStrength.get()
+        && inputs.distanceToFuel.lt(Meters.of(fuelDetectorEmptyDistance.get()));
+
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
       inputs.flywheelLeadClosedLoopReferenceVelocity =
@@ -404,6 +446,9 @@ public class ShooterIOTalonFX implements ShooterIO {
       inputs.turretClosedLoopErrorPosition = Degrees.of(turret.getClosedLoopError().getValue());
       inputs.hoodClosedLoopReferencePosition = Degrees.of(hood.getClosedLoopReference().getValue());
       inputs.hoodClosedLoopErrorPosition = Degrees.of(hood.getClosedLoopError().getValue());
+      inputs.distanceToFuel = fuelDetectorDistanceStatusSignal.getValue();
+      inputs.signalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
+      inputs.sensorDetected = fuelDetectorDetectedStatusSignal.getValue();
     }
 
     LoggedTunableNumber.ifChanged(

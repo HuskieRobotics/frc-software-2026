@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
@@ -62,6 +63,13 @@ public interface ShooterIO {
     Angle hoodClosedLoopReferencePosition = Rotations.of(0.0);
     Angle hoodClosedLoopErrorPosition = Rotations.of(0.0);
     Temperature hoodTemperature = Celsius.of(0.0);
+
+    // Fuel Detection
+    boolean sensorConnected = false;
+    boolean hasFuel = false;
+    boolean isKickerJammed = false;
+    Distance distanceToFuel = Meters.of(0.0); // FIXME: determine if necessary
+    double signalStrength = 0.0;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
