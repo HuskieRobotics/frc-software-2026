@@ -18,6 +18,7 @@ public class ClimberConstants {
   public static final int ANGLE_ENCODER_ID = 18; // FIXME: set to actual CAN ID
 
   public static final boolean CLIMBER_MOTOR_INVERTED = false; // FIXME: verify direction
+  public static final boolean CLIMBER_ENCODER_INVERTED = false; // FIXME: verify direction
 
   public static final double CLIMBER_GEAR_RATIO = 144.0;
 

@@ -219,7 +219,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     // CANcoder configuration
     CANcoderConfiguration angleCANCoderConfig = new CANcoderConfiguration();
     angleCANCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
-    angleCANCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    angleCANCoderConfig.MagnetSensor.SensorDirection =
+        CLIMBER_ENCODER_INVERTED
+            ? SensorDirectionValue.Clockwise_Positive
+            : SensorDirectionValue.CounterClockwise_Positive;
     angleCANCoderConfig.MagnetSensor.MagnetOffset = rotationEncoderMagnetOffset.get();
     Phoenix6Util.applyAndCheckConfiguration(angleEncoder, angleCANCoderConfig, configAlert);
 
