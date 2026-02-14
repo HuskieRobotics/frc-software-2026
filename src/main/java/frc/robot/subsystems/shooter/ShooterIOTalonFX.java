@@ -15,6 +15,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
@@ -113,17 +114,17 @@ public class ShooterIOTalonFX implements ShooterIO {
       new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
 
   private final LoggedTunableNumber flywheelLeadKP =
-      new LoggedTunableNumber("Shooter/Flywheel kP", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KP);
+      new LoggedTunableNumber("Shooter/Flywheel kP", ShooterConstants.FLYWHEEL_KP);
   private final LoggedTunableNumber flywheelLeadKI =
-      new LoggedTunableNumber("Shooter/Flywheel kI", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KI);
+      new LoggedTunableNumber("Shooter/Flywheel kI", ShooterConstants.FLYWHEEL_KI);
   private final LoggedTunableNumber flywheelLeadKD =
-      new LoggedTunableNumber("Shooter/Flywheel kD", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KD);
+      new LoggedTunableNumber("Shooter/Flywheel kD", ShooterConstants.FLYWHEEL_KD);
   private final LoggedTunableNumber flywheelLeadKS =
-      new LoggedTunableNumber("Shooter/Flywheel kS", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KS);
+      new LoggedTunableNumber("Shooter/Flywheel kS", ShooterConstants.FLYWHEEL_KS);
   private final LoggedTunableNumber flywheelLeadKV =
-      new LoggedTunableNumber("Shooter/Flywheel kV", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KV);
+      new LoggedTunableNumber("Shooter/Flywheel kV", ShooterConstants.FLYWHEEL_KV);
   private final LoggedTunableNumber flywheelLeadKA =
-      new LoggedTunableNumber("Shooter/Flywheel kA", ShooterConstants.FLYWHEEL_LEAD_ROTATION_KA);
+      new LoggedTunableNumber("Shooter/Flywheel kA", ShooterConstants.FLYWHEEL_KA);
   private final LoggedTunableNumber turretKP =
       new LoggedTunableNumber("Shooter/Turret kP", ShooterConstants.TURRET_ROTATION_KP);
   private final LoggedTunableNumber turretKI =
@@ -173,10 +174,18 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretPositionRequest = new PositionVoltage(0.0);
     // Set up the flywheels 1 and 2 as followers of the lead flywheel
     flywheelFollow1.setControl(
-        new Follower(FLYWHEEL_LEAD_MOTOR_ID, FLYWHEEL_FOLLOW_1_INVERTED_FROM_LEAD));
+        new Follower(
+            FLYWHEEL_LEAD_MOTOR_ID,
+            FLYWHEEL_FOLLOW_1_INVERTED
+                ? MotorAlignmentValue.Opposed
+                : MotorAlignmentValue.Aligned));
     // reversed
     flywheelFollow2.setControl(
-        new Follower(FLYWHEEL_LEAD_MOTOR_ID, FLYWHEEL_FOLLOW_2_INVERTED_FROM_LEAD));
+        new Follower(
+            FLYWHEEL_LEAD_MOTOR_ID,
+            FLYWHEEL_FOLLOW_2_INVERTED
+                ? MotorAlignmentValue.Opposed
+                : MotorAlignmentValue.Aligned));
     // reversed
     // Assign FLYWHEEL LEAD status signals
     flywheelLeadSupplyCurrentStatusSignal = flywheelLead.getSupplyCurrent();
@@ -265,8 +274,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     this.flywheelSim =
         new FlywheelSystemSim(
-            ShooterConstants.FLYWHEEL_LEAD_ROTATION_KV,
-            ShooterConstants.FLYWHEEL_LEAD_ROTATION_KA,
+            ShooterConstants.FLYWHEEL_KV,
+            ShooterConstants.FLYWHEEL_KA,
             ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO,
             ShooterConstants.FLYWHEEL_MOMENT_OF_INERTIA,
             flywheelLead,
