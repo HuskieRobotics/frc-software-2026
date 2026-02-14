@@ -97,7 +97,9 @@ public class Hopper extends SubsystemBase {
         io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
       } else if (spindexerCurrent.get() != 0) {
         io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
-      } else if (kickerVelocityRPS.get() != 0) {
+      }
+
+      if (kickerVelocityRPS.get() != 0) {
         io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
       } else if (kickerCurrent.get() != 0) {
         io.setKickerCurrent(Amps.of(kickerCurrent.get()));
