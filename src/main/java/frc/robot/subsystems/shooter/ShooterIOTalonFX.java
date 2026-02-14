@@ -565,7 +565,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
-    // turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    //turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true; //FIXME: Delete?
     turretConfig.CurrentLimits.SupplyCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit = TURRET_CONTINUOUS_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerTime = TURRET_PEAK_CURRENT_DURATION;
@@ -592,8 +592,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretLimitSwitches.ReverseSoftLimitEnable = true;
     turretLimitSwitches.ReverseSoftLimitThreshold = TURRET_LOWER_ANGLE_LIMIT.in(Rotations);
 
-    // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
-    // limit switch, but we will set it using a control request
+    // Configure a hardware limit switch that zeros the turret position to its lower angle limit
     turretConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
     turretConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue =
         TURRET_LOWER_ANGLE_LIMIT.in(Rotations);
