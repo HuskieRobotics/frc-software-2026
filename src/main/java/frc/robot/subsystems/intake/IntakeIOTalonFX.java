@@ -73,7 +73,6 @@ public class IntakeIOTalonFX implements IntakeIO {
   private StatusSignal<Temperature> rollerTempSS;
 
   private StatusSignal<Voltage> deployerVoltageSS;
-  private StatusSignal<AngularVelocity> deployerVelocitySS;
   private StatusSignal<Angle> deployerPositionSS;
   private StatusSignal<Current> deployerStatorCurrentSS;
   private StatusSignal<Current> deployerSupplyCurrentSS;
@@ -97,7 +96,6 @@ public class IntakeIOTalonFX implements IntakeIO {
     rollerTempSS = rollerMotor.getDeviceTemp();
 
     deployerVoltageSS = deployerMotor.getMotorVoltage();
-    deployerVelocitySS = deployerMotor.getVelocity();
     deployerPositionSS = deployerMotor.getPosition();
     deployerStatorCurrentSS = deployerMotor.getStatorCurrent();
     deployerSupplyCurrentSS = deployerMotor.getSupplyCurrent();
@@ -112,7 +110,6 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerSupplyCurrentSS,
         rollerTempSS,
         deployerVoltageSS,
-        deployerVelocitySS,
         deployerPositionSS,
         deployerStatorCurrentSS,
         deployerSupplyCurrentSS,
