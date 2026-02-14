@@ -57,8 +57,8 @@ public class IntakeConstants {
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(2.0);
   public static final AngularVelocity ROLLER_CRUISE_VELOCITY = RotationsPerSecond.of(60);
 
-  public static final double ROLLER_CONTINUOUS_CURRENT_LIMIT = 40;
   public static final double ROLLER_PEAK_CURRENT_LIMIT = 20;
+
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 
   public static final double ROLLER_JAMMED_CURRENT_AMPS = 50;

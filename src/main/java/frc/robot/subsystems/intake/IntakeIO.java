@@ -34,8 +34,8 @@ public interface IntakeIO {
     Angle deployerReferencePosition = Rotations.of(0);
     Angle deployerAngularPosition = Rotations.of(0);
 
-    AngularVelocity deployerClosedLoopError = RotationsPerSecond.of(0);
-    AngularVelocity deployerClosedLoopReference = RotationsPerSecond.of(0);
+    Angle deployerClosedLoopError = Rotations.of(0);
+    Angle deployerClosedLoopReference = Rotations.of(0);
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}

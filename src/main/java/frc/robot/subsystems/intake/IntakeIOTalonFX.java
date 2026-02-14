@@ -181,9 +181,9 @@ public class IntakeIOTalonFX implements IntakeIO {
           Rotations.of(rollerMotor.getClosedLoopReference().getValueAsDouble());
 
       inputs.deployerClosedLoopError =
-          RotationsPerSecond.of(deployerMotor.getClosedLoopError().getValueAsDouble());
+          Rotations.of(deployerMotor.getClosedLoopError().getValueAsDouble());
       inputs.deployerClosedLoopReference =
-          RotationsPerSecond.of(deployerMotor.getClosedLoopReference().getValueAsDouble());
+          Rotations.of(deployerMotor.getClosedLoopReference().getValueAsDouble());
     }
 
     LoggedTunableNumber.ifChanged(
@@ -214,7 +214,7 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerKi,
         rollerKd);
 
-    if (Constants.getMode() != Constants.Mode.SIM) {
+    if (Constants.getMode() == Constants.Mode.SIM) {
       deployerSim.updateSim();
       rollerSim.updateSim();
     }
