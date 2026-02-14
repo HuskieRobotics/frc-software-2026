@@ -59,13 +59,8 @@ public class ShooterConstants {
   public static final double TURRET_ROTATION_KA = 0.022794; // FIXME: update value
 
   /* =======================
-   *  Turret Motion Magic Constants
+   *  Turret Physical Constants
    * ======================= */
-  public static final double TURRET_ROTATION_EXPO_KV = 5;
-  public static final double TURRET_ROTATION_EXPO_KA = 5; // FIXME: update values when tuning
-  public static final double TURRET_MOTION_MAGIC_CRUISE_VELOCITY =
-      5; // FIXME: update values when tuning
-
   public static final boolean TURRET_INVERTED =
       false; // FIXME: update when first running the turret
   public static final double TURRET_GEAR_RATIO = 41.666; // FIXME: way too low ask Noga for correct
