@@ -76,7 +76,7 @@ public class RobotContainer {
   private Vision vision;
   private Arm arm;
   private Elevator elevator;
-  private Manipulator manipulator;
+  private Climber climber;
   private Shooter shooter;
   private RobotVisualization visualization;
 
@@ -423,7 +423,7 @@ public class RobotContainer {
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, shooter);
+          oi, swerveDrivetrain, vision, arm, elevator, climber, shooter);
     }
 
     // Endgame alerts

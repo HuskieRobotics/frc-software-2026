@@ -95,6 +95,7 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision,
       Arm arm,
       Elevator elevator,
+      Climber climber,
       Shooter shooter) {
 
     oi.getInterruptAll()
@@ -245,8 +246,14 @@ public class CrossSubsystemsCommandsFactory {
     double yOffset =
         RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
 
+    double xOffset =
+        RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters)
+            / 2; // FIXME: adjust offset
+
     return new Pose2d(
-        targetPosition.getX(), targetPosition.getY() - yOffset, Rotation2d.fromDegrees(0.0));
+        targetPosition.getX() + xOffset,
+        targetPosition.getY() + yOffset,
+        Rotation2d.fromDegrees(-90));
   }
 
   private static Pose2d getRightClimbPose() {
@@ -261,8 +268,14 @@ public class CrossSubsystemsCommandsFactory {
     double yOffset =
         RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
 
+    double xOffset =
+        RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters)
+            / 2; // FIXME: adjust offset
+
     return new Pose2d(
-        targetPosition.getX(), targetPosition.getY() + yOffset, Rotation2d.fromDegrees(0.0));
+        targetPosition.getX() + xOffset,
+        targetPosition.getY() - yOffset,
+        Rotation2d.fromDegrees(-90));
   }
 
   private static boolean inClimbingTolerance(Pose2d currentPose) {
@@ -275,7 +288,7 @@ public class CrossSubsystemsCommandsFactory {
     }
 
     double distanceToTower = currentPose.getTranslation().getDistance(towerCenter);
-    double maxClimbDistance = Units.inchesToMeters(48.0); // FIXME: adjust this tolerance
+    double maxClimbDistance = Units.inchesToMeters(100); // FIXME: adjust this tolerance
 
     return distanceToTower < maxClimbDistance;
   }
