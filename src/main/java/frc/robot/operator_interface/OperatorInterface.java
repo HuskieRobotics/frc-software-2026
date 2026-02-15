@@ -85,6 +85,18 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getExecuteClimbButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getClimberUpButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getClimberDownButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getDriveToLeftClimbButton() {
     return new Trigger(() -> false);
   }

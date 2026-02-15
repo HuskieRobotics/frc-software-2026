@@ -77,6 +77,21 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getExecuteClimbButton() {
+    return rotateJoystickButtons[1]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
+  public Trigger getClimberUpButton() {
+    return rotateJoystickButtons[2]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
+  public Trigger getClimberDownButton() {
+    return rotateJoystickButtons[3]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
   public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }

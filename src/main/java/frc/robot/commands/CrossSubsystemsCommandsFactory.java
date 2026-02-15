@@ -182,22 +182,25 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain swerveDrivetrain, Climber climber, OperatorInterface oi) {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    return Commands.parallel(
-            new DriveToPose(
-                swerveDrivetrain,
-                CrossSubsystemsCommandsFactory::getLeftClimbPose,
-                xController,
-                yController,
-                thetaController,
-                new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
-                true,
-                (atPose) ->
-                    LEDs.getInstance()
-                        .requestState(
-                            atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
-                CrossSubsystemsCommandsFactory::updatePIDConstants,
-                5.0),
-            Commands.runOnce(() -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE)))
+    return Commands.sequence(
+            Commands.parallel(
+                new DriveToPose(
+                    swerveDrivetrain,
+                    CrossSubsystemsCommandsFactory::getLeftClimbPose,
+                    xController,
+                    yController,
+                    thetaController,
+                    new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
+                    true,
+                    (atPose) ->
+                        LEDs.getInstance()
+                            .requestState(
+                                atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
+                    CrossSubsystemsCommandsFactory::updatePIDConstants,
+                    5.0),
+                Commands.runOnce(
+                    () -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE))),
+            ClimberCommandsFactory.getReadyToClimbCommand(climber))
         .withName("drive to left climb");
   }
 
@@ -205,22 +208,25 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain swerveDrivetrain, Climber climber, OperatorInterface oi) {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    return Commands.parallel(
-            new DriveToPose(
-                swerveDrivetrain,
-                CrossSubsystemsCommandsFactory::getRightClimbPose,
-                xController,
-                yController,
-                thetaController,
-                new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
-                true,
-                (atPose) ->
-                    LEDs.getInstance()
-                        .requestState(
-                            atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
-                CrossSubsystemsCommandsFactory::updatePIDConstants,
-                5.0),
-            Commands.runOnce(() -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE)))
+    return Commands.sequence(
+            Commands.parallel(
+                new DriveToPose(
+                    swerveDrivetrain,
+                    CrossSubsystemsCommandsFactory::getRightClimbPose,
+                    xController,
+                    yController,
+                    thetaController,
+                    new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
+                    true,
+                    (atPose) ->
+                        LEDs.getInstance()
+                            .requestState(
+                                atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
+                    CrossSubsystemsCommandsFactory::updatePIDConstants,
+                    5.0),
+                Commands.runOnce(
+                    () -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE))),
+            ClimberCommandsFactory.getReadyToClimbCommand(climber))
         .withName("drive to right climb");
   }
 

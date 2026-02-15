@@ -3,6 +3,7 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ClimberConstants {
 
@@ -51,9 +52,15 @@ public class ClimberConstants {
   public static final Angle MAX_ANGLE_DEGREES = Degrees.of(270); // FIXME: set to actual max angle
   public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(0.5);
 
-  public static final Angle CLIMB_READY_ANGLE =
-      Degrees.of(180); // FIXME: make this our actual climb ready angle
-
   public static final double CLIMBER_LENGTH_INCHES = 7.0;
   public static final double CLIMBER_MASS_KG = 0.69444992;
+
+  public static final Angle CLIMB_READY_ANGLE =
+      Degrees.of(140); // FIXME: hook ready to grab rung
+  public static final Angle CLIMB_ENGAGE_ANGLE =
+      Degrees.of(150); // FIXME: hook pulls around/grabs rung
+  public static final Angle CLIMB_RETRACT_ANGLE = Degrees.of(45.0); // FIXME: pull robot up
+
+  public static final Voltage CLIMBER_EXTEND_VOLTAGE = Volts.of(6.0); // FIXME: find correct value for extending the climber
+  public static final Voltage CLIMBER_RETRACT_VOLTAGE = Volts.of(-6.0); // FIXME: find correct value for retracting the climber
 }
