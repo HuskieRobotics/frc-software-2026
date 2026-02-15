@@ -162,8 +162,7 @@ public class Shooter extends SubsystemBase {
                 () -> {
                   io.setFlywheelVelocity(
                       RotationsPerSecond.of(
-                          30)); // FIXME: determine necessary velocity for systems check based on
-                  // the min and max flywheel velocity
+                          30)); //FIXME: update value when necessary
                 }));
   }
 
