@@ -82,8 +82,4 @@ public class Climber extends SubsystemBase {
   public void stop() {
     io.setClimberVoltage(Volts.of(0));
   }
-
-  public void zero() {
-    io.zeroPosition();
-  }
 }

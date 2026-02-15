@@ -24,6 +24,7 @@ import frc.robot.Field2d;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.shooter.Shooter;
@@ -98,7 +99,8 @@ public class CrossSubsystemsCommandsFactory {
       Shooter shooter) {
 
     oi.getInterruptAll()
-        .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
+        .onTrue(
+            getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, climber, oi));
 
     oi.getDriveToPoseButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, elevator, oi));
 
@@ -140,6 +142,7 @@ public class CrossSubsystemsCommandsFactory {
       Arm arm,
       Elevator elevator,
       Shooter shooter,
+      Climber climber,
       OperatorInterface oi) {
     return Commands.parallel(
             new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
@@ -147,7 +150,8 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(() -> arm.setAngle(Degrees.of(0.0)), arm),
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.Positions.BOTTOM), elevator),
-            Commands.runOnce(() -> shooter.setIdleVelocity(), shooter))
+            Commands.runOnce(() -> shooter.setIdleVelocity(), shooter),
+            Commands.runOnce(climber::stop, climber))
         .withName("interrupt all");
   }
 
@@ -237,12 +241,14 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getReleaseAndStowCommand(SwerveDrivetrain drivetrain, Climber climber) {
     return Commands.sequence(
-            ClimberCommandsFactory.getStowClimberCommand(climber),
+            Commands.runOnce(
+                () -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE), climber),
+            Commands.waitUntil(climber::isAngleAtSetpoint),
             Commands.run(
                     () ->
                         drivetrain.drive(
-                            MetersPerSecond.of(-0.25),
                             MetersPerSecond.of(0.0),
+                            MetersPerSecond.of(2.0),
                             RotationsPerSecond.of(0.0),
                             true,
                             false),

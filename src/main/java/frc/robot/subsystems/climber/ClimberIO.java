@@ -30,6 +30,4 @@ public interface ClimberIO {
   public default void setClimberAngle(Angle angle) {}
 
   public default void setClimberVoltage(Voltage voltage) {}
-
-  public default void zeroPosition() {}
 }

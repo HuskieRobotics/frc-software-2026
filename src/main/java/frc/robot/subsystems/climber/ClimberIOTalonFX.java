@@ -9,7 +9,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -35,7 +35,7 @@ import frc.robot.Constants;
 public class ClimberIOTalonFX implements ClimberIO {
 
   private VoltageOut climberVoltageRequest;
-  private MotionMagicExpoVoltage climberPositionRequest;
+  private PositionVoltage climberPositionRequest;
 
   private StatusSignal<Voltage> climberMotorVoltageStatusSignal;
   private StatusSignal<Current> climberMotorStatorCurrentStatusSignal;
@@ -99,7 +99,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     angleEncoder = new CANcoder(ANGLE_ENCODER_ID, RobotConfig.getInstance().getCANBus());
 
     climberVoltageRequest = new VoltageOut(0.0);
-    climberPositionRequest = new MotionMagicExpoVoltage(0.0);
+    climberPositionRequest = new PositionVoltage(0.0);
 
     climberMotorVoltageStatusSignal = climberMotor.getMotorVoltage();
     climberMotorStatorCurrentStatusSignal = climberMotor.getStatorCurrent();
@@ -203,14 +203,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void zeroPosition() {
-    climberMotor.setControl(climberVoltageRequest.withLimitReverseMotion(true).withOutput(0));
-  }
-
-  @Override
   public void setClimberAngle(Angle angle) {
     this.climberReferenceAngle = angle;
-    climberMotor.setControl(climberPositionRequest.withPosition(angle.in(Rotations)));
+    climberMotor.setControl(climberPositionRequest.withPosition(angle));
   }
 
   private void configClimberMotor(TalonFX motor, CANcoder angleEncoder) {
@@ -256,12 +251,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     config.Feedback.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    config.Feedback.RotorToSensorRatio = ClimberConstants.ENCODER_GEAR_RATIO;
-    config.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
-
-    config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
-    config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0.0;
-    config.HardwareLimitSwitch.ReverseLimitEnable = true;
+    config.Feedback.RotorToSensorRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
+    config.Feedback.SensorToMechanismRatio = ClimberConstants.ENCODER_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
         ClimberConstants.CLIMBER_MOTOR_INVERTED
