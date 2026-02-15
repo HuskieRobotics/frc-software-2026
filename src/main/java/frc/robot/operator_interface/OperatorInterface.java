@@ -85,6 +85,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getDriveToLeftClimbButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDriveToRightClimbButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getCurrentPoseButton() {
     return new Trigger(() -> false);
   }

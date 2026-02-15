@@ -6,7 +6,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.RobotConfig;
@@ -15,9 +18,13 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Field2d;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.shooter.Shooter;
@@ -97,6 +104,14 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
+    oi.getDriveToLeftClimbButton()
+        .and(() -> inClimbingTolerance(swerveDrivetrain.getPose()))
+        .onTrue(getDriveToLeftClimbCommand(swerveDrivetrain, climber, oi));
+
+    oi.getDriveToRightClimbButton()
+        .and(() -> inClimbingTolerance(swerveDrivetrain.getPose()))
+        .onTrue(getDriveToRightClimbCommand(swerveDrivetrain, climber, oi));
+
     registerSysIdCommands(oi);
   }
 
@@ -162,6 +177,52 @@ public class CrossSubsystemsCommandsFactory {
         .withName("drive to pose");
   }
 
+  private static Command getDriveToLeftClimbCommand(
+      SwerveDrivetrain swerveDrivetrain, Climber climber, OperatorInterface oi) {
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return Commands.parallel(
+            new DriveToPose(
+                swerveDrivetrain,
+                CrossSubsystemsCommandsFactory::getLeftClimbPose,
+                xController,
+                yController,
+                thetaController,
+                new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
+                true,
+                (atPose) ->
+                    LEDs.getInstance()
+                        .requestState(
+                            atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
+                CrossSubsystemsCommandsFactory::updatePIDConstants,
+                5.0),
+            Commands.runOnce(() -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE)))
+        .withName("drive to left climb");
+  }
+
+  private static Command getDriveToRightClimbCommand(
+      SwerveDrivetrain swerveDrivetrain, Climber climber, OperatorInterface oi) {
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return Commands.parallel(
+            new DriveToPose(
+                swerveDrivetrain,
+                CrossSubsystemsCommandsFactory::getRightClimbPose,
+                xController,
+                yController,
+                thetaController,
+                new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
+                true,
+                (atPose) ->
+                    LEDs.getInstance()
+                        .requestState(
+                            atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
+                CrossSubsystemsCommandsFactory::updatePIDConstants,
+                5.0),
+            Commands.runOnce(() -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE)))
+        .withName("drive to right climb");
+  }
+
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
     return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
@@ -170,6 +231,53 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Pose2d getTargetPose() {
     return new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(90.0));
+  }
+
+  private static Pose2d getLeftClimbPose() {
+    Translation2d targetPosition;
+
+    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
+      targetPosition = FieldConstants.Tower.leftUpright;
+    } else {
+      targetPosition = FieldConstants.Tower.oppLeftUpright;
+    }
+
+    double yOffset =
+        RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
+
+    return new Pose2d(
+        targetPosition.getX(), targetPosition.getY() - yOffset, Rotation2d.fromDegrees(0.0));
+  }
+
+  private static Pose2d getRightClimbPose() {
+    Translation2d targetPosition;
+
+    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
+      targetPosition = FieldConstants.Tower.rightUpright;
+    } else {
+      targetPosition = FieldConstants.Tower.oppRightUpright;
+    }
+
+    double yOffset =
+        RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
+
+    return new Pose2d(
+        targetPosition.getX(), targetPosition.getY() + yOffset, Rotation2d.fromDegrees(0.0));
+  }
+
+  private static boolean inClimbingTolerance(Pose2d currentPose) {
+    Translation2d towerCenter;
+
+    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
+      towerCenter = FieldConstants.Tower.centerPoint;
+    } else {
+      towerCenter = FieldConstants.Tower.oppCenterPoint;
+    }
+
+    double distanceToTower = currentPose.getTranslation().getDistance(towerCenter);
+    double maxClimbDistance = Units.inchesToMeters(48.0); // FIXME: adjust this tolerance
+
+    return distanceToTower < maxClimbDistance;
   }
 
   private static void updatePIDConstants(Transform2d poseDifference) {

@@ -46,6 +46,16 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getDriveToLeftClimbButton() {
+    return translateJoystickButtons[2]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
+  public Trigger getDriveToRightClimbButton() {
+    return translateJoystickButtons[3]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
   public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
   }

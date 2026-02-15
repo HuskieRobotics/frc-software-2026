@@ -77,4 +77,14 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   public Trigger getInterruptAll() {
     return rotateJoystickButtons[4];
   }
+
+  @Override
+  public Trigger getDriveToLeftClimbButton() {
+    return rotateJoystickButtons[7];
+  }
+
+  @Override
+  public Trigger getDriveToRightClimbButton() {
+    return rotateJoystickButtons[8];
+  }
 }

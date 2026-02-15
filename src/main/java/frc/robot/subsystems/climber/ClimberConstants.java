@@ -46,9 +46,13 @@ public class ClimberConstants {
       120; // keep this higher as we will be supporting the weight of the robot
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.5;
 
-  public static final Angle MIN_ANGLE_DEGREES = Degrees.of(-72.6);
-  public static final Angle MAX_ANGLE_DEGREES = Degrees.of(144.2);
+  public static final Angle MIN_ANGLE_DEGREES =
+      Degrees.of(0); // we will call our starting angle 0 degrees
+  public static final Angle MAX_ANGLE_DEGREES = Degrees.of(270); // FIXME: set to actual max angle
   public static final Angle ANGLE_TOLERANCE_DEGREES = Degrees.of(0.5);
+
+  public static final Angle CLIMB_READY_ANGLE =
+      Degrees.of(180); // FIXME: make this our actual climb ready angle
 
   public static final double CLIMBER_LENGTH_INCHES = 7.0;
   public static final double CLIMBER_MASS_KG = 0.69444992;
