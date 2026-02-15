@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -268,73 +269,64 @@ public class ShooterModes extends SubsystemBase {
   private void calculateIdealShot() {
 
     if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
-      shooter.setIdleVelocity(); // FIXME: change to
-      // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
-      shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(min angle)
-      shooter.setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(otmShot[2])
-      shooter.setIdleVelocity(); // FIXME: change to setKickerVelocity(0);
-    } else if (this.primaryMode == ShooterMode.SHOOT_OTM
-        || this.primaryMode == ShooterMode.MANUAL_SHOOT) {
-
       Translation2d targetLandingPosition = Field2d.getInstance().getHubCenter();
 
-      // find our distances to target in x, y and theta
-      Pose2d robotPose =
-          RobotOdometry.getInstance()
-              .getEstimatedPose(); // FIXME: may want to add a shooter offset to this pose to get
-      // the actual position of the shooter instead of the center of
-      // the robot
-      double deltaX = targetLandingPosition.getX() - robotPose.getX();
-      double deltaY = targetLandingPosition.getY() - robotPose.getY();
-      double distance = Math.hypot(deltaX, deltaY);
+      // get static shot setpoints in rps, degrees, degrees
+      Double[] staticShotSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
 
-      double idealShotVelocity =
-          this.hubDistanceToVelocityMap.get(distance); // FIXME: may need to add velocity offset
-      Angle idealTurretAngle = Radians.of(Math.atan2(deltaX, deltaY));
-      Angle idealHoodAngle = Degrees.of(this.hubDistanceToHoodMap.get(distance));
-
-      Double[] otmShot =
-          calculateShootOnTheMove(idealShotVelocity, idealHoodAngle, idealTurretAngle);
-
-      if (this.primaryMode == ShooterMode.MANUAL_SHOOT) {
-        shooter.setIdleVelocity(); // FIXME: change to
-        // shooter.setFlywheelVelocity(RotationsPerSecond.of(idealShotVelocity))
-        shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(idealHoodAngle)
-        shooter.setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(idealTurretAngle)
+      if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+        // shooter.setFlywheelVelocity(RotationsPerSecond.of(idealShotVelocity));
+        // shooter.setHoodAngle(Degrees.of(ShooterConstants.SHOOTER_MIN_ANGLE_DEGREES));
+        // shooter.setTurretAngle(Degrees.of(staticShotSetpoints[2]));
       } else {
-        shooter.setIdleVelocity(); // FIXME: change to
+        // get shoot on the move set points in rps, degrees, degrees
+        Double[] otmShot =
+            calculateShootOnTheMove(
+                staticShotSetpoints[0],
+                Degrees.of(staticShotSetpoints[1]),
+                Degrees.of(staticShotSetpoints[2]));
         // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
-        shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(Radians.of(otmShot[1]))
-        shooter
-            .setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(Radians.of(otmShot[2]))
-        shooter.setIdleVelocity(); // FIXME: change to setKickerVelocity(-----);
+        // shooter.setHoodAngle(Degrees.of(ShooterConstants.SHOOTER_MIN_ANGLE_DEGREES))
+        // shooter.setTurretAngle(Degrees.of(otmShot[2]))
+      }
+
+    } else if (this.primaryMode == ShooterMode.SHOOT_OTM
+        || this.primaryMode == ShooterMode.MANUAL_SHOOT
+        || this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {
+
+      Translation2d targetLandingPosition = Field2d.getInstance().getHubCenter();
+      Double[] staticShotSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
+
+      if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
+          || this.primaryMode == ShooterMode.MANUAL_SHOOT) {
+        // shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
+        // shooter.setHoodAngle(Degrees.of(staticShotSetpoints[1]));
+        // shooter.setTurretAngle(Degrees.of(staticShotSetpoints[2]));
+      } else {
+        Double[] otmShot =
+            calculateShootOnTheMove(
+                staticShotSetpoints[0],
+                Degrees.of(staticShotSetpoints[1]),
+                Degrees.of(staticShotSetpoints[2]));
+        // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
+        // shooter.setHoodAngle(Degrees.of(otmShot[1]))
+        // shooter.setTurretAngle(Degrees.of(otmShot[2]))
       }
     } else if (this.primaryMode == ShooterMode.PASS) {
 
-      Translation2d targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
+      Translation2d targetLandingPosition =
+          Field2d.getInstance().getNearestPassingZone().getTranslation();
 
-      // find our distances to target in x, y and theta
-      Pose2d robotPose =
-          RobotOdometry.getInstance()
-              .getEstimatedPose(); // FIXME: may want to add a shooter offset to this pose to get
-      // the actual position of the shooter instead of the center of
-      // the robot
-      double deltaX = targetLandingPosition.getX() - robotPose.getX();
-      double deltaY = targetLandingPosition.getY() - robotPose.getY();
-      double distance = Math.hypot(deltaX, deltaY);
-
-      double idealShotVelocity =
-          this.hubDistanceToVelocityMap.get(distance); // FIXME: may need to add velocity offset
-      Angle idealTurretAngle = Radians.of(Math.atan2(deltaX, deltaY));
-      Angle idealHoodAngle = Degrees.of(this.hubDistanceToHoodMap.get(distance));
-
+      Double[] idealShotSetpoints = getIdealPassSetpoints(targetLandingPosition);
       Double[] otmShot =
-          calculateShootOnTheMove(idealShotVelocity, idealHoodAngle, idealTurretAngle);
+          calculateShootOnTheMove(
+              idealShotSetpoints[0],
+              Degrees.of(idealShotSetpoints[1]),
+              Degrees.of(idealShotSetpoints[2]));
 
-      shooter.setIdleVelocity(); // FIXME: change to
-      // shooter.setFlywheelVelocity(RotationsPerSecond.of(idealShotVelocity))
-      shooter.setIdleVelocity(); // FIXME: change to shooter.setHoodAngle(idealHoodAngle)
-      shooter.setIdleVelocity(); // FIXME: change to shooter.setTurretAngle(idealTurretAngle)
+      // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
+      // shooter.setHoodAngle(Degrees.of(otmShot[1]))
+      // shooter.setTurretAngle(Degrees.of(otmShot[2]))
     }
   }
 
@@ -344,26 +336,99 @@ public class ShooterModes extends SubsystemBase {
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
     double robotVy = fieldRelativeSpeeds.vyMetersPerSecond;
 
-    // v prime
     double newFlywheelVelocity =
         Math.sqrt(
             Math.pow(v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
                 + Math.pow(v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)
                 + Math.pow(v * Math.sin(theta.in(Radians)), 2));
 
+    // angles are converted to degrees
     double newHoodAngle =
-        Math.atan2(
-            (v * Math.sin(theta.in(Radians))),
-            Math.sqrt(
-                Math.pow(v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
-                    + Math.pow(
-                        v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)));
+        (180.0 / Math.PI)
+            * Math.atan2(
+                (v * Math.sin(theta.in(Radians))),
+                Math.sqrt(
+                    Math.pow(
+                            v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx,
+                            2)
+                        + Math.pow(
+                            v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy,
+                            2)));
 
     double newTurretAngle =
-        Math.atan2(
-            (v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
-            (v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx));
+        (180.0 / Math.PI)
+            * Math.atan2(
+                (v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
+                (v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx));
 
     return new Double[] {newFlywheelVelocity, newHoodAngle, newTurretAngle};
+  }
+
+  private double idealVelocityFromFunction(double distance) {
+    double vMetersPerSecond =
+        0.0094236446 * Math.pow(distance, 3)
+            - 0.1282900256 * Math.pow(distance, 2)
+            + 1.3314733073 * distance
+            + 4.0571728302;
+
+    // find average circumference of final contact points wheels radius 1.125 and 2
+    double avgCircumference = 2 * Math.PI * ((2.0 + 1.125) / 2.0) * 0.0254;
+
+    return vMetersPerSecond / avgCircumference; // convert to RPS
+  }
+
+  private Angle idealHoodAngleFromFunction(double distance) {
+    // The original function finds angle in degrees from vertical rather than horizontal
+    // so we need to subtract from 90 degrees to get the angle from horizontal
+    return Degrees.of(
+        90
+            - (-0.0826994753 * Math.pow(distance, 3)
+                + 0.6567904524 * Math.pow(distance, 2)
+                + 0.6209511280 * distance
+                + 21.6348611545));
+  }
+
+  private Double[] getIdealStaticShotSetpoints(Translation2d targetLandingPosition) {
+    // find our distances to target in x, y and theta
+
+    // transform robot pose by calculated robot to shooter transform
+    Pose2d robotPose =
+        RobotOdometry.getInstance().getEstimatedPose().transformBy(new Transform2d());
+
+    double deltaX = targetLandingPosition.getX() - robotPose.getX();
+    double deltaY = targetLandingPosition.getY() - robotPose.getY();
+    double distance = Math.hypot(deltaX, deltaY);
+
+    double idealShotVelocity =
+        idealVelocityFromFunction(distance); // this.hubDistanceToVelocityMap.get(distance);
+    Angle idealTurretAngle = Radians.of(Math.atan2(deltaX, deltaY));
+    Angle idealHoodAngle =
+        idealHoodAngleFromFunction(
+            distance); // Degrees.of(this.hubDistanceToHoodMap.get(distance));
+
+    return new Double[] {
+      idealShotVelocity, idealHoodAngle.in(Degrees), idealTurretAngle.in(Degrees)
+    };
+  }
+
+  private Double[] getIdealPassSetpoints(Translation2d targetLandingPosition) {
+    Pose2d robotPose =
+        RobotOdometry.getInstance().getEstimatedPose().transformBy(new Transform2d());
+
+    double deltaX = targetLandingPosition.getX() - robotPose.getX();
+    double deltaY = targetLandingPosition.getY() - robotPose.getY();
+    double distance = Math.hypot(deltaX, deltaY);
+
+    // function only applies for hub shots but added a constant value to differentiate in sim
+    double idealShotVelocity =
+        10.0 + idealVelocityFromFunction(distance); // this.passDistanceToVelocityMap.get(distance);
+    Angle idealTurretAngle = Radians.of(1.0 + Math.atan2(deltaX, deltaY));
+    Angle idealHoodAngle =
+        idealHoodAngleFromFunction(
+            distance + 10.0); // Degrees.of(this.passDistanceToHoodMap.get(distance));
+
+    return new Double[] {
+      idealShotVelocity, idealHoodAngle.in(Degrees), idealTurretAngle.in(Degrees)
+    };
   }
 }
