@@ -52,9 +52,6 @@ import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.manipulator.Manipulator;
-import frc.robot.subsystems.manipulator.ManipulatorIO;
-import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
@@ -79,7 +76,6 @@ public class RobotContainer {
   private Vision vision;
   private Arm arm;
   private Elevator elevator;
-  private Climber climber;
   private Manipulator manipulator;
   private Shooter shooter;
   private RobotVisualization visualization;
@@ -162,7 +158,6 @@ public class RobotContainer {
       // FIXME: initialize other subsystems
       arm = new Arm(new ArmIO() {});
       elevator = new Elevator(new ElevatorIO() {});
-      manipulator = new Manipulator(new ManipulatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
       climber = new Climber(new ClimberIO() {});
       visualization = new RobotVisualization(climber);
@@ -244,7 +239,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     visualization = new RobotVisualization(climber);
@@ -273,7 +267,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(climber);
@@ -307,7 +300,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     visualization = new RobotVisualization(climber);
@@ -319,7 +311,6 @@ public class RobotContainer {
 
     arm = new Arm(new ArmIOXRP());
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(climber);
@@ -333,7 +324,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(climber);
@@ -363,7 +353,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
   }
@@ -392,7 +381,6 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
     climber = new Climber(new ClimberIO() {});
     visualization = new RobotVisualization(climber);
@@ -435,7 +423,7 @@ public class RobotContainer {
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, manipulator, shooter);
+          oi, swerveDrivetrain, vision, arm, elevator, shooter);
     }
 
     // Endgame alerts
