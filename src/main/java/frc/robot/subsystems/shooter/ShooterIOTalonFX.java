@@ -513,6 +513,15 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
 
   @Override
+  public void lowerHoodSlow(Voltage voltage) {
+    hood.setControl(
+        hoodVoltageRequest
+            .withLimitReverseMotion(false)
+            .withIgnoreSoftwareLimits(true)
+            .withOutput(voltage));
+  }
+
+  @Override
   public void zeroHoodPosition() {
     hood.setControl(hoodVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
   }
@@ -565,7 +574,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
-    //turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true; //FIXME: Delete?
     turretConfig.CurrentLimits.SupplyCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit = TURRET_CONTINUOUS_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerTime = TURRET_PEAK_CURRENT_DURATION;

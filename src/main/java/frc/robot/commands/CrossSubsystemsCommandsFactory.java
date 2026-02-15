@@ -130,13 +130,15 @@ public class CrossSubsystemsCommandsFactory {
       Shooter shooter,
       OperatorInterface oi) {
     return Commands.parallel(
-        new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-        Commands.runOnce(() -> arm.setAngle(Degrees.of(0.0)), arm),
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.Positions.BOTTOM), elevator),
-        Commands.runOnce(() -> manipulator.resetStateMachine(), manipulator)
-            // Commands.runOnce(() -> shooter.setIdleVelocity(), shooter))
-            .withName("interrupt all"));
+            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
+            Commands.runOnce(() -> arm.setAngle(Degrees.of(0.0)), arm),
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.Positions.BOTTOM), elevator),
+            Commands.runOnce(() -> manipulator.resetStateMachine(), manipulator),
+            Commands.runOnce(shooter::stopHood, shooter))
+        // Commands.runOnce(() -> shooter.setIdleVelocity(), shooter))
+        .withName("interrupt all");
   }
 
   private static Command getInterruptAllCommand(

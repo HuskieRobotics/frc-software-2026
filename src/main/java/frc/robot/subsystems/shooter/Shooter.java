@@ -48,9 +48,6 @@ public class Shooter extends SubsystemBase {
   private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
 
-  private boolean hoodJam = false;
-  private boolean turretJam = false;
-
   private CurrentSpikeDetector hoodJamDetector =
       new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
 
@@ -108,6 +105,10 @@ public class Shooter extends SubsystemBase {
 
     Logger.processInputs(SUBSYSTEM_NAME, shooterInputs);
 
+    // the jam detectors must be updated every cycle in order to function properly
+    hoodJamDetector.update(shooterInputs.hoodStatorCurrent.in(Amps));
+    turretJamDetector.update(shooterInputs.turretStatorCurrent.in(Amps));
+
     if (testingMode.get() == 1) {
       // Flywheel Lead
       if (flyWheelLeadVelocity.get() != 0) {
@@ -162,8 +163,6 @@ public class Shooter extends SubsystemBase {
                       RotationsPerSecond.of(
                           20)); // FIXME: determine necessary velocity for systems check based on
                   // the min and max flywheel velocity
-                  io.zeroHoodPosition();
-                  io.zeroTurretPosition();
                 }));
   }
 
@@ -342,31 +341,27 @@ public class Shooter extends SubsystemBase {
     io.setHoodPosition(position);
   }
 
-  public void detectHoodJam() {
-    if (hoodJamDetector.getAsBoolean()) {
-      this.hoodJam = true;
-    } else {
-      this.hoodJam = false;
-    }
+  public boolean isHoodJammed() {
+    return hoodJamDetector.getAsBoolean();
   }
 
-  public void detectTurretJam() {
-    if (turretJamDetector.getAsBoolean()) {
-      this.turretJam = true;
-    } else {
-      this.turretJam = false;
-    }
+  public boolean isTurretJammed() {
+    return turretJamDetector.getAsBoolean();
   }
 
-  public void zeroHood(boolean hoodJam) {
-    if (hoodJam) {
-      io.zeroHoodPosition();
-    }
+  public void lowerHoodSlow() {
+    io.lowerHoodSlow(HOOD_SLOW_LOWER_VOLTAGE);
   }
 
-  public void zeroTurret(boolean turretJam) {
-    if (turretJam) {
-      io.zeroTurretPosition();
-    }
+  public void stopHood() {
+    io.setHoodVoltage(Volts.of(0.0));
+  }
+
+  public void zeroHood() {
+    io.zeroHoodPosition();
+  }
+
+  public void zeroTurret() {
+    io.zeroTurretPosition();
   }
 }

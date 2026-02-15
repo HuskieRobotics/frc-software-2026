@@ -81,6 +81,8 @@ public interface ShooterIO {
 
   public default void setHoodVoltage(Voltage voltage) {}
 
+  public default void lowerHoodSlow(Voltage voltage) {}
+
   public default void zeroTurretPosition() {}
 
   public default void zeroHoodPosition() {}

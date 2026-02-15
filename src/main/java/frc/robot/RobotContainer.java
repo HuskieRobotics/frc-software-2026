@@ -31,7 +31,7 @@ import frc.robot.commands.ArmCommandFactory;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
-import frc.robot.commands.ElevatorCommandsFactory;
+import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.CalypsoRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -416,7 +416,7 @@ public class RobotContainer {
 
     // register commands for other subsystems
     ArmCommandFactory.registerCommands(oi, arm);
-    ElevatorCommandsFactory.registerCommands(oi, elevator);
+    ShooterCommandsFactory.registerCommands(oi, shooter);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);

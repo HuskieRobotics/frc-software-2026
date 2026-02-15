@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterConstants {
 
@@ -71,6 +72,8 @@ public class ShooterConstants {
 
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(22); // FIXME: update value
+
+  public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
 
   public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
   public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(360); // FIXME: update value
