@@ -275,6 +275,11 @@ public class ShooterModes extends SubsystemBase {
       Double[] staticShotSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
 
       if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+        // temp logging values before shooter subsystem integration
+        Logger.recordOutput("ShooterModes/Flywheel Velocity", staticShotSetpoints[0]);
+        Logger.recordOutput("ShooterModes/Hood Angle", staticShotSetpoints[1]);
+        Logger.recordOutput("ShooterModes/Turret Angle", staticShotSetpoints[2]);
+
         // shooter.setFlywheelVelocity(RotationsPerSecond.of(idealShotVelocity));
         // shooter.setHoodAngle(Degrees.of(ShooterConstants.SHOOTER_MIN_ANGLE_DEGREES));
         // shooter.setTurretAngle(Degrees.of(staticShotSetpoints[2]));
@@ -285,6 +290,12 @@ public class ShooterModes extends SubsystemBase {
                 staticShotSetpoints[0],
                 Degrees.of(staticShotSetpoints[1]),
                 Degrees.of(staticShotSetpoints[2]));
+
+        // temp logging values before shooter subsystem integration
+        Logger.recordOutput("ShooterModes/Flywheel Velocity", otmShot[0]);
+        Logger.recordOutput("ShooterModes/Hood Angle", otmShot[1]);
+        Logger.recordOutput("ShooterModes/Turret Angle", otmShot[2]);
+
         // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
         // shooter.setHoodAngle(Degrees.of(ShooterConstants.SHOOTER_MIN_ANGLE_DEGREES))
         // shooter.setTurretAngle(Degrees.of(otmShot[2]))
@@ -299,6 +310,12 @@ public class ShooterModes extends SubsystemBase {
 
       if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
           || this.primaryMode == ShooterMode.MANUAL_SHOOT) {
+
+        // temp logging values before shooter subsystem integration
+        Logger.recordOutput("ShooterModes/Flywheel Velocity", staticShotSetpoints[0]);
+        Logger.recordOutput("ShooterModes/Hood Angle", staticShotSetpoints[1]);
+        Logger.recordOutput("ShooterModes/Turret Angle", staticShotSetpoints[2]);
+
         // shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
         // shooter.setHoodAngle(Degrees.of(staticShotSetpoints[1]));
         // shooter.setTurretAngle(Degrees.of(staticShotSetpoints[2]));
@@ -308,6 +325,12 @@ public class ShooterModes extends SubsystemBase {
                 staticShotSetpoints[0],
                 Degrees.of(staticShotSetpoints[1]),
                 Degrees.of(staticShotSetpoints[2]));
+
+        // temp logging values before shooter subsystem integration
+        Logger.recordOutput("ShooterModes/Flywheel Velocity", otmShot[0]);
+        Logger.recordOutput("ShooterModes/Hood Angle", otmShot[1]);
+        Logger.recordOutput("ShooterModes/Turret Angle", otmShot[2]);
+
         // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
         // shooter.setHoodAngle(Degrees.of(otmShot[1]))
         // shooter.setTurretAngle(Degrees.of(otmShot[2]))
@@ -323,6 +346,11 @@ public class ShooterModes extends SubsystemBase {
               idealShotSetpoints[0],
               Degrees.of(idealShotSetpoints[1]),
               Degrees.of(idealShotSetpoints[2]));
+
+      // temp logging values before shooter subsystem integration
+      Logger.recordOutput("ShooterModes/Flywheel Velocity", otmShot[0]);
+      Logger.recordOutput("ShooterModes/Hood Angle", otmShot[1]);
+      Logger.recordOutput("ShooterModes/Turret Angle", otmShot[2]);
 
       // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]))
       // shooter.setHoodAngle(Degrees.of(otmShot[1]))
