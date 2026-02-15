@@ -14,14 +14,11 @@ public class HopperConstants {
   public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value
   public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value
 
-  public static final double SPINDEXER_GEAR_RATIO = 10.0;
+  public static final double SPINDEXER_GEAR_RATIO = 18.0;
   public static final double KICKER_GEAR_RATIO = 1.0;
 
   public static final boolean SPINDEXER_MOTOR_INVERTED = false;
-  public static final boolean KICKER_MOTOR_INVERTED = false;
-
-  public static final double SPINDEXER_MOTOR_MANUAL_CONTROL_VELOCITY = 1.0; // FIXME: Update value?
-  public static final double KICKER_MOTOR_MANUAL_CONTROL_VELOCITY = 1.0; // FIXME: Update value?
+  public static final boolean KICKER_MOTOR_INVERTED = true;
 
   public static final double SPINDEXER_KP = 12.0; // FIXME: Update value
   public static final double SPINDEXER_KI = 0.0; // FIXME: Update value
@@ -42,12 +39,12 @@ public class HopperConstants {
   public static final double KICKER_MOI = 0.5; // FIXME: Update value
 
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE =
-      RotationsPerSecond.of(5); // FIXME: Update value
+      RotationsPerSecond.of(0.5); // FIXME: Update value
 
-  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 30; // FIXME: Update value
-  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.1;
-  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS = 30; // FIXME: Update value
-  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.1;
+  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 39; // FIXME: Update value
+  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.5;
+  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS = 39; // FIXME: Update value
+  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.5;
 
   public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
