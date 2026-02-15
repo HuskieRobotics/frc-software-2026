@@ -55,12 +55,11 @@ public class ClimberConstants {
   public static final double CLIMBER_LENGTH_INCHES = 7.0;
   public static final double CLIMBER_MASS_KG = 0.69444992;
 
-  public static final Angle CLIMB_READY_ANGLE =
-      Degrees.of(140); // FIXME: hook ready to grab rung
-  public static final Angle CLIMB_ENGAGE_ANGLE =
-      Degrees.of(150); // FIXME: hook pulls around/grabs rung
+  public static final Angle CLIMB_READY_ANGLE = Degrees.of(140); // FIXME: hook ready to grab rung
   public static final Angle CLIMB_RETRACT_ANGLE = Degrees.of(45.0); // FIXME: pull robot up
 
-  public static final Voltage CLIMBER_EXTEND_VOLTAGE = Volts.of(6.0); // FIXME: find correct value for extending the climber
-  public static final Voltage CLIMBER_RETRACT_VOLTAGE = Volts.of(-6.0); // FIXME: find correct value for retracting the climber
+  public static final Voltage CLIMBER_EXTEND_VOLTAGE =
+      Volts.of(6.0); // FIXME: find correct value for extending the climber
+  public static final Voltage CLIMBER_RETRACT_VOLTAGE =
+      Volts.of(-6.0); // FIXME: find correct value for retracting the climber
 }

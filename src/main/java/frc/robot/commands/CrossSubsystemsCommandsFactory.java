@@ -24,7 +24,6 @@ import frc.robot.Field2d;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.shooter.Shooter;
@@ -113,6 +112,8 @@ public class CrossSubsystemsCommandsFactory {
         .and(() -> inClimbingTolerance(swerveDrivetrain.getPose()))
         .onTrue(getDriveToRightClimbCommand(swerveDrivetrain, climber, oi));
 
+    oi.getReleaseAndStowButton().onTrue(getReleaseAndStowCommand(swerveDrivetrain, climber));
+
     registerSysIdCommands(oi);
   }
 
@@ -198,9 +199,8 @@ public class CrossSubsystemsCommandsFactory {
                                 atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
                     CrossSubsystemsCommandsFactory::updatePIDConstants,
                     5.0),
-                Commands.runOnce(
-                    () -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE))),
-            ClimberCommandsFactory.getReadyToClimbCommand(climber))
+                ClimberCommandsFactory.getPrepareClimbCommand(climber)),
+            ClimberCommandsFactory.getClimbAndHangCommand(climber))
         .withName("drive to left climb");
   }
 
@@ -224,9 +224,8 @@ public class CrossSubsystemsCommandsFactory {
                                 atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
                     CrossSubsystemsCommandsFactory::updatePIDConstants,
                     5.0),
-                Commands.runOnce(
-                    () -> climber.setClimberAngle(ClimberConstants.CLIMB_READY_ANGLE))),
-            ClimberCommandsFactory.getReadyToClimbCommand(climber))
+                ClimberCommandsFactory.getPrepareClimbCommand(climber)),
+            ClimberCommandsFactory.getClimbAndHangCommand(climber))
         .withName("drive to right climb");
   }
 
@@ -234,6 +233,23 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
     return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
         .withName("Override driveToPose");
+  }
+
+  private static Command getReleaseAndStowCommand(SwerveDrivetrain drivetrain, Climber climber) {
+    return Commands.sequence(
+            ClimberCommandsFactory.getStowClimberCommand(climber),
+            Commands.run(
+                    () ->
+                        drivetrain.drive(
+                            MetersPerSecond.of(-0.25),
+                            MetersPerSecond.of(0.0),
+                            RotationsPerSecond.of(0.0),
+                            true,
+                            false),
+                    drivetrain)
+                .withTimeout(0.5),
+            ClimberCommandsFactory.getStowClimberCommand(climber))
+        .withName("release and stow");
   }
 
   private static Pose2d getTargetPose() {

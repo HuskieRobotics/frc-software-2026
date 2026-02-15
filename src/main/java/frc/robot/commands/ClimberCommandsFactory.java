@@ -13,37 +13,28 @@ public class ClimberCommandsFactory {
   private ClimberCommandsFactory() {}
 
   public static void registerCommands(OperatorInterface oi, Climber climber) {
-
-    oi.getExecuteClimbButton().onTrue(getReadyToClimbCommand(climber));
-
     oi.getClimberUpButton()
-        .whileTrue(Commands.run(() -> climber.setClimberVoltage(CLIMBER_EXTEND_VOLTAGE), climber));
+        .whileTrue(Commands.run(() -> climber.setClimberVoltage(CLIMBER_EXTEND_VOLTAGE), climber))
+        .onFalse(Commands.runOnce(() -> climber.stop(), climber));
 
     oi.getClimberDownButton()
         .whileTrue(Commands.run(() -> climber.setClimberVoltage(CLIMBER_RETRACT_VOLTAGE), climber));
   }
 
-public static Command getReadyToClimbCommand(Climber climber) {
-  return Commands.sequence(
-      // keep the hook ready to climb if we aren't already there
-      Commands.runOnce(() -> climber.setClimberAngle(CLIMB_ENGAGE_ANGLE), climber)
-          .andThen(Commands.waitUntil(climber::isAngleAtSetpoint))
-          .andThen(Commands.waitSeconds(0.25)),
-      
-      // pull the robot up so that we can climb onto the rung
-      Commands.runOnce(() -> climber.setClimberAngle(CLIMB_RETRACT_ANGLE), climber)
-          .andThen(Commands.waitUntil(climber::isAngleAtSetpoint))
-          .andThen(Commands.waitSeconds(0.1)),
-      
-      // keep lifting up the robot if we need to 
-      Commands.runOnce(() -> climber.setClimberAngle(MIN_ANGLE_DEGREES), climber)
-          .andThen(Commands.waitUntil(climber::isAngleAtSetpoint))
-          
-  ).withName("climb sequence");
-}
-
-  public static Command prepareClimberCommand(Climber climber) {
+  public static Command getPrepareClimbCommand(Climber climber) {
     return Commands.runOnce(() -> climber.setClimberAngle(CLIMB_READY_ANGLE), climber)
         .withName("prepare climber");
+  }
+
+  public static Command getClimbAndHangCommand(Climber climber) {
+    return Commands.runOnce(() -> climber.setClimberAngle(CLIMB_RETRACT_ANGLE), climber)
+        .andThen(Commands.waitUntil(climber::isAngleAtSetpoint))
+        .withName("climb and hang");
+  }
+
+  public static Command getStowClimberCommand(Climber climber) {
+    return Commands.runOnce(() -> climber.setClimberAngle(Degrees.of(0.0)), climber)
+        .andThen(Commands.waitUntil(climber::isAngleAtSetpoint))
+        .withName("stow climber");
   }
 }

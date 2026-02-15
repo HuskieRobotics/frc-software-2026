@@ -105,4 +105,9 @@ public class DualJoysticksOI extends OperatorDashboard {
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
   }
+
+  @Override
+  public Trigger getReleaseAndStowButton() {
+    return rotateJoystickButtons[7]; // FIXME: ask elizabeth which button she wants for this
+  }
 }

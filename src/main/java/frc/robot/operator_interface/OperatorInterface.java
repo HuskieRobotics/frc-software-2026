@@ -97,6 +97,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getReleaseAndStowButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getDriveToLeftClimbButton() {
     return new Trigger(() -> false);
   }
