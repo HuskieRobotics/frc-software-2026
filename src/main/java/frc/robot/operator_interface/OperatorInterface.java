@@ -102,11 +102,15 @@ public interface OperatorInterface {
   }
 
   // OPERATOR TRIGGERS, mostly game-specific
-  public default Trigger getEnablePrimaryIRSensorsTrigger() {
+  public default Trigger getPassToggle() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getEnableAutoScoringTrigger() {
+  public default Trigger getShootOnTheMoveToggle() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getObjectDetectionToggle() {
     return new Trigger(() -> false);
   }
 

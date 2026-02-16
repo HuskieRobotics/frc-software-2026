@@ -26,7 +26,6 @@ import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterModes;
 import java.util.List;
@@ -109,9 +108,7 @@ public class CrossSubsystemsCommandsFactory {
       /*, Hopper hopper */ ) {
 
     oi.getInterruptAll()
-        .onTrue(
-            getInterruptAllCommand(
-                swerveDrivetrain, vision, arm, elevator, manipulator, shooter, oi));
+        .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
@@ -257,7 +254,6 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision,
       Arm arm,
       Elevator elevator,
-      Manipulator manipulator,
       Shooter shooter,
       OperatorInterface oi) {
     return Commands.parallel(
@@ -266,7 +262,6 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(() -> arm.setAngle(Degrees.of(0.0)), arm),
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.Positions.BOTTOM), elevator),
-            Commands.runOnce(() -> manipulator.resetStateMachine(), manipulator),
             Commands.runOnce(() -> shooter.setIdleVelocity(), shooter))
         .withName("interrupt all");
   }

@@ -113,7 +113,7 @@
             "title": "SysId Chooser",
             "x": 80.0,
             "y": 192.0,
-            "width": 240.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
@@ -123,22 +123,9 @@
             }
           },
           {
-            "title": "Enable Primary IR Sensors",
-            "x": 416.0,
-            "y": 48.0,
-            "width": 288.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Enable Primary IR Sensors",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Enable Vision",
-            "x": 416.0,
-            "y": 192.0,
+            "x": 400.0,
+            "y": 48.0,
             "width": 288.0,
             "height": 128.0,
             "type": "Toggle Button",
@@ -408,9 +395,9 @@
           {
             "title": "Pass",
             "x": 112.0,
-            "y": 80.0,
-            "width": 400.0,
-            "height": 160.0,
+            "y": 0.0,
+            "width": 560.0,
+            "height": 288.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Pass",
@@ -421,12 +408,25 @@
           {
             "title": "Shoot On The Move",
             "x": 112.0,
-            "y": 256.0,
-            "width": 400.0,
-            "height": 176.0,
+            "y": 288.0,
+            "width": 560.0,
+            "height": 304.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Shoot On The Move",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Object Detection Enabled",
+            "x": 1008.0,
+            "y": 16.0,
+            "width": 224.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Object Detection Enabled",
               "period": 0.06,
               "data_type": "boolean"
             }

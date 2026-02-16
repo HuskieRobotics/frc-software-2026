@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.440156918687589,
+        "y": 0.44452211126961516
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.445649072753208,
+        "y": 0.7291726105563499
+      },
+      "isLocked": false,
+      "linkedName": "Far Right Start"
+    },
+    {
+      "anchor": {
+        "x": 8.645221112696147,
+        "y": 2.398259629101284
+      },
+      "prevControl": {
+        "x": 6.932322072447104,
+        "y": 0.9609666761843954
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 40.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 37.568592028827545
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

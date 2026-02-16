@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.150488888895933,
+        "y": 7.421133333332437
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0820345539607907,
+        "y": 7.0613348548680115
+      },
+      "isLocked": false,
+      "linkedName": "Left Bank"
+    },
+    {
+      "anchor": {
+        "x": 1.7899888888888889,
+        "y": 3.7225888888888887
+      },
+      "prevControl": {
+        "x": 1.672937464424237,
+        "y": 3.4172658100215134
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tower"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Neutral Zone+Climb",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

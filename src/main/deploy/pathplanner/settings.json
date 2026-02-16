@@ -1,10 +1,14 @@
 {
-  "robotWidth": 0.85725,
-  "robotLength": 0.85725,
+  "robotWidth": 0.88026,
+  "robotLength": 0.88026,
   "holonomicMode": true,
   "pathFolders": [
-    "XRP",
-    "Tuning"
+    "Depot+Climb",
+    "Neutral Zone x2",
+    "Neutral Zone+Climb",
+    "Neutral Zone + Depot",
+    "Tuning",
+    "XRP"
   ],
   "autoFolders": [
     "XRP",
@@ -15,12 +19,12 @@
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 66.45,
+  "robotMass": 50.35,
   "robotMOI": 6.985,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.05,
-  "driveGearing": 5.903,
-  "maxDriveSpeed": 4.67,
+  "driveGearing": 6.03,
+  "maxDriveSpeed": 5.117,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 80.0,
   "wheelCOF": 1.5,
