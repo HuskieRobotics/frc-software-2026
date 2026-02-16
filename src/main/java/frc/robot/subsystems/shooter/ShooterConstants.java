@@ -25,12 +25,12 @@ public class ShooterConstants {
   public static final double FLYWHEEL_KP = 8.0;
   public static final double FLYWHEEL_KI = 0.0;
   public static final double FLYWHEEL_KD = 0.0;
-  public static final double FLYWHEEL_KS = 5.2;
-  public static final double FLYWHEEL_KV = 0.018;
+  public static final double FLYWHEEL_KS = 5.3;
+  public static final double FLYWHEEL_KV = 0.04;
   public static final double FLYWHEEL_KA = 0.0;
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = true;
-  public static final double FLYWHEEL_LEAD_GEAR_RATIO = 2;
+  public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.5;
   public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
   public static final boolean FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD =
