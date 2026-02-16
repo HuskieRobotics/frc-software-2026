@@ -399,8 +399,8 @@ public class ShooterModes extends SubsystemBase {
             + 1.3314733073 * distance
             + 4.0571728302;
 
-    // find average circumference of final contact points wheels radius 1.125 and 2
-    double avgCircumference = 2 * Math.PI * ((2.0 + 1.125) / 2.0) * 0.0254;
+    // find average circumference of final contact points wheels radius 1.0 and 2.0
+    double avgCircumference = 2 * Math.PI * ((2.0 + 1.0) / 2.0) * 0.0254;
 
     return vMetersPerSecond / avgCircumference; // convert to RPS
   }
@@ -409,11 +409,10 @@ public class ShooterModes extends SubsystemBase {
     // The original function finds angle in degrees from vertical rather than horizontal
     // so we need to subtract from 90 degrees to get the angle from horizontal
     return Degrees.of(
-        90
-            - (-0.0826994753 * Math.pow(distance, 3)
-                + 0.6567904524 * Math.pow(distance, 2)
-                + 0.6209511280 * distance
-                + 21.6348611545));
+        -0.0826994753 * Math.pow(distance, 3)
+            + 0.6567904524 * Math.pow(distance, 2)
+            + 0.6209511280 * distance
+            + 21.6348611545);
   }
 
   private Double[] getIdealStaticShotSetpoints(Translation2d targetLandingPosition) {
