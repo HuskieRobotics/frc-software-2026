@@ -373,10 +373,8 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-
-
   public boolean isKickerJammed() {
-    if (shooterInputs.hasFuel) {
+    if (shooterInputs.fuelDetectorHasFuel) {
       kickerJamTimer.start();
       if (kickerJamTimer.hasElapsed(KICKER_JAM_TIMEOUT)) {
         return true;
@@ -386,13 +384,13 @@ public class Shooter extends SubsystemBase {
       kickerJamTimer.reset();
     }
     return false;
-      }
-
-  public boolean fuelDetectorHasFuel() {
-    return shooterInputs.hasFuel;
   }
 
-  public Distance fuelDetectorDistanceToFuel () {
-    return shooterInputs.distanceToFuel;
+  public boolean fuelDetectorHasFuel() {
+    return shooterInputs.fuelDetectorHasFuel;
+  }
+
+  public Distance fuelDetectorDistanceToFuel() {
+    return shooterInputs.fuelDetectorDistanceToFuel;
   }
 }
