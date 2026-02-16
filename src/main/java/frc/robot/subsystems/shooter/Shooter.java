@@ -155,18 +155,16 @@ public class Shooter extends SubsystemBase {
     return Commands.sequence(getTestVelocityCommand(), getTestPositionCommand())
         .until(
             () ->
-                (FaultReporter.getInstance()
+                (!FaultReporter.getInstance()
                     .getFaults(SUBSYSTEM_NAME)
-                    .isEmpty())) // FIXME: might need to add a ! before the statement
+                    .isEmpty())) 
         .andThen(
             Commands.runOnce(
                 () -> {
                   io.setFlywheelVelocity(
                       RotationsPerSecond.of(
-                          20)); // FIXME: determine necessary velocity for systems check based on
+                          30)); // FIXME: determine necessary velocity for systems check based on
                   // the min and max flywheel velocity
-                  io.zeroHoodPosition();
-                  io.zeroTurretPosition();
                 }));
   }
 

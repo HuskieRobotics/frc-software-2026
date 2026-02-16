@@ -187,7 +187,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    fuelDetector = new CANrange(FUEL_DETECTOR_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    fuelDetector = new CANrange(FUEL_DETECTOR_ENCODER_ID, RobotConfig.getInstance().getCANBus());
 
     flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
     flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
