@@ -319,7 +319,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isTurretAtSetPoint() {
-
     return turretAtSetpointDebouncer.calculate(
         shooterInputs.turretPosition.isNear(
             shooterInputs.turretReferencePosition, TURRET_TOLERANCE_ANGLE));
@@ -371,18 +370,20 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  public boolean isKickerJammed() {
-    if (shooterInputs.fuelDetectorHasFuel) {
-      kickerJamTimer.start();
-      if (kickerJamTimer.hasElapsed(KICKER_JAM_TIMEOUT)) {
-        return true;
-      }
-    } else {
-      kickerJamTimer.stop();
-      kickerJamTimer.reset();
-    }
-    return false;
-  }
+//FIXME: Delete this method checking if the fuel detector (CANRange sensor) is jammed
+
+//   public boolean isKickerJammed() {
+//     if (shooterInputs.fuelDetectorHasFuel) {
+//       kickerJamTimer.start();
+//       if (kickerJamTimer.hasElapsed(KICKER_JAM_TIMEOUT)) {
+//         return true;
+//       }
+//     } else {
+//     //   kickerJamTimer.stop();
+//       kickerJamTimer.reset();
+//     }
+//     return false;
+//   }
 
   public boolean fuelDetectorHasFuel() {
     return shooterInputs.fuelDetectorHasFuel;
