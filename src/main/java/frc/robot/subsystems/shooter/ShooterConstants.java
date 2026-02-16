@@ -22,23 +22,23 @@ public class ShooterConstants {
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
 
-  public static final double FLYWHEEL_KP = 8.0; // FIXME: update value
-  public static final double FLYWHEEL_KI = 0.0; // FIXME: update value
-  public static final double FLYWHEEL_KD = 0.0; // FIXME: update value
-  public static final double FLYWHEEL_KS = 5.2; // FIXME: update value
-  public static final double FLYWHEEL_KV = 0.018; // FIXME: update value
-  public static final double FLYWHEEL_KA = 0.0; // FIXME: update value
+  public static final double FLYWHEEL_KP = 24.0;
+  public static final double FLYWHEEL_KI = 0.0;
+  public static final double FLYWHEEL_KD = 0.0;
+  public static final double FLYWHEEL_KS = 7.6;
+  public static final double FLYWHEEL_KV = 0.07;
+  public static final double FLYWHEEL_KA = 0.0;
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = true;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO =
       2; // FIXME: Currently 2:1, could be 3:2 or 1:1
   public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
-  public static final boolean FLYWHEEL_FOLLOW_1_INVERTED =
+  public static final boolean FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD =
       true; // FIXME: change to opposed if reversed
 
   // Follow 2 Constants
-  public static final boolean FLYWHEEL_FOLLOW_2_INVERTED =
+  public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD =
       false; // FIXME: change to opposed if reversed
 
   public static final double TURRET_ROTATION_KP = 19; // FIXME: update value
@@ -66,12 +66,12 @@ public class ShooterConstants {
   public static final double HOOD_GEAR_RATIO = 144.0;
   public static final double HOOD_LENGTH_METERS = 0.2;
   public static final double HOOD_MASS_KG = 2.0;
-  public static final Angle HOOD_MIN_ANGLE = Degrees.of(12.0);
+  public static final Angle HOOD_MIN_ANGLE = Degrees.of(20.0);
   public static final Angle HOOD_MAX_ANGLE = Degrees.of(52.0);
   public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
 
-  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
-  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(22); // FIXME: update value
+  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0);
+  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
 
   public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
 

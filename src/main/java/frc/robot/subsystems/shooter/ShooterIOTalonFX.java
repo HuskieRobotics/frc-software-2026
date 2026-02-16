@@ -17,6 +17,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -176,14 +177,14 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelFollow1.setControl(
         new Follower(
             FLYWHEEL_LEAD_MOTOR_ID,
-            FLYWHEEL_FOLLOW_1_INVERTED
+            FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD
                 ? MotorAlignmentValue.Opposed
                 : MotorAlignmentValue.Aligned));
     // reversed
     flywheelFollow2.setControl(
         new Follower(
             FLYWHEEL_LEAD_MOTOR_ID,
-            FLYWHEEL_FOLLOW_2_INVERTED
+            FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD
                 ? MotorAlignmentValue.Opposed
                 : MotorAlignmentValue.Aligned));
     // reversed
@@ -400,10 +401,11 @@ public class ShooterIOTalonFX implements ShooterIO {
       inputs.flywheelLeadClosedLoopErrorVelocity =
           RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
       inputs.turretClosedLoopReferencePosition =
-          Degrees.of(turret.getClosedLoopReference().getValue());
-      inputs.turretClosedLoopErrorPosition = Degrees.of(turret.getClosedLoopError().getValue());
-      inputs.hoodClosedLoopReferencePosition = Degrees.of(hood.getClosedLoopReference().getValue());
-      inputs.hoodClosedLoopErrorPosition = Degrees.of(hood.getClosedLoopError().getValue());
+          Rotations.of(turret.getClosedLoopReference().getValue());
+      inputs.turretClosedLoopErrorPosition = Rotations.of(turret.getClosedLoopError().getValue());
+      inputs.hoodClosedLoopReferencePosition =
+          Rotations.of(hood.getClosedLoopReference().getValue());
+      inputs.hoodClosedLoopErrorPosition = Rotations.of(hood.getClosedLoopError().getValue());
     }
 
     LoggedTunableNumber.ifChanged(
@@ -548,6 +550,11 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
 
+    flywheelConfig.MotorOutput.Inverted =
+        ShooterConstants.FLYWHEEL_LEAD_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+
     Phoenix6Util.applyAndCheckConfiguration(flywheelLead, flywheelConfig, configAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, flywheelLead);
@@ -628,6 +635,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.Slot0.kV = hoodKV.get();
     hoodConfig.Slot0.kA = hoodKA.get();
     hoodConfig.Slot0.kS = hoodKS.get();
+    hoodConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
 
@@ -649,6 +657,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
+
+    hood.setPosition(ShooterConstants.HOOD_STARTING_ANGLE.in(Rotations));
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
   }
