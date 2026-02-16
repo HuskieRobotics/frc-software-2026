@@ -583,7 +583,7 @@ public class Vision extends SubsystemBase {
     // only trust the rotation component for multi-tag strategies; for single-tag, set the standard
     // deviation to infinity
     double thetaStdDev =
-        observation.type() == PoseObservationType.MULTI_TAG
+        (observation.type() == PoseObservationType.MULTI_TAG || DriverStation.isDisabled())
             ? thetaStdDevCoefficient.get()
                 * Math.pow(observation.averageTagDistance(), 2.0)
                 * (reprojectionErrorScaleFactor.get() * observation.reprojectionError())
