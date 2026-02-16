@@ -104,7 +104,7 @@ public class Intake extends SubsystemBase {
       }
 
       if (rollerVelocityRPS.get() != 0) {
-        intakeIO.setRollerVelocity(RotationsPerSecond.of(rollerVelocityRPS.get()));
+        intakeIO.setRollerVelocity(RadiansPerSecond.of(rollerVelocityRPS.get()));
       } else if (rollerCurrent.get() != 0) {
         intakeIO.setRollerCurrent(Amps.of(rollerCurrent.get()));
       }
