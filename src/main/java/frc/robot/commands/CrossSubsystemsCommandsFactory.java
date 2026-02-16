@@ -116,7 +116,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
 
-    oi.getSnakeDriveButton().onTrue(getSnakeDriveCommand(swerveDrivetrain));
+    oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(swerveDrivetrain));
 
     Trigger manualShootTrigger =
         oi.getManualShootButton()
