@@ -22,16 +22,15 @@ public class ShooterConstants {
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
 
-  public static final double FLYWHEEL_KP = 22.0;
+  public static final double FLYWHEEL_KP = 8.0;
   public static final double FLYWHEEL_KI = 0.0;
   public static final double FLYWHEEL_KD = 0.0;
-  public static final double FLYWHEEL_KS = 7.6;
-  public static final double FLYWHEEL_KV = 0.07;
+  public static final double FLYWHEEL_KS = 5.2;
+  public static final double FLYWHEEL_KV = 0.018;
   public static final double FLYWHEEL_KA = 0.0;
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = true;
-  public static final double FLYWHEEL_LEAD_GEAR_RATIO =
-      2; // FIXME: Currently 2:1, could be 3:2 or 1:1
+  public static final double FLYWHEEL_LEAD_GEAR_RATIO = 2;
   public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
   public static final boolean FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD =
