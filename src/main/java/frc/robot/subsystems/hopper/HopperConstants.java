@@ -51,7 +51,7 @@ public class HopperConstants {
           -5); // <-- Should be negative (rotations per second) // FIXME: Update value
   public static final AngularVelocity KICKER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
-          -5); // <-- Should be negative (rotations per second) // FIXME: Update value\
+          -5); // <-- Should be negative (rotations per second) // FIXME: Update value
 
   public static final AngularVelocity KICKER_VELOCITY_SETPOINT_1_RPS =
       RotationsPerSecond.of(30); // FIXME: Determine test points
@@ -66,4 +66,7 @@ public class HopperConstants {
       RotationsPerSecond.of(60); // FIXME: Determine test points
   public static final AngularVelocity SPINDEXER_VELOCITY_SETPOINT_3_RPS =
       RotationsPerSecond.of(90); // FIXME: Determine test points
+
+  public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
+  public static final double KICKER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
 }
