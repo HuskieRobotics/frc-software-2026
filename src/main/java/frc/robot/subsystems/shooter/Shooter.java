@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,6 +49,7 @@ public class Shooter extends SubsystemBase {
   private final Debouncer hoodAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
+  private final Timer kickerJamTimer = new Timer();
 
   private boolean hoodJam = false;
   private boolean turretJam = false;
@@ -368,5 +371,28 @@ public class Shooter extends SubsystemBase {
     if (turretJam) {
       io.zeroTurretPosition();
     }
+  }
+
+
+
+  public boolean isKickerJammed() {
+    if (shooterInputs.hasFuel) {
+      kickerJamTimer.start();
+      if (kickerJamTimer.hasElapsed(KICKER_JAM_TIMEOUT)) {
+        return true;
+      }
+    } else {
+      kickerJamTimer.stop();
+      kickerJamTimer.reset();
+    }
+    return false;
+      }
+
+  public boolean fuelDetectorHasFuel() {
+    return shooterInputs.hasFuel;
+  }
+
+  public Distance fuelDetectorDistanceToFuel () {
+    return shooterInputs.distanceToFuel;
   }
 }

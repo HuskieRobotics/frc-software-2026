@@ -65,11 +65,11 @@ public interface ShooterIO {
     Temperature hoodTemperature = Celsius.of(0.0);
 
     // Fuel Detection
-    boolean sensorConnected = false;
-    boolean hasFuel = false;
+    boolean fuelDetectorConnected = false;
+    boolean fuelDetectorHasFuel = false;
     boolean isKickerJammed = false;
-    Distance distanceToFuel = Meters.of(0.0); // FIXME: determine if necessary
-    double signalStrength = 0.0;
+    Distance fuelDetectorDistanceToFuel = Meters.of(0.0); // FIXME: determine if necessary
+    double fuelDetectorSignalStrength = 0.0;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
@@ -92,4 +92,10 @@ public interface ShooterIO {
   public default void zeroTurretPosition() {}
 
   public default void zeroHoodPosition() {}
+
+  public default void isKickerJammed() {}
+
+  public default void hasFuel() {}
+
+  public default void getDistanceToFuel() {}
 }

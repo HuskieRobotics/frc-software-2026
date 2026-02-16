@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 
 public class ShooterConstants {
 
@@ -23,7 +22,7 @@ public class ShooterConstants {
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
-  public static final int FUEL_DETECTOR_MOTOR_ID = 0; // FIXME: 
+  public static final int FUEL_DETECTOR_MOTOR_ID = 0; // FIXME:
 
   public static final double FLYWHEEL_KP = 8.0; // FIXME: update value
   public static final double FLYWHEEL_KI = 0.0; // FIXME: update value
@@ -118,7 +117,12 @@ public class ShooterConstants {
   public static final double TURRET_CURRENT_THRESHOLD_AMPS = 35.0;
   public static final double TURRET_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
 
+  public static final double FUEL_DETECTOR_THRESHOLD_AMPS = 35.0;
+  public static final double FUEL_DETECTOR_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
+
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
-  public static final double FUEL_DETECTOR_EMPTY_DISTANCE = 0.5; // FIXME: determine value
+  public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
+      0.5; // meters, FIXME: determine value
+  public static final double KICKER_JAM_TIMEOUT = 1.0; // seconds, FIXME: determine value
 }

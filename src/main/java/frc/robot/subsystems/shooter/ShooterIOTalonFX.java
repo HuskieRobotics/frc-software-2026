@@ -5,6 +5,8 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -18,6 +20,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -28,6 +31,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -92,7 +96,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Distance> fuelDetectorDistanceStatusSignal;
   private StatusSignal<Double> fuelDetectorSignalStrengthStatusSignal;
   private StatusSignal<Boolean> fuelDetectorDetectedStatusSignal;
-
 
   private Angle hoodReferencePosition = Degrees.of(0.0);
   private Angle turretReferencePosition = Degrees.of(0.0);
@@ -162,9 +165,14 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber hoodKA =
       new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_KA);
   private final LoggedTunableNumber fuelDetectorMinSignalStrength =
-      new LoggedTunableNumber("Shooter/Fuel Detector Min Signal Strength", FUEL_DETECTOR_MIN_SIGNAL_STRENGTH);
-  private final LoggedTunableNumber fuelDetectorEmptyDistance =
-      new LoggedTunableNumber("Shooter/Fuel Detector Empty Distance", FUEL_DETECTOR_EMPTY_DISTANCE);
+      new LoggedTunableNumber(
+          "Shooter/Fuel Detector Min Signal Strength", FUEL_DETECTOR_MIN_SIGNAL_STRENGTH);
+  private final LoggedTunableNumber fuelDetectorProximityThreshold =
+      new LoggedTunableNumber(
+          "Shooter/Fuel Detector Proximity Threshold", FUEL_DETECTOR_PROXIMITY_THRESHOLD);
+
+  private final LoggedTunableNumber simFuelDetectorDistance =
+      new LoggedTunableNumber("Shooter/Sim Fuel Detector Distance (m)", 1.0);
 
   private FlywheelSystemSim flywheelSim;
   private ArmSystemSim turretLeadSim;
@@ -298,7 +306,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     configFlywheelFollow(flywheelFollow2, "flywheel follow 2", flywheelFollow2ConfigAlert);
     configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
     configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
-    configFuelDetector(fuelDetector, fuelDetectorConfigAlert);
+    configFuelDetector(fuelDetector, "fuel detector", fuelDetectorConfigAlert);
 
     this.flywheelSim =
         new FlywheelSystemSim(
@@ -380,7 +388,7 @@ public class ShooterIOTalonFX implements ShooterIO {
                 turretTemperatureStatusSignal,
                 turretVoltageStatusSignal,
                 turretPositionStatusSignal));
-    inputs.sensorConnected = 
+    inputs.fuelDetectorConnected =
         fuelDetectorConnectedDebouncer.calculate(
             BaseStatusSignal.isAllGood(
                 fuelDetectorDistanceStatusSignal,
@@ -428,12 +436,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodReferencePosition = this.hoodReferencePosition;
 
     // Updates Fuel Detector Inputs
-    inputs.sensorConnected = fuelDetector.isConnected();
-    inputs.distanceToFuel = fuelDetectorDistanceStatusSignal.getValue();
-    inputs.signalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
-    inputs.hasFuel = inputs.sensorConnected
-        && inputs.signalStrength >= fuelDetectorMinSignalStrength.get()
-        && inputs.distanceToFuel.lt(Meters.of(fuelDetectorEmptyDistance.get()));
+    inputs.fuelDetectorConnected = fuelDetector.isConnected();
+    inputs.fuelDetectorHasFuel = fuelDetectorDetectedStatusSignal.getValue();
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
@@ -446,9 +450,8 @@ public class ShooterIOTalonFX implements ShooterIO {
       inputs.turretClosedLoopErrorPosition = Degrees.of(turret.getClosedLoopError().getValue());
       inputs.hoodClosedLoopReferencePosition = Degrees.of(hood.getClosedLoopReference().getValue());
       inputs.hoodClosedLoopErrorPosition = Degrees.of(hood.getClosedLoopError().getValue());
-      inputs.distanceToFuel = fuelDetectorDistanceStatusSignal.getValue();
-      inputs.signalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
-      inputs.sensorDetected = fuelDetectorDetectedStatusSignal.getValue();
+      inputs.fuelDetectorDistanceToFuel = fuelDetectorDistanceStatusSignal.getValue();
+      inputs.fuelDetectorSignalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
     }
 
     LoggedTunableNumber.ifChanged(
@@ -514,10 +517,25 @@ public class ShooterIOTalonFX implements ShooterIO {
         hoodKV,
         hoodKA);
 
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        detectorConfig -> {
+          ProximityParamsConfigs config = new ProximityParamsConfigs();
+          fuelDetector.getConfigurator().refresh(config);
+          config.MinSignalStrengthForValidMeasurement = detectorConfig[0];
+          config.ProximityThreshold = detectorConfig[1];
+
+          fuelDetector.getConfigurator().apply(config);
+        },
+        fuelDetectorMinSignalStrength,
+        fuelDetectorProximityThreshold);
+
     if (Constants.getMode() == Constants.Mode.SIM) { // If the entire robot is in simulation
       flywheelSim.updateSim();
       turretLeadSim.updateSim();
       hoodLeadSim.updateSim();
+      fuelDetector.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
+      fuelDetector.getSimState().setDistance(simFuelDetectorDistance.get());
     }
   }
 
@@ -610,7 +628,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
-    //turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true; //FIXME: Delete?
+    // turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true; //FIXME: Delete?
     turretConfig.CurrentLimits.SupplyCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit = TURRET_CONTINUOUS_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerTime = TURRET_PEAK_CURRENT_DURATION;
@@ -688,5 +706,20 @@ public class ShooterIOTalonFX implements ShooterIO {
     Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
+  }
+
+  private void configFuelDetector(CANrange encoder, String encoderName, Alert configAlert) {
+    CANrangeConfiguration config = new CANrangeConfiguration();
+
+    config.ProximityParams.MinSignalStrengthForValidMeasurement =
+        fuelDetectorMinSignalStrength.get();
+
+    config.ProximityParams.ProximityThreshold = fuelDetectorProximityThreshold.get();
+
+    config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
+
+    Phoenix6Util.applyAndCheckConfiguration(encoder, config, configAlert);
+
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, encoderName, encoder);
   }
 }
