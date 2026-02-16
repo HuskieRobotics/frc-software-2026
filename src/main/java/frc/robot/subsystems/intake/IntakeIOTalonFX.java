@@ -115,6 +115,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         deployerSupplyCurrentSS,
         deployerTempSS);
 
+    configDeployerMotor(deployerMotor);
+    configRollerMotor(rollerMotor);
+
     // Initialize Simulation
     this.rollerSim =
         new VelocitySystemSim(
@@ -130,13 +133,18 @@ public class IntakeIOTalonFX implements IntakeIO {
             DEPLOYER_MAX_ANGLE.in(Radians),
             DEPLOYER_MIN_ANGLE.in(Radians),
             SUBSYSTEM_NAME);
-
-    configDeployerMotor(deployerMotor);
-    configRollerMotor(rollerMotor);
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
+    if (Constants.getMode() == Constants.Mode.SIM) {
+      if (deployerSim != null) {
+        deployerSim.updateSim();
+      }
+      if (rollerSim != null) {
+        rollerSim.updateSim();
+      }
+    }
     // Check connections
     inputs.rollerConnected =
         connectedRollerDebouncer.calculate(

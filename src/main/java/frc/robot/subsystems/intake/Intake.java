@@ -103,10 +103,10 @@ public class Intake extends SubsystemBase {
         setLinearPosition(Inches.of(deployerPositionLinearInches.get()));
       }
 
-      if (rollerCurrent.get() != 0) {
-        intakeIO.setRollerCurrent(Amps.of(rollerCurrent.get()));
-      } else if (rollerVelocityRPS.get() != 0) {
+      if (rollerVelocityRPS.get() != 0) {
         intakeIO.setRollerVelocity(RotationsPerSecond.of(rollerVelocityRPS.get()));
+      } else if (rollerCurrent.get() != 0) {
+        intakeIO.setRollerCurrent(Amps.of(rollerCurrent.get()));
       }
     }
 

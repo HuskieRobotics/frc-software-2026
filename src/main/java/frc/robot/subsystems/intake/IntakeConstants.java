@@ -23,7 +23,6 @@ public class IntakeConstants {
   public static final boolean DEPLOYER_MOTOR_INVERTED = false; // FIXME: check direction
 
   // Mechanical properties for simulation
-  public static final double DEPLOYER_MOI = 0.25;
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
   public static final double DEPLOYER_MASS_KG = 1.5;
   public static final Angle DEPLOYER_MIN_ANGLE = Degrees.of(0);
