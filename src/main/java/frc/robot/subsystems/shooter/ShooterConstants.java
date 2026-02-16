@@ -7,18 +7,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ShooterConstants {
 
-  private static final String CONSTRUCTOR_EXCEPTION = "constant class";
-
-  private ShooterConstants() {
-    throw new IllegalStateException(CONSTRUCTOR_EXCEPTION);
-  }
-
   public static final String SUBSYSTEM_NAME = "Shooter";
 
   public static final int FLYWHEEL_LEAD_MOTOR_ID =
       20; // Updated in robot devices and trackers sheet
   public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID =
       21; // FIXME: update from robot devices and trackers sheet
+
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
