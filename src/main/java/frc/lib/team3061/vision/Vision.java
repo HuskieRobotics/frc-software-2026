@@ -324,7 +324,7 @@ public class Vision extends SubsystemBase {
           } else {
             robotPosesRejected.get(cameraIndex).add(estimatedRobotPose3d);
             final int finalCameraIndex = cameraIndex;
-            for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
+            for (int tagID = 1; tagID < FieldConstants.aprilTagCount; tagID++) {
               if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
                 Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
                 tagPose.ifPresent(

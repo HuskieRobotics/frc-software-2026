@@ -370,14 +370,14 @@ public class RobotContainer {
     ArmCommandFactory.registerCommands(oi, arm);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(
-        oi, swerveDrivetrain, vision, arm, elevator, manipulator, shooter, shooterModes);
+        oi, swerveDrivetrain, vision, arm, elevator, shooter, shooterModes);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, manipulator, shooter, shooterModes);
+          oi, swerveDrivetrain, vision, arm, elevator, shooter, shooterModes);
 
       configureRobotContainerTriggers();
     }

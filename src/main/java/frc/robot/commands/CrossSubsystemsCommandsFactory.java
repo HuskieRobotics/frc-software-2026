@@ -102,7 +102,6 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision,
       Arm arm,
       Elevator elevator,
-      Manipulator manipulator,
       Shooter shooter,
       ShooterModes shooterModes
       /*, Hopper hopper */ ) {
