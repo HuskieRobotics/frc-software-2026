@@ -127,29 +127,29 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber flywheelLeadKA =
       new LoggedTunableNumber("Shooter/Flywheel kA", ShooterConstants.FLYWHEEL_KA);
   private final LoggedTunableNumber turretKP =
-      new LoggedTunableNumber("Shooter/Turret kP", ShooterConstants.TURRET_ROTATION_KP);
+      new LoggedTunableNumber("Shooter/Turret kP", ShooterConstants.TURRET_KP);
   private final LoggedTunableNumber turretKI =
-      new LoggedTunableNumber("Shooter/Turret kI", ShooterConstants.TURRET_ROTATION_KI);
+      new LoggedTunableNumber("Shooter/Turret kI", ShooterConstants.TURRET_KI);
   private final LoggedTunableNumber turretKD =
-      new LoggedTunableNumber("Shooter/Turret kD", ShooterConstants.TURRET_ROTATION_KD);
+      new LoggedTunableNumber("Shooter/Turret kD", ShooterConstants.TURRET_KD);
   private final LoggedTunableNumber turretKS =
-      new LoggedTunableNumber("Shooter/Turret kS", ShooterConstants.TURRET_ROTATION_KS);
+      new LoggedTunableNumber("Shooter/Turret kS", ShooterConstants.TURRET_KS);
   private final LoggedTunableNumber turretKV =
-      new LoggedTunableNumber("Shooter/Turret kV", ShooterConstants.TURRET_ROTATION_KV);
+      new LoggedTunableNumber("Shooter/Turret kV", ShooterConstants.TURRET_KV);
   private final LoggedTunableNumber turretKA =
-      new LoggedTunableNumber("Shooter/Turret kA", ShooterConstants.TURRET_ROTATION_KA);
+      new LoggedTunableNumber("Shooter/Turret kA", ShooterConstants.TURRET_KA);
   private final LoggedTunableNumber hoodKP =
-      new LoggedTunableNumber("Shooter/Hood kP", ShooterConstants.HOOD_ROTATION_KP);
+      new LoggedTunableNumber("Shooter/Hood kP", ShooterConstants.HOOD_KP);
   private final LoggedTunableNumber hoodKI =
-      new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_ROTATION_KI);
+      new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_KI);
   private final LoggedTunableNumber hoodKD =
-      new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_ROTATION_KD);
+      new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_KD);
   private final LoggedTunableNumber hoodKS =
-      new LoggedTunableNumber("Shooter/Hood kS", ShooterConstants.HOOD_ROTATION_KS);
+      new LoggedTunableNumber("Shooter/Hood kS", ShooterConstants.HOOD_KS);
   private final LoggedTunableNumber hoodKV =
-      new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_ROTATION_KV);
+      new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_KV);
   private final LoggedTunableNumber hoodKA =
-      new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_ROTATION_KA);
+      new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_KA);
 
   private FlywheelSystemSim flywheelSim;
   private ArmSystemSim turretLeadSim;

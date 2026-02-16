@@ -22,7 +22,7 @@ public class ShooterConstants {
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
 
-  public static final double FLYWHEEL_KP = 24.0;
+  public static final double FLYWHEEL_KP = 22.0;
   public static final double FLYWHEEL_KI = 0.0;
   public static final double FLYWHEEL_KD = 0.0;
   public static final double FLYWHEEL_KS = 7.6;
@@ -41,12 +41,12 @@ public class ShooterConstants {
   public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD =
       false; // FIXME: change to opposed if reversed
 
-  public static final double TURRET_ROTATION_KP = 19; // FIXME: update value
-  public static final double TURRET_ROTATION_KI = 0.0; // FIXME: update value
-  public static final double TURRET_ROTATION_KD = 0.0; // FIXME: update value
-  public static final double TURRET_ROTATION_KS = 0.39217; // FIXME: update value
-  public static final double TURRET_ROTATION_KV = 0.12; // FIXME: update value
-  public static final double TURRET_ROTATION_KA = 0.022794; // FIXME: update value
+  public static final double TURRET_KP = 19; // FIXME: update value
+  public static final double TURRET_KI = 0.0; // FIXME: update value
+  public static final double TURRET_KD = 0.0; // FIXME: update value
+  public static final double TURRET_KS = 0.39217; // FIXME: update value
+  public static final double TURRET_KV = 0.12; // FIXME: update value
+  public static final double TURRET_KA = 0.022794; // FIXME: update value
 
   public static final boolean TURRET_INVERTED =
       false; // FIXME: update when first running the turret
@@ -55,12 +55,12 @@ public class ShooterConstants {
       1.0; // this is irrelevant for simulation since gravity doesn't affect the model
   public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
 
-  public static final double HOOD_ROTATION_KP = 800; // FIXME: update values when tuning
-  public static final double HOOD_ROTATION_KI = 0.0; // FIXME: update values when tuning
-  public static final double HOOD_ROTATION_KD = 0.0; // FIXME: update values when tuning
-  public static final double HOOD_ROTATION_KS = 0.4; // FIXME: update values when tuning
-  public static final double HOOD_ROTATION_KV = 0.0; // FIXME: update values when tuning
-  public static final double HOOD_ROTATION_KA = 0.83438; // FIXME: update values when tuning
+  public static final double HOOD_KP = 600;
+  public static final double HOOD_KI = 0.0;
+  public static final double HOOD_KD = 0.0;
+  public static final double HOOD_KS = 0.4;
+  public static final double HOOD_KV = 0.0;
+  public static final double HOOD_KA = 0.0;
 
   public static final boolean HOOD_INVERTED = false;
   public static final double HOOD_GEAR_RATIO = 144.0;
