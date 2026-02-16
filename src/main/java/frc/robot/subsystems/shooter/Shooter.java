@@ -155,14 +155,17 @@ public class Shooter extends SubsystemBase {
             () ->
                 !FaultReporter.getInstance()
                     .getFaults(SUBSYSTEM_NAME)
-                    .isEmpty()) // .until() stops the sequence of commands, if it is triggered true, so if isEmpty returns false, that gets negated by the ! and becomes true. 
-                    // Then the .until() would stop the rest of the commands from running, because a fault has been detected. Otherwise, if .until() evaluates to false, then the system check keeps running.
+                    .isEmpty()) // .until() stops the sequence of commands, if it is triggered true,
+        // so if isEmpty returns false, that gets negated by the ! and
+        // becomes true.
+        // Then the .until() would stop the rest of the commands from running, because a fault has
+        // been detected. Otherwise, if .until() evaluates to false, then the system check keeps
+        // running.
         .andThen(
             Commands.runOnce(
                 () -> {
                   io.setFlywheelVelocity(
-                      RotationsPerSecond.of(
-                          30)); //FIXME: update value when necessary
+                      RotationsPerSecond.of(30)); // FIXME: update value when necessary
                 }));
   }
 
