@@ -74,8 +74,8 @@ public class ShooterConstants {
 
   public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
 
-  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(0); // FIXME: update value
-  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(360); // FIXME: update value
+  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(-135); // FIXME: update value
+  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(135); // FIXME: update value
 
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 40;
