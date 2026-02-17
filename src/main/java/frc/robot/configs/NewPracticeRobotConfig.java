@@ -122,10 +122,10 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(-11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-127.761)));
+              Units.inchesToMeters(-10.969),
+              Units.inchesToMeters(-10.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
 
   // Back left camera
   // x, y, z, pitch, yaw
@@ -133,10 +133,10 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
+              Units.inchesToMeters(-10.969),
+              Units.inchesToMeters(10.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
   @Override
   public CameraConfig[] getCameraConfigs() {
