@@ -17,7 +17,8 @@ public class ShooterConstants {
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 14;
-  public static final int FUEL_DETECTOR_ENCODER_ID = 0; // FIXME: determine the CAN ID for this encoder
+  public static final int FUEL_DETECTOR_ENCODER_ID =
+      0; // FIXME: determine the CAN ID for this encoder
 
   public static final double FLYWHEEL_KP = 8.0; // FIXME: update value
   public static final double FLYWHEEL_KI = 0.0; // FIXME: update value
@@ -119,5 +120,4 @@ public class ShooterConstants {
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
   public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
       0.5; // meters, FIXME: determine value
-  public static final double KICKER_JAM_TIMEOUT = 1.0; // seconds, FIXME: determine value
 }
