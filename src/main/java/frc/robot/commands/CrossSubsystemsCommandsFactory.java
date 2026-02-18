@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -62,6 +61,8 @@ public class CrossSubsystemsCommandsFactory {
   private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
       0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
   private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
+
+  private static final double JOYSTICK_POWER = 2.0;
 
   private static ProfiledPIDController xController =
       new ProfiledPIDController(
@@ -162,6 +163,18 @@ public class CrossSubsystemsCommandsFactory {
         () -> shooterModes.manualShootEnabled());
   }
 
+  private static double getModifiedXTranslation() {
+    return TeleopSwerve.modifyAxis(
+            OISelector.getOperatorInterface().getTranslateX(), JOYSTICK_POWER)
+        * RobotConfig.getInstance().getRobotMaxVelocity().in(MetersPerSecond);
+  }
+
+  private static double getModifiedYTranslation() {
+    return TeleopSwerve.modifyAxis(
+            OISelector.getOperatorInterface().getTranslateY(), JOYSTICK_POWER)
+        * RobotConfig.getInstance().getRobotMaxVelocity().in(MetersPerSecond);
+  }
+
   // this will rotate our robot into a diamond shape while we are near the bump zone
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
 
@@ -176,12 +189,8 @@ public class CrossSubsystemsCommandsFactory {
           Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
           drivetrain.driveFacingAngle(
-              RobotConfig.getInstance()
-                  .getRobotMaxVelocity()
-                  .times(OISelector.getOperatorInterface().getTranslateX()),
-              RobotConfig.getInstance()
-                  .getRobotMaxVelocity()
-                  .times(OISelector.getOperatorInterface().getTranslateY()),
+              MetersPerSecond.of(getModifiedXTranslation()),
+              MetersPerSecond.of(getModifiedYTranslation()),
               targetRotation,
               false);
         });
@@ -199,12 +208,8 @@ public class CrossSubsystemsCommandsFactory {
               Rotation2d targetRotation = Rotation2d.fromDegrees(nearest90DegreeAngle);
 
               drivetrain.driveFacingAngle(
-                  RobotConfig.getInstance()
-                      .getRobotMaxVelocity()
-                      .times(OISelector.getOperatorInterface().getTranslateX()),
-                  RobotConfig.getInstance()
-                      .getRobotMaxVelocity()
-                      .times(OISelector.getOperatorInterface().getTranslateY()),
+                  MetersPerSecond.of(getModifiedXTranslation()),
+                  MetersPerSecond.of(getModifiedYTranslation()),
                   targetRotation,
                   false);
             })
@@ -214,19 +219,15 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getSnakeDriveCommand(SwerveDrivetrain drivetrain) {
     return Commands.run(
             () -> {
-              LinearVelocity vX =
-                  RobotConfig.getInstance()
-                      .getRobotMaxVelocity()
-                      .times(OISelector.getOperatorInterface().getTranslateX());
-              LinearVelocity vY =
-                  RobotConfig.getInstance()
-                      .getRobotMaxVelocity()
-                      .times(OISelector.getOperatorInterface().getTranslateY());
+              double xVelocity = getModifiedXTranslation();
+              double yVelocity = getModifiedYTranslation();
+              Rotation2d targetRotation = new Rotation2d(xVelocity, yVelocity);
 
-              Rotation2d targetRotation =
-                  new Rotation2d(vX.in(MetersPerSecond), vY.in(MetersPerSecond));
-
-              drivetrain.driveFacingAngle(vX, vY, targetRotation, false);
+              drivetrain.driveFacingAngle(
+                  MetersPerSecond.of(xVelocity),
+                  MetersPerSecond.of(yVelocity),
+                  targetRotation,
+                  false);
             })
         .withName("Snake Drive Command");
   }
