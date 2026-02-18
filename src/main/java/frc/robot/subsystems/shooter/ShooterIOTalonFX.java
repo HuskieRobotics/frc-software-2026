@@ -65,6 +65,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Current> turretSupplyCurrentStatusSignal;
   private StatusSignal<Current> hoodStatorCurrentStatusSignal;
   private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
+  private StatusSignal<AngularVelocity> turretVelocityStatusSignal;
+
 
   // Angular Velocity Status Signals
   // For flywheel lead motor
@@ -218,6 +220,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretTemperatureStatusSignal = turret.getDeviceTemp();
     turretVoltageStatusSignal = turret.getMotorVoltage();
     turretPositionStatusSignal = turret.getPosition();
+    turretVelocityStatusSignal = turret.getVelocity();
 
     // Assign hood status signals
     hoodStatorCurrentStatusSignal = hood.getStatorCurrent();
@@ -258,6 +261,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         turretTemperatureStatusSignal,
         turretVoltageStatusSignal,
         turretPositionStatusSignal,
+        turretVelocityStatusSignal,
 
         // HOOD
         hoodStatorCurrentStatusSignal,
@@ -352,7 +356,8 @@ public class ShooterIOTalonFX implements ShooterIO {
                 turretSupplyCurrentStatusSignal,
                 turretTemperatureStatusSignal,
                 turretVoltageStatusSignal,
-                turretPositionStatusSignal));
+                turretPositionStatusSignal,
+                turretVelocityStatusSignal));
 
     // Updates Flywheel Lead Motor Inputs
     inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValue();
@@ -386,6 +391,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretVoltage = turretVoltageStatusSignal.getValue();
     inputs.turretPosition = turretPositionStatusSignal.getValue();
     inputs.turretReferencePosition = this.turretReferencePosition;
+    inputs.turretVelocity = turretVelocityStatusSignal.getValue();
+
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
     inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValue();

@@ -376,4 +376,8 @@ public class Shooter extends SubsystemBase {
   public void zeroTurret() {
     io.zeroTurretPosition();
   }
+
+  public AngularVelocity getTurretAngularVelocity() {
+    return shooterInputs.turretVelocity;
+  }
 }

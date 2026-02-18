@@ -52,6 +52,7 @@ public interface ShooterIO {
     Angle turretClosedLoopReferencePosition = Rotations.of(0.0);
     Angle turretClosedLoopErrorPosition = Rotations.of(0.0);
     Temperature turretTemperature = Celsius.of(0.0);
+    AngularVelocity turretVelocity = RotationsPerSecond.of(0.0);
 
     boolean hoodConnected = false;
     Current hoodStatorCurrent = Amps.of(0.0);
