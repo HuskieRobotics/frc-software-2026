@@ -110,70 +110,51 @@ public class New2026RobotConfig extends RobotConfig {
 
   private static final int LED_COUNT = 85;
 
-  private static final String CAMERA_NAME_0 = "40686739";
-  private static final String CAMERA_NAME_1 = "40708569";
-  private static final String CAMERA_NAME_2 = "40708556";
-  private static final String CAMERA_NAME_3 = "40708542";
+  private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
+  private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
+  private static final String CENTER_CAMERA_SERIAL_NUMBER = "25249734";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 17.5;
   private static final double MONO_DENOISE = 1.0;
 
-  // Front right camera
-  private static final Transform3d ROBOT_TO_CAMERA_0 =
-      new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(10.609),
-              Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(8.2085)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(18)));
-  // pitch 45 degrees
+  private static final int COLOR_EXPOSURE = 4500;
+  private static final double COLOR_GAIN = 5.0;
 
   // Back right camera
-  private static final Transform3d ROBOT_TO_CAMERA_1 =
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(-10.6095),
-              Units.inchesToMeters(8.052)),
-          new Rotation3d(
-              Units.degreesToRadians(0), Units.degreesToRadians(-30), Units.degreesToRadians(-90)));
-
-  // Front left camera
-  private static final Transform3d ROBOT_TO_CAMERA_2 =
-      new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(10.778),
-              Units.inchesToMeters(10.6085),
-              Units.inchesToMeters(8.2085)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-18)));
+              Units.inchesToMeters(-8.969),
+              Units.inchesToMeters(-11.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
 
   // Back left camera
-  private static final Transform3d ROBOT_TO_CAMERA_3 =
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.6095),
-              Units.inchesToMeters(10.778),
-              Units.inchesToMeters(8.052)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
+              Units.inchesToMeters(-8.969),
+              Units.inchesToMeters(11.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
+
+  // Center camera
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_CENTER_CAMERA =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(0.0), Units.inchesToMeters(0.0), Units.inchesToMeters(0.0)),
+          new Rotation3d(0, Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
 
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_0)
-          .id(CAMERA_NAME_0)
-          .location("FR")
-          .width(1920)
-          .height(1200)
-          .exposure(MONO_EXPOSURE)
-          .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
-          .stdDevFactor(1.0)
-          .build(),
-      CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_1)
-          .id(CAMERA_NAME_1)
+          .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
+          .id(BR_CAMERA_SERIAL_NUMBER)
           .location("BR")
           .width(1920)
           .height(1200)
@@ -183,9 +164,9 @@ public class New2026RobotConfig extends RobotConfig {
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_2)
-          .id(CAMERA_NAME_2)
-          .location("FL")
+          .robotToCameraTransform(ROBOT_TO_BL_CAMERA)
+          .id(BL_CAMERA_SERIAL_NUMBER)
+          .location("BL")
           .width(1920)
           .height(1200)
           .exposure(MONO_EXPOSURE)
@@ -194,14 +175,13 @@ public class New2026RobotConfig extends RobotConfig {
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CAMERA_3)
-          .id(CAMERA_NAME_3)
-          .location("BL")
-          .width(1920)
-          .height(1200)
-          .exposure(MONO_EXPOSURE)
-          .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .robotToCameraTransform(ROBOT_TO_CENTER_CAMERA)
+          .id(CENTER_CAMERA_SERIAL_NUMBER)
+          .location("center")
+          .width(1280)
+          .height(960)
+          .exposure(COLOR_EXPOSURE)
+          .gain(COLOR_GAIN)
           .stdDevFactor(1.0)
           .build(),
     };
