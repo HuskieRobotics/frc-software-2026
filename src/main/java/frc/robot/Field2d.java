@@ -41,7 +41,8 @@ public class Field2d {
   // for all four possible banks depending on alliance
   private Pose2d[] banks = new Pose2d[4];
 
-  private Pose2d[] passingZones = new Pose2d[4];
+  private Pose2d[] bluePassingZones = new Pose2d[2];
+  private Pose2d[] redPassingZones = new Pose2d[2];
 
   private Alliance alliance = DriverStation.Alliance.Blue;
 
@@ -155,7 +156,7 @@ public class Field2d {
         RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) + Units.inchesToMeters(3);
 
     // blue left passing zone
-    passingZones[0] =
+    bluePassingZones[0] =
         new Pose2d(
             PZ_BUFFER_X,
             FieldConstants.fieldWidth - PZ_BUFFER_Y,
@@ -163,7 +164,7 @@ public class Field2d {
                 0)); // FIXME: should this be our target rotation of where we want to pass to?
 
     // blue right passing zone
-    passingZones[1] =
+    bluePassingZones[1] =
         new Pose2d(
             PZ_BUFFER_X,
             PZ_BUFFER_Y,
@@ -171,10 +172,10 @@ public class Field2d {
                 0)); // FIXME: should this be our target rotation of where we want to pass to?
 
     // red left passing zone
-    passingZones[2] = FlippingUtil.flipFieldPose(passingZones[0]);
+    redPassingZones[0] = FlippingUtil.flipFieldPose(bluePassingZones[0]);
 
     // red right passing zone
-    passingZones[3] = FlippingUtil.flipFieldPose(passingZones[1]);
+    redPassingZones[1] = FlippingUtil.flipFieldPose(bluePassingZones[1]);
   }
 
   public void populateTrenchZone() {
@@ -501,20 +502,11 @@ public class Field2d {
   }
 
   public Pose2d getNearestPassingZone() {
-
-    List<Pose2d> passingZoneList = Arrays.asList(passingZones);
-
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    if (getAlliance() == Alliance.Blue) {
-      passingZoneList.add(passingZones[0]);
-      passingZoneList.add(passingZones[1]);
-    } else {
-      passingZoneList.add(passingZones[2]);
-      passingZoneList.add(passingZones[3]);
-    }
-
-    return pose.nearest(passingZoneList);
+    return (getAlliance() == Alliance.Blue
+        ? pose.nearest(Arrays.asList(bluePassingZones))
+        : pose.nearest(Arrays.asList(redPassingZones)));
   }
 
   public Translation2d getHubCenter() {

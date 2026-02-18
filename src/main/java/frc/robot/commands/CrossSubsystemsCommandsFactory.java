@@ -107,11 +107,11 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
     oi.getScoreFromBankButton()
-        .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+        .onTrue(getScoreSafeShotCommand(swerveDrivetrain, /*, hopper*/ oi, shooter, shooterModes));
 
     oi.getManualShootButton()
         .and(shooterModes::manualShootEnabled)
-        .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+        .whileTrue(getUnloadShooterCommand(swerveDrivetrain, shooter));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -130,11 +130,13 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getScoreSafeShotCommand(
       SwerveDrivetrain drivetrain /*, Hopper hopper */,
       OperatorInterface oi,
+      Shooter shooter,
       ShooterModes shooterModes) {
 
     return Commands.either(
         Commands.sequence(
-            getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/)),
+            getDriveToBankCommand(drivetrain),
+            getUnloadShooterCommand(drivetrain, shooter /*, hopper*/)),
         Commands.none(),
         () -> shooterModes.manualShootEnabled());
   }
@@ -166,9 +168,11 @@ public class CrossSubsystemsCommandsFactory {
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
-  public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain /*, Hopper hopper */) {
-
-    return Commands.sequence(Commands.runOnce(drivetrain::holdXstance));
+  public static Command getUnloadShooterCommand(
+      SwerveDrivetrain drivetrain, Shooter shooter /*, Hopper hopper */) {
+    return Commands.sequence(
+        Commands.runOnce(drivetrain::holdXstance),
+        Commands.runOnce(() -> shooter.setFlywheelVelocity(RotationsPerSecond.of(10.0))));
     // add hopper kick method in parallel
   }
 
@@ -313,10 +317,21 @@ public class CrossSubsystemsCommandsFactory {
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
             () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
-    unloadHopperOnTheMoveTrigger.onTrue(Commands.none()); // FIXME: run hopper
+    unloadHopperOnTheMoveTrigger.onTrue(
+        Commands.runOnce(
+            () -> shooter.setFlywheelVelocity(RotationsPerSecond.of(15.0)))); // FIXME: run hopper
+
+    // TEMP
+    unloadHopperOnTheMoveTrigger.onFalse(
+        Commands.runOnce(() -> shooter.setFlywheelVelocity(RotationsPerSecond.of(0.0))));
 
     Trigger unloadHopperForPassingTrigger =
         new Trigger(() -> !Field2d.getInstance().inAllianceZone() && shooterModes.isPassEnabled());
-    unloadHopperForPassingTrigger.onTrue(Commands.none()); // FIXME: run hopper
+    unloadHopperForPassingTrigger.onTrue(
+        Commands.runOnce(
+            () -> shooter.setFlywheelVelocity(RotationsPerSecond.of(10.0)))); // FIXME: run hopper
+    // TEMP
+    unloadHopperForPassingTrigger.onFalse(
+        Commands.runOnce(() -> shooter.setFlywheelVelocity(RotationsPerSecond.of(0.0))));
   }
 }
