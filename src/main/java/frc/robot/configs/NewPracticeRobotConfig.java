@@ -42,7 +42,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
   private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
-  private static final Distance WHEEL_RADIUS = Meters.of(0.050165);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.0515507563);
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
 
   private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
@@ -62,7 +62,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.18755;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 15.0; // determined after manual tuning
+  private static final double DRIVE_KP = 10.0; // determined after manual tuning
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 

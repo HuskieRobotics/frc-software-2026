@@ -795,9 +795,9 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
             swerveModule
                 .getDriveMotor()
                 .setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast, 0.25);
-            swerveModule
-                .getSteerMotor()
-                .setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast, 0.25);
+            // swerveModule
+            //     .getSteerMotor()
+            //     .setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast, 0.25);
           }
         });
   }
