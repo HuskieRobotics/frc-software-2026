@@ -343,10 +343,9 @@ public class Shooter extends SubsystemBase {
     degrees = ((degrees + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
 
     if (degrees < -135.0 || degrees > 135.0) {
-        return;
-    }
-    else{
-    io.setTurretPosition(Degrees.of(degrees));
+      return;
+    } else {
+      io.setTurretPosition(Degrees.of(degrees));
     }
   }
 

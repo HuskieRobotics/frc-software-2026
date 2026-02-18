@@ -313,12 +313,10 @@ public class CrossSubsystemsCommandsFactory {
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
             () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
-    unloadHopperOnTheMoveTrigger.onTrue(
-        Commands.run(() -> shooter.setIdleVelocity())); // FIXME: run hopper
+    unloadHopperOnTheMoveTrigger.onTrue(Commands.none()); // FIXME: run hopper
 
     Trigger unloadHopperForPassingTrigger =
         new Trigger(() -> !Field2d.getInstance().inAllianceZone() && shooterModes.isPassEnabled());
-    unloadHopperForPassingTrigger.onTrue(
-        Commands.run(() -> shooter.setIdleVelocity())); // FIXME: run hopper
+    unloadHopperForPassingTrigger.onTrue(Commands.none()); // FIXME: run hopper
   }
 }

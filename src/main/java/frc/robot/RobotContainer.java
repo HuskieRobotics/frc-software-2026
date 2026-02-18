@@ -370,7 +370,6 @@ public class RobotContainer {
 
     // register commands for other subsystems
     ArmCommandFactory.registerCommands(oi, arm);
-    ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(
         oi, swerveDrivetrain, vision, arm, elevator, shooter, shooterModes);
     ShooterCommandsFactory.registerCommands(oi, shooter);
