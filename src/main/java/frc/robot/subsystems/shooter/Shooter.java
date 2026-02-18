@@ -5,241 +5,376 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * Example subsystem for controlling the velocity of an shooter mechanism with independently
- * controlled top and bottom shooter wheels.
- *
- * <p>WARNING: This code is for example purposes only. It will not work with a physical shooter
- * mechanism without changes. While it is derived from Huskie Robotics 2024 shooter, it has been
- * simplified to highlight select best practices.
- *
- * <p>This example illustrates the following features:
- *
- * <ul>
- *   <li>AdvantageKit support for logging and replay
- *   <li>Use of an InterpolatingDoubleTreeMap to map distances to velocities
- *   <li>Use of a debouncer to determine if the wheels are at a setpoint
- *   <li>Use of logged tunable numbers for manual control and testing
- *   <li>Use of a simulation class to model the wheels' behavior in simulation
- *   <li>Use of a SysIdRoutine to perform system identification
- *   <li>Use of a system check command to verify the shooter's functionality
- *   <li>Use of a fault reporter to report issues with the shooter's devices
- * </ul>
- */
 public class Shooter extends SubsystemBase {
-  // all subsystems receive a reference to their IO implementation when constructed
+
   private ShooterIO io;
 
-  // all subsystems create the AutoLogged version of their IO inputs class
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
-  // When initially testing a mechanism, it is best to manually provide a voltage or current to
-  // verify the mechanical functionality. At times, this can be done via Phoenix Tuner. However,
-  // when multiple motors are involved, that is not possible. Using a tunables to enable testing
-  // mode and, for the shooter, specifying current or velocity is convenient. This feature is also
-  // an efficient approach when, for example, empirically tuning the velocity for different
-  // distances when shooting a game piece.
+  // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
-  private final LoggedTunableNumber topWheelVelocityRPS =
-      new LoggedTunableNumber("Shooter/Top Wheel Velocity (RPS)", 0);
-  private final LoggedTunableNumber bottomWheelVelocityRPS =
-      new LoggedTunableNumber("Shooter/Bottom Wheel Velocity (RPS)", 0);
-  private final LoggedTunableNumber topWheelCurrent =
-      new LoggedTunableNumber("Shooter/Top Wheel Current", 0);
-  private final LoggedTunableNumber bottomWheelCurrent =
-      new LoggedTunableNumber("Shooter/Bottom Wheel Current", 0);
+  private final LoggedTunableNumber flyWheelLeadVelocity =
+      new LoggedTunableNumber("Shooter/FlyWheelLead Velocity", 0);
+  private final LoggedTunableNumber flywheelLeadCurrent =
+      new LoggedTunableNumber("Shooter/FlywheelLead Current", 0);
+  private final LoggedTunableNumber turretPosition =
+      new LoggedTunableNumber("Shooter/Turret Position", 0);
+  private final LoggedTunableNumber turretVoltage =
+      new LoggedTunableNumber("Shooter/Turret Voltage", 0);
+  private final LoggedTunableNumber hoodPosition =
+      new LoggedTunableNumber("Shooter/Hood Position", 0);
+  private final LoggedTunableNumber hoodVoltage =
+      new LoggedTunableNumber("Shooter/Hood Voltage", 0);
 
-  // As an alternative to determining a mathematical function to map distances to velocities,
-  // we can use an InterpolatingDoubleTreeMap to store the distances and their corresponding
-  // velocities. The InterpolatingDoubleTreeMap will linearly interpolate the velocity
-  // for any distance that is not explicitly defined in the map.
-  private InterpolatingDoubleTreeMap shootingMap = new InterpolatingDoubleTreeMap();
-  private static final double FIELD_MEASUREMENT_OFFSET = 0.0;
-  private final double[] shootingPopulationDistances = {7.329, 9.649, 11.336};
-  private final double[] shootingPopulationRealVelocities = {40.0, 48.0, 55.0};
+  private final Debouncer hoodAtSetpointDebouncer = new Debouncer(0.1);
+  private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
+  private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
 
-  private final Debouncer topAtSetpointDebouncer = new Debouncer(0.1);
-  private final Debouncer bottomAtSetpointDebouncer = new Debouncer(0.1);
+  private CurrentSpikeDetector hoodJamDetector =
+      new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
 
-  // The SysId routine is used to characterize the mechanism. While the SysId routine is intended to
-  // be used for voltage control, we can apply a current instead and reinterpret the units when
-  // performing the analysis in SysId.
-  private final SysIdRoutine shooterWheelTopSysIdRoutine =
+  private CurrentSpikeDetector turretJamDetector =
+      new CurrentSpikeDetector(
+          TURRET_CURRENT_THRESHOLD_AMPS, TURRET_CURRENT_TIME_THRESHOLD_SECONDS);
+
+  private final SysIdRoutine flywheelIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
               Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
               Volts.of(10), // will actually be a step to 10 A
-              Seconds.of(5), // override default timeout (10 s)
+              Seconds.of(10), // override default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
           new SysIdRoutine.Mechanism(
-              output -> io.setShooterWheelTopCurrent(Amps.of(output.in(Volts))),
+              output -> io.setFlywheelCurrent(Amps.of(output.in(Volts))),
               null,
               this)); // treat volts as amps
-  private final SysIdRoutine shooterWheelBottomSysIdRoutine =
+
+  private final SysIdRoutine hoodIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
-              Volts.of(10), // will actually be a step to 10 A
-              Seconds.of(5), // override default timeout (10 s)
-              // Log state with SignalLogger class
-              state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
-          new SysIdRoutine.Mechanism(
-              output -> io.setShooterWheelBottomCurrent(Amps.of(output.in(Volts))),
-              null,
-              this)); // treat volts as amps
+              Volts.of(0.5).per(Second), // override default ramp rate (1 V/s)
+              Volts.of(2.0), // override default step voltage (7 V)
+              null, // use default timeout (10 s)
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(output -> io.setHoodVoltage(output), null, this));
+
+  private final SysIdRoutine turretIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(0.5).per(Second), // override default ramp rate (1 V/s)
+              Volts.of(2.0), // override default step voltage (7 V)
+              null, // use default timeout (10 s)
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(output -> io.setTurretVoltage(output), null, this));
 
   public Shooter(ShooterIO io) {
+    if (io == null) {
+      throw new IllegalArgumentException("ShooterIO cannot be null");
+    }
     this.io = io;
 
-    populateShootingMap();
+    SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Current", flywheelIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Hood Voltage", hoodIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Turret Voltage", turretIdRoutine);
 
-    // Register this subsystem's SysId routine with the SysIdRoutineChooser. This allows
-    // the routine to be selected and executed from the dashboard.
-    SysIdRoutineChooser.getInstance()
-        .addOption("Shooter Wheel Top Current", shooterWheelTopSysIdRoutine);
-    SysIdRoutineChooser.getInstance()
-        .addOption("Shooter Wheel Bottom Current", shooterWheelBottomSysIdRoutine);
-
-    // Register this subsystem's system check command with the fault reporter. The system check
-    // command can be added to the Elastic Dashboard to execute the system test.
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
+    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getShooterSystemCheckCommand());
   }
 
   @Override
   public void periodic() {
-    // the first step in periodic is to update the inputs from the IO implementation.
     io.updateInputs(shooterInputs);
 
-    // the next step is to log the inputs to the AdvantageKit logger.
     Logger.processInputs(SUBSYSTEM_NAME, shooterInputs);
 
-    // If the testing mode is enabled, set either the velocity (if not zero) or apply the
-    // specified current (if not zero).
+    // the jam detectors must be updated every cycle in order to function properly
+    hoodJamDetector.update(shooterInputs.hoodStatorCurrent.in(Amps));
+    turretJamDetector.update(shooterInputs.turretStatorCurrent.in(Amps));
+
     if (testingMode.get() == 1) {
-      if (topWheelVelocityRPS.get() != 0) {
-        io.setShooterWheelTopVelocity(RotationsPerSecond.of(topWheelVelocityRPS.get()));
-      } else if (topWheelCurrent.get() != 0) {
-        io.setShooterWheelTopCurrent(Amps.of(topWheelCurrent.get()));
+      // Flywheel Lead
+      if (flyWheelLeadVelocity.get() != 0) {
+        io.setFlywheelVelocity(RotationsPerSecond.of(flyWheelLeadVelocity.get()));
+      } else if (flywheelLeadCurrent.get() != 0) {
+        io.setFlywheelCurrent(Amps.of(flywheelLeadCurrent.get()));
       }
-      if (bottomWheelVelocityRPS.get() != 0) {
-        io.setShooterWheelBottomVelocity(RotationsPerSecond.of(bottomWheelVelocityRPS.get()));
-      } else if (bottomWheelCurrent.get() != 0) {
-        io.setShooterWheelBottomCurrent(Amps.of(bottomWheelCurrent.get()));
+
+      // Turret
+      if (turretPosition.get() != 0) {
+        io.setTurretPosition(Degrees.of(turretPosition.get()));
+      } else if (turretVoltage.get() != 0) {
+        io.setTurretVoltage(Volts.of(turretVoltage.get()));
+      }
+
+      // Hood
+      // Hood
+      if (hoodPosition.get() != 0) {
+        io.setHoodPosition(Degrees.of(hoodPosition.get()));
+      } else if (hoodVoltage.get() != 0) {
+        io.setHoodVoltage(Volts.of(hoodVoltage.get()));
       }
     }
 
-    // Log how long this subsystem takes to execute its periodic method.
-    // This is useful for debugging performance issues.
+    Transform3d shooterPose =
+        new Transform3d(
+            Units.inchesToMeters(-4.5),
+            Units.inchesToMeters(2.5),
+            Units.inchesToMeters(22.0),
+            new Rotation3d(
+                0.0,
+                -shooterInputs.hoodPosition.in(Radians),
+                shooterInputs.turretPosition.in(Radians)));
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/pose",
+        new Pose3d(RobotOdometry.getInstance().getEstimatedPose()).plus(shooterPose));
+
     LoggedTracer.record("Shooter");
   }
 
-  public void setIdleVelocity() {
-    io.setShooterWheelBottomVelocity(SHOOTER_IDLE_VELOCITY);
-    io.setShooterWheelTopVelocity(SHOOTER_IDLE_VELOCITY);
-  }
-
-  // While we cannot use subtypes of Measure in the inputs class due to logging limitations, we do
-  // strive to use them (e.g., Distance) throughout the rest of the code to mitigate bugs due to
-  // unit mismatches.
-  public void setVelocity(Distance distance) {
-    // Subsystems may need to log additional information that is not part of the inputs. This is
-    // done for convenience as additional values can always be logged when replaying a log file.
-    // While this is often done in the periodic method, at times values are only logged when they
-    // are changed.
-    Logger.recordOutput("Shooter/distance", distance);
-
-    io.setShooterWheelTopVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
-    io.setShooterWheelBottomVelocity(RotationsPerSecond.of(shootingMap.get(distance.in(Meters))));
-  }
-
-  public boolean isTopShooterAtSetpoint() {
-    // This method uses a debouncer to determine if the shooter wheels are at the setpoint velocity.
-    // The velocity is considered at the setpoint if the velocity is within tolerance for the period
-    // specified when constructing the debouncer (e.g., 0.1 seconds or 5 loop iterations).
-    return topAtSetpointDebouncer.calculate(
-        shooterInputs.shootMotorTopVelocity.isNear(
-            shooterInputs.shootMotorTopReferenceVelocity, VELOCITY_TOLERANCE));
-  }
-
-  public boolean isBottomShooterAtSetpoint() {
-    return bottomAtSetpointDebouncer.calculate(
-        shooterInputs.shootMotorBottomVelocity.isNear(
-            shooterInputs.shootMotorBottomReferenceVelocity, VELOCITY_TOLERANCE));
-  }
-
-  private void populateShootingMap() {
-    for (int i = 0; i < shootingPopulationDistances.length; i++) {
-      shootingMap.put(
-          shootingPopulationDistances[i] + FIELD_MEASUREMENT_OFFSET,
-          shootingPopulationRealVelocities[i]);
-    }
-  }
-
-  private Command getSystemCheckCommand() {
-    // A subsystem's system check command is used to verify the functionality of the subsystem. It
-    // should perform a sequence of commands (usually encapsulated in another method). The command
-    // should always be decorated with an `until` condition that checks for faults in the subsystem
-    // and an `andThen` condition that sets the subsystem to a safe state. This ensures that if any
-    // faults are detected, the test will stop and the subsystem is always left in a safe state.
-    return Commands.sequence(
-            getPresetCheckCommand(Meters.of(7.0)),
-            getPresetCheckCommand(Meters.of(9.0)),
-            getPresetCheckCommand(Meters.of(11.0)),
-            getPresetCheckCommand(Meters.of(13.0)))
-        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+  public Command getShooterSystemCheckCommand() {
+    return Commands.sequence(getTestVelocityCommand(), getTestPositionCommand())
+        .until(
+            () ->
+                !FaultReporter.getInstance()
+                    .getFaults(SUBSYSTEM_NAME)
+                    .isEmpty()) // .until() stops the sequence of commands, if it is triggered true,
+        // so if isEmpty returns false, that gets negated by the ! and
+        // becomes true.
+        // Then the .until() would stop the rest of the commands from running, because a fault has
+        // been detected. Otherwise, if .until() evaluates to false, then the system check keeps
+        // running.
         .andThen(
             Commands.runOnce(
                 () -> {
-                  io.setShooterWheelBottomVelocity(RotationsPerSecond.of(0.0));
-                  io.setShooterWheelTopVelocity(RotationsPerSecond.of(0.0));
+                  io.setFlywheelVelocity(
+                      RotationsPerSecond.of(30)); // FIXME: update value when necessary
                 }));
   }
 
-  private Command getPresetCheckCommand(Distance distance) {
+  public Command getTestVelocityCommand() {
     return Commands.sequence(
-        Commands.runOnce(() -> this.setVelocity(distance)),
-        Commands.waitSeconds(2.0),
+        // check if the velocity is at setpoint 1
         Commands.runOnce(
-            () ->
-                this.checkVelocity(
-                    RotationsPerSecond.of(shootingMap.get(distance.in(Meters))),
-                    RotationsPerSecond.of(shootingMap.get(distance.in(Meters))))));
+            () -> io.setFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.waitSeconds(3),
+        Commands.runOnce(
+            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        // check if the velocity is at setpoint 2
+        Commands.runOnce(
+            () -> io.setFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(
+            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+
+        // check if the velocity is at setpoint 3
+        Commands.runOnce(
+            () -> io.setFlywheelVelocity((ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS))),
+        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(
+            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
   }
 
-  private void checkVelocity(AngularVelocity topVelocity, AngularVelocity bottomVelocity) {
-    // check bottom motor
-    if (!this.shooterInputs.shootMotorBottomVelocity.isNear(bottomVelocity, VELOCITY_TOLERANCE)) {
+  public Command getTestPositionCommand() {
+    return Commands.sequence(
+        // check if hood and turret are at setpoint 1
+        Commands.runOnce(
+            () -> io.setHoodPosition(Degrees.of(ShooterConstants.HOOD_SETPOINT_1_DEGREES))),
+        Commands.runOnce(
+            () -> io.setTurretPosition(Degrees.of(ShooterConstants.TURRET_SETPOINT_1_DEGREES))),
+        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(
+            () ->
+                this.checkPosition(
+                    ShooterConstants.HOOD_SETPOINT_1_DEGREES,
+                    ShooterConstants.TURRET_SETPOINT_1_DEGREES)),
+
+        // check if hood and turret are at setpoint 2
+        Commands.runOnce(
+            () -> io.setHoodPosition(Degrees.of(ShooterConstants.HOOD_SETPOINT_2_DEGREES))),
+        Commands.runOnce(
+            () -> io.setTurretPosition(Degrees.of(ShooterConstants.TURRET_SETPOINT_2_DEGREES))),
+        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(
+            () ->
+                this.checkPosition(
+                    ShooterConstants.HOOD_SETPOINT_2_DEGREES,
+                    ShooterConstants.TURRET_SETPOINT_2_DEGREES)),
+
+        // check if hood and turret are at setpoint 3
+        Commands.runOnce(
+            () -> io.setHoodPosition(Degrees.of(ShooterConstants.HOOD_SETPOINT_3_DEGREES))),
+        Commands.runOnce(
+            () -> io.setTurretPosition(Degrees.of(ShooterConstants.TURRET_SETPOINT_3_DEGREES))),
+        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(
+            () ->
+                this.checkPosition(
+                    ShooterConstants.HOOD_SETPOINT_3_DEGREES,
+                    ShooterConstants.TURRET_SETPOINT_3_DEGREES)));
+  }
+
+  public void checkFlywheelVelocity(AngularVelocity flywheelTargetVelocity) {
+    if (shooterInputs.flywheelLeadVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
-              "Bottom shooter wheel velocity out of tolerance, should be "
-                  + bottomVelocity
-                  + " but is "
-                  + this.shooterInputs.shootMotorBottomVelocity);
+              "flywheel lead is out of tolerance, should be "
+                  + flywheelTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + shooterInputs.flywheelLeadVelocity.in(RotationsPerSecond)
+                  + " RPS");
     }
-    // check top motor
-    if (!this.shooterInputs.shootMotorTopVelocity.isNear(topVelocity, VELOCITY_TOLERANCE)) {
+
+    if (shooterInputs.flywheelFollow1Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
-              "Top shooter wheel velocity out of tolerance, should be "
-                  + topVelocity
-                  + " but is "
-                  + this.shooterInputs.shootMotorTopVelocity);
+              "flywheel follow 1 is out of tolerance, should be "
+                  + flywheelTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
+                  + " RPS");
     }
+
+    if (shooterInputs.flywheelFollow2Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "flywheel follow 2 is out of tolerance, should be "
+                  + flywheelTargetVelocity.in(RotationsPerSecond)
+                  + " RPS but is "
+                  + shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
+                  + " RPS");
+    }
+  }
+
+  public void checkPosition(
+      double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees) {
+    // Check if hood position is where it should be
+    if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees)
+        > ShooterConstants.HOOD_TOLERANCE_ANGLE.in(Degrees)) {
+      if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees < 0) {
+        FaultReporter.getInstance()
+            .addFault(
+                SUBSYSTEM_NAME,
+                "Hood position is too low, should be "
+                    + hoodIntendedPositionDegrees
+                    + " but is "
+                    + shooterInputs.hoodPosition);
+      } else if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees > 0) {
+        FaultReporter.getInstance()
+            .addFault(
+                SUBSYSTEM_NAME,
+                "Hood position is too high, should be "
+                    + hoodIntendedPositionDegrees
+                    + " but is "
+                    + shooterInputs.hoodPosition);
+      }
+    }
+
+    // Check if turret position is where it should be
+    if (Math.abs(shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees)
+        > ShooterConstants.TURRET_TOLERANCE_ANGLE.in(Degrees)) {
+      if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees < 0) {
+        FaultReporter.getInstance()
+            .addFault(
+                SUBSYSTEM_NAME,
+                "Turret position is too low, should be "
+                    + turretIntendedPositionDegrees
+                    + " but is "
+                    + shooterInputs.turretPosition);
+      } else if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees > 0) {
+        FaultReporter.getInstance()
+            .addFault(
+                SUBSYSTEM_NAME,
+                "Turret position is too high, should be "
+                    + turretIntendedPositionDegrees
+                    + " but is "
+                    + shooterInputs.turretPosition);
+      }
+    }
+  }
+
+  public boolean isHoodAtSetPoint() {
+    return hoodAtSetpointDebouncer.calculate(
+        shooterInputs.hoodPosition.isNear(
+            shooterInputs.hoodReferencePosition, HOOD_TOLERANCE_ANGLE));
+  }
+
+  public boolean isTurretAtSetPoint() {
+
+    return turretAtSetpointDebouncer.calculate(
+        shooterInputs.turretPosition.isNear(
+            shooterInputs.turretReferencePosition, TURRET_TOLERANCE_ANGLE));
+  }
+
+  public boolean isFlywheelAtSetPoint() {
+    return flywheelAtSetpointDebouncer.calculate(
+        shooterInputs.flywheelLeadVelocity.isNear(
+            shooterInputs.flywheelLeadReferenceVelocity, VELOCITY_TOLERANCE));
+  }
+
+  public void setFlywheelVelocity(AngularVelocity velocity) {
+    io.setFlywheelVelocity(velocity);
+  }
+
+  public void setTurretPosition(Angle position) {
+
+    double degrees = position.in(Degrees);
+
+    degrees = ((degrees + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
+
+    if (degrees < -135.0 || degrees > 135.0) {
+        return;
+    }
+    else{
+    io.setTurretPosition(Degrees.of(degrees));
+    }
+  }
+
+  public void setHoodPosition(Angle position) {
+    io.setHoodPosition(position);
+  }
+
+  public boolean isHoodJammed() {
+    return hoodJamDetector.getAsBoolean();
+  }
+
+  public boolean isTurretJammed() {
+    return turretJamDetector.getAsBoolean();
+  }
+
+  public void lowerHoodSlow() {
+    io.lowerHoodSlow(HOOD_SLOW_LOWER_VOLTAGE);
+  }
+
+  public void stopHood() {
+    io.setHoodVoltage(Volts.of(0.0));
+  }
+
+  public void zeroHood() {
+    io.zeroHoodPosition();
+  }
+
+  public void zeroTurret() {
+    io.zeroTurretPosition();
   }
 }

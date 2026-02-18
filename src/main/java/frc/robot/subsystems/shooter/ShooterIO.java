@@ -2,60 +2,88 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
-
-  // The inputs class for a subsystem usually contains the stator and supply currents, temperature,
-  // voltage (or current), and, depending on the control mode, additional fields related to position
-  // or velocity (both measured and reference). The first property is always `connected` and logs if
-  // each device is reachable. Due to logging limitations, properties cannot be a subtype of
-  // Measure. Therefore all properties are suffix with their unit to mitigate bugs due to unit
-  // mismatches.
   @AutoLog
   public static class ShooterIOInputs {
 
-    // Top Shooter Motor Inputs
-    boolean shootMotorTopConnected = false;
-    Current shootMotorTopStatorCurrent = Amps.of(0.0);
-    Current shootMotorTopSupplyCurrent = Amps.of(0.0);
-    AngularVelocity shootMotorTopVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorTopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorTopClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorTopClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature shootMotorTopTemperature = Celsius.of(0.0);
-    Voltage shootMotorTopVoltage = Volts.of(0.0);
+    // FLYWHEEL LEAD
+    boolean flywheelLeadConnected = false;
+    Current flywheelLeadStatorCurrent = Amps.of(0.0);
+    Current flywheelLeadSupplyCurrent = Amps.of(0.0);
+    Voltage flywheelLeadVoltage = Volts.of(0.0);
+    Current flywheelLeadTorqueCurrent = Amps.of(0.0);
+    AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
+    AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelLeadTemperature = Celsius.of(0.0);
 
-    // Bottom Shooter Motor Inputs
-    boolean shootMotorBottomConnected = false;
-    Current shootMotorBottomStatorCurrent = Amps.of(0.0);
-    Current shootMotorBottomSupplyCurrent = Amps.of(0.0);
-    AngularVelocity shootMotorBottomVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorBottomReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorBottomClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity shootMotorBottomClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature shootMotorBottomTemperature = Celsius.of(0.0);
-    Voltage shootMotorBottomVoltage = Volts.of(0.0);
+    // FLYWHEEL FOLLOW 1
+    boolean flywheelFollow1Connected = false;
+    Current flywheelFollow1StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow1SupplyCurrent = Amps.of(0.0);
+    Voltage flywheelFollow1Voltage = Volts.of(0.0);
+    Current flywheelFollow1TorqueCurrent = Amps.of(0.0);
+    AngularVelocity flywheelFollow1Velocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow1Temperature = Celsius.of(0.0);
 
-    // Game Piece Detection
-    boolean sensorConnected = false;
-    boolean hasGamePiece = false;
-    Distance distanceToGamePiece = Meters.of(0.0);
-    double signalStrength = 0.0;
+    // FLYWHEEL FOLLOW 2
+    boolean flywheelFollow2Connected = false;
+    Current flywheelFollow2StatorCurrent = Amps.of(0.0);
+    Current flywheelFollow2SupplyCurrent = Amps.of(0.0);
+    Voltage flywheelFollow2Voltage = Volts.of(0.0);
+    Current flywheelFollow2TorqueCurrent = Amps.of(0.0);
+    AngularVelocity flywheelFollow2Velocity = RotationsPerSecond.of(0.0);
+    Temperature flywheelFollow2Temperature = Celsius.of(0.0);
+
+    boolean turretConnected = false;
+    Current turretStatorCurrent = Amps.of(0.0);
+    Current turretSupplyCurrent = Amps.of(0.0);
+    Voltage turretVoltage = Volts.of(0.0);
+    Angle turretPosition = Rotations.of(0.0);
+    Angle turretReferencePosition = Rotations.of(0.0);
+    Angle turretClosedLoopReferencePosition = Rotations.of(0.0);
+    Angle turretClosedLoopErrorPosition = Rotations.of(0.0);
+    Temperature turretTemperature = Celsius.of(0.0);
+
+    boolean hoodConnected = false;
+    Current hoodStatorCurrent = Amps.of(0.0);
+    Current hoodSupplyCurrent = Amps.of(0.0);
+    Voltage hoodVoltage = Volts.of(0.0);
+    Angle hoodPosition = Rotations.of(0.0);
+    Angle hoodReferencePosition = Rotations.of(0.0);
+    Angle hoodClosedLoopReferencePosition = Rotations.of(0.0);
+    Angle hoodClosedLoopErrorPosition = Rotations.of(0.0);
+    Temperature hoodTemperature = Celsius.of(0.0);
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-  public default void setShooterWheelTopVelocity(AngularVelocity velocity) {}
+  // Flywheel IO methods
+  public default void setFlywheelVelocity(AngularVelocity velocity) {}
 
-  public default void setShooterWheelBottomVelocity(AngularVelocity velocity) {}
+  public default void setFlywheelCurrent(Current amps) {}
 
-  public default void setShooterWheelTopCurrent(Current amps) {}
+  // Turret IO methods
+  public default void setTurretPosition(Angle position) {}
 
-  public default void setShooterWheelBottomCurrent(Current amps) {}
+  public default void setTurretVoltage(Voltage voltage) {}
+
+  // Hood IO methods
+  public default void setHoodPosition(Angle position) {}
+
+  public default void setHoodVoltage(Voltage voltage) {}
+
+  public default void lowerHoodSlow(Voltage voltage) {}
+
+  public default void zeroTurretPosition() {}
+
+  public default void zeroHoodPosition() {}
 }

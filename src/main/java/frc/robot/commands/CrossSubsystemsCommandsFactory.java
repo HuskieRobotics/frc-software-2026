@@ -194,7 +194,8 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(() -> arm.setAngle(Degrees.of(0.0)), arm),
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.Positions.BOTTOM), elevator),
-            Commands.runOnce(() -> shooter.setIdleVelocity(), shooter))
+            Commands.runOnce(shooter::stopHood, shooter))
+        // Commands.runOnce(() -> shooter.setIdleVelocity(), shooter))
         .withName("interrupt all");
   }
 

@@ -124,12 +124,8 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  // ELEVATOR EXAMPLE TRIGGERS
-  public default Trigger getRaiseElevatorSlowButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getLowerElevatorSlowButton() {
+  // Shooter triggers
+  public default Trigger getZeroHoodButton() {
     return new Trigger(() -> false);
   }
 }

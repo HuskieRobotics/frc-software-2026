@@ -1,8 +1,10 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterConstants {
 
@@ -14,39 +16,103 @@ public class ShooterConstants {
 
   public static final String SUBSYSTEM_NAME = "Shooter";
 
-  public static final int TOP_SHOOTER_MOTOR_ID = 27;
-  public static final int BOTTOM_SHOOTER_MOTOR_ID = 28;
-  public static final int GAME_PIECE_SENSOR_ID = 29;
+  public static final int FLYWHEEL_LEAD_MOTOR_ID = 20;
+  public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 21;
+  public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
+  public static final int HOOD_MOTOR_ID = 23;
+  public static final int TURRET_MOTOR_ID = 14;
 
-  // PID constants are determined empirically through tuning
-  public static final double TOP_SHOOT_KP = 5.0;
-  public static final double TOP_SHOOT_KI = 0.0;
-  public static final double TOP_SHOOT_KD = 0.0;
-  public static final double BOTTOM_SHOOT_KP = 5.0;
-  public static final double BOTTOM_SHOOT_KI = 0.0;
-  public static final double BOTTOM_SHOOT_KD = 0.0;
+  public static final double FLYWHEEL_KP = 8.0;
+  public static final double FLYWHEEL_KI = 0.0;
+  public static final double FLYWHEEL_KD = 0.0;
+  public static final double FLYWHEEL_KS = 5.3;
+  public static final double FLYWHEEL_KV = 0.04;
+  public static final double FLYWHEEL_KA = 0.0;
 
-  // feed forward constants are determined through running SysId commands and analyzing the results
-  // in SysId
-  public static final double TOP_SHOOT_KS = 6.0;
-  public static final double BOTTOM_SHOOT_KS = 7.0;
+  public static final boolean FLYWHEEL_LEAD_INVERTED = true;
+  public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.5;
+  public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
 
-  // current limits are determined based on current budget for the robot
-  public static final double SHOOT_MOTOR_TOP_CONTINUOUS_CURRENT_LIMIT = 30;
-  public static final double SHOOT_MOTOR_TOP_PEAK_CURRENT_LIMIT = 60;
-  public static final double SHOOT_MOTOR_TOP_PEAK_CURRENT_DURATION = 0.1;
-  public static final double SHOOT_MOTOR_BOTTOM_CONTINUOUS_CURRENT_LIMIT = 30;
-  public static final double SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_LIMIT = 60;
-  public static final double SHOOT_MOTOR_BOTTOM_PEAK_CURRENT_DURATION = 0.1;
+  public static final boolean FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD =
+      true; // FIXME: change to opposed if reversed
 
-  // the following are determined based on the mechanical design of the shooter
-  public static final double SHOOT_MOTORS_GEAR_RATIO = 0.5;
-  public static final boolean SHOOT_TOP_INVERTED = false;
-  public static final boolean SHOOT_BOTTOM_INVERTED = false;
-  public static final AngularVelocity SHOOTER_IDLE_VELOCITY = RotationsPerSecond.of(10.0);
-  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
+  // Follow 2 Constants
+  public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD =
+      false; // FIXME: change to opposed if reversed
 
-  // game pirece detection constants
-  public static final double DETECTOR_MIN_SIGNAL_STRENGTH = 2000;
-  public static final double DETECTOR_PROXIMITY_THRESHOLD = 0.1;
+  public static final double TURRET_KP = 19; // FIXME: update value
+  public static final double TURRET_KI = 0.0; // FIXME: update value
+  public static final double TURRET_KD = 0.0; // FIXME: update value
+  public static final double TURRET_KS = 0.39217; // FIXME: update value
+  public static final double TURRET_KV = 0.12; // FIXME: update value
+  public static final double TURRET_KA = 0.022794; // FIXME: update value
+
+  public static final boolean TURRET_INVERTED =
+      false; // FIXME: update when first running the turret
+  public static final double TURRET_GEAR_RATIO = 41.666; // FIXME: way too low ask Noga for correct
+  public static final double TURRET_LENGTH_METERS =
+      1.0; // this is irrelevant for simulation since gravity doesn't affect the model
+  public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
+
+  public static final double HOOD_KP = 600;
+  public static final double HOOD_KI = 0.0;
+  public static final double HOOD_KD = 0.0;
+  public static final double HOOD_KS = 0.4;
+  public static final double HOOD_KV = 0.0;
+  public static final double HOOD_KA = 0.0;
+
+  public static final boolean HOOD_INVERTED = false;
+  public static final double HOOD_GEAR_RATIO = 144.0;
+  public static final double HOOD_LENGTH_METERS = 0.2;
+  public static final double HOOD_MASS_KG = 2.0;
+  public static final Angle HOOD_MIN_ANGLE = Degrees.of(20.0);
+  public static final Angle HOOD_MAX_ANGLE = Degrees.of(52.0);
+  public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
+
+  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0);
+  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
+
+  public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
+
+  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(-135); // FIXME: update value
+  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(135); // FIXME: update value
+
+  public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
+  public static final int TURRET_PEAK_CURRENT_LIMIT = 40;
+
+  public static final double HOOD_PEAK_CURRENT_LIMIT = 20;
+  public static final int HOOD_CONTINUOUS_CURRENT_LIMIT = 15;
+  public static final double HOOD_PEAK_CURRENT_DURATION = 0.1;
+
+  public static final int TURRET_CONTINUOUS_CURRENT_LIMIT = 15;
+  public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
+
+  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
+  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
+
+  // Hood and turret position setpoints
+  public static final double HOOD_SETPOINT_1_DEGREES = 0.0; // FIXME: determine test points
+  public static final double HOOD_SETPOINT_2_DEGREES = 0.0; // FIXME: determine test points
+  public static final double HOOD_SETPOINT_3_DEGREES = 0.0; // FIXME: determine test points
+
+  public static final double TURRET_SETPOINT_1_DEGREES = 0.0; // FIXME: determine test points
+  public static final double TURRET_SETPOINT_2_DEGREES = 0.0; // FIXME: determine test points
+  public static final double TURRET_SETPOINT_3_DEGREES = 0.0; // FIXME: determine test points
+
+  // Velocity setpoints for lead flywheel
+  public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_1_RPS =
+      RotationsPerSecond.of(30); // FIXME: determine test points
+  public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_2_RPS =
+      RotationsPerSecond.of(60); // FIXME: determine test points
+  public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_3_RPS =
+      RotationsPerSecond.of(90); // FIXME: determine test points
+
+  public static final double COMMAND_WAIT_TIME_SECONDS = 3;
+
+  public static final double HOOD_CURRENT_THRESHOLD_AMPS = 35.0;
+  public static final double HOOD_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
+
+  public static final double TURRET_CURRENT_THRESHOLD_AMPS = 35.0;
+  public static final double TURRET_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
 }

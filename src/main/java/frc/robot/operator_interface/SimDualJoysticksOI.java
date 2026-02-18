@@ -56,6 +56,11 @@ public class SimDualJoysticksOI extends OperatorDashboard {
     return translateJoystickButtons[3];
   }
 
+  @Override
+  public Trigger getZeroHoodButton() {
+    return translateJoystickButtons[4];
+  }
+
   // rotation joystick
 
   @Override

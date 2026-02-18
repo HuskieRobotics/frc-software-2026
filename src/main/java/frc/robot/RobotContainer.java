@@ -30,7 +30,7 @@ import frc.robot.commands.ArmCommandFactory;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
-import frc.robot.commands.ElevatorCommandsFactory;
+import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.CalypsoRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -283,12 +283,12 @@ public class RobotContainer {
   private void createPracticeBoardSubsystems() {
     // change the following to connect the subsystem being tested to actual hardware
     swerveDrivetrain = new SwerveDrivetrain(new SwerveDrivetrainIO() {});
-    vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    vision = new Vision(new VisionIO[] {});
 
     // FIXME: initialize other subsystems
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
+    shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(elevator);
   }
 
@@ -373,6 +373,7 @@ public class RobotContainer {
     ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(
         oi, swerveDrivetrain, vision, arm, elevator, shooter, shooterModes);
+    ShooterCommandsFactory.registerCommands(oi, shooter);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);

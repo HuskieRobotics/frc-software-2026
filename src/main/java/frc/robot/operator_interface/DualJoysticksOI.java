@@ -60,6 +60,11 @@ public class DualJoysticksOI extends OperatorDashboard {
     return translateJoystickButtons[9];
   }
 
+  @Override
+  public Trigger getZeroHoodButton() {
+    return translateJoystickButtons[10];
+  }
+
   // Rotation Joystick
   @Override
   public double getRotate() {
