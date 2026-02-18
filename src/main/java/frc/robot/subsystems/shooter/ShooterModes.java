@@ -272,7 +272,7 @@ public class ShooterModes extends SubsystemBase {
       Double[] staticShotSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
 
       if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-        // shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
+        shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
         shooter.setHoodPosition(ShooterConstants.HOOD_LOWER_ANGLE_LIMIT);
         shooter.setTurretPosition(Degrees.of(staticShotSetpoints[2]));
       } else {
@@ -283,7 +283,7 @@ public class ShooterModes extends SubsystemBase {
                 Degrees.of(staticShotSetpoints[1]),
                 Degrees.of(staticShotSetpoints[2]));
 
-        // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
+        shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
         shooter.setHoodPosition(ShooterConstants.HOOD_LOWER_ANGLE_LIMIT);
         shooter.setTurretPosition(Degrees.of(otmShot[2]));
       }
@@ -296,7 +296,7 @@ public class ShooterModes extends SubsystemBase {
 
       if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
           || this.primaryMode == ShooterMode.MANUAL_SHOOT) {
-        // shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
+        shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
         shooter.setHoodPosition(Degrees.of(staticShotSetpoints[1]));
         shooter.setTurretPosition(Degrees.of(staticShotSetpoints[2]));
       } else {
@@ -306,7 +306,7 @@ public class ShooterModes extends SubsystemBase {
                 Degrees.of(staticShotSetpoints[1]),
                 Degrees.of(staticShotSetpoints[2]));
 
-        // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
+        shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
         shooter.setHoodPosition(Degrees.of(otmShot[1]));
         shooter.setTurretPosition(Degrees.of(otmShot[2]));
       }
@@ -322,7 +322,7 @@ public class ShooterModes extends SubsystemBase {
               Degrees.of(idealShotSetpoints[1]),
               Degrees.of(idealShotSetpoints[2]));
 
-      // shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
+      shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
       shooter.setHoodPosition(Degrees.of(otmShot[1]));
       shooter.setTurretPosition(Degrees.of(otmShot[2]));
     }
