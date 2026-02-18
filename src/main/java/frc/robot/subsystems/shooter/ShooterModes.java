@@ -3,12 +3,12 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -398,13 +398,18 @@ public class ShooterModes extends SubsystemBase {
 
     double idealShotVelocity =
         idealVelocityFromFunction(distance); // this.hubDistanceToVelocityMap.get(distance);
-    Angle idealTurretAngle = Radians.of(Math.atan2(deltaX, deltaY));
+
+    Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
+    Rotation2d robotRelativeTurretAngleRadians =
+        robotPose.getRotation().minus(new Rotation2d(fieldRelativeTurretAngle));
+    Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
+
     Angle idealHoodAngle =
         idealHoodAngleFromFunction(
             distance); // Degrees.of(this.hubDistanceToHoodMap.get(distance));
 
     return new Double[] {
-      idealShotVelocity, idealHoodAngle.in(Degrees), idealTurretAngle.in(Degrees)
+      idealShotVelocity, idealHoodAngle.in(Degrees), robotRelativeTurretAngle.in(Degrees)
     };
   }
 
@@ -419,13 +424,18 @@ public class ShooterModes extends SubsystemBase {
     // function only applies for hub shots but added a constant value to differentiate in sim
     double idealShotVelocity =
         10.0 + idealVelocityFromFunction(distance); // this.passDistanceToVelocityMap.get(distance);
-    Angle idealTurretAngle = Radians.of(1.0 + Math.atan2(deltaX, deltaY));
+
+    Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
+    Rotation2d robotRelativeTurretAngleRadians =
+        robotPose.getRotation().minus(new Rotation2d(fieldRelativeTurretAngle));
+    Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
+
     Angle idealHoodAngle =
         idealHoodAngleFromFunction(
             distance + 10.0); // Degrees.of(this.passDistanceToHoodMap.get(distance));
 
     return new Double[] {
-      idealShotVelocity, idealHoodAngle.in(Degrees), idealTurretAngle.in(Degrees)
+      idealShotVelocity, idealHoodAngle.in(Degrees), robotRelativeTurretAngle.in(Degrees)
     };
   }
 }

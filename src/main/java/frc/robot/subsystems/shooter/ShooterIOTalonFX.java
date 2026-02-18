@@ -67,7 +67,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Current> hoodSupplyCurrentStatusSignal;
   private StatusSignal<AngularVelocity> turretVelocityStatusSignal;
 
-
   // Angular Velocity Status Signals
   // For flywheel lead motor
   private StatusSignal<AngularVelocity> flywheelLeadVelocityStatusSignal;
