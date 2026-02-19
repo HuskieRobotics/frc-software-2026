@@ -324,9 +324,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.TURRET_GEAR_RATIO,
             ShooterConstants.TURRET_LENGTH_METERS,
             ShooterConstants.TURRET_MASS_KG,
-            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Radians),
-            ShooterConstants.TURRET_UPPER_ANGLE_LIMIT.in(Radians),
-            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Radians),
+            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Degrees),
+            ShooterConstants.TURRET_UPPER_ANGLE_LIMIT.in(Degrees),
+            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Degrees),
             false,
             ShooterConstants.SUBSYSTEM_NAME + " Turret");
     this.hoodLeadSim =
@@ -336,9 +336,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             ShooterConstants.HOOD_GEAR_RATIO,
             ShooterConstants.HOOD_LENGTH_METERS,
             ShooterConstants.HOOD_MASS_KG,
-            ShooterConstants.HOOD_MIN_ANGLE.in(Radians),
-            ShooterConstants.HOOD_MAX_ANGLE.in(Radians),
-            ShooterConstants.HOOD_STARTING_ANGLE.in(Radians),
+            ShooterConstants.HOOD_MIN_ANGLE.in(Degrees),
+            ShooterConstants.HOOD_MAX_ANGLE.in(Degrees),
+            ShooterConstants.HOOD_STARTING_ANGLE.in(Degrees),
             false,
             ShooterConstants.SUBSYSTEM_NAME + " Hood");
   }
