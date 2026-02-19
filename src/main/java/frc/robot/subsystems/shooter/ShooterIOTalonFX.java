@@ -95,7 +95,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   // status signals for detector
   private StatusSignal<Distance> fuelDetectorDistanceStatusSignal;
   private StatusSignal<Double> fuelDetectorSignalStrengthStatusSignal;
-  private StatusSignal<Boolean> fuelDetectorDetectedStatusSignal;
+  private StatusSignal<Boolean> fuelDetectorDetectedFuelStatusSignal;
 
   private Angle hoodReferencePosition = Degrees.of(0.0);
   private Angle turretReferencePosition = Degrees.of(0.0);
@@ -253,7 +253,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     // Assign fuel detector status signals
     fuelDetectorDistanceStatusSignal = fuelDetector.getDistance();
     fuelDetectorSignalStrengthStatusSignal = fuelDetector.getSignalStrength();
-    fuelDetectorDetectedStatusSignal = fuelDetector.getIsDetected();
+    fuelDetectorDetectedFuelStatusSignal = fuelDetector.getIsDetected();
 
     Phoenix6Util.registerSignals(
         true,
@@ -298,7 +298,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         // FUEL DETECTOR
         fuelDetectorDistanceStatusSignal,
         fuelDetectorSignalStrengthStatusSignal,
-        fuelDetectorDetectedStatusSignal);
+        fuelDetectorDetectedFuelStatusSignal);
 
     // Configure all motors
     configFlywheelLead(flywheelLead, "flywheel lead", flywheelLeadConfigAlert);
@@ -393,7 +393,7 @@ public class ShooterIOTalonFX implements ShooterIO {
             BaseStatusSignal.isAllGood(
                 fuelDetectorDistanceStatusSignal,
                 fuelDetectorSignalStrengthStatusSignal,
-                fuelDetectorDetectedStatusSignal));
+                fuelDetectorDetectedFuelStatusSignal));
 
     // Updates Flywheel Lead Motor Inputs
     inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValue();
@@ -437,7 +437,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     // Updates Fuel Detector Inputs
     inputs.fuelDetectorConnected = fuelDetector.isConnected();
-    inputs.fuelDetectorHasFuel = fuelDetectorDetectedStatusSignal.getValue();
+    inputs.fuelDetectorHasFuel = fuelDetectorDetectedFuelStatusSignal.getValue();
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead

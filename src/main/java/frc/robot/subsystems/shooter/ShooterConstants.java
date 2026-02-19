@@ -118,6 +118,5 @@ public class ShooterConstants {
 
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
-  public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
-      0.5; // meters, FIXME: determine value
+  public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD = 0.1; // meters, FIXME: determine value
 }
