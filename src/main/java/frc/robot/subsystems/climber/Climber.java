@@ -69,7 +69,10 @@ public class Climber extends SubsystemBase {
   public void setClimberVoltage(Voltage voltage) {
     io.setClimberVoltage(voltage);
   }
-  public Command getClimberSystemCheckCommand() {}
+
+  public Command getClimberSystemCheckCommand() {
+    return null; // TODO: implement system check command
+  }
 
   public boolean isAngleAtSetpoint() {
 
