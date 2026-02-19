@@ -7,6 +7,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
@@ -68,6 +69,7 @@ public class Climber extends SubsystemBase {
   public void setClimberVoltage(Voltage voltage) {
     io.setClimberVoltage(voltage);
   }
+  public Command getClimberSystemCheckCommand() {}
 
   public boolean isAngleAtSetpoint() {
 
