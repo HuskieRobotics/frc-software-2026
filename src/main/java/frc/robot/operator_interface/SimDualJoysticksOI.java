@@ -64,7 +64,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToLeftClimbButton() {
+  public Trigger getDriveToClosestTowerSideButton() {
     return rotateJoystickButtons[1];
   }
 

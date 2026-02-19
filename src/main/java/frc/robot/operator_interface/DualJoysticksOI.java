@@ -46,7 +46,7 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToLeftClimbButton() {
+  public Trigger getDriveToClosestTowerSideButton() {
     return translateJoystickButtons[2]; // FIXME: ask elizabeth which button she wants for this
   }
 

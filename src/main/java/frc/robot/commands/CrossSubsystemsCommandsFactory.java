@@ -106,13 +106,9 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
-    oi.getDriveToLeftClimbButton()
+    oi.getDriveToClosestTowerSideButton()
         .and(() -> inClimbingTolerance(swerveDrivetrain.getPose()))
-        .onTrue(getDriveToLeftClimbCommand(swerveDrivetrain, climber, oi));
-
-    oi.getDriveToRightClimbButton()
-        .and(() -> inClimbingTolerance(swerveDrivetrain.getPose()))
-        .onTrue(getDriveToRightClimbCommand(swerveDrivetrain, climber, oi));
+        .onTrue(getDriveToClosetTowerSideCommand(swerveDrivetrain, climber, oi));
 
     oi.getReleaseAndStowButton().onTrue(getReleaseAndStowCommand(swerveDrivetrain, climber));
 
@@ -183,7 +179,7 @@ public class CrossSubsystemsCommandsFactory {
         .withName("drive to pose");
   }
 
-  private static Command getDriveToLeftClimbCommand(
+  private static Command getDriveToClosetTowerSideCommand(
       SwerveDrivetrain swerveDrivetrain, Climber climber, OperatorInterface oi) {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -191,7 +187,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.parallel(
                 new DriveToPose(
                     swerveDrivetrain,
-                    CrossSubsystemsCommandsFactory::getLeftClimbPose,
+                    () -> getClosestTowerSidePose(swerveDrivetrain.getPose()),
                     xController,
                     yController,
                     thetaController,
@@ -205,32 +201,7 @@ public class CrossSubsystemsCommandsFactory {
                     5.0),
                 ClimberCommandsFactory.getPrepareClimbCommand(climber)),
             ClimberCommandsFactory.getClimbAndHangCommand(climber))
-        .withName("drive to left climb");
-  }
-
-  private static Command getDriveToRightClimbCommand(
-      SwerveDrivetrain swerveDrivetrain, Climber climber, OperatorInterface oi) {
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    return Commands.sequence(
-            Commands.parallel(
-                new DriveToPose(
-                    swerveDrivetrain,
-                    CrossSubsystemsCommandsFactory::getRightClimbPose,
-                    xController,
-                    yController,
-                    thetaController,
-                    new Transform2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)),
-                    true,
-                    (atPose) ->
-                        LEDs.getInstance()
-                            .requestState(
-                                atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
-                    CrossSubsystemsCommandsFactory::updatePIDConstants,
-                    5.0),
-                ClimberCommandsFactory.getPrepareClimbCommand(climber)),
-            ClimberCommandsFactory.getClimbAndHangCommand(climber))
-        .withName("drive to right climb");
+        .withName("Drive to closest tower side and climb");
   }
 
   private static Command getDriveToPoseOverrideCommand(
@@ -262,14 +233,9 @@ public class CrossSubsystemsCommandsFactory {
     return new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(90.0));
   }
 
-  private static Pose2d getLeftClimbPose() {
-    Translation2d targetPosition;
+  private static Pose2d getClosestTowerSidePose(Pose2d currentPose) {
 
-    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-      targetPosition = FieldConstants.Tower.leftUpright;
-    } else {
-      targetPosition = FieldConstants.Tower.oppLeftUpright;
-    }
+    Translation2d targetPosition;
 
     double yOffset =
         RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
@@ -278,32 +244,41 @@ public class CrossSubsystemsCommandsFactory {
         RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters)
             / 2; // FIXME: adjust offset
 
-    return new Pose2d(
-        targetPosition.getX() + xOffset,
-        targetPosition.getY() + yOffset,
-        Rotation2d.fromDegrees(-90));
-  }
+    if (Field2d.getInstance().getAlliance() == Alliance.Blue
+        && currentPose.getY() > FieldConstants.LinesHorizontal.center) {
 
-  private static Pose2d getRightClimbPose() {
-    Translation2d targetPosition;
+      targetPosition = targetPosition = FieldConstants.Tower.leftUpright;
+      return new Pose2d(
+          targetPosition.getX() + xOffset,
+          targetPosition.getY() + yOffset,
+          Rotation2d.fromDegrees(-90));
+    } else if (Field2d.getInstance().getAlliance() == Alliance.Blue
+        && currentPose.getY() <= FieldConstants.LinesHorizontal.center) {
 
-    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
       targetPosition = FieldConstants.Tower.rightUpright;
-    } else {
+      return new Pose2d(
+          targetPosition.getX() + xOffset,
+          targetPosition.getY() - yOffset,
+          Rotation2d.fromDegrees(-90));
+    } else if (Field2d.getInstance().getAlliance() == Alliance.Red
+        && currentPose.getY() > FieldConstants.LinesHorizontal.center) {
+
+      targetPosition = FieldConstants.Tower.oppLeftUpright;
+      return new Pose2d(
+          targetPosition.getX() - xOffset,
+          targetPosition.getY() + yOffset,
+          Rotation2d.fromDegrees(90));
+    } else if (Field2d.getInstance().getAlliance() == Alliance.Red
+        && currentPose.getY() <= FieldConstants.LinesHorizontal.center) {
+
       targetPosition = FieldConstants.Tower.oppRightUpright;
+      return new Pose2d(
+          targetPosition.getX() - xOffset,
+          targetPosition.getY() - yOffset,
+          Rotation2d.fromDegrees(90));
     }
 
-    double yOffset =
-        RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
-
-    double xOffset =
-        RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters)
-            / 2; // FIXME: adjust offset
-
-    return new Pose2d(
-        targetPosition.getX() + xOffset,
-        targetPosition.getY() - yOffset,
-        Rotation2d.fromDegrees(-90));
+    return currentPose;
   }
 
   private static boolean inClimbingTolerance(Pose2d currentPose) {

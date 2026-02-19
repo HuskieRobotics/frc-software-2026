@@ -101,7 +101,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getDriveToLeftClimbButton() {
+  public default Trigger getDriveToClosestTowerSideButton() {
     return new Trigger(() -> false);
   }
 
