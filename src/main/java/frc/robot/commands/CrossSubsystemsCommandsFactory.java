@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -235,7 +236,8 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Pose2d getClosestTowerSidePose(Pose2d currentPose) {
 
-    Translation2d targetPosition;
+    Translation2d targetLeftPosition = FieldConstants.Tower.leftUpright;
+    Translation2d targetRightPosition = FieldConstants.Tower.rightUpright;
 
     double yOffset =
         RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2; // FIXME: adjust offset
@@ -244,41 +246,34 @@ public class CrossSubsystemsCommandsFactory {
         RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters)
             / 2; // FIXME: adjust offset
 
-    if (Field2d.getInstance().getAlliance() == Alliance.Blue
-        && currentPose.getY() > FieldConstants.LinesHorizontal.center) {
+    Pose2d targetPositionLeft =
+        new Pose2d(
+            targetLeftPosition.getX() + xOffset,
+            targetLeftPosition.getY() + yOffset,
+            Rotation2d.fromDegrees(-90));
 
-      targetPosition = targetPosition = FieldConstants.Tower.leftUpright;
-      return new Pose2d(
-          targetPosition.getX() + xOffset,
-          targetPosition.getY() + yOffset,
-          Rotation2d.fromDegrees(-90));
-    } else if (Field2d.getInstance().getAlliance() == Alliance.Blue
-        && currentPose.getY() <= FieldConstants.LinesHorizontal.center) {
+    Pose2d targetPositionRight =
+        new Pose2d(
+            targetRightPosition.getX() + xOffset,
+            targetRightPosition.getY() - yOffset,
+            Rotation2d.fromDegrees(-90));
 
-      targetPosition = FieldConstants.Tower.rightUpright;
-      return new Pose2d(
-          targetPosition.getX() + xOffset,
-          targetPosition.getY() - yOffset,
-          Rotation2d.fromDegrees(-90));
-    } else if (Field2d.getInstance().getAlliance() == Alliance.Red
-        && currentPose.getY() > FieldConstants.LinesHorizontal.center) {
+    boolean isBlue = Field2d.getInstance().getAlliance() == Alliance.Blue;
 
-      targetPosition = FieldConstants.Tower.oppLeftUpright;
-      return new Pose2d(
-          targetPosition.getX() - xOffset,
-          targetPosition.getY() + yOffset,
-          Rotation2d.fromDegrees(90));
-    } else if (Field2d.getInstance().getAlliance() == Alliance.Red
-        && currentPose.getY() <= FieldConstants.LinesHorizontal.center) {
+    if (isBlue) {
 
-      targetPosition = FieldConstants.Tower.oppRightUpright;
-      return new Pose2d(
-          targetPosition.getX() - xOffset,
-          targetPosition.getY() - yOffset,
-          Rotation2d.fromDegrees(90));
+      if (currentPose.getY() > FieldConstants.LinesHorizontal.center) {
+        return targetPositionLeft;
+      } else {
+        return targetPositionRight;
+      }
+    } else {
+      if (currentPose.getY() > FieldConstants.LinesHorizontal.center) {
+        return FlippingUtil.flipFieldPose(targetPositionLeft);
+      } else {
+        return FlippingUtil.flipFieldPose(targetPositionRight);
+      }
     }
-
-    return currentPose;
   }
 
   private static boolean inClimbingTolerance(Pose2d currentPose) {
