@@ -8,10 +8,10 @@ public class IntakeConstants {
 
   public static final String SUBSYSTEM_NAME = "Intake";
 
-  public static final int ROLLER_MOTOR_ID = 57;
-  public static final int DEPLOYER_MOTOR_ID = 55;
+  public static final int ROLLER_MOTOR_ID = 42;
+  public static final int DEPLOYER_MOTOR_ID = 33;
 
-  public static final double DEPLOYER_KP = 12; // FIXME: tune value
+  public static final double DEPLOYER_KP = 12; // FIXME: tune values
   public static final double DEPLOYER_KI = 0;
   public static final double DEPLOYER_KD = 0;
   public static final double DEPLOYER_KS = 0.25;
