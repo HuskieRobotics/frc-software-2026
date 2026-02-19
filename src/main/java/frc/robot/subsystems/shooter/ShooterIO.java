@@ -67,7 +67,6 @@ public interface ShooterIO {
     // Fuel Detection
     boolean fuelDetectorConnected = false;
     boolean fuelDetectorHasFuel = false;
-    boolean isKickerJammed = false;
     Distance fuelDetectorDistanceToFuel = Meters.of(0.0); // FIXME: determine if necessary
     double fuelDetectorSignalStrength = 0.0;
   }
@@ -93,9 +92,4 @@ public interface ShooterIO {
 
   public default void zeroHoodPosition() {}
 
-  public default void isKickerJammed() {}
-
-  public default void hasFuel() {}
-
-  public default void getDistanceToFuel() {}
 }

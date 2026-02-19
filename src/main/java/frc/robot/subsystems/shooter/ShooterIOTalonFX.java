@@ -628,7 +628,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
-    // turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true; //FIXME: Delete?
     turretConfig.CurrentLimits.SupplyCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerLimit = TURRET_CONTINUOUS_CURRENT_LIMIT;
     turretConfig.CurrentLimits.SupplyCurrentLowerTime = TURRET_PEAK_CURRENT_DURATION;

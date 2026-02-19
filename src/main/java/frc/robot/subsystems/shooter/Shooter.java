@@ -125,7 +125,6 @@ public class Shooter extends SubsystemBase {
       }
 
       // Hood
-      // Hood
       if (hoodPosition.get() != 0) {
         io.setHoodPosition(Degrees.of(hoodPosition.get()));
       } else if (hoodVoltage.get() != 0) {
