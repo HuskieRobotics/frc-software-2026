@@ -25,6 +25,8 @@ public class Intake extends SubsystemBase {
 
   private IntakeIO intakeIO;
 
+  public boolean isIntakeDeployed = false;
+
   private Distance deployerLinearPosition = Meters.of(0);
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -164,10 +166,12 @@ public class Intake extends SubsystemBase {
   }
 
   public void deployIntake() {
+    this.isIntakeDeployed = true;
     setLinearPosition(DEPLOYED_LINEAR_POSITION);
   }
 
   public void retractIntake() {
+    this.isIntakeDeployed = false;
     setLinearPosition(RETRACTED_LINEAR_POSITION);
   }
 

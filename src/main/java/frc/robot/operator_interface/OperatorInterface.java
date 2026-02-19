@@ -93,6 +93,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getDeployIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
   // OPERATOR TRIGGERS, mostly game-specific
   public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
