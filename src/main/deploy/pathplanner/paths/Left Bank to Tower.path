@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 1.7899888888888889,
-        "y": 3.7225888888888887
+        "x": 1.9688730385164046,
+        "y": 4.3908131241084165
       },
       "prevControl": {
-        "x": 1.672937464424237,
-        "y": 3.4172658100215134
+        "x": 3.1721683309557767,
+        "y": 5.296519258202568
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tower"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

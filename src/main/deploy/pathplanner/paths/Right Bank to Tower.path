@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3242806129584594,
-        "y": 0.39691874479839195
+        "x": 1.9818116975748927,
+        "y": 0.8585592011412279
       },
       "isLocked": false,
       "linkedName": "Right Bank"
     },
     {
       "anchor": {
-        "x": 1.7899888888888889,
-        "y": 3.7225888888888887
+        "x": 1.9559343794579167,
+        "y": 3.265149786019972
       },
       "prevControl": {
-        "x": 1.6703464025143244,
-        "y": 3.9421012472063923
+        "x": 1.8362918930833523,
+        "y": 3.4846621443374755
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tower"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

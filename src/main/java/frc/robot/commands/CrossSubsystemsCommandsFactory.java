@@ -17,7 +17,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
-import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -64,7 +63,7 @@ public class CrossSubsystemsCommandsFactory {
 
   private static final double JOYSTICK_POWER = 2.0;
 
-  private static ProfiledPIDController xController =
+  public static ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
           driveKi.get(),
@@ -74,7 +73,7 @@ public class CrossSubsystemsCommandsFactory {
               RobotConfig.getInstance()
                   .getDriveToPoseDriveMaxAcceleration()
                   .in(MetersPerSecondPerSecond)));
-  private static ProfiledPIDController yController =
+  public static ProfiledPIDController yController =
       new ProfiledPIDController(
           driveYKp.get(),
           driveKi.get(),
@@ -84,7 +83,7 @@ public class CrossSubsystemsCommandsFactory {
               RobotConfig.getInstance()
                   .getDriveToPoseDriveMaxAcceleration()
                   .in(MetersPerSecondPerSecond)));
-  private static ProfiledPIDController thetaController =
+  public static ProfiledPIDController thetaController =
       new ProfiledPIDController(
           thetaKp.get(),
           thetaKi.get(),
@@ -120,18 +119,18 @@ public class CrossSubsystemsCommandsFactory {
             .and(shooterModes::manualShootEnabled)
             .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
-    new Trigger(
-            () -> {
-              double currentYPose = swerveDrivetrain.getPose().getY();
+    // new Trigger(
+    //         () -> {
+    //           double currentYPose = swerveDrivetrain.getPose().getY();
 
-              // see which of the two walls we are closer to
-              boolean closerToLeft = currentYPose < WALL_SNAP_TOLERANCE_METERS;
-              boolean closerToRight =
-                  currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
+    //           // see which of the two walls we are closer to
+    //           boolean closerToLeft = currentYPose < WALL_SNAP_TOLERANCE_METERS;
+    //           boolean closerToRight =
+    //               currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
 
-              return closerToLeft || closerToRight;
-            })
-        .whileTrue(getSnapToWallsCommand(swerveDrivetrain));
+    //           return (closerToLeft || closerToRight) && !Field2d.getInstance().inTrenchZone();
+    //         })
+    //     .whileTrue(getSnapToWallsCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -335,7 +334,7 @@ public class CrossSubsystemsCommandsFactory {
     return Field2d.getInstance().getNearestBank();
   }
 
-  private static void updatePIDConstants(Transform2d poseDifference) {
+  public static void updatePIDConstants(Transform2d poseDifference) {
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(
         xController.hashCode(),
