@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -196,23 +197,26 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   public static Command getSnapToWallsCommand(SwerveDrivetrain drivetrain) {
-    return Commands.run(
-            () -> {
-              Rotation2d currentRotation = drivetrain.getPose().getRotation();
-              double currentDegrees = currentRotation.getDegrees();
+    return Commands.either(
+        Commands.none(),
+        Commands.run(
+                () -> {
+                  Rotation2d currentRotation = drivetrain.getPose().getRotation();
+                  double currentDegrees = currentRotation.getDegrees();
 
-              double nearest90DegreeAngle =
-                  Math.round(currentDegrees / 90.0) * 90.0; // nearest multiple of 90 degrees
+                  double nearest90DegreeAngle =
+                      Math.round(currentDegrees / 90.0) * 90.0; // nearest multiple of 90 degrees
 
-              Rotation2d targetRotation = Rotation2d.fromDegrees(nearest90DegreeAngle);
+                  Rotation2d targetRotation = Rotation2d.fromDegrees(nearest90DegreeAngle);
 
-              drivetrain.driveFacingAngle(
-                  MetersPerSecond.of(getModifiedXTranslation()),
-                  MetersPerSecond.of(getModifiedYTranslation()),
-                  targetRotation,
-                  false);
-            })
-        .withName("Auto Snap To 90 Degree While Near Wall Command");
+                  drivetrain.driveFacingAngle(
+                      MetersPerSecond.of(getModifiedXTranslation()),
+                      MetersPerSecond.of(getModifiedYTranslation()),
+                      targetRotation,
+                      false);
+                })
+            .withName("Auto Snap To 90 Degree While Near Wall Command"),
+        () -> DriverStation.isAutonomousEnabled());
   }
 
   public static Command getSnakeDriveCommand(SwerveDrivetrain drivetrain) {
