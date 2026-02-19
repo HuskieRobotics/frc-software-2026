@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
-import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -63,7 +62,7 @@ public class Intake extends SubsystemBase {
               Volts.of(10), // will actually be a step to 10 A
               Seconds.of(5), // override default timeout (10 s)
               // Log state with SignalLogger class
-              state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
               output -> intakeIO.setRollerCurrent(Amps.of(output.in(Volts))),
               null,
@@ -112,6 +111,16 @@ public class Intake extends SubsystemBase {
 
     checkRollerJam();
 
+    // update debouncer objects; this must be done every cycle
+    rollerAtSetPointDebouncer.calculate(
+        inputs.rollerVelocity.isNear(ROLLER_TARGET_VELOCITY, ROLLER_VELOCITY_TOLERANCE));
+    deployerDeployedDebouncer.calculate(
+        this.deployerLinearPosition.isNear(
+            DEPLOYED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+    deployerRetractedDebouncer.calculate(
+        this.deployerLinearPosition.isNear(
+            RETRACTED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+
     this.deployerLinearPosition =
         DEPLOYER_CIRCUMFERENCE.times(inputs.deployerAngularPosition.in(Rotations));
 
@@ -131,10 +140,10 @@ public class Intake extends SubsystemBase {
       CommandScheduler.getInstance()
           .schedule(
               Commands.sequence(
-                      Commands.runOnce(() -> intakeIO.setRollerCurrent(Amps.of(0.0)), this),
-                      Commands.run(
-                              () -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
-                          .withTimeout(1.0))
+                      Commands.runOnce(this::outTakeRoller, this),
+                      Commands.waitSeconds(ROLLER_UNJAM_DURATION_SECONDS),
+                      Commands.runOnce(this::startRoller, this))
+                  .withTimeout(1.0)
                   .withName("Stop Intake Jammed"));
       rollerJamAlert.set(true);
     } else {
