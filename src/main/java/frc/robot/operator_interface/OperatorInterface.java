@@ -93,7 +93,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getDeployIntakeButton() {
+  public default Trigger getDeployRetractIntakeButton() {
     return new Trigger(() -> false);
   }
 

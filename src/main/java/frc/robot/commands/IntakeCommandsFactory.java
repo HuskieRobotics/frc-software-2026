@@ -10,17 +10,18 @@ public class IntakeCommandsFactory {
 
   public static void registerCommands(OperatorInterface oi, Intake intake) {
 
-    oi.getDeployIntakeButton()
+    oi.getDeployRetractIntakeButton()
         .onTrue(
             Commands.either(
-                Commands.parallel(
-                        Commands.runOnce(intake::deployIntake, intake),
-                        Commands.runOnce(intake::startRoller, intake))
-                    .withName("Deploy Intake and Start Rollers"),
-                Commands.parallel(
-                        Commands.runOnce(intake::retractIntake, intake),
-                        Commands.runOnce(intake::stopRoller, intake))
-                    .withName("Retract Intake and Stop Rollers"),
-                () -> !intake.isIntakeDeployed));
+                    Commands.sequence(
+                        Commands.runOnce(intake::stopRoller),
+                        Commands.runOnce(intake::retractIntake),
+                        Commands.waitUntil(intake::isRetracted)),
+                    Commands.sequence(
+                        Commands.runOnce(intake::deployIntake),
+                        Commands.waitUntil(intake::isDeployed),
+                        Commands.runOnce(intake::startRoller)),
+                    intake::inDeployedState)
+                .withName("deploy/retract intake"));
   }
 }
