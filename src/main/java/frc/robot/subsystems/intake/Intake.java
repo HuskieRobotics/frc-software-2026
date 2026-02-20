@@ -202,41 +202,45 @@ public class Intake extends SubsystemBase {
 
   private Command getSystemCheckCommand() {
     return Commands.sequence(
-            Commands.runOnce(() -> intakeIO.setRollerVelocity(RotationsPerSecond.of(10))),
+            Commands.runOnce(this::deployIntake),
             Commands.waitSeconds(0.5)
-                .andThen(Commands.waitUntil(() -> isRollerAtSetpoint(RotationsPerSecond.of(10)))),
-            Commands.runOnce(
-                () -> {
-                  if (inputs.rollerVelocity.lt(RotationsPerSecond.of(8))) {
-                    FaultReporter.getInstance()
-                        .addFault(SUBSYSTEM_NAME, "Roller failed to reach 10 RPS in System Check");
-                  }
-                }),
+                .andThen( () -> {
+                    if (!inputs.deployerAngularPosition.isNear(
+                        Rotations.of(DEPLOYED_ANGULAR_POSITION.in(Rotations)), Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
+                      FaultReporter.getInstance()
+                          .addFault(
+                              SUBSYSTEM_NAME, "Deployer failed to reach deployed position in System Check");
+                    }}),
+            Commands.runOnce(this::startRoller),
+            Commands.waitSeconds(2)
+                .andThen( () -> {
+                    if (!inputs.rollerVelocity.isNear(RotationsPerSecond.of(ROLLER_TARGET_VELOCITY.in(RotationsPerSecond)), RotationsPerSecond.of(ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
+                      FaultReporter.getInstance()
+                          .addFault(SUBSYSTEM_NAME, "Roller failed to reach target velocity in System Check");
+                    }}),
+            Commands.runOnce(this::outTakeRoller),
+            Commands.waitSeconds(2)
+                .andThen( () -> {
+                    if (!inputs.rollerVelocity.isNear(RotationsPerSecond.of(ROLLER_EJECT_VELOCITY.in(RotationsPerSecond)), RotationsPerSecond.of(ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
+                      FaultReporter.getInstance()
+                          .addFault(SUBSYSTEM_NAME, "Roller failed to reach eject velocity in System Check");
+                    }}),
             Commands.runOnce(this::stopRoller),
-            Commands.runOnce(() -> intakeIO.setDeployerPosition(Rotations.of(0.1))),
-            Commands.waitSeconds(0.5)
-                .andThen(
-                    Commands.waitUntil(
-                        () ->
-                            isDeployerAtSetpoint(
-                                Inches.of(0.1 * DEPLOYER_CIRCUMFERENCE.in(Inches))))),
-            Commands.runOnce(
-                () -> {
-                  if (!inputs.deployerAngularPosition.isNear(
-                      Rotations.of(0.1), Rotations.of(0.02))) {
-                    FaultReporter.getInstance()
-                        .addFault(
-                            SUBSYSTEM_NAME, "Deployer failed to reach 0.1 Rot in System Check");
-                  }
-                }),
             Commands.runOnce(this::retractIntake),
-            Commands.waitSeconds(0.5).andThen(Commands.waitUntil(this::isRetracted)))
-        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  stopRoller();
-                  intakeIO.setDeployerPosition(inputs.deployerAngularPosition);
-                }));
+            Commands.waitSeconds(0.5)
+            .andThen( () -> {
+                if (!inputs.deployerAngularPosition.isNear(
+                    Rotations.of(RETRACTED_ANGULAR_POSITION.in(Rotations)), Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
+                  FaultReporter.getInstance()
+                      .addFault(
+                          SUBSYSTEM_NAME, "Deployer failed to reach retracted position in System Check");
+                }}))
+            .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+            .andThen(
+                Commands.runOnce(
+                    () -> {
+                      stopRoller();
+                      intakeIO.setDeployerPosition(inputs.deployerAngularPosition);
+                    }));
   }
 }
