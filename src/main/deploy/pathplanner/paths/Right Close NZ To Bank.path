@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.600811111111111,
-        "y": 5.9699333333333335
+        "x": 7.804208273894435,
+        "y": 3.329843081312412
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6078553295428273,
-        "y": 6.368683822049974
+        "x": 6.057489300998573,
+        "y": 0.3410128388017126
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "RIGHT NZ"
     },
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 7.509029957203994
+        "x": 3.5732667617689007,
+        "y": 0.5868473609129818
       },
       "prevControl": {
-        "x": 3.790537081137286,
-        "y": 7.7078759583082
+        "x": 6.238630527817403,
+        "y": 0.6774179743223976
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "Right Bank"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.803837953091684,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Neutral Zone + Depot",
+  "folder": "Neutral Zone x2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 91.59114027119438
   },
   "useDefaultConstraints": true
 }

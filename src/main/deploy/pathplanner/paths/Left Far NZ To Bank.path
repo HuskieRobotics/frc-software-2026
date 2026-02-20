@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.600811111111111,
-        "y": 5.9699333333333335
+        "x": 8.735791726105562,
+        "y": 5.684679029957205
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6078553295428273,
-        "y": 6.368683822049974
+        "x": 5.746961483594864,
+        "y": 7.8713124108416554
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Real Neutral Zone"
     },
     {
       "anchor": {
@@ -20,15 +20,20 @@
         "y": 7.509029957203994
       },
       "prevControl": {
-        "x": 3.790537081137286,
-        "y": 7.7078759583082
+        "x": 6.907242922796495,
+        "y": 7.441662672374288
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Left Bank"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,10 +50,10 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Neutral Zone + Depot",
+  "folder": "Neutral Zone x2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -36.158185439808186
   },
   "useDefaultConstraints": true
 }

@@ -516,10 +516,10 @@ public class AutonomousCommandsFactory {
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBankAgain;
     try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Neutral Zone");
-      driveToBank = PathPlannerPath.fromPathFile("Right Neutral Zone to Bank");
-      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Right Bank to Neutral Zone");
-      driveToBankAgain = PathPlannerPath.fromPathFile("Right Neutral Zone to Bank");
+      driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Far NZ");
+      driveToBank = PathPlannerPath.fromPathFile("Right Far NZ to Bank");
+      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Right Bank to Close NZ");
+      driveToBankAgain = PathPlannerPath.fromPathFile("Right Close NZ to Bank");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
@@ -548,10 +548,10 @@ public class AutonomousCommandsFactory {
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBankAgain;
     try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Neutral Zone");
-      driveToBank = PathPlannerPath.fromPathFile("Left Neutral Zone to Bank");
-      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Left Bank to Neutral Zone");
-      driveToBankAgain = PathPlannerPath.fromPathFile("Left Neutral Zone to Bank");
+      driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Far NZ");
+      driveToBank = PathPlannerPath.fromPathFile("Left Far NZ to Bank");
+      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Left Bank to Close NZ");
+      driveToBankAgain = PathPlannerPath.fromPathFile("Left Close NZ to Bank");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
