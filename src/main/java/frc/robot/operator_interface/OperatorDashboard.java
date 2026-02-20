@@ -25,6 +25,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean objectDetectionToggle =
       new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
 
+  public final LoggedTunableBoolean autoSnapsEnabled =
+      new LoggedTunableBoolean("operatorDashboard/Toggle Auto Snaps", true, true);
+
   public OperatorDashboard() {}
 
   @Override
@@ -45,5 +48,10 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getVisionIsEnabledTrigger() {
     return new Trigger(() -> enableVision.get());
+  }
+
+  @Override
+  public Trigger getAutoSnapsEnabledTrigger() {
+    return new Trigger(() -> autoSnapsEnabled.get());
   }
 }

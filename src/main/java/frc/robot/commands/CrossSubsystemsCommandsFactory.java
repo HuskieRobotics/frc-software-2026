@@ -179,21 +179,24 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
 
     return Commands.run(
-        () -> {
-          double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
+            () -> {
+              double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
 
-          double nearest45DegreeAngle =
-              (Math.round(((currentRotationPose - 45) / 90)) * 90)
-                  + 45; // this should grab the nearest diamond angle (45+90x)
+              double nearest45DegreeAngle =
+                  (Math.round(((currentRotationPose - 45) / 90)) * 90)
+                      + 45; // this should grab the nearest diamond angle (45+90x)
 
-          Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
+              Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
 
-          drivetrain.driveFacingAngle(
-              MetersPerSecond.of(getModifiedXTranslation()),
-              MetersPerSecond.of(getModifiedYTranslation()),
-              targetRotation,
-              false);
-        });
+              drivetrain.driveFacingAngle(
+                  MetersPerSecond.of(getModifiedXTranslation()),
+                  MetersPerSecond.of(getModifiedYTranslation()),
+                  targetRotation,
+                  false);
+            })
+        .unless(
+            () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
+        .withName("Rotate While Near Bump Command");
   }
 
   public static Command getSnapToWallsCommand(SwerveDrivetrain drivetrain) {
@@ -215,6 +218,9 @@ public class CrossSubsystemsCommandsFactory {
                       targetRotation,
                       false);
                 })
+            .unless(
+                () ->
+                    !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
             .withName("Auto Snap To 90 Degree While Near Wall Command"),
         () -> DriverStation.isAutonomousEnabled());
   }
@@ -232,6 +238,8 @@ public class CrossSubsystemsCommandsFactory {
                   targetRotation,
                   false);
             })
+        .unless(
+            () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
         .withName("Snake Drive Command");
   }
 
