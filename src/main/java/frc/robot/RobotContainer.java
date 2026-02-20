@@ -29,6 +29,7 @@ import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.ArmCommandFactory;
 import frc.robot.commands.AutonomousCommandsFactory;
+import frc.robot.commands.ClimberCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
 import frc.robot.commands.ElevatorCommandsFactory;
@@ -46,6 +47,9 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.arm.ArmIOXRP;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -73,6 +77,7 @@ public class RobotContainer {
   private Vision vision;
   private Arm arm;
   private Elevator elevator;
+  private Climber climber;
   private Shooter shooter;
   private RobotVisualization visualization;
 
@@ -155,7 +160,8 @@ public class RobotContainer {
       arm = new Arm(new ArmIO() {});
       elevator = new Elevator(new ElevatorIO() {});
       shooter = new Shooter(new ShooterIO() {});
-      visualization = new RobotVisualization(elevator);
+      climber = new Climber(new ClimberIO() {});
+      visualization = new RobotVisualization(climber);
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -235,7 +241,8 @@ public class RobotContainer {
     arm = new Arm(new ArmIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    climber = new Climber(new ClimberIOTalonFX());
+    visualization = new RobotVisualization(climber);
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -262,7 +269,8 @@ public class RobotContainer {
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization(elevator);
+    climber = new Climber(new ClimberIO() {});
+    visualization = new RobotVisualization(climber);
   }
 
   private void createCTRESimSubsystems() {
@@ -294,7 +302,8 @@ public class RobotContainer {
     arm = new Arm(new ArmIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    climber = new Climber(new ClimberIOTalonFX());
+    visualization = new RobotVisualization(climber);
   }
 
   private void createXRPSubsystems() {
@@ -304,7 +313,8 @@ public class RobotContainer {
     arm = new Arm(new ArmIOXRP());
     elevator = new Elevator(new ElevatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization(elevator);
+    climber = new Climber(new ClimberIO() {});
+    visualization = new RobotVisualization(climber);
   }
 
   private void createPracticeBoardSubsystems() {
@@ -316,7 +326,8 @@ public class RobotContainer {
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization(elevator);
+    climber = new Climber(new ClimberIO() {});
+    visualization = new RobotVisualization(climber);
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -344,6 +355,7 @@ public class RobotContainer {
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
+    climber = new Climber(new ClimberIO() {});
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -371,7 +383,8 @@ public class RobotContainer {
     arm = new Arm(new ArmIO() {});
     elevator = new Elevator(new ElevatorIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization(elevator);
+    climber = new Climber(new ClimberIO() {});
+    visualization = new RobotVisualization(climber);
   }
 
   /**
@@ -405,13 +418,14 @@ public class RobotContainer {
     // register commands for other subsystems
     ArmCommandFactory.registerCommands(oi, arm);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
+    ClimberCommandsFactory.registerCommands(oi, climber);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, shooter);
+          oi, swerveDrivetrain, vision, arm, elevator, climber, shooter);
     }
 
     // Endgame alerts

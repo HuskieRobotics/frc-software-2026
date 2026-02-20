@@ -46,6 +46,16 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getDriveToClosestTowerSideButton() {
+    return translateJoystickButtons[2]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
+  public Trigger getDriveToRightClimbButton() {
+    return translateJoystickButtons[3]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
   public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
   }
@@ -67,6 +77,21 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getExecuteClimbButton() {
+    return rotateJoystickButtons[1]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
+  public Trigger getClimberUpButton() {
+    return rotateJoystickButtons[2]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
+  public Trigger getClimberDownButton() {
+    return rotateJoystickButtons[3]; // FIXME: ask elizabeth which button she wants for this
+  }
+
+  @Override
   public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
@@ -79,5 +104,10 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
+  }
+
+  @Override
+  public Trigger getReleaseAndStowButton() {
+    return rotateJoystickButtons[7]; // FIXME: ask elizabeth which button she wants for this
   }
 }
