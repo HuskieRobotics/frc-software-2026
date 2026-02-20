@@ -47,7 +47,7 @@ public class DualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getDeployRetractIntakeButton() {
-    return translateJoystickButtons[4];
+    return translateJoystickButtons[2];
   }
 
   @Override
