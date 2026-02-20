@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.6997627520759195,
-        "y": 3.3625504151838665
+        "x": 7.739514978601996,
+        "y": 2.9287446504992873
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.656390870186612,
-        "y": 0.004607703283719289
+        "x": 4.155506419398504,
+        "y": 0.599786019964446
       },
       "isLocked": false,
       "linkedName": "Right Neutral Zone"
@@ -20,8 +20,8 @@
         "y": 0.6488666666666665
       },
       "prevControl": {
-        "x": 7.247845934380621,
-        "y": 0.7291726105590408
+        "x": 5.850470756060417,
+        "y": 0.5997860199644469
       },
       "nextControl": null,
       "isLocked": false,
@@ -53,7 +53,7 @@
   "folder": "Neutral Zone+Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 48.12213046211579
   },
   "useDefaultConstraints": true
 }

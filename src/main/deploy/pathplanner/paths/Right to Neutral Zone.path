@@ -8,29 +8,29 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.898502139800283,
-        "y": 0.6256633380884444
+        "x": 6.497403708987161,
+        "y": 0.5221540656205423
       },
       "isLocked": false,
       "linkedName": "Right Starting Point"
     },
     {
       "anchor": {
-        "x": 7.6997627520759195,
-        "y": 3.3625504151838665
+        "x": 8.684037089871612,
+        "y": 2.42413694721826
       },
       "prevControl": {
-        "x": 7.850391459074734,
-        "y": 0.03795966785290705
+        "x": 7.571312410841653,
+        "y": 1.1173323823109853
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Neutral Zone"
+      "linkedName": "Right Opponent NZ"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.25,
       "rotationDegrees": 90.0
     }
   ],
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 48.12213046211579
   },
   "reversed": false,
   "folder": null,
