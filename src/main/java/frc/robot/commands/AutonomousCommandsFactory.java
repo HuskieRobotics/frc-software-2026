@@ -143,10 +143,10 @@ public class AutonomousCommandsFactory {
     autoChooser.addOption("Middle Hopper and Climb", middleHopperAndClimb(drivetrain, null));
 
     autoChooser.addOption(
-        "Right Hopper to Neutral Zone x2", rightHopperToNeutralZonex2(drivetrain, null));
+        "Right Hopper to Neutral Zone x2", rightHopperToNeutralZoneX2(drivetrain, null));
 
     autoChooser.addOption(
-        "Left Hopper to Neutral Zone x2", leftHopperToNeutralZonex2AndClimb(drivetrain, null));
+        "Left Hopper to Neutral Zone x2", leftHopperToNeutralZoneX2(drivetrain, null));
 
     autoChooser.addOption(
         "Left Hopper Neutral Zone And Depot", leftHopperNeutralZoneAndDepot(drivetrain, null));
@@ -509,7 +509,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(AutoBuilder.followPath(driveToTower));
   }
 
-  private Command rightHopperToNeutralZonex2(
+  private Command rightHopperToNeutralZoneX2(
       SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
     PathPlannerPath driveToBank;
@@ -541,7 +541,7 @@ public class AutonomousCommandsFactory {
         AutoBuilder.followPath(driveToBankAgain));
   }
 
-  private Command leftHopperToNeutralZonex2AndClimb(
+  private Command leftHopperToNeutralZoneX2(
       SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
     PathPlannerPath driveToBank;
