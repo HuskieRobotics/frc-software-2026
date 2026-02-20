@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.shooter.ShooterConstants.TURRET_LOCK_POSITION_DEGREES;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
+import frc.robot.subsystems.shooter.ShooterConstants.*;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
@@ -51,6 +53,10 @@ public class ShooterModes extends SubsystemBase {
   private Trigger collectAndHoldTrigger;
   private Trigger shootOTMTrigger;
   private Trigger canShootTrigger;
+
+  private Trigger turretLockNZTrigger;
+
+  private boolean turretAutoLocked = false;
 
   // the primary mode and secondary mode will act unilaterally except for when NEAR_TRENCH
   private ShooterMode primaryMode;
@@ -99,6 +105,10 @@ public class ShooterModes extends SubsystemBase {
     passDistanceToVelocityMap.put(0.0, 0.0);
 
     passDistanceToHoodMap.put(0.0, 0.0);
+  }
+
+  private void setTurretAutoLocked(boolean locked) {
+    this.turretAutoLocked = locked;
   }
 
   public boolean isShootOnTheMoveEnabled() {
@@ -253,6 +263,13 @@ public class ShooterModes extends SubsystemBase {
                     && this.hubActive);
 
     canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
+
+    turretLockNZTrigger =
+        new Trigger(
+            () -> !Field2d.getInstance().inAllianceZone() && !Field2d.getInstance().inTrenchZone());
+
+    turretLockNZTrigger.onTrue(Commands.runOnce(() -> setTurretAutoLocked(true)));
+    turretLockNZTrigger.onFalse(Commands.runOnce(() -> setTurretAutoLocked(false)));
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
@@ -264,6 +281,20 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private void calculateIdealShot() {
+
+    boolean inNeutralZone =
+        !Field2d.getInstance().inAllianceZone() && !Field2d.getInstance().inTrenchZone();
+
+    boolean lockToggleOn =
+        OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean();
+
+    Logger.recordOutput("ShooterModes/TurretLocked", inNeutralZone || lockToggleOn);
+
+    if ((this.turretAutoLocked && this.primaryMode != ShooterMode.PASS)
+        || (lockToggleOn && this.primaryMode != ShooterMode.PASS)) {
+      shooter.setTurretPosition(TURRET_LOCK_POSITION_DEGREES);
+      return;
+    }
 
     if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
       Translation2d targetLandingPosition = Field2d.getInstance().getHubCenter();

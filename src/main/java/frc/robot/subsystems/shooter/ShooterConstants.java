@@ -100,6 +100,9 @@ public class ShooterConstants {
   public static final double TURRET_SETPOINT_2_DEGREES = 0.0; // FIXME: determine test points
   public static final double TURRET_SETPOINT_3_DEGREES = 0.0; // FIXME: determine test points
 
+  public static final Angle TURRET_LOCK_POSITION_DEGREES =
+      Degrees.of(120); // FIXME: determine value
+
   // Velocity setpoints for lead flywheel
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_1_RPS =
       RotationsPerSecond.of(30); // FIXME: determine test points

@@ -349,6 +349,10 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  public void setTurretLockPositionForBank() {
+    io.setTurretPosition(ShooterConstants.TURRET_LOCK_POSITION_DEGREES);
+  }
+
   public void setHoodPosition(Angle position) {
     io.setHoodPosition(position);
   }

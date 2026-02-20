@@ -102,6 +102,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getLockTurretForBankToggle() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getShootOnTheMoveToggle() {
     return new Trigger(() -> false);
   }

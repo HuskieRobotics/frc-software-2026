@@ -20,6 +20,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean passToggle =
       new LoggedTunableBoolean("operatorDashboard/Pass", false, true);
 
+  public final LoggedTunableBoolean lockTurretForBankToggle =
+      new LoggedTunableBoolean("operatorDashboard/Lock Turret For Bank", false, true);
+
   public final LoggedTunableBoolean shootOnTheMoveToggle =
       new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", true, true);
 
@@ -34,6 +37,11 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getPassToggle() {
     return new Trigger(() -> passToggle.get());
+  }
+
+  @Override
+  public Trigger getLockTurretForBankToggle() {
+    return new Trigger(() -> lockTurretForBankToggle.get());
   }
 
   @Override
