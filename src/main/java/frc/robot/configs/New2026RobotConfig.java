@@ -44,13 +44,14 @@ public class New2026RobotConfig extends RobotConfig {
 
   private static final int GYRO_ID = 3;
 
-  private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
-  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
+  private static final Distance TRACKWIDTH = Meters.of(0.628650);
+  private static final Distance WHEELBASE = Meters.of(0.476250);
   private static final Distance WHEEL_RADIUS = Meters.of(0.0508);
-  private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
+  private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
+      new Translation2d(0.302940, -0.379140);
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
+  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.933450);
+  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.768350);
 
   private static final double COUPLE_RATIO = 3.857142857142857;
 
