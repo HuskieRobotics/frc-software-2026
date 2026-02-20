@@ -90,9 +90,6 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
 
-    Logger.recordOutput("Debug/InTrench", Field2d.getInstance().inTrenchZone());
-    Logger.recordOutput("Debug/InAlliance", Field2d.getInstance().inAllianceZone());
-
     calculateIdealShot();
   }
 
@@ -288,8 +285,6 @@ public class ShooterModes extends SubsystemBase {
     boolean lockToggleOn =
         OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean();
 
-    Logger.recordOutput("ShooterModes/TurretLocked", inNeutralZone || lockToggleOn);
-
     if ((this.turretAutoLocked && this.primaryMode != ShooterMode.PASS)
         || (lockToggleOn && this.primaryMode != ShooterMode.PASS)) {
       shooter.setTurretPosition(TURRET_LOCK_POSITION_DEGREES);
@@ -434,10 +429,6 @@ public class ShooterModes extends SubsystemBase {
     Rotation2d robotRelativeTurretAngleRadians =
         new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
-
-    Logger.recordOutput("ShooterModes/FieldRelativeAngle", fieldRelativeTurretAngle.in(Degrees));
-    Logger.recordOutput("ShooterModes/RobotHeading", robotPose.getRotation().getDegrees());
-    Logger.recordOutput("ShooterModes/RobotRelativeAngle", robotRelativeTurretAngle.in(Degrees));
 
     Angle idealHoodAngle =
         idealHoodAngleFromFunction(
