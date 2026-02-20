@@ -242,10 +242,10 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIOTalonFX());
-    elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
-    shooter = new Shooter(new ShooterIOTalonFX());
+    arm = new Arm(new ArmIO() {});
+    elevator = new Elevator(new ElevatorIO() {});
+    manipulator = new Manipulator(new ManipulatorIO() {});
+    shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
