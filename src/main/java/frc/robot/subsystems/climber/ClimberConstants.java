@@ -47,6 +47,11 @@ public class ClimberConstants {
       120; // keep this higher as we will be supporting the weight of the robot
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 0.5;
 
+  // Angle Setpoints for System Check
+  public static final Angle CLIMBER_ANGLE_SETPOINT_1 = Degrees.of(60.0);
+  public static final Angle CLIMBER_ANGLE_SETPOINT_2 = Degrees.of(120.0);
+  public static final Angle CLIMBER_ANGLE_SETPOINT_3 = Degrees.of(160.0);
+
   // 0 degrees is the position where the hooks are horizontal inside of the robot; the angle
   // increases as the hooks deploy to climb
   public static final Angle MIN_ANGLE_DEGREES =
