@@ -353,6 +353,7 @@ public class Vision extends SubsystemBase {
           frameIndex < objDetectInputs[cameraIndex].timestamps.length;
           frameIndex++) {
         double[] frame = objDetectInputs[cameraIndex].frames[frameIndex];
+
         for (int i = 0; i < frame.length; i += 10) {
           if (frame[i + 1] > FUEL_DETECT_CONFIDENCE_THRESHOLD) {
             double[] tx = new double[4];
@@ -363,14 +364,14 @@ public class Vision extends SubsystemBase {
             }
 
             // get the average of each point in the bounding box
-            double avgTx = 0;
-            double avgTy = 0;
+            double avgTx = 0.0;
+            double avgTy = 0.0;
             for (int z = 0; z < 4; z++) {
               avgTx += tx[z];
               avgTy += ty[z];
             }
-            avgTx /= 4;
-            avgTy /= 4;
+            avgTx /= 4.0;
+            avgTy /= 4.0;
 
             Translation2d fuelPoseInCameraFrame = new Translation2d(avgTx, avgTy);
             this.placeFuelInZone(fuelPoseInCameraFrame);
@@ -381,10 +382,9 @@ public class Vision extends SubsystemBase {
                     RobotConfig.getInstance()
                         .getCameraConfigs()[cameraIndex]
                         .robotToCameraTransform());
-            Translation2d fuelOffsetFromCamera = new Translation2d(1.0, tx[0]);
             // convert the offset in the frame of the camera pose back into the field frame
             Translation2d fieldRelativeFuelOffset =
-                fuelOffsetFromCamera.rotateBy(cameraPose.toPose2d().getRotation());
+                fuelPoseInCameraFrame.rotateBy(cameraPose.toPose2d().getRotation());
             allFuelPoses.add(
                 cameraPose.plus(
                     new Transform3d(
