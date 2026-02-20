@@ -394,15 +394,19 @@ public class ShooterModes extends SubsystemBase {
 
     double deltaX = targetLandingPosition.getX() - robotPose.getX();
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
-    double distance = Math.hypot(deltaX, deltaY);
+    double distance = Math.hypot(deltaY, deltaX);
 
     double idealShotVelocity =
         idealVelocityFromFunction(distance); // this.hubDistanceToVelocityMap.get(distance);
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
-        robotPose.getRotation().minus(new Rotation2d(fieldRelativeTurretAngle));
+        new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
+
+    Logger.recordOutput("ShooterModes/FieldRelativeAngle", fieldRelativeTurretAngle.in(Degrees));
+    Logger.recordOutput("ShooterModes/RobotHeading", robotPose.getRotation().getDegrees());
+    Logger.recordOutput("ShooterModes/RobotRelativeAngle", robotRelativeTurretAngle.in(Degrees));
 
     Angle idealHoodAngle =
         idealHoodAngleFromFunction(
@@ -419,7 +423,7 @@ public class ShooterModes extends SubsystemBase {
 
     double deltaX = targetLandingPosition.getX() - robotPose.getX();
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
-    double distance = Math.hypot(deltaX, deltaY);
+    double distance = Math.hypot(deltaY, deltaX);
 
     // function only applies for hub shots but added a constant value to differentiate in sim
     double idealShotVelocity =
