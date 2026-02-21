@@ -129,7 +129,7 @@ public class Field2d {
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             FieldConstants.fieldWidth
                 - RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
-            Rotation2d.fromDegrees(270));
+            Rotation2d.fromDegrees(-90));
 
     // blue right bank
     banks[1] =

@@ -110,8 +110,9 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
-    oi.getScoreFromBankButton()
-        .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+    // oi.getScoreFromBankButton()
+    //     .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+    oi.getScoreFromBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(swerveDrivetrain));
 
