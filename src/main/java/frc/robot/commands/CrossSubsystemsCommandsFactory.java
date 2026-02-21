@@ -55,14 +55,16 @@ public class CrossSubsystemsCommandsFactory {
       new LoggedTunableNumber(
           "DriveToBank/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
-    private static final LoggedTunableNumber driveToPoseMaxVelocity = 
+  private static final LoggedTunableNumber driveToPoseMaxVelocity =
       new LoggedTunableNumber(
           "DriveToBank/DriveToPoseMaxVelocity",
           RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond));
-    private static final LoggedTunableNumber driveToPoseMaxAcceleration =
+  private static final LoggedTunableNumber driveToPoseMaxAcceleration =
       new LoggedTunableNumber(
           "DriveToBank/DriveToPoseMaxAcceleration",
-          RobotConfig.getInstance().getDriveToPoseDriveMaxAcceleration().in(MetersPerSecondPerSecond));
+          RobotConfig.getInstance()
+              .getDriveToPoseDriveMaxAcceleration()
+              .in(MetersPerSecondPerSecond));
 
   private static final double WALL_SNAP_TOLERANCE_METERS = Units.inchesToMeters(30);
 
@@ -79,16 +81,14 @@ public class CrossSubsystemsCommandsFactory {
           driveKi.get(),
           driveXKd.get(),
           new TrapezoidProfile.Constraints(
-              driveToPoseMaxVelocity.get(),
-              driveToPoseMaxAcceleration.get()));
+              driveToPoseMaxVelocity.get(), driveToPoseMaxAcceleration.get()));
   public static ProfiledPIDController yController =
       new ProfiledPIDController(
           driveYKp.get(),
           driveKi.get(),
           driveYKd.get(),
           new TrapezoidProfile.Constraints(
-              driveToPoseMaxVelocity.get(),
-              driveToPoseMaxAcceleration.get()));
+              driveToPoseMaxVelocity.get(), driveToPoseMaxAcceleration.get()));
   public static ProfiledPIDController thetaController =
       new ProfiledPIDController(
           thetaKp.get(),

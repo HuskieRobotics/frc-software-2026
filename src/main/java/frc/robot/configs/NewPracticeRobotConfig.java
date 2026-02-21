@@ -96,8 +96,9 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06);
   private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
-  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(1000);
-  private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION = MetersPerSecondPerSecond.of(1000);
+  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(2);
+  private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION =
+      MetersPerSecondPerSecond.of(4);
 
   private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
 
