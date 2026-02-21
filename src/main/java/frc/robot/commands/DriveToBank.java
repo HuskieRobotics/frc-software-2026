@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,14 +11,17 @@ import java.util.function.Supplier;
 public class DriveToBank extends DriveToPose {
 
   // boost is negative to drive backwards into wall
-  private static final double DRIVE_TO_BANK_X_BOOST = -0.25; // in m/s
+  private static final double DRIVE_TO_BANK_X_BOOST = 0; // -0.25; // in m/s
 
   public DriveToBank(
       SwerveDrivetrain drivetrain,
       Supplier<Pose2d> targetPoseSupplier,
-      ProfiledPIDController xController,
-      ProfiledPIDController yController,
-      ProfiledPIDController thetaController,
+      // ProfiledPIDController xController,
+      // ProfiledPIDController yController,
+      // ProfiledPIDController thetaController,
+      PIDController xController,
+      PIDController yController,
+      PIDController thetaController,
       Transform2d targetTolerance,
       boolean finishesWhenAtTarget,
       Consumer<Boolean> atTargetConsumer,

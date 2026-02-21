@@ -462,8 +462,8 @@ public class RobotContainer {
     rotateNearBumpTrigger =
         new Trigger(
             () -> (Field2d.getInstance().inBumpZone() && !DriverStation.isAutonomousEnabled()));
-    rotateNearBumpTrigger.whileTrue(
-        CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
+    // rotateNearBumpTrigger.whileTrue(
+    //     CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
 
     runHopperOTMandAZTrigger =
         new Trigger(

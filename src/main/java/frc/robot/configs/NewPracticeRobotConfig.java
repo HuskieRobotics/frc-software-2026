@@ -86,11 +86,11 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
   // Drive to Pose constants
-  private static final double DRIVE_TO_POSE_DRIVE_KP =
-      8; // from preliminary testing, still needs more tuning
-  private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
-  private static final double DRIVE_TO_POSE_THETA_KP =
-      7.5; // 18.0; // from preliminary testing, still needs more tuning
+  private static final double DRIVE_TO_POSE_DRIVE_X_KP = 8;
+  private static final double DRIVE_TO_POSE_DRIVE_Y_KP = 8;
+  private static final double DRIVE_TO_POSE_DRIVE_X_KD = 0.0;
+  private static final double DRIVE_TO_POSE_DRIVE_Y_KD = 0.0;
+  private static final double DRIVE_TO_POSE_THETA_KP = 7.5;
   private static final double DRIVE_TO_POSE_THETA_KI = 10.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06);
@@ -383,17 +383,22 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   @Override
   public double getDriveToPoseDriveYKP() {
-    return DRIVE_TO_POSE_DRIVE_KP;
+    return DRIVE_TO_POSE_DRIVE_Y_KP;
+  }
+
+  @Override
+  public double getDriveToPoseDriveXKP() {
+    return DRIVE_TO_POSE_DRIVE_X_KP;
   }
 
   @Override
   public double getDriveToPoseDriveXKD() {
-    return DRIVE_TO_POSE_DRIVE_KD;
+    return DRIVE_TO_POSE_DRIVE_X_KD;
   }
 
   @Override
   public double getDriveToPoseDriveYKD() {
-    return DRIVE_TO_POSE_DRIVE_KD;
+    return DRIVE_TO_POSE_DRIVE_Y_KD;
   }
 
   @Override

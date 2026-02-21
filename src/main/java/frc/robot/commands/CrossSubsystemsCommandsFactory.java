@@ -2,11 +2,10 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,27 +32,27 @@ public class CrossSubsystemsCommandsFactory {
 
   private static final LoggedTunableNumber driveXKp =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveXKp", RobotConfig.getInstance().getDriveToPoseDriveXKP());
+          "DriveToBank/DriveXKp", RobotConfig.getInstance().getDriveToPoseDriveXKP());
   private static final LoggedTunableNumber driveYKp =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveYKp", RobotConfig.getInstance().getDriveToPoseDriveYKP());
+          "DriveToBank/DriveYKp", RobotConfig.getInstance().getDriveToPoseDriveYKP());
   private static final LoggedTunableNumber driveXKd =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveXKd", RobotConfig.getInstance().getDriveToPoseDriveXKD());
+          "DriveToBank/DriveXKd", RobotConfig.getInstance().getDriveToPoseDriveXKD());
   private static final LoggedTunableNumber driveYKd =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveYKd", RobotConfig.getInstance().getDriveToPoseDriveYKD());
+          "DriveToBank/DriveYKd", RobotConfig.getInstance().getDriveToPoseDriveYKD());
   private static final LoggedTunableNumber driveKi =
-      new LoggedTunableNumber("DriveToPoseExample/DriveKi", 0);
+      new LoggedTunableNumber("DriveToBank/DriveKi", 0);
   private static final LoggedTunableNumber thetaKp =
       new LoggedTunableNumber(
-          "DriveToPoseExample/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
+          "DriveToBank/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
   private static final LoggedTunableNumber thetaKd =
       new LoggedTunableNumber(
-          "DriveToPoseExample/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
+          "DriveToBank/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
   private static final LoggedTunableNumber thetaKi =
       new LoggedTunableNumber(
-          "DriveToPoseExample/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
+          "DriveToBank/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
   private static final double WALL_SNAP_TOLERANCE_METERS = Units.inchesToMeters(30);
 
@@ -64,36 +63,43 @@ public class CrossSubsystemsCommandsFactory {
 
   private static final double JOYSTICK_POWER = 2.0;
 
-  public static ProfiledPIDController xController =
-      new ProfiledPIDController(
-          driveXKp.get(),
-          driveKi.get(),
-          driveXKd.get(),
-          new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseDriveMaxAcceleration()
-                  .in(MetersPerSecondPerSecond)));
-  public static ProfiledPIDController yController =
-      new ProfiledPIDController(
-          driveYKp.get(),
-          driveKi.get(),
-          driveYKd.get(),
-          new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseDriveMaxAcceleration()
-                  .in(MetersPerSecondPerSecond)));
-  public static ProfiledPIDController thetaController =
-      new ProfiledPIDController(
-          thetaKp.get(),
-          thetaKi.get(),
-          thetaKd.get(),
-          new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity().in(RadiansPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseTurnMaxAcceleration()
-                  .in(RadiansPerSecondPerSecond)));
+  //   public static ProfiledPIDController xController =
+  //       new ProfiledPIDController(
+  //           driveXKp.get(),
+  //           driveKi.get(),
+  //           driveXKd.get(),
+  //           new TrapezoidProfile.Constraints(
+  //               RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond),
+  //               RobotConfig.getInstance()
+  //                   .getDriveToPoseDriveMaxAcceleration()
+  //                   .in(MetersPerSecondPerSecond)));
+  //   public static ProfiledPIDController yController =
+  //       new ProfiledPIDController(
+  //           driveYKp.get(),
+  //           driveKi.get(),
+  //           driveYKd.get(),
+  //           new TrapezoidProfile.Constraints(
+  //               RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond),
+  //               RobotConfig.getInstance()
+  //                   .getDriveToPoseDriveMaxAcceleration()
+  //                   .in(MetersPerSecondPerSecond)));
+  //   public static ProfiledPIDController thetaController =
+  //       new ProfiledPIDController(
+  //           thetaKp.get(),
+  //           thetaKi.get(),
+  //           thetaKd.get(),
+  //           new TrapezoidProfile.Constraints(
+  //               RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity().in(RadiansPerSecond),
+  //               RobotConfig.getInstance()
+  //                   .getDriveToPoseTurnMaxAcceleration()
+  //                   .in(RadiansPerSecondPerSecond)));
+
+  public static PIDController xController =
+      new PIDController(driveXKp.get(), driveKi.get(), driveXKd.get());
+  public static PIDController yController =
+      new PIDController(driveYKp.get(), driveKi.get(), driveYKd.get());
+  public static PIDController thetaController =
+      new PIDController(thetaKp.get(), thetaKi.get(), thetaKd.get());
 
   private CrossSubsystemsCommandsFactory() {}
 
@@ -110,8 +116,9 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
-    oi.getScoreFromBankButton()
-        .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+    // oi.getScoreFromBankButton()
+    //     .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+    oi.getScoreFromBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(swerveDrivetrain));
 

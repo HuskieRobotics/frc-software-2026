@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -38,9 +38,12 @@ import org.littletonrobotics.junction.Logger;
 public class DriveToPose extends Command {
   private final SwerveDrivetrain drivetrain;
   private final Supplier<Pose2d> targetPoseSupplier;
-  private final ProfiledPIDController xController;
-  private final ProfiledPIDController yController;
-  private final ProfiledPIDController thetaController;
+  // private final ProfiledPIDController xController;
+  // private final ProfiledPIDController yController;
+  // private final ProfiledPIDController thetaController;
+  private final PIDController xController;
+  private final PIDController yController;
+  private final PIDController thetaController;
   private Transform2d targetTolerance;
   private final boolean finishesWhenAtTarget;
   private final Consumer<Boolean> atTargetConsumer;
@@ -88,9 +91,12 @@ public class DriveToPose extends Command {
   public DriveToPose(
       SwerveDrivetrain drivetrain,
       Supplier<Pose2d> targetPoseSupplier,
-      ProfiledPIDController xController,
-      ProfiledPIDController yController,
-      ProfiledPIDController thetaController,
+      // ProfiledPIDController xController,
+      // ProfiledPIDController yController,
+      // ProfiledPIDController thetaController,
+      PIDController xController,
+      PIDController yController,
+      PIDController thetaController,
       Transform2d targetTolerance,
       boolean finishesWhenAtTarget,
       Consumer<Boolean> atTargetConsumer,
@@ -163,18 +169,19 @@ public class DriveToPose extends Command {
           new Translation2d(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond)
               .rotateBy(targetPose.getRotation().unaryMinus());
 
-      xController.reset(this.poseDifferenceInTargetFrame.getX(), velocitiesInTargetFrame.getX());
-      yController.reset(this.poseDifferenceInTargetFrame.getY(), velocitiesInTargetFrame.getY());
-      thetaController.reset(
-          this.poseDifferenceInTargetFrame.getRotation().getRadians(),
-          currentSpeeds.omegaRadiansPerSecond);
+      // xController.reset(this.poseDifferenceInTargetFrame.getX(), velocitiesInTargetFrame.getX());
+      // yController.reset(this.poseDifferenceInTargetFrame.getY(), velocitiesInTargetFrame.getY());
+      // thetaController.reset(
+      //     this.poseDifferenceInTargetFrame.getRotation().getRadians(),
+      //     currentSpeeds.omegaRadiansPerSecond);
     }
 
     // calculate new velocities in the frame of the target pose
-    double xVelocityInTargetFrame = xController.calculate(currentPoseInTargetFrame.getX(), 0.0);
-    double yVelocityInTargetFrame = yController.calculate(currentPoseInTargetFrame.getY(), 0.0);
+    double xVelocityInTargetFrame = xController.calculate(currentPose.getX(), targetPose.getX());
+    double yVelocityInTargetFrame = yController.calculate(currentPose.getY(), targetPose.getY());
     double thetaVelocity =
-        thetaController.calculate(currentPoseInTargetFrame.getRotation().getRadians(), 0.0);
+        thetaController.calculate(
+            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
 
     // opportunity to adjust velocities in the robot frame
     Translation2d velocitiesInTargetFrame =
