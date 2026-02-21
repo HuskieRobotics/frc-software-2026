@@ -176,9 +176,9 @@ public class DriveToPose extends Command {
       //     currentSpeeds.omegaRadiansPerSecond);
     }
 
-    // calculate new velocities in the frame of the target pose
-    double xVelocityInTargetFrame = xController.calculate(currentPose.getX(), targetPose.getX());
-    double yVelocityInTargetFrame = yController.calculate(currentPose.getY(), targetPose.getY());
+    // calculate new velocities field relative
+    double xVelocity = xController.calculate(currentPose.getX(), targetPose.getX());
+    double yVelocity = yController.calculate(currentPose.getY(), targetPose.getY());
     double thetaVelocity =
         thetaController.calculate(
             currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
@@ -186,7 +186,7 @@ public class DriveToPose extends Command {
     // opportunity to adjust velocities in the robot frame
     Translation2d velocitiesInTargetFrame =
         adjustVelocities(
-            new Translation2d(xVelocityInTargetFrame, yVelocityInTargetFrame),
+            new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation().unaryMinus()),
             this.poseDifferenceInTargetFrame);
 
     // convert the velocities in the frame of the target pose back into the field frame

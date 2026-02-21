@@ -95,11 +95,11 @@ public class CrossSubsystemsCommandsFactory {
   //                   .in(RadiansPerSecondPerSecond)));
 
   public static PIDController xController =
-      new PIDController(driveXKp.get(), driveKi.get(), driveXKd.get());
+      new PIDController(driveXKp.get(), driveKi.get(), driveXKd.get(), 0.02);
   public static PIDController yController =
-      new PIDController(driveYKp.get(), driveKi.get(), driveYKd.get());
+      new PIDController(driveYKp.get(), driveKi.get(), driveYKd.get(), 0.02);
   public static PIDController thetaController =
-      new PIDController(thetaKp.get(), thetaKi.get(), thetaKd.get());
+      new PIDController(thetaKp.get(), thetaKi.get(), thetaKd.get(), 0.02);
 
   private CrossSubsystemsCommandsFactory() {}
 
