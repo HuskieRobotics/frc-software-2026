@@ -5,7 +5,6 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -88,6 +87,10 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/PrimaryMode", primaryMode);
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
+
+    Logger.recordOutput("ShooterModes/InTrench", Field2d.getInstance().inTrenchZone());
+
+    Logger.recordOutput("ShooterModes/AllianceZone", Field2d.getInstance().inAllianceZone());
 
     calculateIdealShot();
   }
@@ -219,6 +222,7 @@ public class ShooterModes extends SubsystemBase {
   }
 
   public void configureShooterModeTriggers() {
+
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
     nearTrenchTrigger.onTrue(Commands.runOnce(this::setNearTrenchActive));
     nearTrenchTrigger.onFalse(Commands.runOnce(this::returnToPreviousMode));
@@ -235,7 +239,8 @@ public class ShooterModes extends SubsystemBase {
         new Trigger(
             () ->
                 (!OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
-                        && !Field2d.getInstance().inAllianceZone())
+                        && !Field2d.getInstance().inAllianceZone()
+                        && !Field2d.getInstance().inTrenchZone())
                     || (!this.hubActive && Field2d.getInstance().inAllianceZone()));
 
     collectAndHoldTrigger.onTrue(
@@ -273,39 +278,27 @@ public class ShooterModes extends SubsystemBase {
 
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
 
-    // total angular velocity is comprised of the robot omega and the turret omega
-    double totalAngularVelocity =
-        drivetrainSpeeds.omegaRadiansPerSecond
-            + shooter.getTurretAngularVelocity().in(RadiansPerSecond);
+    double robotVelocity = drivetrainSpeeds.vxMetersPerSecond;
 
-    // total angle is comprised of the robot angle and the turret angle (which is relative to the
-    // robot)
-    double totalAngleRadians =
-        robotPose.getRotation().getRadians() + shooter.getTurretPosition().in(Radians);
+    double deltaXFieldRelativeTurret =
+        robotPose.getX() * ROBOT_TO_TURRET_TRANSFORM.getX()
+            - robotPose.getY() * ROBOT_TO_TURRET_TRANSFORM.getY();
+    double deltaYFieldRelativeTurret =
+        robotPose.getX() * ROBOT_TO_TURRET_TRANSFORM.getY()
+            + robotPose.getY() * ROBOT_TO_TURRET_TRANSFORM.getX();
 
-    // DISTANCE_FROM_TURRET_TO_SHOOTER_METERS, the distance from the center of the robot to the exit
-    // location of the ball
-
-    // TODO: if the turret isnt at the center of the robot, there will be an extra set of tangential
-    // velocities
-
-    double vXTangential =
-        -totalAngularVelocity
-            * DISTANCE_FROM_TURRET_TO_SHOOTER_METERS
-            * Math.sin(totalAngleRadians);
-    double vYTangential =
-        totalAngularVelocity * DISTANCE_FROM_TURRET_TO_SHOOTER_METERS * Math.cos(totalAngleRadians);
+    double tangentialVelocityTurretX =
+        -(drivetrainSpeeds.omegaRadiansPerSecond * deltaYFieldRelativeTurret);
+    double tangentialVelocityTurretY =
+        (drivetrainSpeeds.omegaRadiansPerSecond * deltaXFieldRelativeTurret);
 
     return new ChassisSpeeds(
-        drivetrainSpeeds.vxMetersPerSecond + vXTangential,
-        drivetrainSpeeds.vyMetersPerSecond + vYTangential,
-        totalAngularVelocity);
+        robotVelocity + tangentialVelocityTurretX,
+        robotVelocity + tangentialVelocityTurretY,
+        drivetrainSpeeds.omegaRadiansPerSecond); // FIXME: fix this
   }
 
   private void calculateIdealShot() {
-
-    boolean inNeutralZone =
-        !Field2d.getInstance().inAllianceZone() && !Field2d.getInstance().inTrenchZone();
 
     boolean lockToggleOn =
         OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean();
@@ -395,14 +388,14 @@ public class ShooterModes extends SubsystemBase {
     double newHoodAngle =
         (180.0 / Math.PI)
             * Math.atan2(
-                (v * Math.sin(theta.in(Radians))),
                 Math.sqrt(
                     Math.pow(
-                            v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx,
+                            v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx,
                             2)
                         + Math.pow(
-                            v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy,
-                            2)));
+                            v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy,
+                            2)),
+                v * Math.cos(theta.in(Radians)));
 
     double newTurretAngle =
         (180.0 / Math.PI)
@@ -441,10 +434,12 @@ public class ShooterModes extends SubsystemBase {
 
     // transform robot pose by calculated robot to shooter transform
     Pose2d robotPose =
-        RobotOdometry.getInstance().getEstimatedPose().transformBy(new Transform2d());
+        RobotOdometry.getInstance().getEstimatedPose().transformBy(ROBOT_TO_TURRET_TRANSFORM);
 
-    double deltaX = targetLandingPosition.getX() - robotPose.getX();
-    double deltaY = targetLandingPosition.getY() - robotPose.getY();
+    double deltaX =
+        targetLandingPosition.getX() - (robotPose.getX() + ROBOT_TO_TURRET_TRANSFORM.getX());
+    double deltaY =
+        targetLandingPosition.getY() - (robotPose.getY() + ROBOT_TO_TURRET_TRANSFORM.getY());
     double distance = Math.hypot(deltaY, deltaX);
 
     double idealShotVelocity =
@@ -466,7 +461,7 @@ public class ShooterModes extends SubsystemBase {
 
   private Double[] getIdealPassSetpoints(Translation2d targetLandingPosition) {
     Pose2d robotPose =
-        RobotOdometry.getInstance().getEstimatedPose().transformBy(new Transform2d());
+        RobotOdometry.getInstance().getEstimatedPose().transformBy(ROBOT_TO_TURRET_TRANSFORM);
 
     double deltaX = targetLandingPosition.getX() - robotPose.getX();
     double deltaY = targetLandingPosition.getY() - robotPose.getY();

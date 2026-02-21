@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -119,5 +121,7 @@ public class ShooterConstants {
   public static final double TURRET_CURRENT_THRESHOLD_AMPS = 35.0;
   public static final double TURRET_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
 
-  public static final double DISTANCE_FROM_TURRET_TO_SHOOTER_METERS = 0.5; // FIXME: update value
+  // Displacement of the turret relative to the center of the robot at the phi of robot = 0
+  public static final Transform2d ROBOT_TO_TURRET_TRANSFORM =
+      new Transform2d(-0.0635, 0.13335, new Rotation2d());
 }
