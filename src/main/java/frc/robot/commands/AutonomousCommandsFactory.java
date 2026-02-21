@@ -511,14 +511,12 @@ public class AutonomousCommandsFactory {
   private Command rightHopperToNeutralZoneX2(
       SwerveDrivetrain drivetrain) { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
-    PathPlannerPath driveToBank;
     PathPlannerPath driveToNeutralZoneAgain;
-    PathPlannerPath driveToBankAgain;
+    PathPlannerPath driveToBank;
     try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Far NZ");
-      driveToBank = PathPlannerPath.fromPathFile("Right Far NZ to Bank");
-      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Right Bank to Close NZ");
-      driveToBankAgain = PathPlannerPath.fromPathFile("Right Close NZ to Bank");
+      driveToNeutralZone = PathPlannerPath.fromPathFile("R Fuel Sweep"); //this path ends at the bank
+      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("R Sweep Collect");
+      driveToBank = PathPlannerPath.fromPathFile("R Sweep to Bank");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
@@ -533,23 +531,19 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZone),
         Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToBank),
-        Commands.waitSeconds(1),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToBankAgain));
+        AutoBuilder.followPath(driveToBank));
   }
 
   private Command leftHopperToNeutralZoneX2() { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
-    PathPlannerPath driveToBank;
     PathPlannerPath driveToNeutralZoneAgain;
-    PathPlannerPath driveToBankAgain;
+    PathPlannerPath driveToBank;
     try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Far NZ");
-      driveToBank = PathPlannerPath.fromPathFile("Left Far NZ to Bank");
-      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("Left Bank to Close NZ");
-      driveToBankAgain = PathPlannerPath.fromPathFile("Left Close NZ to Bank");
+      driveToNeutralZone = PathPlannerPath.fromPathFile("L Fuel Sweep"); //this path ends at the bank
+      driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("L Sweep Collect");
+      driveToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
@@ -565,11 +559,9 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZone),
         Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToBank),
-        Commands.waitSeconds(1),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToBankAgain));
+        AutoBuilder.followPath(driveToBank));
   }
 
   private Command leftHopperNeutralZoneAndDepot(

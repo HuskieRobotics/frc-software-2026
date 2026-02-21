@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.735791726105562,
-        "y": 5.684679029957205
+        "x": 5.861411111111112,
+        "y": 3.379944444444444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.746961483594864,
-        "y": 7.8713124108416554
+        "x": 5.901722222222222,
+        "y": 1.031822222222222
       },
       "isLocked": false,
-      "linkedName": "Real Neutral Zone"
+      "linkedName": "R Sweep Collect"
     },
     {
       "anchor": {
-        "x": 3.5574733096010975,
-        "y": 7.4465568181818185
+        "x": 3.535954922894425,
+        "y": 0.5866785290628707
       },
       "prevControl": {
-        "x": 6.943204106862643,
-        "y": 7.379189533352112
+        "x": 6.86918888888889,
+        "y": 0.25583333333333264
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "Right Bank"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6,
-      "rotationDegrees": -90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Neutral Zone x2",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -36.158185439808186
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
