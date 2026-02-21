@@ -163,6 +163,9 @@ public class DriveToPose extends Command {
             this.poseDifferenceInTargetFrame.getRotation());
 
     if (firstRun) {
+      xController.reset();
+      yController.reset();
+      thetaController.reset();
       // reset the profiled PID controllers on the first run
       ChassisSpeeds currentSpeeds = drivetrain.getRobotRelativeSpeeds();
       Translation2d velocitiesInTargetFrame =

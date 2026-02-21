@@ -91,7 +91,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_DRIVE_X_KD = 0.0;
   private static final double DRIVE_TO_POSE_DRIVE_Y_KD = 0.0;
   private static final double DRIVE_TO_POSE_THETA_KP = 7.5;
-  private static final double DRIVE_TO_POSE_THETA_KI = 10.0;
+  private static final double DRIVE_TO_POSE_THETA_KI = 0.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06);
   private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
