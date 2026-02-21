@@ -1,7 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.shooter.ShooterConstants.TURRET_LOCK_POSITION_DEGREES;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,7 +19,6 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
-import frc.robot.subsystems.shooter.ShooterConstants.*;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
@@ -272,9 +271,35 @@ public class ShooterModes extends SubsystemBase {
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
     ChassisSpeeds drivetrainSpeeds = RobotOdometry.getInstance().getFieldRelativeSpeeds();
 
-    // TODO: convert to shooter relative speeds with angular velocity of turret and robot_to_shooter
-    // transform
-    return drivetrainSpeeds;
+    Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
+
+    // total angular velocity is comprised of the robot omega and the turret omega
+    double totalAngularVelocity =
+        drivetrainSpeeds.omegaRadiansPerSecond
+            + shooter.getTurretAngularVelocity().in(RadiansPerSecond);
+
+    // total angle is comprised of the robot angle and the turret angle (which is relative to the
+    // robot)
+    double totalAngleRadians =
+        robotPose.getRotation().getRadians() + shooter.getTurretPosition().in(Radians);
+
+    // DISTANCE_FROM_TURRET_TO_SHOOTER_METERS, the distance from the center of the robot to the exit
+    // location of the ball
+
+    // TODO: if the turret isnt at the center of the robot, there will be an extra set of tangential
+    // velocities
+
+    double vXTangential =
+        -totalAngularVelocity
+            * DISTANCE_FROM_TURRET_TO_SHOOTER_METERS
+            * Math.sin(totalAngleRadians);
+    double vYTangential =
+        totalAngularVelocity * DISTANCE_FROM_TURRET_TO_SHOOTER_METERS * Math.cos(totalAngleRadians);
+
+    return new ChassisSpeeds(
+        drivetrainSpeeds.vxMetersPerSecond + vXTangential,
+        drivetrainSpeeds.vyMetersPerSecond + vYTangential,
+        totalAngularVelocity);
   }
 
   private void calculateIdealShot() {
@@ -299,7 +324,7 @@ public class ShooterModes extends SubsystemBase {
 
       if (!OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
         shooter.setFlywheelVelocity(RotationsPerSecond.of(staticShotSetpoints[0]));
-        shooter.setHoodPosition(ShooterConstants.HOOD_LOWER_ANGLE_LIMIT);
+        shooter.setHoodPosition(HOOD_LOWER_ANGLE_LIMIT);
         shooter.setTurretPosition(Degrees.of(staticShotSetpoints[2]));
       } else {
         // get shoot on the move set points in rps, degrees, degrees
@@ -310,7 +335,7 @@ public class ShooterModes extends SubsystemBase {
                 Degrees.of(staticShotSetpoints[2]));
 
         shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
-        shooter.setHoodPosition(ShooterConstants.HOOD_LOWER_ANGLE_LIMIT);
+        shooter.setHoodPosition(HOOD_LOWER_ANGLE_LIMIT);
         shooter.setTurretPosition(Degrees.of(otmShot[2]));
       }
     } else if (this.primaryMode == ShooterMode.SHOOT_OTM

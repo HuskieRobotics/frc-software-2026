@@ -116,41 +116,35 @@ public class ShooterIOTalonFX implements ShooterIO {
       new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
 
   private final LoggedTunableNumber flywheelLeadKP =
-      new LoggedTunableNumber("Shooter/Flywheel kP", ShooterConstants.FLYWHEEL_KP);
+      new LoggedTunableNumber("Shooter/Flywheel kP", FLYWHEEL_KP);
   private final LoggedTunableNumber flywheelLeadKI =
-      new LoggedTunableNumber("Shooter/Flywheel kI", ShooterConstants.FLYWHEEL_KI);
+      new LoggedTunableNumber("Shooter/Flywheel kI", FLYWHEEL_KI);
   private final LoggedTunableNumber flywheelLeadKD =
-      new LoggedTunableNumber("Shooter/Flywheel kD", ShooterConstants.FLYWHEEL_KD);
+      new LoggedTunableNumber("Shooter/Flywheel kD", FLYWHEEL_KD);
   private final LoggedTunableNumber flywheelLeadKS =
-      new LoggedTunableNumber("Shooter/Flywheel kS", ShooterConstants.FLYWHEEL_KS);
+      new LoggedTunableNumber("Shooter/Flywheel kS", FLYWHEEL_KS);
   private final LoggedTunableNumber flywheelLeadKV =
-      new LoggedTunableNumber("Shooter/Flywheel kV", ShooterConstants.FLYWHEEL_KV);
+      new LoggedTunableNumber("Shooter/Flywheel kV", FLYWHEEL_KV);
   private final LoggedTunableNumber flywheelLeadKA =
-      new LoggedTunableNumber("Shooter/Flywheel kA", ShooterConstants.FLYWHEEL_KA);
+      new LoggedTunableNumber("Shooter/Flywheel kA", FLYWHEEL_KA);
   private final LoggedTunableNumber turretKP =
-      new LoggedTunableNumber("Shooter/Turret kP", ShooterConstants.TURRET_KP);
+      new LoggedTunableNumber("Shooter/Turret kP", TURRET_KP);
   private final LoggedTunableNumber turretKI =
-      new LoggedTunableNumber("Shooter/Turret kI", ShooterConstants.TURRET_KI);
+      new LoggedTunableNumber("Shooter/Turret kI", TURRET_KI);
   private final LoggedTunableNumber turretKD =
-      new LoggedTunableNumber("Shooter/Turret kD", ShooterConstants.TURRET_KD);
+      new LoggedTunableNumber("Shooter/Turret kD", TURRET_KD);
   private final LoggedTunableNumber turretKS =
-      new LoggedTunableNumber("Shooter/Turret kS", ShooterConstants.TURRET_KS);
+      new LoggedTunableNumber("Shooter/Turret kS", TURRET_KS);
   private final LoggedTunableNumber turretKV =
-      new LoggedTunableNumber("Shooter/Turret kV", ShooterConstants.TURRET_KV);
+      new LoggedTunableNumber("Shooter/Turret kV", TURRET_KV);
   private final LoggedTunableNumber turretKA =
-      new LoggedTunableNumber("Shooter/Turret kA", ShooterConstants.TURRET_KA);
-  private final LoggedTunableNumber hoodKP =
-      new LoggedTunableNumber("Shooter/Hood kP", ShooterConstants.HOOD_KP);
-  private final LoggedTunableNumber hoodKI =
-      new LoggedTunableNumber("Shooter/Hood kI", ShooterConstants.HOOD_KI);
-  private final LoggedTunableNumber hoodKD =
-      new LoggedTunableNumber("Shooter/Hood kD", ShooterConstants.HOOD_KD);
-  private final LoggedTunableNumber hoodKS =
-      new LoggedTunableNumber("Shooter/Hood kS", ShooterConstants.HOOD_KS);
-  private final LoggedTunableNumber hoodKV =
-      new LoggedTunableNumber("Shooter/Hood kV", ShooterConstants.HOOD_KV);
-  private final LoggedTunableNumber hoodKA =
-      new LoggedTunableNumber("Shooter/Hood kA", ShooterConstants.HOOD_KA);
+      new LoggedTunableNumber("Shooter/Turret kA", TURRET_KA);
+  private final LoggedTunableNumber hoodKP = new LoggedTunableNumber("Shooter/Hood kP", HOOD_KP);
+  private final LoggedTunableNumber hoodKI = new LoggedTunableNumber("Shooter/Hood kI", HOOD_KI);
+  private final LoggedTunableNumber hoodKD = new LoggedTunableNumber("Shooter/Hood kD", HOOD_KD);
+  private final LoggedTunableNumber hoodKS = new LoggedTunableNumber("Shooter/Hood kS", HOOD_KS);
+  private final LoggedTunableNumber hoodKV = new LoggedTunableNumber("Shooter/Hood kV", HOOD_KV);
+  private final LoggedTunableNumber hoodKA = new LoggedTunableNumber("Shooter/Hood kA", HOOD_KA);
 
   private FlywheelSystemSim flywheelSim;
   private ArmSystemSim turretLeadSim;
@@ -278,37 +272,37 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     this.flywheelSim =
         new FlywheelSystemSim(
-            ShooterConstants.FLYWHEEL_KV,
-            ShooterConstants.FLYWHEEL_KA,
-            ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO,
-            ShooterConstants.FLYWHEEL_MOMENT_OF_INERTIA,
+            FLYWHEEL_KV,
+            FLYWHEEL_KA,
+            FLYWHEEL_LEAD_GEAR_RATIO,
+            FLYWHEEL_MOMENT_OF_INERTIA,
             flywheelLead,
             flywheelFollow1,
             flywheelFollow2);
     this.turretLeadSim =
         new ArmSystemSim(
             turret,
-            ShooterConstants.TURRET_INVERTED,
-            ShooterConstants.TURRET_GEAR_RATIO,
-            ShooterConstants.TURRET_LENGTH_METERS,
-            ShooterConstants.TURRET_MASS_KG,
-            ShooterConstants.TURRET_LOWER_ANGLE_LIMIT.in(Radians),
-            ShooterConstants.TURRET_UPPER_ANGLE_LIMIT.in(Radians),
+            TURRET_INVERTED,
+            TURRET_GEAR_RATIO,
+            TURRET_LENGTH_METERS,
+            TURRET_MASS_KG,
+            TURRET_LOWER_ANGLE_LIMIT.in(Radians),
+            TURRET_UPPER_ANGLE_LIMIT.in(Radians),
             0.0,
             false,
-            ShooterConstants.SUBSYSTEM_NAME + " Turret");
+            SUBSYSTEM_NAME + " Turret");
     this.hoodLeadSim =
         new ArmSystemSim(
             hood,
-            ShooterConstants.HOOD_INVERTED,
-            ShooterConstants.HOOD_GEAR_RATIO,
-            ShooterConstants.HOOD_LENGTH_METERS,
-            ShooterConstants.HOOD_MASS_KG,
-            ShooterConstants.HOOD_MIN_ANGLE.in(Radians),
-            ShooterConstants.HOOD_MAX_ANGLE.in(Radians),
-            ShooterConstants.HOOD_STARTING_ANGLE.in(Radians),
+            HOOD_INVERTED,
+            HOOD_GEAR_RATIO,
+            HOOD_LENGTH_METERS,
+            HOOD_MASS_KG,
+            HOOD_MIN_ANGLE.in(Radians),
+            HOOD_MAX_ANGLE.in(Radians),
+            HOOD_STARTING_ANGLE.in(Radians),
             false,
-            ShooterConstants.SUBSYSTEM_NAME + " Hood");
+            SUBSYSTEM_NAME + " Hood");
   }
 
   @Override
@@ -543,10 +537,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
 
-    flywheelConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
-    flywheelConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
+    flywheelConfig.TorqueCurrent.PeakForwardTorqueCurrent = FLYWHEEL_PEAK_CURRENT_LIMIT;
+    flywheelConfig.TorqueCurrent.PeakReverseTorqueCurrent = -FLYWHEEL_PEAK_CURRENT_LIMIT;
     flywheelConfig.Slot0.kP = flywheelLeadKP.get();
     flywheelConfig.Slot0.kI = flywheelLeadKI.get();
     flywheelConfig.Slot0.kD = flywheelLeadKD.get();
@@ -554,10 +546,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelConfig.Slot0.kV = flywheelLeadKV.get();
     flywheelConfig.Slot0.kA = flywheelLeadKA.get();
 
-    flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
+    flywheelConfig.Feedback.SensorToMechanismRatio = FLYWHEEL_LEAD_GEAR_RATIO;
 
     flywheelConfig.MotorOutput.Inverted =
-        ShooterConstants.FLYWHEEL_LEAD_INVERTED
+        FLYWHEEL_LEAD_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
@@ -570,12 +562,10 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration flywheelConfig = new TalonFXConfiguration();
 
-    flywheelConfig.TorqueCurrent.PeakForwardTorqueCurrent =
-        ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
-    flywheelConfig.TorqueCurrent.PeakReverseTorqueCurrent =
-        -ShooterConstants.FLYWHEEL_PEAK_CURRENT_LIMIT;
+    flywheelConfig.TorqueCurrent.PeakForwardTorqueCurrent = FLYWHEEL_PEAK_CURRENT_LIMIT;
+    flywheelConfig.TorqueCurrent.PeakReverseTorqueCurrent = -FLYWHEEL_PEAK_CURRENT_LIMIT;
 
-    flywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_LEAD_GEAR_RATIO;
+    flywheelConfig.Feedback.SensorToMechanismRatio = FLYWHEEL_LEAD_GEAR_RATIO;
 
     Phoenix6Util.applyAndCheckConfiguration(flywheelFollow, flywheelConfig, configAlert);
 
@@ -600,7 +590,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.Slot0.kV = turretKV.get();
     turretConfig.Slot0.kA = turretKA.get();
 
-    turretConfig.Feedback.SensorToMechanismRatio = ShooterConstants.TURRET_GEAR_RATIO;
+    turretConfig.Feedback.SensorToMechanismRatio = TURRET_GEAR_RATIO;
 
     turretConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
@@ -643,7 +633,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.Slot0.kS = hoodKS.get();
     hoodConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
-    hoodConfig.Feedback.SensorToMechanismRatio = ShooterConstants.HOOD_GEAR_RATIO;
+    hoodConfig.Feedback.SensorToMechanismRatio = HOOD_GEAR_RATIO;
 
     hoodConfig.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
@@ -664,7 +654,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
 
-    hood.setPosition(ShooterConstants.HOOD_STARTING_ANGLE.in(Rotations));
+    hood.setPosition(HOOD_STARTING_ANGLE.in(Rotations));
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
   }

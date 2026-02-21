@@ -118,4 +118,6 @@ public class ShooterConstants {
 
   public static final double TURRET_CURRENT_THRESHOLD_AMPS = 35.0;
   public static final double TURRET_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
+
+  public static final double DISTANCE_FROM_TURRET_TO_SHOOTER_METERS = 0.5; // FIXME: update value
 }

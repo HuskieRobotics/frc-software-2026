@@ -172,63 +172,42 @@ public class Shooter extends SubsystemBase {
   public Command getTestVelocityCommand() {
     return Commands.sequence(
         // check if the velocity is at setpoint 1
-        Commands.runOnce(
-            () -> io.setFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
         Commands.waitSeconds(3),
-        Commands.runOnce(
-            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
         // check if the velocity is at setpoint 2
-        Commands.runOnce(
-            () -> io.setFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
-        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(
-            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
 
         // check if the velocity is at setpoint 3
-        Commands.runOnce(
-            () -> io.setFlywheelVelocity((ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS))),
-        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(
-            () -> this.checkFlywheelVelocity(ShooterConstants.FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS)),
+        Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
   }
 
   public Command getTestPositionCommand() {
     return Commands.sequence(
         // check if hood and turret are at setpoint 1
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_1_DEGREES))),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_1_DEGREES))),
+        Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> io.setHoodPosition(Degrees.of(ShooterConstants.HOOD_SETPOINT_1_DEGREES))),
-        Commands.runOnce(
-            () -> io.setTurretPosition(Degrees.of(ShooterConstants.TURRET_SETPOINT_1_DEGREES))),
-        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(
-            () ->
-                this.checkPosition(
-                    ShooterConstants.HOOD_SETPOINT_1_DEGREES,
-                    ShooterConstants.TURRET_SETPOINT_1_DEGREES)),
+            () -> this.checkPosition(HOOD_SETPOINT_1_DEGREES, TURRET_SETPOINT_1_DEGREES)),
 
         // check if hood and turret are at setpoint 2
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_2_DEGREES))),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_2_DEGREES))),
+        Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> io.setHoodPosition(Degrees.of(ShooterConstants.HOOD_SETPOINT_2_DEGREES))),
-        Commands.runOnce(
-            () -> io.setTurretPosition(Degrees.of(ShooterConstants.TURRET_SETPOINT_2_DEGREES))),
-        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(
-            () ->
-                this.checkPosition(
-                    ShooterConstants.HOOD_SETPOINT_2_DEGREES,
-                    ShooterConstants.TURRET_SETPOINT_2_DEGREES)),
+            () -> this.checkPosition(HOOD_SETPOINT_2_DEGREES, TURRET_SETPOINT_2_DEGREES)),
 
         // check if hood and turret are at setpoint 3
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_3_DEGREES))),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_3_DEGREES))),
+        Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> io.setHoodPosition(Degrees.of(ShooterConstants.HOOD_SETPOINT_3_DEGREES))),
-        Commands.runOnce(
-            () -> io.setTurretPosition(Degrees.of(ShooterConstants.TURRET_SETPOINT_3_DEGREES))),
-        Commands.waitSeconds(ShooterConstants.COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(
-            () ->
-                this.checkPosition(
-                    ShooterConstants.HOOD_SETPOINT_3_DEGREES,
-                    ShooterConstants.TURRET_SETPOINT_3_DEGREES)));
+            () -> this.checkPosition(HOOD_SETPOINT_3_DEGREES, TURRET_SETPOINT_3_DEGREES)));
   }
 
   public void checkFlywheelVelocity(AngularVelocity flywheelTargetVelocity) {
@@ -270,7 +249,7 @@ public class Shooter extends SubsystemBase {
       double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees) {
     // Check if hood position is where it should be
     if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees)
-        > ShooterConstants.HOOD_TOLERANCE_ANGLE.in(Degrees)) {
+        > HOOD_TOLERANCE_ANGLE.in(Degrees)) {
       if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(
@@ -292,7 +271,7 @@ public class Shooter extends SubsystemBase {
 
     // Check if turret position is where it should be
     if (Math.abs(shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees)
-        > ShooterConstants.TURRET_TOLERANCE_ANGLE.in(Degrees)) {
+        > TURRET_TOLERANCE_ANGLE.in(Degrees)) {
       if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees < 0) {
         FaultReporter.getInstance()
             .addFault(
@@ -350,7 +329,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setTurretLockPositionForBank() {
-    io.setTurretPosition(ShooterConstants.TURRET_LOCK_POSITION_DEGREES);
+    io.setTurretPosition(TURRET_LOCK_POSITION_DEGREES);
   }
 
   public void setHoodPosition(Angle position) {
@@ -383,5 +362,9 @@ public class Shooter extends SubsystemBase {
 
   public AngularVelocity getTurretAngularVelocity() {
     return shooterInputs.turretVelocity;
+  }
+
+  public Angle getTurretPosition() {
+    return shooterInputs.turretPosition;
   }
 }
