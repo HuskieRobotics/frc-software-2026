@@ -26,6 +26,7 @@ public class HopperConstants {
   public static final double SPINDEXER_KV = 0.67505; // FIXME: Update value
   public static final double SPINDEXER_KA = 0.027564; // FIXME: Update value
   public static final double SPINDEXER_KS = 0.01; // FIXME: Update value
+  public static final double SPINDEXER_MOI = 0.5; // FIXME: Update value
 
   public static final AngularVelocity SPINDEXER_VELOCITY_TOLERANCE =
       RotationsPerSecond.of(0.5); // FIXME: Update value

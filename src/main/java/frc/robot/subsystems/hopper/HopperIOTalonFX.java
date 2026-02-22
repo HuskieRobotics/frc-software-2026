@@ -23,7 +23,6 @@ import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.FlywheelSystemSim;
-import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 
@@ -31,7 +30,7 @@ public class HopperIOTalonFX implements HopperIO {
   private TalonFX spindexerMotor;
   private TalonFX kickerMotor;
 
-  private VelocitySystemSim spindexerVelocitySystemSim;
+  private FlywheelSystemSim spindexerVelocitySystemSim;
   private FlywheelSystemSim kickerSim;
 
   private VelocityTorqueCurrentFOC spindexerVelocityRequest;
@@ -132,7 +131,8 @@ public class HopperIOTalonFX implements HopperIO {
     configKickerMotor(kickerMotor);
 
     spindexerVelocitySystemSim =
-        new VelocitySystemSim(SPINDEXER_KV, SPINDEXER_KA, SPINDEXER_GEAR_RATIO, spindexerMotor);
+        new FlywheelSystemSim(
+            SPINDEXER_KV, SPINDEXER_KA, SPINDEXER_GEAR_RATIO, SPINDEXER_MOI, spindexerMotor);
 
     kickerSim =
         new FlywheelSystemSim(KICKER_KV, KICKER_KA, KICKER_GEAR_RATIO, KICKER_MOI, kickerMotor);
