@@ -25,13 +25,13 @@ public class IntakeConstants {
   // Mechanical properties for simulation
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
   public static final double DEPLOYER_MASS_KG = 1.5;
-  public static final Angle DEPLOYER_MIN_ANGLE = Rotations.of(0); // FIXME: set value
-  public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(1.4); // FIXME: set value
+  public static final Angle DEPLOYER_MIN_ANGLE = Rotations.of(0);
+  public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(35.0); // FIXME: set value
 
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
   public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(34.54); // FIXME: set value
   public static final Distance DEPLOYED_LINEAR_POSITION =
-      Meters.of(DEPLOYED_ANGULAR_POSITION.times(DEPLOYER_CIRCUMFERENCE).magnitude());
+      Meters.of(DEPLOYED_ANGULAR_POSITION.in(Rotations) * DEPLOYER_CIRCUMFERENCE.in(Meters));
   public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
   public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0.0);
   public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
