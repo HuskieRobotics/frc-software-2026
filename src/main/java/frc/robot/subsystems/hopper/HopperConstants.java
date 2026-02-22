@@ -17,27 +17,29 @@ public class HopperConstants {
   public static final double SPINDEXER_GEAR_RATIO = 18.0;
   public static final double KICKER_GEAR_RATIO = 1.0;
 
-  public static final boolean SPINDEXER_MOTOR_INVERTED = false;
+  public static final boolean SPINDEXER_MOTOR_INVERTED = true;
   public static final boolean KICKER_MOTOR_INVERTED = true;
 
-  public static final double SPINDEXER_KP = 12.0; // FIXME: Update value
-  public static final double SPINDEXER_KI = 0.0; // FIXME: Update value
-  public static final double SPINDEXER_KD = 0.0; // FIXME: Update value
-  public static final double SPINDEXER_KV = 0.67505; // FIXME: Update value
-  public static final double SPINDEXER_KA = 0.027564; // FIXME: Update value
-  public static final double SPINDEXER_KS = 0.01; // FIXME: Update value
-  public static final double SPINDEXER_MOI = 0.5; // FIXME: Update value
+  public static final double SPINDEXER_KP = 64.0;
+  public static final double SPINDEXER_KI = 0.0; 
+  public static final double SPINDEXER_KD = 0.0; 
+  public static final double SPINDEXER_KV = 0.08; 
+  public static final double SPINDEXER_KA = 0.027564;
+  public static final double SPINDEXER_KS = 2.5; 
+
+  public static final double SPINDEXER_MOI = 0.5; 
 
   public static final AngularVelocity SPINDEXER_VELOCITY_TOLERANCE =
       RotationsPerSecond.of(0.5); // FIXME: Update value
 
-  public static final double KICKER_KP = 12.0; // FIXME: Update value
-  public static final double KICKER_KI = 0.0; // FIXME: Update value
-  public static final double KICKER_KD = 0.0; // FIXME: Update vlaue
-  public static final double KICKER_KV = 0.67505; // FIXME: Update value
-  public static final double KICKER_KA = 0.027564; // FIXME: Update value
-  public static final double KICKER_KS = 0.01; // FIXME: Update value
-  public static final double KICKER_MOI = 0.5; // FIXME: Update value
+  public static final double KICKER_KP = 11.0;
+  public static final double KICKER_KI = 0.0;
+  public static final double KICKER_KD = 0.0;
+  public static final double KICKER_KV = 0.22;
+  public static final double KICKER_KA = 0.0;
+  public static final double KICKER_KS = 6.25;
+
+  public static final double KICKER_MOI = 0.5;
 
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE =
       RotationsPerSecond.of(0.5); // FIXME: Update value
