@@ -441,7 +441,7 @@ public class ShooterModes extends SubsystemBase {
     double distance = Math.hypot(deltaY, deltaX);
 
     double idealShotVelocity =
-        idealVelocityFromFunction(distance); // this.hubDistanceToVelocityMap.get(distance);
+        idealVelocityFromFunction(distance) * FLYWHEEL_VELOCITY_SCALE_FACTOR; // this.hubDistanceToVelocityMap.get(distance);
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
@@ -468,7 +468,7 @@ public class ShooterModes extends SubsystemBase {
 
     // function only applies for hub shots but added a constant value to differentiate in sim
     double idealShotVelocity =
-        idealVelocityFromFunction(distance); // this.passDistanceToVelocityMap.get(distance);
+        idealVelocityFromFunction(distance) * FLYWHEEL_VELOCITY_SCALE_FACTOR; // this.passDistanceToVelocityMap.get(distance);
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
