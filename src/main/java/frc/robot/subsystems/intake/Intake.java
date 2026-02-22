@@ -203,12 +203,11 @@ public class Intake extends SubsystemBase {
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake),
-            Commands.waitSeconds(0.5)
+            Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
                       if (!inputs.deployerAngularPosition.isNear(
-                          Rotations.of(DEPLOYED_ANGULAR_POSITION.in(Rotations)),
-                          Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
+                          DEPLOYED_ANGULAR_POSITION, DEPLOYER_ANGULAR_POSITION_TOLERANCE)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
@@ -216,13 +215,11 @@ public class Intake extends SubsystemBase {
                       }
                     }),
             Commands.runOnce(this::startRoller),
-            Commands.waitSeconds(2)
+            Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
                       if (!inputs.rollerVelocity.isNear(
-                          RotationsPerSecond.of(ROLLER_TARGET_VELOCITY.in(RotationsPerSecond)),
-                          RotationsPerSecond.of(
-                              ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
+                          ROLLER_TARGET_VELOCITY, ROLLER_VELOCITY_TOLERANCE)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
@@ -230,13 +227,11 @@ public class Intake extends SubsystemBase {
                       }
                     }),
             Commands.runOnce(this::outTakeRoller),
-            Commands.waitSeconds(2)
+            Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
                       if (!inputs.rollerVelocity.isNear(
-                          RotationsPerSecond.of(ROLLER_EJECT_VELOCITY.in(RotationsPerSecond)),
-                          RotationsPerSecond.of(
-                              ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
+                          ROLLER_EJECT_VELOCITY, ROLLER_VELOCITY_TOLERANCE)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
@@ -245,12 +240,11 @@ public class Intake extends SubsystemBase {
                     }),
             Commands.runOnce(this::stopRoller),
             Commands.runOnce(this::retractIntake),
-            Commands.waitSeconds(0.5)
+            Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
                       if (!inputs.deployerAngularPosition.isNear(
-                          Rotations.of(RETRACTED_ANGULAR_POSITION.in(Rotations)),
-                          Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
+                          RETRACTED_ANGULAR_POSITION, DEPLOYER_ANGULAR_POSITION_TOLERANCE)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
@@ -259,10 +253,7 @@ public class Intake extends SubsystemBase {
                     }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(
-            Commands.runOnce(
-                () -> {
-                  stopRoller();
-                  intakeIO.setDeployerPosition(inputs.deployerAngularPosition);
-                }));
+            Commands.sequence(
+                Commands.runOnce(this::stopRoller), Commands.runOnce(this::retractIntake)));
   }
 }
