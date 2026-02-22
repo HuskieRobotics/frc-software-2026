@@ -208,6 +208,7 @@ public class IntakeIOTalonFX implements IntakeIO {
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
+          config.kS = pid[3];
           this.deployerMotor.getConfigurator().apply(config);
         },
         deployerKp,
@@ -223,6 +224,8 @@ public class IntakeIOTalonFX implements IntakeIO {
           config.Slot0.kP = motionMagic[0];
           config.Slot0.kI = motionMagic[1];
           config.Slot0.kD = motionMagic[2];
+          config.Slot0.kS = motionMagic[3];
+          config.Slot0.kV = motionMagic[4];
           this.rollerMotor.getConfigurator().apply(config);
         },
         rollerKp,

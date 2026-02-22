@@ -42,12 +42,12 @@ public class IntakeConstants {
   public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 40;
   public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
 
-  public static final double ROLLER_KP = 12; // FIXME: tune value
+  public static final double ROLLER_KP = 20; 
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 0.25; // FIXME: tune values
-  public static final double ROLLER_KV = 0.12;
-  public static final double ROLLER_KA = 0.01;
+  public static final double ROLLER_KS = 4.9; 
+  public static final double ROLLER_KV = 0.5;
+  public static final double ROLLER_KA = 0;
 
   // this is the gear ratio for the wheels; the roller, which is mechanically linked to the wheel
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
