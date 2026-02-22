@@ -126,4 +126,6 @@ public class ShooterConstants {
       new Transform2d(-0.0635, 0.13335, new Rotation2d()); // got from CAD
 
   public static final Angle HOOD_OFFSET_WHEN_SHOOTING = Degrees.of(0.0); // FIXME: determine value
+
+  public static final double FLYWHEEL_VELOCITY_SCALE_FACTOR = 1.0; // FIXME: determine value
 }
