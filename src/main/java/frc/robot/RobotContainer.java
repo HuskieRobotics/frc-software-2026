@@ -212,8 +212,7 @@ public class RobotContainer {
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
     for (int i = 0; i < visionIOs.length; i++) {
       visionIOs[i] =
-          new VisionIOPhotonVision(
-              cameraConfigs[i].id(), FieldConstants.defaultAprilTagType.getLayout());
+          new VisionIONorthstar(FieldConstants.defaultAprilTagType.getLayout(), cameraConfigs[i]);
     }
     vision = new Vision(visionIOs);
 
