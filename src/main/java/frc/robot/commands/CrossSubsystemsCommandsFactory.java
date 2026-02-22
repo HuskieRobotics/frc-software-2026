@@ -80,9 +80,14 @@ public class CrossSubsystemsCommandsFactory {
   private CrossSubsystemsCommandsFactory() {}
 
   public static void registerCommands(
-      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, Intake intake, Hopper hopper, Vision vision) {
+      OperatorInterface oi,
+      SwerveDrivetrain swerveDrivetrain,
+      Intake intake,
+      Hopper hopper,
+      Vision vision) {
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, vision, oi));
+    oi.getInterruptAll()
+        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, vision, oi));
 
     oi.getDriveToPoseButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, oi));
 
@@ -109,7 +114,11 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getInterruptAllCommand(
-      SwerveDrivetrain swerveDrivetrain, Hopper hopper, Vision vision, OperatorInterface oi) {
+      SwerveDrivetrain swerveDrivetrain,
+      Intake intake,
+      Hopper hopper,
+      Vision vision,
+      OperatorInterface oi) {
     return Commands.parallel(
             new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
             Commands.runOnce(intake::stopRoller),
