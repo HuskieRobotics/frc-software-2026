@@ -11,15 +11,15 @@ public class IntakeConstants {
   public static final int ROLLER_MOTOR_ID = 42;
   public static final int DEPLOYER_MOTOR_ID = 33;
 
-  public static final double DEPLOYER_KP = 12; // FIXME: tune values
+  public static final double DEPLOYER_KP = 12; // FIXME: tune value
   public static final double DEPLOYER_KI = 0;
   public static final double DEPLOYER_KD = 0;
-  public static final double DEPLOYER_KS = 0.25;
-  public static final double DEPLOYER_KV = 0.37;
-  public static final double DEPLOYER_KA = 0.583;
-  public static final double DEPLOYER_KG = 0.45;
+  public static final double DEPLOYER_KS = 0.25; // FIXME: tune value
+  public static final double DEPLOYER_KV = 0.0;
+  public static final double DEPLOYER_KA = 0.0;
+  public static final double DEPLOYER_KG = 0.0;
 
-  public static final double DEPLOYER_GEAR_RATIO = 4.0; // FIXME: set value
+  public static final double DEPLOYER_GEAR_RATIO = 25.0;
   public static final boolean DEPLOYER_MOTOR_INVERTED = true; // FIXME: check direction
 
   // Mechanical properties for simulation
@@ -29,14 +29,11 @@ public class IntakeConstants {
   public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(1.4); // FIXME: set value
 
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
-  public static final Distance DEPLOYED_LINEAR_POSITION = Inches.of(10.0); // FIXME: set value
-  public static final Angle DEPLOYED_ANGULAR_POSITION =
-      Rotations.of(
-          DEPLOYED_LINEAR_POSITION.div(DEPLOYER_CIRCUMFERENCE).magnitude()); // FIXME: set value
-  public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0.0); // FIXME: set value
-  public static final Angle RETRACTED_ANGULAR_POSITION =
-      Rotations.of(
-          RETRACTED_LINEAR_POSITION.div(DEPLOYER_CIRCUMFERENCE).magnitude()); // FIXME: set value
+  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(34.54); // FIXME: set value
+  public static final Distance DEPLOYED_LINEAR_POSITION =
+      Meters.of(DEPLOYED_ANGULAR_POSITION.times(DEPLOYER_CIRCUMFERENCE).magnitude());
+  public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
+  public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0.0);
   public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
   public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
@@ -48,7 +45,7 @@ public class IntakeConstants {
   public static final double ROLLER_KP = 12; // FIXME: tune value
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 0.25;
+  public static final double ROLLER_KS = 0.25; // FIXME: tune values
   public static final double ROLLER_KV = 0.12;
   public static final double ROLLER_KA = 0.01;
 
