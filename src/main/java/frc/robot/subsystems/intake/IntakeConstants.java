@@ -31,12 +31,15 @@ public class IntakeConstants {
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
   public static final Distance DEPLOYED_LINEAR_POSITION = Inches.of(10.0); // FIXME: set value
   public static final Angle DEPLOYED_ANGULAR_POSITION =
-      Rotations.of(DEPLOYED_LINEAR_POSITION.div(DEPLOYER_CIRCUMFERENCE).magnitude()); // FIXME: set value
+      Rotations.of(
+          DEPLOYED_LINEAR_POSITION.div(DEPLOYER_CIRCUMFERENCE).magnitude()); // FIXME: set value
   public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0.0); // FIXME: set value
   public static final Angle RETRACTED_ANGULAR_POSITION =
-      Rotations.of(RETRACTED_LINEAR_POSITION.div(DEPLOYER_CIRCUMFERENCE).magnitude()); // FIXME: set value
+      Rotations.of(
+          RETRACTED_LINEAR_POSITION.div(DEPLOYER_CIRCUMFERENCE).magnitude()); // FIXME: set value
   public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
-  public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE = Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
+  public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
+      Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
 
   public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 60;
   public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 40;

@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.team3061.RobotConfig;
-import frc.lib.team3061.leds.LEDs;
 import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.climber.Climber;
 import org.littletonrobotics.junction.Logger;
@@ -18,7 +17,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 public class RobotVisualization {
 
   private Intake intake;
-// private Climber climber;
+  // private Climber climber;
 
   private LoggedMechanism2d intakeVisualization2D;
 
@@ -31,7 +30,7 @@ public class RobotVisualization {
   private final double kIntakeRootPosY = Units.inchesToMeters(7.00);
   private final double kIntakeDepth = Units.inchesToMeters(11.0);
 
-    private LoggedMechanism2d climberVisualization2D;
+  private LoggedMechanism2d climberVisualization2D;
 
   private LoggedMechanismLigament2d climberBox;
   private final double kClimberRootPosY = Units.inchesToMeters(4.875);
@@ -43,6 +42,7 @@ public class RobotVisualization {
 
     this.intake = intake;
     init2dVisualization();
+  }
 
   private void init2dVisualization() {
     intakeVisualization2D =

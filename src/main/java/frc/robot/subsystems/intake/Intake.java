@@ -204,43 +204,65 @@ public class Intake extends SubsystemBase {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake),
             Commands.waitSeconds(0.5)
-                .andThen( () -> {
-                    if (!inputs.deployerAngularPosition.isNear(
-                        Rotations.of(DEPLOYED_ANGULAR_POSITION.in(Rotations)), Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
-                      FaultReporter.getInstance()
-                          .addFault(
-                              SUBSYSTEM_NAME, "Deployer failed to reach deployed position in System Check");
-                    }}),
+                .andThen(
+                    () -> {
+                      if (!inputs.deployerAngularPosition.isNear(
+                          Rotations.of(DEPLOYED_ANGULAR_POSITION.in(Rotations)),
+                          Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
+                        FaultReporter.getInstance()
+                            .addFault(
+                                SUBSYSTEM_NAME,
+                                "Deployer failed to reach deployed position in System Check");
+                      }
+                    }),
             Commands.runOnce(this::startRoller),
             Commands.waitSeconds(2)
-                .andThen( () -> {
-                    if (!inputs.rollerVelocity.isNear(RotationsPerSecond.of(ROLLER_TARGET_VELOCITY.in(RotationsPerSecond)), RotationsPerSecond.of(ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
-                      FaultReporter.getInstance()
-                          .addFault(SUBSYSTEM_NAME, "Roller failed to reach target velocity in System Check");
-                    }}),
+                .andThen(
+                    () -> {
+                      if (!inputs.rollerVelocity.isNear(
+                          RotationsPerSecond.of(ROLLER_TARGET_VELOCITY.in(RotationsPerSecond)),
+                          RotationsPerSecond.of(
+                              ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
+                        FaultReporter.getInstance()
+                            .addFault(
+                                SUBSYSTEM_NAME,
+                                "Roller failed to reach target velocity in System Check");
+                      }
+                    }),
             Commands.runOnce(this::outTakeRoller),
             Commands.waitSeconds(2)
-                .andThen( () -> {
-                    if (!inputs.rollerVelocity.isNear(RotationsPerSecond.of(ROLLER_EJECT_VELOCITY.in(RotationsPerSecond)), RotationsPerSecond.of(ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
-                      FaultReporter.getInstance()
-                          .addFault(SUBSYSTEM_NAME, "Roller failed to reach eject velocity in System Check");
-                    }}),
+                .andThen(
+                    () -> {
+                      if (!inputs.rollerVelocity.isNear(
+                          RotationsPerSecond.of(ROLLER_EJECT_VELOCITY.in(RotationsPerSecond)),
+                          RotationsPerSecond.of(
+                              ROLLER_VELOCITY_TOLERANCE.in(RotationsPerSecond)))) {
+                        FaultReporter.getInstance()
+                            .addFault(
+                                SUBSYSTEM_NAME,
+                                "Roller failed to reach eject velocity in System Check");
+                      }
+                    }),
             Commands.runOnce(this::stopRoller),
             Commands.runOnce(this::retractIntake),
             Commands.waitSeconds(0.5)
-            .andThen( () -> {
-                if (!inputs.deployerAngularPosition.isNear(
-                    Rotations.of(RETRACTED_ANGULAR_POSITION.in(Rotations)), Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
-                  FaultReporter.getInstance()
-                      .addFault(
-                          SUBSYSTEM_NAME, "Deployer failed to reach retracted position in System Check");
-                }}))
-            .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-            .andThen(
-                Commands.runOnce(
+                .andThen(
                     () -> {
-                      stopRoller();
-                      intakeIO.setDeployerPosition(inputs.deployerAngularPosition);
-                    }));
+                      if (!inputs.deployerAngularPosition.isNear(
+                          Rotations.of(RETRACTED_ANGULAR_POSITION.in(Rotations)),
+                          Rotations.of(DEPLOYER_ANGULAR_POSITION_TOLERANCE.in(Rotations)))) {
+                        FaultReporter.getInstance()
+                            .addFault(
+                                SUBSYSTEM_NAME,
+                                "Deployer failed to reach retracted position in System Check");
+                      }
+                    }))
+        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+        .andThen(
+            Commands.runOnce(
+                () -> {
+                  stopRoller();
+                  intakeIO.setDeployerPosition(inputs.deployerAngularPosition);
+                }));
   }
 }
