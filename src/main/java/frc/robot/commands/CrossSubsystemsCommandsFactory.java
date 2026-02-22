@@ -17,7 +17,6 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
-import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -110,16 +109,14 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getInterruptAllCommand(
       SwerveDrivetrain swerveDrivetrain, Vision vision, OperatorInterface oi) {
     return Commands.parallel(
-            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
-            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
         .withName("interrupt all");
   }
 
   private static Command getInterruptAllCommand(
       DifferentialDrivetrain differentialDrivetrain, Vision vision, OperatorInterface oi) {
     return Commands.parallel(
-            new ArcadeDrive(differentialDrivetrain, oi::getTranslateX, oi::getRotate),
-            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+            new ArcadeDrive(differentialDrivetrain, oi::getTranslateX, oi::getRotate))
         .withName("interrupt all");
   }
 
