@@ -27,11 +27,9 @@ import frc.lib.team3061.vision.VisionIONorthstar;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.ArmCommandFactory;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
-import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.CalypsoRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -39,22 +37,11 @@ import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.NorthstarTestPlatformConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
-import frc.robot.configs.XRPRobotConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOTalonFX;
-import frc.robot.subsystems.arm.ArmIOXRP;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.visualizations.RobotVisualization;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,9 +61,6 @@ public class RobotContainer {
   private DifferentialDrivetrain differentialDrivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
-  private Arm arm;
-  private Elevator elevator;
-  private Shooter shooter;
   private Hopper hopper;
   private RobotVisualization visualization;
 
@@ -156,11 +140,8 @@ public class RobotContainer {
       vision = new Vision(visionIOs);
 
       // FIXME: initialize other subsystems
-      arm = new Arm(new ArmIO() {});
-      elevator = new Elevator(new ElevatorIO() {});
-      shooter = new Shooter(new ShooterIO() {});
       hopper = new Hopper(new HopperIO() {});
-      visualization = new RobotVisualization(elevator);
+      visualization = new RobotVisualization();
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -208,9 +189,6 @@ public class RobotContainer {
       case ROBOT_NORTHSTAR_TEST_PLATFORM:
         config = new NorthstarTestPlatformConfig();
         break;
-      case ROBOT_XRP:
-        config = new XRPRobotConfig();
-        break;
       default:
         break;
     }
@@ -237,11 +215,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIOTalonFX());
-    elevator = new Elevator(new ElevatorIOTalonFX());
-    shooter = new Shooter(new ShooterIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization();
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -265,11 +240,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization();
   }
 
   private void createCTRESimSubsystems() {
@@ -298,21 +270,14 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIOTalonFX());
-    elevator = new Elevator(new ElevatorIOTalonFX());
-    shooter = new Shooter(new ShooterIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization();
   }
 
   private void createXRPSubsystems() {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
-
-    arm = new Arm(new ArmIOXRP());
-    elevator = new Elevator(new ElevatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization();
   }
 
   private void createPracticeBoardSubsystems() {
@@ -321,11 +286,8 @@ public class RobotContainer {
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization();
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -350,10 +312,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     hopper = new Hopper(new HopperIO() {});
+    visualization = new RobotVisualization();
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -378,11 +338,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization(elevator);
+    visualization = new RobotVisualization();
   }
 
   /**
@@ -414,15 +371,12 @@ public class RobotContainer {
     configureVisionCommands();
 
     // register commands for other subsystems
-    ArmCommandFactory.registerCommands(oi, arm);
-    ElevatorCommandsFactory.registerCommands(oi, elevator);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, shooter);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, vision);
     }
 
     // Endgame alerts
