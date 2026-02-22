@@ -130,7 +130,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     // Initialize Simulation
     this.rollerSim =
         new VelocitySystemSim(
-            rollerMotor, ROLLER_MOTOR_INVERTED, ROLLER_KV, ROLLER_KA, ROLLER_GEAR_RATIO);
+            rollerMotor, ROLLER_MOTOR_INVERTED, ROLLER_KV, ROLLER_KA + 0.001, ROLLER_GEAR_RATIO);
     this.deployerSim =
         new ArmSystemSim(
             deployerMotor,
