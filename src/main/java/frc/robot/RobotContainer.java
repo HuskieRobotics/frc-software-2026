@@ -27,11 +27,9 @@ import frc.lib.team3061.vision.VisionIONorthstar;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.ArmCommandFactory;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
-import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.IntakeCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.CalypsoRobotConfig;
@@ -40,25 +38,11 @@ import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.NorthstarTestPlatformConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
-import frc.robot.configs.XRPRobotConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOTalonFX;
-import frc.robot.subsystems.arm.ArmIOXRP;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.manipulator.Manipulator;
-import frc.robot.subsystems.manipulator.ManipulatorIO;
-import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.visualizations.RobotVisualization;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,10 +62,6 @@ public class RobotContainer {
   private DifferentialDrivetrain differentialDrivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
-  private Arm arm;
-  private Elevator elevator;
-  private Manipulator manipulator;
-  private Shooter shooter;
   private Intake intake;
   private RobotVisualization visualization;
 
@@ -161,10 +141,6 @@ public class RobotContainer {
       vision = new Vision(visionIOs);
 
       // FIXME: initialize other subsystems
-      arm = new Arm(new ArmIO() {});
-      elevator = new Elevator(new ElevatorIO() {});
-      manipulator = new Manipulator(new ManipulatorIO() {});
-      shooter = new Shooter(new ShooterIO() {});
       intake = new Intake(new IntakeIO() {});
       visualization = new RobotVisualization(intake);
     }
@@ -214,9 +190,6 @@ public class RobotContainer {
       case ROBOT_NORTHSTAR_TEST_PLATFORM:
         config = new NorthstarTestPlatformConfig();
         break;
-      case ROBOT_XRP:
-        config = new XRPRobotConfig();
-        break;
       default:
         break;
     }
@@ -243,10 +216,6 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIOTalonFX());
-    elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
-    shooter = new Shooter(new ShooterIOTalonFX());
     intake = new Intake(new IntakeIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
@@ -272,10 +241,6 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(intake);
   }
@@ -306,10 +271,6 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIOTalonFX());
-    elevator = new Elevator(new ElevatorIOTalonFX());
-    manipulator = new Manipulator(new ManipulatorIOTalonFX());
-    shooter = new Shooter(new ShooterIOTalonFX());
     intake = new Intake(new IntakeIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
@@ -318,10 +279,6 @@ public class RobotContainer {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
 
-    arm = new Arm(new ArmIOXRP());
-    elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(intake);
   }
@@ -332,10 +289,6 @@ public class RobotContainer {
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(intake);
   }
@@ -362,11 +315,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
     intake = new Intake(new IntakeIO() {});
-    shooter = new Shooter(new ShooterIO() {});
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -391,10 +340,6 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    arm = new Arm(new ArmIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
-    manipulator = new Manipulator(new ManipulatorIO() {});
-    shooter = new Shooter(new ShooterIO() {});
     intake = new Intake(new IntakeIO() {});
     visualization = new RobotVisualization(intake);
   }
@@ -428,16 +373,13 @@ public class RobotContainer {
     configureVisionCommands();
 
     // register commands for other subsystems
-    ArmCommandFactory.registerCommands(oi, arm);
-    ElevatorCommandsFactory.registerCommands(oi, elevator);
     IntakeCommandsFactory.registerCommands(oi, intake);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, manipulator, shooter);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, vision);
     }
 
     // Endgame alerts

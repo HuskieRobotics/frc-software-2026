@@ -18,35 +18,40 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
 
-public class NewPracticeRobotConfig extends RobotConfig {
-  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 37;
-  private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 61;
-  private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.117676 + 0.5);
+// FIXME: a lot of this is copied directly from the practice bot config, we must update all the
+// necessary values
 
-  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 40;
-  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 25;
-  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.028809 + 0.5);
+public class New2026RobotConfig extends RobotConfig {
+  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 14;
+  private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 51;
+  private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
+  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.117676);
 
-  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 39;
-  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 60;
-  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.378906 + 0.5);
+  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 61;
+  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 51;
+  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.028809);
 
-  private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 38;
-  private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 59;
-  private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959 - 0.5);
+  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 18;
+  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 50;
+  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 9;
+  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.378906);
+
+  private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
+  private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
+  private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
+  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959);
+
   private static final int GYRO_ID = 3;
 
-  private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
-  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
-  private static final Distance WHEEL_RADIUS = Meters.of(0.050165);
-  private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
+  private static final Distance TRACKWIDTH = Meters.of(0.628650);
+  private static final Distance WHEELBASE = Meters.of(0.476250);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.0508);
+  private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
+      new Translation2d(0.302940, -0.379140);
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
+  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.933450);
+  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.768350);
 
   private static final double COUPLE_RATIO = 3.857142857142857;
 
@@ -62,7 +67,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.18755;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 15.0; // determined after manual tuning
+  private static final double DRIVE_KP = 12.0; // 0.40997
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
@@ -106,8 +111,9 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   private static final int LED_COUNT = 85;
 
-  private static final String BR_CAMERA_NAME = "40708542";
-  private static final String BL_CAMERA_NAME = "40708569";
+  private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
+  private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
+  private static final String CENTER_CAMERA_SERIAL_NUMBER = "25249734";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 17.5;
@@ -118,32 +124,38 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   // Back right camera
   // x, y, z, pitch, yaw
-  // -11.4425	-8.0165	6.436	60	-127.761
   private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(-11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-127.761)));
+              Units.inchesToMeters(-8.969),
+              Units.inchesToMeters(-11.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
 
   // Back left camera
   // x, y, z, pitch, yaw
-  // -11.4425	8.0165	6.436	60	142.239
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
+              Units.inchesToMeters(-8.969),
+              Units.inchesToMeters(11.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
+
+  // Center camera
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_CENTER_CAMERA =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(0.0), Units.inchesToMeters(0.0), Units.inchesToMeters(0.0)),
+          new Rotation3d(0, Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
 
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
-          .id(BR_CAMERA_NAME)
+          .id(BR_CAMERA_SERIAL_NUMBER)
           .location("BR")
           .width(1920)
           .height(1200)
@@ -154,13 +166,23 @@ public class NewPracticeRobotConfig extends RobotConfig {
           .build(),
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BL_CAMERA)
-          .id(BL_CAMERA_NAME)
+          .id(BL_CAMERA_SERIAL_NUMBER)
           .location("BL")
           .width(1920)
           .height(1200)
           .exposure(MONO_EXPOSURE)
           .gain(MONO_GAIN)
           .denoise(MONO_DENOISE)
+          .stdDevFactor(1.0)
+          .build(),
+      CameraConfig.builder()
+          .robotToCameraTransform(ROBOT_TO_CENTER_CAMERA)
+          .id(CENTER_CAMERA_SERIAL_NUMBER)
+          .location("center")
+          .width(1280)
+          .height(960)
+          .exposure(COLOR_EXPOSURE)
+          .gain(COLOR_GAIN)
           .stdDevFactor(1.0)
           .build(),
     };

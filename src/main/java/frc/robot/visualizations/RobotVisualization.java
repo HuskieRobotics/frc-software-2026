@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.robot.subsystems.intake.Intake;
+// import frc.robot.subsystems.climber.Climber;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -16,9 +17,8 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 public class RobotVisualization {
 
-  // Elevator: White
-
   private Intake intake;
+// private Climber climber;
 
   private LoggedMechanism2d intakeVisualization2D;
 
@@ -31,11 +31,18 @@ public class RobotVisualization {
   private final double kIntakeRootPosY = Units.inchesToMeters(7.00);
   private final double kIntakeDepth = Units.inchesToMeters(11.0);
 
+    private LoggedMechanism2d climberVisualization2D;
+
+  private LoggedMechanismLigament2d climberBox;
+  private final double kClimberRootPosY = Units.inchesToMeters(4.875);
+  private final double kClimberRootPosZ = Units.inchesToMeters(20.25);
+  private final double kClimberLength = Units.inchesToMeters(10.0);
+
   public RobotVisualization(Intake intake) {
-    this.intake = intake;
     if (RobotBase.isReal()) return;
+
+    this.intake = intake;
     init2dVisualization();
-  }
 
   private void init2dVisualization() {
     intakeVisualization2D =
@@ -57,12 +64,23 @@ public class RobotVisualization {
         new LoggedMechanismLigament2d(
             "intake", kIntakeDepth, 0.0, 80.0, new Color8Bit(Color.kWhite));
     intakeRoot.append(this.intakeBox);
+    climberVisualization2D =
+        new LoggedMechanism2d(
+            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters), 3.0);
+
+    // Climber
+    LoggedMechanismRoot2d climberRoot =
+        climberVisualization2D.getRoot("climberRoot", kClimberRootPosY, kClimberRootPosZ);
+    climberBox =
+        new LoggedMechanismLigament2d(
+            "climber", kClimberLength, 0.0, 5.0, new Color8Bit(Color.kOrange));
+    climberRoot.append(this.climberBox);
   }
 
   public void update() {
     if (RobotBase.isReal()) return;
 
-    ledDisplayBox.setColor(LEDs.getInstance().getColor(0));
+    // climberBox.setAngle(climber.getAngle().in(Degrees));
 
     if (intake.isDeployed()) {
       intakeBox.setLength(kIntakeDepth * 2.0);
@@ -71,5 +89,6 @@ public class RobotVisualization {
     }
 
     Logger.recordOutput("Visualization/Intake", this.intakeVisualization2D);
+    Logger.recordOutput("Visualization/Climber", this.climberVisualization2D);
   }
 }
