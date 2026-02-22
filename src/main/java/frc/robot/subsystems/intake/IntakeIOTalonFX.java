@@ -57,12 +57,20 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final LoggedTunableNumber rollerKd =
       new LoggedTunableNumber("Intake/Roller/kD", ROLLER_KD);
 
+  private final LoggedTunableNumber rollerKs =
+      new LoggedTunableNumber("Intake/Roller/kS", ROLLER_KS);
+  private final LoggedTunableNumber rollerKv =
+      new LoggedTunableNumber("Intake/Roller/kV", ROLLER_KV);
+
   private final LoggedTunableNumber deployerKp =
       new LoggedTunableNumber("Intake/Deployer/kP", DEPLOYER_KP);
   private final LoggedTunableNumber deployerKi =
       new LoggedTunableNumber("Intake/Deployer/kI", DEPLOYER_KI);
   private final LoggedTunableNumber deployerKd =
       new LoggedTunableNumber("Intake/Deployer/kD", DEPLOYER_KD);
+
+  private final LoggedTunableNumber deployerKs =
+      new LoggedTunableNumber("Intake/Deployer/kS", DEPLOYER_KS);
 
   private VelocitySystemSim rollerSim;
   private ArmSystemSim deployerSim;
@@ -204,7 +212,8 @@ public class IntakeIOTalonFX implements IntakeIO {
         },
         deployerKp,
         deployerKi,
-        deployerKd);
+        deployerKd,
+        deployerKs);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -218,7 +227,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         },
         rollerKp,
         rollerKi,
-        rollerKd);
+        rollerKd,
+        rollerKs,
+        rollerKv);
 
     if (Constants.getMode() == Constants.Mode.SIM) {
       deployerSim.updateSim();
@@ -269,7 +280,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.Slot0.kP = deployerKp.get();
     config.Slot0.kI = deployerKi.get();
     config.Slot0.kD = deployerKd.get();
-    config.Slot0.kS = DEPLOYER_KS;
+    config.Slot0.kS = deployerKs.get();
     config.Slot0.kV = DEPLOYER_KV;
     config.Slot0.kA = DEPLOYER_KA;
     config.Slot0.kG = DEPLOYER_KG;
@@ -295,8 +306,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.Slot0.kP = rollerKp.get();
     config.Slot0.kI = rollerKi.get();
     config.Slot0.kD = rollerKd.get();
-    config.Slot0.kS = ROLLER_KS;
-    config.Slot0.kV = ROLLER_KV;
+    config.Slot0.kS = rollerKs.get();
+    config.Slot0.kV = rollerKv.get();
     config.Slot0.kA = ROLLER_KA;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, rollerConfigAlert);

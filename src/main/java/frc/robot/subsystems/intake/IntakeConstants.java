@@ -11,10 +11,10 @@ public class IntakeConstants {
   public static final int ROLLER_MOTOR_ID = 42;
   public static final int DEPLOYER_MOTOR_ID = 33;
 
-  public static final double DEPLOYER_KP = 12; // FIXME: tune value
+  public static final double DEPLOYER_KP = 100.0;
   public static final double DEPLOYER_KI = 0;
   public static final double DEPLOYER_KD = 0;
-  public static final double DEPLOYER_KS = 0.25; // FIXME: tune value
+  public static final double DEPLOYER_KS = 0.4;
   public static final double DEPLOYER_KV = 0.0;
   public static final double DEPLOYER_KA = 0.0;
   public static final double DEPLOYER_KG = 0.0;
@@ -26,10 +26,10 @@ public class IntakeConstants {
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
   public static final double DEPLOYER_MASS_KG = 1.5;
   public static final Angle DEPLOYER_MIN_ANGLE = Rotations.of(0);
-  public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(35.0); // FIXME: set value
+  public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(22);
 
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
-  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(34.54); // FIXME: set value
+  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(21.5);
   public static final Distance DEPLOYED_LINEAR_POSITION =
       Meters.of(DEPLOYED_ANGULAR_POSITION.in(Rotations) * DEPLOYER_CIRCUMFERENCE.in(Meters));
   public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
