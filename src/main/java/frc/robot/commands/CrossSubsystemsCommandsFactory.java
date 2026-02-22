@@ -94,7 +94,7 @@ public class CrossSubsystemsCommandsFactory {
       Intake intake,
       Hopper hopper,
       Shooter shooter,
-      ShooterModes shooterModes,
+      /*ShooterModes shooterModes,*/
       Vision vision) {
 
     configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooter);

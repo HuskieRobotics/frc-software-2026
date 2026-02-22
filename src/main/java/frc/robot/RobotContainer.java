@@ -371,7 +371,7 @@ public class RobotContainer {
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, intake, hopper, shooter, shooterModes, vision);
+          oi, swerveDrivetrain, intake, hopper, shooter, /*  shooterModes,*/ vision);
       ShooterCommandsFactory.registerCommands(oi, shooter);
 
       configureRobotContainerTriggers();
