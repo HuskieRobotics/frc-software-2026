@@ -30,6 +30,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
+import frc.robot.commands.IntakeCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.New2026RobotConfig;
@@ -42,6 +43,9 @@ import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.visualizations.RobotVisualization;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +66,7 @@ public class RobotContainer {
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
   private Hopper hopper;
+  private Intake intake;
   private RobotVisualization visualization;
 
   private final LoggedNetworkNumber endgameAlert1 =
@@ -140,8 +145,9 @@ public class RobotContainer {
       vision = new Vision(visionIOs);
 
       // FIXME: initialize other subsystems
+      intake = new Intake(new IntakeIO() {});
       hopper = new Hopper(new HopperIO() {});
-      visualization = new RobotVisualization();
+      visualization = new RobotVisualization(intake);
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -215,8 +221,9 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -240,8 +247,9 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTRESimSubsystems() {
@@ -270,14 +278,17 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createXRPSubsystems() {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
-    visualization = new RobotVisualization();
+
+    intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   private void createPracticeBoardSubsystems() {
@@ -286,8 +297,9 @@ public class RobotContainer {
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -312,8 +324,9 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -338,8 +351,9 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   /**
@@ -371,12 +385,13 @@ public class RobotContainer {
     configureVisionCommands();
 
     // register commands for other subsystems
+    IntakeCommandsFactory.registerCommands(oi, intake);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, hopper, vision);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, intake, hopper, vision);
     }
 
     // Endgame alerts
