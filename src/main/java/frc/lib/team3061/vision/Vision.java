@@ -566,6 +566,8 @@ public class Vision extends SubsystemBase {
    * rotationally to the robot) For now, these are arbitrarily determined values, but can be made
    * into a function for grid distance from 1.
    *
+   * <p>The frame is determined by values from -1 to 1 in the x and y, with the origin at the center
+   *
    * <p>Ordering for zone indexes is from the top left to the bottom right
    */
   private void populateFuelDetectionZones() {
@@ -576,16 +578,16 @@ public class Vision extends SubsystemBase {
         List<Translation2d> zoneCorners = new ArrayList<>();
 
         // Top Left Corner of Zone
-        zoneCorners.add(new Translation2d(dx * 80, (4 - dy) * 160));
+        zoneCorners.add(new Translation2d((-1 + (0.25 * dx)), 1 - (0.5 * dy)));
 
         // Top Right Corner of Zone
-        zoneCorners.add(new Translation2d((dx + 1) * 80, (4 - dy) * 160));
+        zoneCorners.add(new Translation2d(-1 + (0.25 * (dx + 1)), 1 - (0.5 * dy)));
 
         // Bottom Left Corner of Zone
-        zoneCorners.add(new Translation2d(dx * 80, (4 - dy - 1) * 160));
+        zoneCorners.add(new Translation2d(-1 + (0.25 * dx), 1 - (0.5 * (dy + 1))));
 
         // Bottom Right Corner of Zone
-        zoneCorners.add(new Translation2d((dx + 1) * 80, (4 - dy - 1) * 160));
+        zoneCorners.add(new Translation2d(-1 + (0.25 * (dx + 1)), 1 - (0.5 * (dy + 1))));
 
         fuelZones.put(zoneIndex, zoneCorners);
       }
