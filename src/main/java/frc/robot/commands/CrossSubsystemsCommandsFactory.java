@@ -22,6 +22,8 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterModes;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.intake.Intake;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -90,10 +92,11 @@ public class CrossSubsystemsCommandsFactory {
   public static void registerCommands(
       OperatorInterface oi,
       SwerveDrivetrain swerveDrivetrain,
-      Vision vision,
+      Intake intake,
+      Hopper hopper,
       Shooter shooter,
       ShooterModes shooterModes
-      /*, Hopper hopper */ ) {
+      Vision vision) {
 
     configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter);
 
@@ -176,10 +179,18 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getInterruptAllCommand(
-      SwerveDrivetrain swerveDrivetrain, Vision vision, Shooter shooter, OperatorInterface oi) {
+      SwerveDrivetrain swerveDrivetrain,
+      Intake intake,
+      Hopper hopper,
+      Shooter shooter,
+      Vision vision,
+      OperatorInterface oi) {
     return Commands.parallel(
             new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
-            Commands.runOnce(shooter::stopHood, shooter))
+            Commands.runOnce(intake::stopRoller),
+            Commands.runOnce(hopper::stopKicker),
+            Commands.runOnce(hopper::stopSpindexer),
+        Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }
 
