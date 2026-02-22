@@ -42,21 +42,20 @@ public class ShooterConstants {
   public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD =
       false; // FIXME: change to opposed if reversed
 
-  public static final double TURRET_KP = 19; // FIXME: update value
-  public static final double TURRET_KI = 0.0; // FIXME: update value
-  public static final double TURRET_KD = 0.0; // FIXME: update value
-  public static final double TURRET_KS = 0.39217; // FIXME: update value
-  public static final double TURRET_KV = 0.12; // FIXME: update value
-  public static final double TURRET_KA = 0.022794; // FIXME: update value
+  public static final double TURRET_KP = 50.0;
+  public static final double TURRET_KI = 0.0;
+  public static final double TURRET_KD = 0.0;
+  public static final double TURRET_KS = 0.4;
+  public static final double TURRET_KV = 0.0;
+  public static final double TURRET_KA = 0.0;
 
-  public static final boolean TURRET_INVERTED =
-      false; // FIXME: update when first running the turret
+  public static final boolean TURRET_INVERTED = false;
   public static final double TURRET_GEAR_RATIO = 41.666; // FIXME: way too low ask Noga for correct
   public static final double TURRET_LENGTH_METERS =
       1.0; // this is irrelevant for simulation since gravity doesn't affect the model
   public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
 
-  public static final double HOOD_KP = 600;
+  public static final double HOOD_KP = 325;
   public static final double HOOD_KI = 0.0;
   public static final double HOOD_KD = 0.0;
   public static final double HOOD_KS = 0.4;
@@ -76,8 +75,10 @@ public class ShooterConstants {
 
   public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
 
-  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(-135); // FIXME: update value
-  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(135); // FIXME: update value
+  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(-180);
+  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(90);
+
+  public static final Angle TURRET_STARTING_ANGLE = Degrees.of(90.0);
 
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 40;

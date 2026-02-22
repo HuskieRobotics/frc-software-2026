@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -590,6 +591,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.Slot0.kV = turretKV.get();
     turretConfig.Slot0.kA = turretKA.get();
 
+    turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.0015;
+    turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
+    turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
     turretConfig.Feedback.SensorToMechanismRatio = TURRET_GEAR_RATIO;
 
     turretConfig.MotorOutput.Inverted =
@@ -610,6 +615,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
+
+    turret.setPosition(TURRET_STARTING_ANGLE.in(Rotations));
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, turret);
   }
@@ -632,6 +639,9 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodConfig.Slot0.kA = hoodKA.get();
     hoodConfig.Slot0.kS = hoodKS.get();
     hoodConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+    hoodConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.00003;
+    hoodConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 
     hoodConfig.Feedback.SensorToMechanismRatio = HOOD_GEAR_RATIO;
 

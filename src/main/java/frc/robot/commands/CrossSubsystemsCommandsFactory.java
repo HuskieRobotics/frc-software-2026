@@ -21,7 +21,6 @@ import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterModes;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -88,22 +87,17 @@ public class CrossSubsystemsCommandsFactory {
   private CrossSubsystemsCommandsFactory() {}
 
   public static void registerCommands(
-      OperatorInterface oi,
-      SwerveDrivetrain swerveDrivetrain,
-      Vision vision,
-      Shooter shooter,
-      ShooterModes shooterModes
+      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, Vision vision, Shooter shooter
       /*, Hopper hopper */ ) {
 
-    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter);
+    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooter);
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, vision, shooter, oi));
 
-    oi.getScoreFromBankButton()
-        .onTrue(getScoreSafeShotCommand(swerveDrivetrain, /*, hopper*/ oi, shooterModes));
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain, /*, hopper*/ oi));
 
     oi.getManualShootButton()
-        .and(shooterModes::manualShootEnabled)
+        // .and(shooterModes::manualShootEnabled)
         .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
     oi.getManualShootButton().onFalse(Commands.none()); // stop hopper
@@ -123,15 +117,14 @@ public class CrossSubsystemsCommandsFactory {
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain /*, Hopper hopper */,
-      OperatorInterface oi,
-      ShooterModes shooterModes) {
+      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi) {
+    // ShooterModes shooterModes) {
 
-    return Commands.either(
-        Commands.sequence(
-            getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/)),
-        Commands.none(),
-        () -> shooterModes.manualShootEnabled());
+    return // Commands.either(
+    Commands.sequence(
+        getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/));
+    // Commands.none());
+    // () -> shooterModes.manualShootEnabled());
   }
 
   // this will rotate our robot into a diamond shape while we are near the bump zone
@@ -289,12 +282,14 @@ public class CrossSubsystemsCommandsFactory {
   private static void configureCrossSubsystemsTriggers(
       OperatorInterface oi,
       SwerveDrivetrain swerveDrivetrain,
-      ShooterModes shooterModes,
+      // ShooterModes shooterModes,
       Shooter shooter) {
 
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
-            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
+            () ->
+                Field2d.getInstance()
+                    .inAllianceZone()); //  && shooterModes.isShootOnTheMoveEnabled());
 
     // FIXME: when running in sim, used a run once to set a constant velocity.
     // we can do this worst case, or try using a whileTrue + runOnce (so that we constantly update
@@ -304,7 +299,8 @@ public class CrossSubsystemsCommandsFactory {
     unloadHopperOnTheMoveTrigger.onFalse(Commands.none());
 
     Trigger unloadHopperForPassingTrigger =
-        new Trigger(() -> !Field2d.getInstance().inAllianceZone() && shooterModes.isPassEnabled());
+        new Trigger(
+            () -> !Field2d.getInstance().inAllianceZone()); // && shooterModes.isPassEnabled());
 
     // FIXME: same note as above
     unloadHopperForPassingTrigger.onTrue(Commands.none());
