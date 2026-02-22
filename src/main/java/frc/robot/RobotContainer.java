@@ -40,6 +40,9 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperIO;
+import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
@@ -62,6 +65,7 @@ public class RobotContainer {
   private DifferentialDrivetrain differentialDrivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Hopper hopper;
   private Intake intake;
   private RobotVisualization visualization;
 
@@ -142,6 +146,7 @@ public class RobotContainer {
 
       // FIXME: initialize other subsystems
       intake = new Intake(new IntakeIO() {});
+      hopper = new Hopper(new HopperIO() {});
       visualization = new RobotVisualization(intake);
     }
 
@@ -217,6 +222,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIOTalonFX());
+    hopper = new Hopper(new HopperIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
 
@@ -242,6 +248,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -272,6 +279,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIOTalonFX());
+    hopper = new Hopper(new HopperIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
 
@@ -290,6 +298,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -316,6 +325,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -342,6 +352,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -380,7 +391,7 @@ public class RobotContainer {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, intake, vision);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, intake, hopper, vision);
     }
 
     // Endgame alerts
