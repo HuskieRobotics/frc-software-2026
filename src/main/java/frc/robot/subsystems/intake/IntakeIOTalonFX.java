@@ -141,6 +141,7 @@ public class IntakeIOTalonFX implements IntakeIO {
             DEPLOYER_MIN_ANGLE.in(Radians),
             DEPLOYER_MAX_ANGLE.in(Radians),
             DEPLOYER_MIN_ANGLE.in(Radians),
+            true,
             SUBSYSTEM_NAME);
   }
 
