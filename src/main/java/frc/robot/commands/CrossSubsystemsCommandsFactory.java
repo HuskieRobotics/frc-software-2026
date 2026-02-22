@@ -20,6 +20,8 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class CrossSubsystemsCommandsFactory {
@@ -87,12 +89,18 @@ public class CrossSubsystemsCommandsFactory {
   private CrossSubsystemsCommandsFactory() {}
 
   public static void registerCommands(
-      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, Vision vision, Shooter shooter
-      /*, Hopper hopper */ ) {
+      OperatorInterface oi,
+      SwerveDrivetrain swerveDrivetrain,
+      Intake intake,
+      Hopper hopper,
+      Shooter shooter,
+      ShooterModes shooterModes,
+      Vision vision) {
 
     configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooter);
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, vision, shooter, oi));
+    oi.getInterruptAll()
+        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, vision, oi));
 
     oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain, /*, hopper*/ oi));
 
@@ -169,9 +177,17 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getInterruptAllCommand(
-      SwerveDrivetrain swerveDrivetrain, Vision vision, Shooter shooter, OperatorInterface oi) {
+      SwerveDrivetrain swerveDrivetrain,
+      Intake intake,
+      Hopper hopper,
+      Shooter shooter,
+      Vision vision,
+      OperatorInterface oi) {
     return Commands.parallel(
             new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            Commands.runOnce(intake::stopRoller),
+            Commands.runOnce(hopper::stopKicker),
+            Commands.runOnce(hopper::stopSpindexer),
             Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }

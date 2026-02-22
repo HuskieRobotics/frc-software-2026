@@ -29,6 +29,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
+import frc.robot.commands.IntakeCommandsFactory;
 import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.DefaultRobotConfig;
@@ -39,6 +40,12 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperIO;
+import frc.robot.subsystems.hopper.HopperIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
@@ -60,6 +67,8 @@ public class RobotContainer {
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
   private Shooter shooter;
+  private Hopper hopper;
+  private Intake intake;
   private RobotVisualization visualization;
 
   // private ShooterModes shooterModes;
@@ -140,8 +149,10 @@ public class RobotContainer {
       vision = new Vision(visionIOs);
 
       // FIXME: initialize other subsystems
+      intake = new Intake(new IntakeIO() {});
+      hopper = new Hopper(new HopperIO() {});
       shooter = new Shooter(new ShooterIO() {});
-      visualization = new RobotVisualization();
+      visualization = new RobotVisualization(intake);
     }
 
     // shooterModes = new ShooterModes(swerveDrivetrain, shooter);
@@ -174,10 +185,10 @@ public class RobotContainer {
       case ROBOT_DEFAULT:
         config = new DefaultRobotConfig();
         break;
-      case ROBOT_PRACTICE, ROBOT_SIMBOT:
+      case ROBOT_PRACTICE:
         config = new NewPracticeRobotConfig();
         break;
-      case ROBOT_COMPETITION:
+      case ROBOT_COMPETITION, ROBOT_SIMBOT:
         config = new New2026RobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
@@ -207,8 +218,10 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIOTalonFX());
+    hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -223,8 +236,10 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTRESimSubsystems() {
@@ -243,15 +258,19 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIOTalonFX());
+    hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createXRPSubsystems() {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
+    hopper = new Hopper(new HopperIO() {});
+    intake = new Intake(new IntakeIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createPracticeBoardSubsystems() {
@@ -260,8 +279,10 @@ public class RobotContainer {
     vision = new Vision(new VisionIO[] {});
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     shooter = new Shooter(new ShooterIOTalonFX());
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -278,8 +299,10 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -295,8 +318,10 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
+    intake = new Intake(new IntakeIO() {});
+    hopper = new Hopper(new HopperIO() {});
     shooter = new Shooter(new ShooterIO() {});
-    visualization = new RobotVisualization();
+    visualization = new RobotVisualization(intake);
   }
 
   /**
@@ -339,12 +364,14 @@ public class RobotContainer {
     // shooterModes.configureShooterModeTriggers();
 
     // register commands for other subsystems
+    IntakeCommandsFactory.registerCommands(oi, intake);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, vision, shooter);
+      CrossSubsystemsCommandsFactory.registerCommands(
+          oi, swerveDrivetrain, intake, hopper, shooter, shooterModes, vision);
       ShooterCommandsFactory.registerCommands(oi, shooter);
 
       configureRobotContainerTriggers();

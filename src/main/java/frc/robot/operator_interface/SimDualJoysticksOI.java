@@ -62,7 +62,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getZeroHoodButton() {
+  public Trigger getDeployRetractIntakeButton() {
     return translateJoystickButtons[4];
   }
 
