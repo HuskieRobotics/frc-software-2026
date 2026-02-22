@@ -124,4 +124,6 @@ public class ShooterConstants {
   // Displacement of the turret relative to the center of the robot at the phi of robot = 0
   public static final Transform2d ROBOT_TO_TURRET_TRANSFORM =
       new Transform2d(-0.0635, 0.13335, new Rotation2d()); // got from CAD
+
+  public static final Angle HOOD_OFFSET_WHEN_SHOOTING = Degrees.of(0.0); // FIXME: determine value
 }
