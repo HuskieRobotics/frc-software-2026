@@ -17,6 +17,7 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.intake.Intake;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -78,9 +79,9 @@ public class CrossSubsystemsCommandsFactory {
   private CrossSubsystemsCommandsFactory() {}
 
   public static void registerCommands(
-      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, Vision vision) {
+      OperatorInterface oi, SwerveDrivetrain swerveDrivetrain, Intake intake, Vision vision) {
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, vision, oi));
+    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, intake, oi));
 
     oi.getDriveToPoseButton().onTrue(getDriveToPoseCommand(swerveDrivetrain, oi));
 
@@ -107,9 +108,10 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getInterruptAllCommand(
-      SwerveDrivetrain swerveDrivetrain, Vision vision, OperatorInterface oi) {
+      SwerveDrivetrain swerveDrivetrain, Intake intake, OperatorInterface oi) {
     return Commands.parallel(
-            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
+            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            Commands.runOnce(intake::stopRoller))
         .withName("interrupt all");
   }
 

@@ -379,7 +379,7 @@ public class RobotContainer {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, vision);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, intake, vision);
     }
 
     // Endgame alerts
