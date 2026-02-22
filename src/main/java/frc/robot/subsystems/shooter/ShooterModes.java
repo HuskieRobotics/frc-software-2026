@@ -436,10 +436,8 @@ public class ShooterModes extends SubsystemBase {
     Pose2d robotPose =
         RobotOdometry.getInstance().getEstimatedPose().transformBy(ROBOT_TO_TURRET_TRANSFORM);
 
-    double deltaX =
-        targetLandingPosition.getX() - (robotPose.getX());
-    double deltaY =
-        targetLandingPosition.getY() - (robotPose.getY());
+    double deltaX = targetLandingPosition.getX() - (robotPose.getX());
+    double deltaY = targetLandingPosition.getY() - (robotPose.getY());
     double distance = Math.hypot(deltaY, deltaX);
 
     double idealShotVelocity =
@@ -451,8 +449,9 @@ public class ShooterModes extends SubsystemBase {
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
     Angle idealHoodAngle =
-        idealHoodAngleFromFunction(
-            distance).plus(HOOD_OFFSET_WHEN_SHOOTING); // Degrees.of(this.hubDistanceToHoodMap.get(distance));
+        idealHoodAngleFromFunction(distance)
+            .plus(
+                HOOD_OFFSET_WHEN_SHOOTING); // Degrees.of(this.hubDistanceToHoodMap.get(distance));
 
     return new Double[] {
       idealShotVelocity, idealHoodAngle.in(Degrees), robotRelativeTurretAngle.in(Degrees)
@@ -477,8 +476,9 @@ public class ShooterModes extends SubsystemBase {
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
     Angle idealHoodAngle =
-        idealHoodAngleFromFunction(
-            distance).plus(HOOD_OFFSET_WHEN_SHOOTING); // Degrees.of(this.passDistanceToHoodMap.get(distance));
+        idealHoodAngleFromFunction(distance)
+            .plus(
+                HOOD_OFFSET_WHEN_SHOOTING); // Degrees.of(this.passDistanceToHoodMap.get(distance));
 
     return new Double[] {
       idealShotVelocity, idealHoodAngle.in(Degrees), robotRelativeTurretAngle.in(Degrees)
