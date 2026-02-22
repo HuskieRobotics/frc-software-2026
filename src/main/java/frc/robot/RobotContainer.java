@@ -31,8 +31,8 @@ import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
-import frc.robot.configs.CalypsoRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
+import frc.robot.configs.New2026RobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.NorthstarTestPlatformConfig;
 import frc.robot.configs.PracticeBoardConfig;
@@ -174,11 +174,11 @@ public class RobotContainer {
       case ROBOT_DEFAULT:
         config = new DefaultRobotConfig();
         break;
-      case ROBOT_PRACTICE, ROBOT_SIMBOT:
+      case ROBOT_PRACTICE:
         config = new NewPracticeRobotConfig();
         break;
-      case ROBOT_COMPETITION:
-        config = new CalypsoRobotConfig();
+      case ROBOT_COMPETITION, ROBOT_SIMBOT:
+        config = new New2026RobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
         config = new PracticeBoardConfig();
