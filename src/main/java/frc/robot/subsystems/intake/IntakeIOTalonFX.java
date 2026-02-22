@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -272,6 +273,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.Slot0.kV = DEPLOYER_KV;
     config.Slot0.kA = DEPLOYER_KA;
     config.Slot0.kG = DEPLOYER_KG;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, deployerConfigAlert);
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Deployer Motor", motor);
