@@ -30,15 +30,19 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
+import frc.robot.commands.IntakeCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
-import frc.robot.configs.CalypsoRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
+import frc.robot.configs.New2026RobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.NorthstarTestPlatformConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.visualizations.RobotVisualization;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +62,7 @@ public class RobotContainer {
   private DifferentialDrivetrain differentialDrivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Intake intake;
   private RobotVisualization visualization;
 
   private final LoggedNetworkNumber endgameAlert1 =
@@ -136,7 +141,8 @@ public class RobotContainer {
       vision = new Vision(visionIOs);
 
       // FIXME: initialize other subsystems
-      visualization = new RobotVisualization();
+      intake = new Intake(new IntakeIO() {});
+      visualization = new RobotVisualization(intake);
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -169,11 +175,11 @@ public class RobotContainer {
       case ROBOT_DEFAULT:
         config = new DefaultRobotConfig();
         break;
-      case ROBOT_PRACTICE, ROBOT_SIMBOT:
+      case ROBOT_PRACTICE:
         config = new NewPracticeRobotConfig();
         break;
-      case ROBOT_COMPETITION:
-        config = new CalypsoRobotConfig();
+      case ROBOT_COMPETITION, ROBOT_SIMBOT:
+        config = new New2026RobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
         config = new PracticeBoardConfig();
@@ -210,7 +216,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    visualization = new RobotVisualization();
+    intake = new Intake(new IntakeIOTalonFX());
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -234,7 +241,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    visualization = new RobotVisualization();
+    intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   private void createCTRESimSubsystems() {
@@ -263,13 +271,16 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    visualization = new RobotVisualization();
+    intake = new Intake(new IntakeIOTalonFX());
+    visualization = new RobotVisualization(intake);
   }
 
   private void createXRPSubsystems() {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
-    visualization = new RobotVisualization();
+
+    intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   private void createPracticeBoardSubsystems() {
@@ -278,7 +289,8 @@ public class RobotContainer {
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
 
     // FIXME: initialize other subsystems
-    visualization = new RobotVisualization();
+    intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -303,7 +315,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    visualization = new RobotVisualization();
+    intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   private void createNorthstarTestPlatformSubsystems() {
@@ -328,7 +341,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-
+    intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   /**
@@ -360,12 +374,13 @@ public class RobotContainer {
     configureVisionCommands();
 
     // register commands for other subsystems
+    IntakeCommandsFactory.registerCommands(oi, intake);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, vision);
+      CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, intake, vision);
     }
 
     // Endgame alerts
