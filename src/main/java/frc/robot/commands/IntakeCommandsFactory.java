@@ -22,6 +22,6 @@ public class IntakeCommandsFactory {
                         Commands.waitUntil(intake::isDeployed),
                         Commands.runOnce(intake::startRoller)),
                     intake::inDeployedState)
-                .withName("deploy/retract intake"));
+                .withName("deploy-retract intake"));
   }
 }
