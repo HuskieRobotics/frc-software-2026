@@ -22,7 +22,7 @@ public class ShooterConstants {
   public static final int FLYWHEEL_FOLLOW_1_MOTOR_ID = 21;
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
-  public static final int TURRET_MOTOR_ID = 14;
+  public static final int TURRET_MOTOR_ID = 26;
 
   public static final double FLYWHEEL_KP = 8.0;
   public static final double FLYWHEEL_KI = 0.0;
