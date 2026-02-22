@@ -20,10 +20,10 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterModes;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterModes;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -95,12 +95,13 @@ public class CrossSubsystemsCommandsFactory {
       Intake intake,
       Hopper hopper,
       Shooter shooter,
-      ShooterModes shooterModes
+      ShooterModes shooterModes,
       Vision vision) {
 
     configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter);
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, vision, shooter, oi));
+    oi.getInterruptAll()
+        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, vision, oi));
 
     oi.getScoreFromBankButton()
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain, /*, hopper*/ oi, shooterModes));
@@ -190,7 +191,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(intake::stopRoller),
             Commands.runOnce(hopper::stopKicker),
             Commands.runOnce(hopper::stopSpindexer),
-        Commands.runOnce(shooter::stopHood, shooter))
+            Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }
 

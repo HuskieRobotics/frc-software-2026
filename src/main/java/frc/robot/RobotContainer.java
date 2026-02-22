@@ -29,8 +29,8 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
-import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.IntakeCommandsFactory;
+import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.New2026RobotConfig;
@@ -40,16 +40,16 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOTalonFX;
-import frc.robot.subsystems.shooter.ShooterModes;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterModes;
 import frc.robot.visualizations.RobotVisualization;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -262,7 +262,7 @@ public class RobotContainer {
     intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
-    visualization = new RobotVisualization(intake);>>>>>>> main
+    visualization = new RobotVisualization(intake);
   }
 
   private void createXRPSubsystems() {
