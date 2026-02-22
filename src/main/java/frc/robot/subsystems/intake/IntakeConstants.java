@@ -42,10 +42,10 @@ public class IntakeConstants {
   public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 40;
   public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
 
-  public static final double ROLLER_KP = 20; 
+  public static final double ROLLER_KP = 20;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 4.9; 
+  public static final double ROLLER_KS = 4.9;
   public static final double ROLLER_KV = 0.5;
   public static final double ROLLER_KA = 0;
 

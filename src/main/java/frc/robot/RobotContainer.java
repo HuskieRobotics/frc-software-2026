@@ -316,6 +316,7 @@ public class RobotContainer {
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
+    visualization = new RobotVisualization(intake);
   }
 
   private void createNorthstarTestPlatformSubsystems() {
