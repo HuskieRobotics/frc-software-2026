@@ -136,6 +136,7 @@ public class RobotContainer {
       vision = new Vision(visionIOs);
 
       // FIXME: initialize other subsystems
+      visualization = new RobotVisualization();
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -209,7 +210,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-
+    visualization = new RobotVisualization();
   }
 
   private void createCTREPracticeBotSubsystems() {
@@ -233,7 +234,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-
+    visualization = new RobotVisualization();
   }
 
   private void createCTRESimSubsystems() {
@@ -262,12 +263,13 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-
+    visualization = new RobotVisualization();
   }
 
   private void createXRPSubsystems() {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
+    visualization = new RobotVisualization();
   }
 
   private void createPracticeBoardSubsystems() {
@@ -276,7 +278,7 @@ public class RobotContainer {
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
 
     // FIXME: initialize other subsystems
-
+    visualization = new RobotVisualization();
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -301,7 +303,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-
+    visualization = new RobotVisualization();
   }
 
   private void createNorthstarTestPlatformSubsystems() {
