@@ -49,6 +49,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterModes;
 import frc.robot.visualizations.RobotVisualization;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -71,7 +72,7 @@ public class RobotContainer {
   private Intake intake;
   private RobotVisualization visualization;
 
-  // private ShooterModes shooterModes;
+  private ShooterModes shooterModes;
 
   private Trigger rotateNearBumpTrigger;
 
@@ -155,7 +156,7 @@ public class RobotContainer {
       visualization = new RobotVisualization(intake);
     }
 
-    // shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -360,7 +361,7 @@ public class RobotContainer {
     configureDrivetrainCommands();
     configureVisionCommands();
 
-    // shooterModes.configureShooterModeTriggers();
+    shooterModes.configureShooterModeTriggers();
 
     // register commands for other subsystems
     IntakeCommandsFactory.registerCommands(oi, intake);
@@ -370,7 +371,7 @@ public class RobotContainer {
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, intake, hopper, shooter, /*  shooterModes,*/ vision);
+          oi, swerveDrivetrain, intake, hopper, shooter, shooterModes, vision);
       ShooterCommandsFactory.registerCommands(oi, shooter);
 
       configureRobotContainerTriggers();

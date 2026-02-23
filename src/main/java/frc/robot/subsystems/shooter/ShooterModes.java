@@ -51,6 +51,7 @@ public class ShooterModes extends SubsystemBase {
   private Trigger collectAndHoldTrigger;
   private Trigger shootOTMTrigger;
   private Trigger canShootTrigger;
+  private Trigger lockShooterTrigger;
 
   private Trigger turretLockNZTrigger;
 
@@ -66,6 +67,7 @@ public class ShooterModes extends SubsystemBase {
     COLLECT_AND_HOLD, // collecting and holding fuel in hopper
     NEAR_TRENCH, // near the trench zone
     PASS, // passing mode,
+    SHOOTER_LOCKED, // set our manaul hood, turret, and flywheel values for money shot
   }
 
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
@@ -88,9 +90,16 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
 
-    Logger.recordOutput("ShooterModes/InTrench", Field2d.getInstance().inTrenchZone());
+    Logger.recordOutput(
+        "ShooterModes/CollectAndHoldTrigger",
+        (!OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
+                && !Field2d.getInstance().inAllianceZone()
+                && !Field2d.getInstance().inTrenchZone())
+            || (!this.hubActive && Field2d.getInstance().inAllianceZone()));
 
-    Logger.recordOutput("ShooterModes/AllianceZone", Field2d.getInstance().inAllianceZone());
+    Logger.recordOutput(
+        "ShooterModes/LockShooterToggle",
+        OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean());
 
     calculateIdealShot();
   }
@@ -128,6 +137,10 @@ public class ShooterModes extends SubsystemBase {
 
   public boolean manualShootEnabled() {
     return this.primaryMode == ShooterMode.MANUAL_SHOOT;
+  }
+
+  public boolean isLockedShooterEnabled() {
+    return this.primaryMode == ShooterMode.SHOOTER_LOCKED;
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
@@ -197,7 +210,8 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private void setNormalShooterMode(ShooterMode mode) {
-    if (this.primaryMode != ShooterMode.NEAR_TRENCH) {
+    if (this.primaryMode != ShooterMode.NEAR_TRENCH
+        && this.primaryMode != ShooterMode.SHOOTER_LOCKED) {
       this.primaryMode = mode;
     }
 
@@ -259,6 +273,7 @@ public class ShooterModes extends SubsystemBase {
         new Trigger(
             () ->
                 !OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
+                    && !OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean()
                     && Field2d.getInstance().inAllianceZone()
                     && !Field2d.getInstance().inTrenchZone()
                     && this.hubActive);
@@ -267,10 +282,19 @@ public class ShooterModes extends SubsystemBase {
 
     turretLockNZTrigger =
         new Trigger(
-            () -> !Field2d.getInstance().inAllianceZone() && !Field2d.getInstance().inTrenchZone());
+            () ->
+                OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean()
+                    || ((!Field2d.getInstance().inAllianceZone()
+                            && !Field2d.getInstance().inTrenchZone())
+                        && this.primaryMode != ShooterMode.PASS));
 
     turretLockNZTrigger.onTrue(Commands.runOnce(() -> setTurretAutoLocked(true)));
     turretLockNZTrigger.onFalse(Commands.runOnce(() -> setTurretAutoLocked(false)));
+
+    lockShooterTrigger =
+        new Trigger(() -> OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean());
+    lockShooterTrigger.onTrue(
+        Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOTER_LOCKED)));
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
@@ -303,10 +327,10 @@ public class ShooterModes extends SubsystemBase {
     boolean lockToggleOn =
         OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean();
 
-    if ((this.turretAutoLocked && this.primaryMode != ShooterMode.PASS)
-        || (lockToggleOn && this.primaryMode != ShooterMode.PASS)) {
+    if (((this.turretAutoLocked && this.primaryMode != ShooterMode.PASS)
+            || (lockToggleOn && this.primaryMode != ShooterMode.PASS))
+        && this.primaryMode != ShooterMode.SHOOTER_LOCKED) {
       shooter.setTurretPosition(TURRET_LOCK_POSITION_DEGREES);
-      return;
     }
 
     if (this.primaryMode == ShooterMode.NEAR_TRENCH) {
@@ -331,6 +355,10 @@ public class ShooterModes extends SubsystemBase {
         shooter.setHoodPosition(HOOD_LOWER_ANGLE_LIMIT);
         shooter.setTurretPosition(Degrees.of(otmShot[2]));
       }
+    } else if (this.primaryMode == ShooterMode.SHOOTER_LOCKED) {
+      shooter.setFlywheelVelocity(SAFE_SHOT_FLYWHEEL_RPS);
+      shooter.setHoodPosition(SAFE_SHOT_HOOD_ANGLE);
+      shooter.setTurretPosition(SAFE_SHOT_TURRET_ANGLE);
     } else if (this.primaryMode == ShooterMode.SHOOT_OTM
         || this.primaryMode == ShooterMode.MANUAL_SHOOT
         || this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {

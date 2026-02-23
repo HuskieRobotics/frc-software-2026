@@ -32,6 +32,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean hubActiveAtHomeToggle =
       new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", true, true);
 
+  public final LoggedTunableBoolean lockShooterToggle =
+      new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, true);
+
   public OperatorDashboard() {}
 
   @Override
@@ -57,6 +60,11 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getHubActiveAtHomeToggle() {
     return new Trigger(() -> (!DriverStation.isFMSAttached() && hubActiveAtHomeToggle.get()));
+  }
+
+  @Override
+  public Trigger getLockShooterToggle() {
+    return new Trigger(() -> lockShooterToggle.get());
   }
 
   public Trigger getObjectDetectionToggle() {
