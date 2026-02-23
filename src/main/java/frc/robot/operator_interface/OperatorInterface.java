@@ -85,6 +85,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getStopIntakeRollersButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getOverrideDriveToPoseButton() {
     return new Trigger(() -> false);
   }

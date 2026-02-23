@@ -82,6 +82,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getStopIntakeRollersButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
   public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }

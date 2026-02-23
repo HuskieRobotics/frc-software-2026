@@ -104,13 +104,16 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, vision, oi));
 
     oi.getScoreFromBankButton()
-        .onTrue(getScoreSafeShotCommand(swerveDrivetrain, /*, hopper*/ oi, shooterModes));
+        .onTrue(getScoreSafeShotCommand(swerveDrivetrain, hopper, oi, shooterModes));
 
     oi.getManualShootButton()
         .and(shooterModes::manualShootEnabled)
-        .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+        .whileTrue(getUnloadShooterCommand(swerveDrivetrain, hopper));
 
-    oi.getManualShootButton().onFalse(Commands.none()); // stop hopper
+    oi.getManualShootButton()
+        .onFalse(
+            Commands.parallel(
+                Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -127,13 +130,11 @@ public class CrossSubsystemsCommandsFactory {
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain /*, Hopper hopper */,
-      OperatorInterface oi,
-      ShooterModes shooterModes) {
+      SwerveDrivetrain drivetrain, Hopper hopper, OperatorInterface oi, ShooterModes shooterModes) {
 
     return Commands.either(
         Commands.sequence(
-            getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/)),
+            getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain, hopper)),
         Commands.none(),
         () -> shooterModes.manualShootEnabled());
   }
@@ -165,9 +166,10 @@ public class CrossSubsystemsCommandsFactory {
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
-  public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain /*, Hopper hopper */) {
+  public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain, Hopper hopper) {
     return Commands.sequence(
-        Commands.runOnce(drivetrain::holdXstance), Commands.none()); // FIXME: run hopper
+        Commands.runOnce(drivetrain::holdXstance),
+        Commands.runOnce(hopper::setUnloadShooterKickerVelocity));
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
