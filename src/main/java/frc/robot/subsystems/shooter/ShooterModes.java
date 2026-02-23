@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
@@ -52,10 +53,17 @@ public class ShooterModes extends SubsystemBase {
   private Trigger shootOTMTrigger;
   private Trigger canShootTrigger;
   private Trigger lockShooterTrigger;
-
   private Trigger turretLockNZTrigger;
+  private Trigger testingModeTrigger;
 
   private boolean turretAutoLocked = false;
+
+  private final LoggedTunableNumber testingFlywheelVelocity =
+      new LoggedTunableNumber("ShooterModes/Testing/FlywheelVelocityRPS", 0.0);
+  private final LoggedTunableNumber testingHoodAngle =
+      new LoggedTunableNumber("ShooterModes/Testing/HoodAngleDegrees", HOOD_MIN_ANGLE.in(Degrees));
+  private final LoggedTunableNumber testingTurretAngle =
+      new LoggedTunableNumber("ShooterModes/Testing/TurretAngleDegrees", 0.0);
 
   // the primary mode and secondary mode will act unilaterally except for when NEAR_TRENCH
   private ShooterMode primaryMode;
@@ -68,6 +76,7 @@ public class ShooterModes extends SubsystemBase {
     NEAR_TRENCH, // near the trench zone
     PASS, // passing mode,
     SHOOTER_LOCKED, // set our manaul hood, turret, and flywheel values for money shot
+    TESTING // testing mode for testing
   }
 
   public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
@@ -89,17 +98,6 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/PrimaryMode", primaryMode);
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
-
-    Logger.recordOutput(
-        "ShooterModes/CollectAndHoldTrigger",
-        (!OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
-                && !Field2d.getInstance().inAllianceZone()
-                && !Field2d.getInstance().inTrenchZone())
-            || (!this.hubActive && Field2d.getInstance().inAllianceZone()));
-
-    Logger.recordOutput(
-        "ShooterModes/LockShooterToggle",
-        OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean());
 
     calculateIdealShot();
   }
@@ -211,7 +209,8 @@ public class ShooterModes extends SubsystemBase {
 
   private void setNormalShooterMode(ShooterMode mode) {
     if (this.primaryMode != ShooterMode.NEAR_TRENCH
-        && this.primaryMode != ShooterMode.SHOOTER_LOCKED) {
+        && this.primaryMode != ShooterMode.SHOOTER_LOCKED
+        && this.primaryMode != ShooterMode.TESTING) {
       this.primaryMode = mode;
     }
 
@@ -295,6 +294,11 @@ public class ShooterModes extends SubsystemBase {
         new Trigger(() -> OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean());
     lockShooterTrigger.onTrue(
         Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOTER_LOCKED)));
+
+    testingModeTrigger =
+        new Trigger(
+            () -> OISelector.getOperatorInterface().getShooterModesTestingToggle().getAsBoolean());
+    testingModeTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.TESTING)));
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
@@ -323,6 +327,13 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private void calculateIdealShot() {
+
+    if (this.primaryMode == ShooterMode.TESTING) {
+      shooter.setFlywheelVelocity(RotationsPerSecond.of(testingFlywheelVelocity.get()));
+      shooter.setHoodPosition(Degrees.of(testingHoodAngle.get()));
+      shooter.setTurretPosition(Degrees.of(testingTurretAngle.get()));
+      return;
+    }
 
     boolean lockToggleOn =
         OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean();
@@ -356,9 +367,9 @@ public class ShooterModes extends SubsystemBase {
         shooter.setTurretPosition(Degrees.of(otmShot[2]));
       }
     } else if (this.primaryMode == ShooterMode.SHOOTER_LOCKED) {
-      shooter.setFlywheelVelocity(SAFE_SHOT_FLYWHEEL_RPS);
-      shooter.setHoodPosition(SAFE_SHOT_HOOD_ANGLE);
-      shooter.setTurretPosition(SAFE_SHOT_TURRET_ANGLE);
+      shooter.setFlywheelVelocity(LOCK_SHOT_FLYWHEEL_RPS);
+      shooter.setHoodPosition(LOCK_SHOT_HOOD_ANGLE);
+      shooter.setTurretPosition(LOCK_SHOT_TURRET_ANGLE);
     } else if (this.primaryMode == ShooterMode.SHOOT_OTM
         || this.primaryMode == ShooterMode.MANUAL_SHOOT
         || this.primaryMode == ShooterMode.COLLECT_AND_HOLD) {

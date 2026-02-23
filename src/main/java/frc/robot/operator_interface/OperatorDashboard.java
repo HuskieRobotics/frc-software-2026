@@ -35,6 +35,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean lockShooterToggle =
       new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, true);
 
+  public final LoggedTunableBoolean shooterModesTestingToggle =
+      new LoggedTunableBoolean("operatorDashboard/Shooter Modes Testing", false, true);
+
   public OperatorDashboard() {}
 
   @Override
@@ -65,6 +68,11 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getLockShooterToggle() {
     return new Trigger(() -> lockShooterToggle.get());
+  }
+
+  @Override
+  public Trigger getShooterModesTestingToggle() {
+    return new Trigger(() -> shooterModesTestingToggle.get());
   }
 
   public Trigger getObjectDetectionToggle() {
