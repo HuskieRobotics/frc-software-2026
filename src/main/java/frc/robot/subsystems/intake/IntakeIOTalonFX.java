@@ -6,6 +6,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -277,6 +278,13 @@ public class IntakeIOTalonFX implements IntakeIO {
         DEPLOYER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
+
+    SoftwareLimitSwitchConfigs deployerLimitSwitches = config.SoftwareLimitSwitch;
+
+    deployerLimitSwitches.ForwardSoftLimitEnable = true;
+    deployerLimitSwitches.ForwardSoftLimitThreshold = DEPLOYER_MAX_ANGLE.in(Rotations);
+    deployerLimitSwitches.ReverseSoftLimitEnable = true;
+    deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE.in(Rotations);
 
     config.Feedback.SensorToMechanismRatio = DEPLOYER_GEAR_RATIO;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
