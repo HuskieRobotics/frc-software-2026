@@ -147,19 +147,6 @@
               "period": 0.06,
               "data_type": "boolean"
             }
-          },
-          {
-            "title": "Lock Shooter",
-            "x": 400.0,
-            "y": 336.0,
-            "width": 288.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Lock Shooter",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
           }
         ]
       }
@@ -422,8 +409,8 @@
             "title": "Pass",
             "x": 112.0,
             "y": 0.0,
-            "width": 560.0,
-            "height": 288.0,
+            "width": 400.0,
+            "height": 250.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Pass",
@@ -435,11 +422,37 @@
             "title": "Shoot On The Move",
             "x": 112.0,
             "y": 288.0,
-            "width": 560.0,
-            "height": 304.0,
+            "width": 400.0,
+            "height": 250.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Shoot On The Move",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Lock Shooter",
+            "x": 550.0,
+            "y": 0.0,
+            "width": 400.0,
+            "height": 250.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Lock Shooter",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Lock Turret For Bank",
+            "x": 550.0,
+            "y": 288.0,
+            "width": 400.0,
+            "height": 250.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Lock Turret For Bank",
               "period": 0.06,
               "data_type": "boolean"
             }
