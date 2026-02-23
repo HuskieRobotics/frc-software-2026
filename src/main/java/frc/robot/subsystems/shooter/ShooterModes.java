@@ -75,7 +75,7 @@ public class ShooterModes extends SubsystemBase {
     COLLECT_AND_HOLD, // collecting and holding fuel in hopper
     NEAR_TRENCH, // near the trench zone
     PASS, // passing mode,
-    SHOOTER_LOCKED, // set our manaul hood, turret, and flywheel values for money shot
+    SHOOTER_LOCKED, // set our manual hood, turret, and flywheel values for money shot
     TESTING // testing mode for testing
   }
 

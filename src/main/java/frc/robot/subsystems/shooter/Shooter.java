@@ -320,7 +320,8 @@ public class Shooter extends SubsystemBase {
 
     degrees = ((degrees + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
 
-    if (degrees < -135.0 || degrees > 135.0) {
+    if (degrees < TURRET_LOWER_ANGLE_LIMIT.in(Degrees)
+        || degrees > TURRET_UPPER_ANGLE_LIMIT.in(Degrees)) {
       return;
     } else {
       io.setTurretPosition(Degrees.of(degrees));

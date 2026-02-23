@@ -289,7 +289,7 @@ public class ShooterIOTalonFX implements ShooterIO {
             TURRET_MASS_KG,
             TURRET_LOWER_ANGLE_LIMIT.in(Radians),
             TURRET_UPPER_ANGLE_LIMIT.in(Radians),
-            0.0,
+            TURRET_STARTING_ANGLE.in(Radians),
             false,
             SUBSYSTEM_NAME + " Turret");
     this.hoodLeadSim =
