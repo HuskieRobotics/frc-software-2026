@@ -514,7 +514,8 @@ public class AutonomousCommandsFactory {
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
     try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("R Fuel Sweep"); //this path ends at the bank
+      driveToNeutralZone =
+          PathPlannerPath.fromPathFile("R Fuel Sweep"); // this path ends at the bank
       driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("R Sweep Collect");
       driveToBank = PathPlannerPath.fromPathFile("R Sweep to Bank");
     } catch (Exception e) {
@@ -541,7 +542,8 @@ public class AutonomousCommandsFactory {
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
     try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("L Fuel Sweep"); //this path ends at the bank
+      driveToNeutralZone =
+          PathPlannerPath.fromPathFile("L Fuel Sweep"); // this path ends at the bank
       driveToNeutralZoneAgain = PathPlannerPath.fromPathFile("L Sweep Collect");
       driveToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
     } catch (Exception e) {
