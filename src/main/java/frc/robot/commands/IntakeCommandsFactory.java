@@ -28,13 +28,10 @@ public class IntakeCommandsFactory {
 
     oi.getStopIntakeRollersButton()
         .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (intake.isRollerAtSetpoint(ROLLER_TARGET_VELOCITY)) {
-                    intake.stopRoller();
-                  } else {
-                    intake.startRoller();
-                  }
-                }));
+            Commands.either(
+                    Commands.runOnce(intake::stopRoller),
+                    Commands.runOnce(intake::startRoller),
+                    intake::areRollersActive)
+                .withName("start-stop intake rollers"));
   }
 }

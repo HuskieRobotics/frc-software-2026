@@ -27,6 +27,7 @@ public class Intake extends SubsystemBase {
 
   private Distance deployerLinearPosition = Meters.of(0);
   private boolean inDeployedState = false;
+  private boolean areRollersActiveState = false;
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
@@ -153,14 +154,17 @@ public class Intake extends SubsystemBase {
   }
 
   public void startRoller() {
+    areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
   }
 
   public void stopRoller() {
+    areRollersActiveState = false;
     intakeIO.setRollerVelocity(RotationsPerSecond.of(0.0));
   }
 
   public void outTakeRoller() {
+    areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_EJECT_VELOCITY);
   }
 
@@ -198,6 +202,10 @@ public class Intake extends SubsystemBase {
 
   public boolean inDeployedState() {
     return inDeployedState;
+  }
+
+  public boolean areRollersActive() {
+    return areRollersActiveState;
   }
 
   private Command getSystemCheckCommand() {
