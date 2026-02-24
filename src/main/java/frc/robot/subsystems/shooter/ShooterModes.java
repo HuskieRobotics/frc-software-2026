@@ -100,12 +100,6 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
 
-    Logger.recordOutput(
-        "ShooterModes/In Opposite Alliance Zone",
-        Field2d.getInstance().inOpponentAllianceZone()
-            && drivetrain.getPose().getY() < FieldConstants.Hub.leftFace.getY()
-            && drivetrain.getPose().getY() > FieldConstants.Hub.rightFace.getY());
-
     calculateIdealShot();
   }
 
@@ -406,7 +400,7 @@ public class ShooterModes extends SubsystemBase {
       if (Field2d.getInstance().inOpponentAllianceZone()
           && drivetrain.getPose().getY() < FieldConstants.Hub.leftFace.getY()
           && drivetrain.getPose().getY() > FieldConstants.Hub.rightFace.getY()) {
-            
+
         shooter.setHoodPosition(HOOD_LOWER_ANGLE_LIMIT);
         shooter.setFlywheelVelocity(FLYWHEEL_PASS_OVER_NET_VELOCITY);
       } else {
