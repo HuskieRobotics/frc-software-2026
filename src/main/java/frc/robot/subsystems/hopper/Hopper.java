@@ -235,8 +235,8 @@ public class Hopper extends SubsystemBase {
     io.setSpindexerCurrent(amps);
   }
 
-  public void setUnloadShooterKickerVelocity() {
-    io.setKickerVelocity(UNLOAD_SHOOTER_KICKER_VELOCITY);
+  public void setUnloadKickerVelocity() {
+    io.setKickerVelocity(UNLOAD_KICKER_VELOCITY);
   }
 
   public void setSpindexerUnloadVelocity() {

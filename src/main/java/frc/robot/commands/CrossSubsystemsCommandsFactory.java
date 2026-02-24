@@ -173,7 +173,9 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain, Hopper hopper) {
     return Commands.sequence(
         Commands.runOnce(drivetrain::holdXstance),
-        Commands.runOnce(hopper::setUnloadShooterKickerVelocity));
+        Commands.sequence(
+            Commands.runOnce(hopper::setSpindexerUnloadVelocity),
+            Commands.runOnce(hopper::setUnloadKickerVelocity)));
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
@@ -311,19 +313,24 @@ public class CrossSubsystemsCommandsFactory {
         new Trigger(
             () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
 
-    // FIXME: when running in sim, used a run once to set a constant velocity.
-    // we can do this worst case, or try using a whileTrue + runOnce (so that we constantly update
-    // speed),
-    // followed by an onFalse to stop the hopper when we stop moving.
-    unloadHopperOnTheMoveTrigger.onTrue(Commands.none());
-    unloadHopperOnTheMoveTrigger.onFalse(Commands.none());
+    unloadHopperOnTheMoveTrigger.whileTrue(
+        Commands.parallel(
+            Commands.runOnce(hopper::setUnloadKickerVelocity),
+            Commands.runOnce(hopper::setSpindexerUnloadVelocity)));
+    unloadHopperOnTheMoveTrigger.onFalse(
+        Commands.parallel(
+            Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
 
     Trigger unloadHopperForPassingTrigger =
         new Trigger(() -> !Field2d.getInstance().inAllianceZone() && shooterModes.isPassEnabled());
 
-    // FIXME: same note as above
-    unloadHopperForPassingTrigger.onTrue(Commands.none());
-    unloadHopperForPassingTrigger.onFalse(Commands.none());
+    unloadHopperForPassingTrigger.onTrue(
+        Commands.parallel(
+            Commands.runOnce(hopper::setUnloadKickerVelocity),
+            Commands.runOnce(hopper::setSpindexerUnloadVelocity)));
+    unloadHopperForPassingTrigger.onFalse(
+        Commands.parallel(
+            Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
 
     Trigger tooCloseToHubForPassTrigger =
         new Trigger(
