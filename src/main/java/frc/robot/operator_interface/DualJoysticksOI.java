@@ -87,6 +87,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getUnjamHopperButton() {
+    return rotateJoystickButtons[3];
+  }
+
+  @Override
   public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }

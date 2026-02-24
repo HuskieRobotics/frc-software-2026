@@ -89,6 +89,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getUnjamHopperButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getOverrideDriveToPoseButton() {
     return new Trigger(() -> false);
   }

@@ -19,6 +19,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 import org.littletonrobotics.junction.Logger;
 
@@ -108,19 +109,7 @@ public class Hopper extends SubsystemBase {
       }
     }
 
-    if (frc.robot.Constants.getMode() != Mode.SIM) {
-      if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
-        CommandScheduler.getInstance()
-            .schedule(
-                Commands.sequence(
-                    Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
-                        .withName("spindexer jammed"),
-                    Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME)));
-        spindexerJammedAlert.set(true);
-      } else {
-        spindexerJammedAlert.set(false);
-      }
-
+    if (Constants.getMode() == Constants.Mode.SIM) {
       if (kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps)))) {
         CommandScheduler.getInstance()
             .schedule(
@@ -131,6 +120,18 @@ public class Hopper extends SubsystemBase {
         kickerJammedAlert.set(true);
       } else {
         kickerJammedAlert.set(false);
+      }
+
+      if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
+        CommandScheduler.getInstance()
+            .schedule(
+                Commands.sequence(
+                    Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
+                        .withName("spindexer jammed"),
+                    Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME)));
+        spindexerJammedAlert.set(true);
+      } else {
+        spindexerJammedAlert.set(false);
       }
     }
 

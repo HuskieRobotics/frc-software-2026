@@ -29,6 +29,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
+import frc.robot.commands.HopperCommandsFactory;
 import frc.robot.commands.IntakeCommandsFactory;
 import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
@@ -365,6 +366,7 @@ public class RobotContainer {
 
     // register commands for other subsystems
     IntakeCommandsFactory.registerCommands(oi, intake);
+    HopperCommandsFactory.registerCommands(oi, hopper);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
