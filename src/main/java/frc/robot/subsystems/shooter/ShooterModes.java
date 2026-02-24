@@ -244,7 +244,8 @@ public class ShooterModes extends SubsystemBase {
         new Trigger(
             () ->
                 OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
-                    && !Field2d.getInstance().inAllianceZone());
+                    && !Field2d.getInstance().inAllianceZone()
+                    && !Field2d.getInstance().inTrenchZone());
 
     passModeTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.PASS)));
 

@@ -75,4 +75,7 @@ public class HopperConstants {
 
   public static final AngularVelocity UNLOAD_SHOOTER_KICKER_VELOCITY =
       RotationsPerSecond.of(20.0); // FIXME: Update value
+
+  public static final AngularVelocity UNLOAD_SPINDEXER_VELOCITY =
+      RotationsPerSecond.of(5); // FIXME: Update value
 }

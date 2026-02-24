@@ -150,24 +150,15 @@ public class Field2d {
 
   public void populatePassingZones() {
 
-    double PZ_BUFFER_X = 2.0; 
+    double PZ_BUFFER_X = 2.0;
     double PZ_BUFFER_Y = 1.0;
 
     // blue left passing zone
     bluePassingZones[0] =
-        new Pose2d(
-            PZ_BUFFER_X,
-            FieldConstants.fieldWidth - PZ_BUFFER_Y,
-            Rotation2d.fromDegrees(
-                0));
+        new Pose2d(PZ_BUFFER_X, FieldConstants.fieldWidth - PZ_BUFFER_Y, Rotation2d.fromDegrees(0));
 
     // blue right passing zone
-    bluePassingZones[1] =
-        new Pose2d(
-            PZ_BUFFER_X,
-            PZ_BUFFER_Y,
-            Rotation2d.fromDegrees(
-                0));
+    bluePassingZones[1] = new Pose2d(PZ_BUFFER_X, PZ_BUFFER_Y, Rotation2d.fromDegrees(0));
 
     // red left passing zone
     redPassingZones[0] = FlippingUtil.flipFieldPose(bluePassingZones[0]);

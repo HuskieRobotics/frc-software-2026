@@ -16,6 +16,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -55,6 +56,9 @@ public class CrossSubsystemsCommandsFactory {
   private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
       0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
   private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
+
+  private static final double PASS_ZONE_TOLERANCE_X = 2.0; // meters
+  private static final double PASS_ZONE_TOLERANCE_Y = 1.0; // meters
 
   private static ProfiledPIDController xController =
       new ProfiledPIDController(
@@ -98,7 +102,7 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes,
       Vision vision) {
 
-    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter);
+    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter, hopper);
 
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, vision, oi));
@@ -300,7 +304,8 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi,
       SwerveDrivetrain swerveDrivetrain,
       ShooterModes shooterModes,
-      Shooter shooter) {
+      Shooter shooter,
+      Hopper hopper) {
 
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
@@ -319,5 +324,21 @@ public class CrossSubsystemsCommandsFactory {
     // FIXME: same note as above
     unloadHopperForPassingTrigger.onTrue(Commands.none());
     unloadHopperForPassingTrigger.onFalse(Commands.none());
+
+    Trigger tooCloseToHubForPassTrigger =
+        new Trigger(
+            () ->
+                shooterModes.isPassEnabled()
+                    && Math.abs(
+                            FieldConstants.Hub.innerCenterPoint.getMeasureX().in(Meters)
+                                - swerveDrivetrain.getPose().getX())
+                        < PASS_ZONE_TOLERANCE_X
+                    && Math.abs(
+                            FieldConstants.Hub.innerCenterPoint.getMeasureY().in(Meters)
+                                - swerveDrivetrain.getPose().getY())
+                        < PASS_ZONE_TOLERANCE_Y);
+
+    tooCloseToHubForPassTrigger.onTrue(Commands.runOnce(hopper::stopSpindexer));
+    tooCloseToHubForPassTrigger.onFalse(Commands.runOnce(hopper::setSpindexerUnloadVelocity));
   }
 }
