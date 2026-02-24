@@ -18,6 +18,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -126,18 +127,18 @@ public class CrossSubsystemsCommandsFactory {
             .and(shooterModes::manualShootEnabled)
             .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
 
-    // new Trigger(
-    //         () -> {
-    //           double currentYPose = swerveDrivetrain.getPose().getY();
+    new Trigger(
+            () -> {
+              double currentYPose = swerveDrivetrain.getPose().getY();
 
-    //           // see which of the two walls we are closer to
-    //           boolean closerToLeft = currentYPose < WALL_SNAP_TOLERANCE_METERS;
-    //           boolean closerToRight =
-    //               currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
+              // see which of the two walls we are closer to
+              boolean closerToLeft = currentYPose < WALL_SNAP_TOLERANCE_METERS;
+              boolean closerToRight =
+                  currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
 
-    //           return (closerToLeft || closerToRight) && !Field2d.getInstance().inTrenchZone();
-    //         })
-    //     .whileTrue(getSnapToWallsCommand(swerveDrivetrain));
+              return (closerToLeft || closerToRight) && !Field2d.getInstance().inTrenchZone();
+            })
+        .whileTrue(getSnapToWallsCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
