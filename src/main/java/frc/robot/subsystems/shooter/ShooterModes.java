@@ -404,7 +404,6 @@ public class ShooterModes extends SubsystemBase {
         shooter.setHoodPosition(HOOD_LOWER_ANGLE_LIMIT);
         shooter.setFlywheelVelocity(FLYWHEEL_PASS_OVER_NET_VELOCITY);
       } else {
-
         Translation2d targetLandingPosition =
             Field2d.getInstance().getNearestPassingZone().getTranslation();
 
@@ -415,9 +414,20 @@ public class ShooterModes extends SubsystemBase {
                 Degrees.of(idealShotSetpoints[1]),
                 Degrees.of(idealShotSetpoints[2]));
 
-        shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
-        shooter.setHoodPosition(Degrees.of(otmShot[1]));
-        shooter.setTurretPosition(Degrees.of(otmShot[2]));
+        double PASSING_TOLERANCE = 14; // meters
+
+        if (Math.sqrt(
+                Math.pow(targetLandingPosition.getY(), 2)
+                    + Math.pow(targetLandingPosition.getX(), 2))
+            < PASSING_TOLERANCE) {
+          shooter.setFlywheelVelocity(FLYWHEEL_MAX_VELOCITY_RPS);
+          shooter.setHoodPosition(HOOD_MAX_PASSING_ANGLE);
+          shooter.setTurretPosition(Degrees.of(otmShot[2]));
+        } else {
+          shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
+          shooter.setHoodPosition(Degrees.of(otmShot[1]));
+          shooter.setTurretPosition(Degrees.of(otmShot[2]));
+        }
       }
     }
   }

@@ -367,4 +367,8 @@ public class Shooter extends SubsystemBase {
   public Angle getTurretPosition() {
     return shooterInputs.turretPosition;
   }
+
+  public AngularVelocity getFlywheelLeadVelocity() {
+    return shooterInputs.flywheelLeadVelocity;
+  }
 }

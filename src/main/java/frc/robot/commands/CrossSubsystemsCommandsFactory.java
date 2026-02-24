@@ -315,7 +315,7 @@ public class CrossSubsystemsCommandsFactory {
 
     unloadHopperOnTheMoveTrigger.whileTrue(
         Commands.parallel(
-            Commands.runOnce(hopper::setUnloadKickerVelocity),
+            Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
             Commands.runOnce(hopper::setSpindexerUnloadVelocity)));
     unloadHopperOnTheMoveTrigger.onFalse(
         Commands.parallel(
@@ -326,7 +326,7 @@ public class CrossSubsystemsCommandsFactory {
 
     unloadHopperForPassingTrigger.onTrue(
         Commands.parallel(
-            Commands.runOnce(hopper::setUnloadKickerVelocity),
+            Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
             Commands.runOnce(hopper::setSpindexerUnloadVelocity)));
     unloadHopperForPassingTrigger.onFalse(
         Commands.parallel(

@@ -71,6 +71,7 @@ public class ShooterConstants {
 
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0);
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0);
+  public static final Angle HOOD_MAX_PASSING_ANGLE = Degrees.of(49.0);
 
   public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
 
@@ -112,6 +113,8 @@ public class ShooterConstants {
       RotationsPerSecond.of(60); // FIXME: determine test points
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_3_RPS =
       RotationsPerSecond.of(90); // FIXME: determine test points
+
+  public static final AngularVelocity FLYWHEEL_MAX_VELOCITY_RPS = RotationsPerSecond.of(60);
 
   public static final double COMMAND_WAIT_TIME_SECONDS = 3;
 
