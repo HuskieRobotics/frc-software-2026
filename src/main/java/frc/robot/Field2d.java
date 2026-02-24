@@ -47,6 +47,7 @@ public class Field2d {
   private Alliance alliance = DriverStation.Alliance.Blue;
 
   private Region2d transformedAllianceZone;
+  private Region2d transformedOpponentAllianceZone;
   private Region2d blueLeftTrenchZone;
   private Region2d blueRightTrenchZone;
   private Region2d redLeftTrenchZone;
@@ -90,8 +91,9 @@ public class Field2d {
 
     // since positive x is defined at forward if we move the far side x back 2 inches it should
     // result in giving us a 2 inch buffer
-    double bufferAZ = Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
-    double safeFarSideX = FieldConstants.LinesVertical.allianceZone - bufferAZ;
+    double safeFarSideX =
+        FieldConstants.LinesVertical.allianceZone
+            - Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
 
     Translation2d[] zoneCorners =
         new Translation2d[] {
@@ -109,6 +111,29 @@ public class Field2d {
         };
 
     this.transformedAllianceZone = new Region2d(zoneCorners);
+  }
+
+  public void populateOpponentAllianceZone() {
+
+    double oppAllianceZoneX =
+        FieldConstants.LinesVertical.oppAllianceZone
+            + Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
+
+    Translation2d[] zoneCorners =
+        new Translation2d[] {
+          // far left corner
+          new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth),
+
+          // far right corner
+          new Translation2d(FieldConstants.fieldLength, 0.0),
+
+          // opposite trench left corner
+          new Translation2d(oppAllianceZoneX, FieldConstants.fieldWidth),
+
+          // opposite trench right corner
+          new Translation2d(oppAllianceZoneX, 0.0)
+        };
+    this.transformedOpponentAllianceZone = new Region2d(zoneCorners);
   }
 
   /**
@@ -460,6 +485,16 @@ public class Field2d {
     }
 
     return transformedAllianceZone.contains(pose);
+  }
+
+  public boolean inOpponentAllianceZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedOpponentAllianceZone.contains(pose);
   }
 
   public boolean inTrenchZone() {

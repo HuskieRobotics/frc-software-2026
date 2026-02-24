@@ -15,12 +15,11 @@ public class HopperCommandsFactory {
         .onTrue(
             Commands.parallel(
                 Commands.sequence(
-                    Commands.runOnce(() -> hopper.setKickerVelocity(KICKER_UNJAM_VELOCITY), hopper)
+                    Commands.runOnce(() -> hopper.setKickerVelocity(KICKER_UNJAM_VELOCITY))
                         .withName("kicker jammed"),
                     Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME)),
                 Commands.sequence(
-                    Commands.runOnce(
-                            () -> hopper.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY), hopper)
+                    Commands.runOnce(() -> hopper.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
                         .withName("spindexer jammed"),
                     Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME))));
   }

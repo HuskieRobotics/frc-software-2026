@@ -33,14 +33,14 @@ public class ShooterConstants {
 
   public static final boolean FLYWHEEL_LEAD_INVERTED = true;
   public static final double FLYWHEEL_LEAD_GEAR_RATIO = 1.5;
-  public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1; // FIXME: update value
+  public static final double FLYWHEEL_MOMENT_OF_INERTIA = 0.1;
 
-  public static final boolean FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD =
-      true; // FIXME: change to opposed if reversed
+  public static final boolean FLYWHEEL_FOLLOWER_1_INVERTED_FROM_LEAD = true;
 
   // Follow 2 Constants
-  public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD =
-      false; // FIXME: change to opposed if reversed
+  public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD = false;
+
+  public static final AngularVelocity FLYWHEEL_PASS_OVER_NET_VELOCITY = RotationsPerSecond.of(45);
 
   public static final double TURRET_KP = 50.0;
   public static final double TURRET_KI = 0.0;
@@ -50,10 +50,9 @@ public class ShooterConstants {
   public static final double TURRET_KA = 0.0;
 
   public static final boolean TURRET_INVERTED = false;
-  public static final double TURRET_GEAR_RATIO = 41.666; // FIXME: way too low ask Noga for correct
-  public static final double TURRET_LENGTH_METERS =
-      1.0; // this is irrelevant for simulation since gravity doesn't affect the model
-  public static final double TURRET_MASS_KG = 1.0; // FIXME: update value
+  public static final double TURRET_GEAR_RATIO = 41.666;
+  public static final double TURRET_LENGTH_METERS = 1.0;
+  public static final double TURRET_MASS_KG = 1.0;
 
   public static final double HOOD_KP = 325;
   public static final double HOOD_KI = 0.0;
@@ -71,7 +70,7 @@ public class ShooterConstants {
   public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
 
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0);
-  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0); // FIXME: update value
+  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0);
 
   public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
 

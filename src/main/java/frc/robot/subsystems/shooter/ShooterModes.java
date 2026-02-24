@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -98,6 +99,12 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/PrimaryMode", primaryMode);
     Logger.recordOutput("ShooterModes/SecondaryMode", secondaryMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
+
+    Logger.recordOutput(
+        "ShooterModes/In Opposite Alliance Zone",
+        Field2d.getInstance().inOpponentAllianceZone()
+            && drivetrain.getPose().getY() < FieldConstants.Hub.leftFace.getY()
+            && drivetrain.getPose().getY() > FieldConstants.Hub.rightFace.getY());
 
     calculateIdealShot();
   }
@@ -396,19 +403,28 @@ public class ShooterModes extends SubsystemBase {
       }
     } else if (this.primaryMode == ShooterMode.PASS) {
 
-      Translation2d targetLandingPosition =
-          Field2d.getInstance().getNearestPassingZone().getTranslation();
+      if (Field2d.getInstance().inOpponentAllianceZone()
+          && drivetrain.getPose().getY() < FieldConstants.Hub.leftFace.getY()
+          && drivetrain.getPose().getY() > FieldConstants.Hub.rightFace.getY()) {
+            
+        shooter.setHoodPosition(HOOD_LOWER_ANGLE_LIMIT);
+        shooter.setFlywheelVelocity(FLYWHEEL_PASS_OVER_NET_VELOCITY);
+      } else {
 
-      Double[] idealShotSetpoints = getIdealPassSetpoints(targetLandingPosition);
-      Double[] otmShot =
-          calculateShootOnTheMove(
-              idealShotSetpoints[0],
-              Degrees.of(idealShotSetpoints[1]),
-              Degrees.of(idealShotSetpoints[2]));
+        Translation2d targetLandingPosition =
+            Field2d.getInstance().getNearestPassingZone().getTranslation();
 
-      shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
-      shooter.setHoodPosition(Degrees.of(otmShot[1]));
-      shooter.setTurretPosition(Degrees.of(otmShot[2]));
+        Double[] idealShotSetpoints = getIdealPassSetpoints(targetLandingPosition);
+        Double[] otmShot =
+            calculateShootOnTheMove(
+                idealShotSetpoints[0],
+                Degrees.of(idealShotSetpoints[1]),
+                Degrees.of(idealShotSetpoints[2]));
+
+        shooter.setFlywheelVelocity(RotationsPerSecond.of(otmShot[0]));
+        shooter.setHoodPosition(Degrees.of(otmShot[1]));
+        shooter.setTurretPosition(Degrees.of(otmShot[2]));
+      }
     }
   }
 
