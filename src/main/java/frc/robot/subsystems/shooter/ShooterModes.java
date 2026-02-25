@@ -24,6 +24,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
 
+  // FIXME: how is this intended to be used?
   // constant to configure for when running practice matches with no game data
   public final boolean WON_AUTO_PRACTICE_MATCH = true;
   private static final double SHOOT_TIME_OFFSET_SECONDS = 2.0; // offset for ball travel time to hub
@@ -66,6 +67,7 @@ public class ShooterModes extends SubsystemBase {
   private final LoggedTunableNumber testingTurretAngle =
       new LoggedTunableNumber("ShooterModes/Testing/TurretAngleDegrees", 0.0);
 
+  // FIXME: act unilaterally or be the same value?
   // the primary mode and secondary mode will act unilaterally except for when NEAR_TRENCH
   private ShooterMode primaryMode;
   private ShooterMode secondaryMode;
@@ -134,7 +136,7 @@ public class ShooterModes extends SubsystemBase {
     return this.primaryMode == ShooterMode.PASS;
   }
 
-  public boolean manualShootEnabled() {
+  public boolean isManualShootEnabled() {
     return this.primaryMode == ShooterMode.MANUAL_SHOOT;
   }
 
@@ -151,6 +153,7 @@ public class ShooterModes extends SubsystemBase {
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
   public boolean hubActive() {
+    // FIXME: how is the hub active at home toggle intended to be used?
     if (!OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean()
         && !DriverStation.isFMSAttached()) {
       return false;

@@ -111,7 +111,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain, hopper, oi, shooterModes));
 
     oi.getManualShootButton()
-        .and(shooterModes::manualShootEnabled)
+        .and(shooterModes::isManualShootEnabled)
         .whileTrue(getUnloadShooterCommand(swerveDrivetrain, hopper));
 
     oi.getManualShootButton()
@@ -140,7 +140,7 @@ public class CrossSubsystemsCommandsFactory {
         Commands.sequence(
             getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain, hopper)),
         Commands.none(),
-        () -> shooterModes.manualShootEnabled());
+        () -> shooterModes.isManualShootEnabled());
   }
 
   // this will rotate our robot into a diamond shape while we are near the bump zone
