@@ -282,6 +282,8 @@ public class ShooterModes extends SubsystemBase {
    */
   public void configureShooterModeTriggers() {
 
+    // FIXME: is drive to bank sufficiently outside of the trench zone to not have this trigger
+    // true?
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
     nearTrenchTrigger.onTrue(Commands.runOnce(this::setNearTrenchActive));
     nearTrenchTrigger.onFalse(Commands.runOnce(this::returnToPreviousMode));
@@ -381,6 +383,7 @@ public class ShooterModes extends SubsystemBase {
     boolean lockToggleOn =
         OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean();
 
+    // FIXME: why do we have essentially two triggers (one here and one with the other triggers)?
     if (((this.turretAutoLocked && this.primaryMode != ShooterMode.PASS)
             || (lockToggleOn && this.primaryMode != ShooterMode.PASS))
         && this.primaryMode != ShooterMode.SHOOTER_LOCKED) {

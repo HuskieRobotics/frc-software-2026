@@ -332,6 +332,9 @@ public class CrossSubsystemsCommandsFactory {
         Commands.parallel(
             Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
 
+    // FIXME: what about passing when we are in the opposing alliance zone? When we cover this case,
+    // we need to be careful that we don't exclude when we are near the opposing alliance's hub but
+    // in the neutral zone in which case it won't block our pass.
     Trigger tooCloseToHubForPassTrigger =
         new Trigger(
             () ->
@@ -345,7 +348,15 @@ public class CrossSubsystemsCommandsFactory {
                                 - swerveDrivetrain.getPose().getY())
                         < PASS_ZONE_TOLERANCE_Y);
 
-    tooCloseToHubForPassTrigger.onTrue(Commands.runOnce(hopper::stopSpindexer));
-    tooCloseToHubForPassTrigger.onFalse(Commands.runOnce(hopper::spinFuelIntoKicker));
+    // FIXME: add method that stops / starts the spindexer and kicker together instead of having to
+    // do both of these commands every time we want to start or stop the hopper from feeding the
+    // shooter
+    tooCloseToHubForPassTrigger.onTrue(
+        Commands.parallel(
+            Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
+    tooCloseToHubForPassTrigger.onFalse(
+        Commands.parallel(
+            Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
+            Commands.runOnce(hopper::spinFuelIntoKicker)));
   }
 }
