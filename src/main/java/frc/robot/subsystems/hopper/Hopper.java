@@ -86,7 +86,7 @@ public class Hopper extends SubsystemBase {
     SysIdRoutineChooser.getInstance().addOption("Kicker Current", kickerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Spindexer Current", spindexerSysIdRoutine);
 
-    getHopperSystemCheckCommand();
+    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getHopperSystemCheckCommand());
   }
 
   @Override
