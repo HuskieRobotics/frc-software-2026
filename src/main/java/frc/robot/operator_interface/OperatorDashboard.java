@@ -26,7 +26,7 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
 
   public final LoggedTunableBoolean autoSnapsEnabled =
-      new LoggedTunableBoolean("operatorDashboard/Toggle Auto Snaps", true, true);
+      new LoggedTunableBoolean("operatorDashboard/Auto Snaps Enabled", true, true);
 
   public OperatorDashboard() {}
 

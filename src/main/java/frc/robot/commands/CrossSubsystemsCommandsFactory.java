@@ -112,16 +112,15 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
-    // oi.getScoreFromBankButton()
-    //     .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
-    oi.getScoreFromBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
+    oi.getScoreFromBankButton()
+        .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
     Trigger manualShootTrigger =
         oi.getManualShootButton()
             .and(shooterModes::manualShootEnabled)
-            .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
+            .whileTrue(getUnloadShooterCommand(swerveDrivetrain, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -147,9 +146,9 @@ public class CrossSubsystemsCommandsFactory {
 
     return Commands.either(
         Commands.sequence(
-            getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain /*, hopper*/)),
+            getDriveToBankCommand(drivetrain),
+            getUnloadShooterCommand(drivetrain, oi /*, hopper*/)),
         Commands.none(),
-        /* change this check to be the getter method in ShooterModes for CAN_SHOOT mode (which will have this condition)  */
         () -> shooterModes.manualShootEnabled());
   }
 
@@ -167,9 +166,11 @@ public class CrossSubsystemsCommandsFactory {
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
-  public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain /*, Hopper hopper */) {
+  public static Command getUnloadShooterCommand(
+      SwerveDrivetrain drivetrain, OperatorInterface oi /*, Hopper hopper */) {
 
-    return Commands.sequence(Commands.runOnce(drivetrain::holdXstance));
+    return Commands.parallel(Commands.run(drivetrain::holdXstance))
+        .until(() -> (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1));
     // add hopper kick method in parallel
   }
 
