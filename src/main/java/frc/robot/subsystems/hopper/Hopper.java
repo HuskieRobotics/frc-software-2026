@@ -109,33 +109,31 @@ public class Hopper extends SubsystemBase {
       }
     }
 
-    if (Constants.getMode() == Constants.Mode.SIM) {
-      if (kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps)))) {
-        CommandScheduler.getInstance()
-            .schedule(
-                Commands.sequence(
-                    Commands.runOnce(() -> io.setKickerVelocity(KICKER_UNJAM_VELOCITY))
-                        .withName("kicker jammed"),
-                    Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME)));
-        kickerJammedAlert.set(true);
-      } else {
-        kickerJammedAlert.set(false);
-      }
+    if (Constants.getMode() != Constants.Mode.SIM) {
+      kickerJammedAlert.set(
+          kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps))));
+      spindexerJammedAlert.set(
+          spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps))));
 
-      if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
+      if (kickerSpikeDetector.getAsBoolean() || spindexerSpikeDetector.getAsBoolean()) {
         CommandScheduler.getInstance()
-            .schedule(
-                Commands.sequence(
-                    Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
-                        .withName("spindexer jammed"),
-                    Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME)));
-        spindexerJammedAlert.set(true);
-      } else {
-        spindexerJammedAlert.set(false);
+            .schedule(this.getUnjamCommand().withName("auto unjam hopper"));
       }
     }
 
     LoggedTracer.record(SUBSYSTEM_NAME);
+  }
+
+  public Command getUnjamCommand() {
+    return Commands.parallel(
+        Commands.sequence(
+            Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY)),
+            Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME),
+            Commands.runOnce(this::kickFuelIntoShooter)),
+        Commands.sequence(
+            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY)),
+            Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME),
+            Commands.runOnce(this::spinFuelIntoKicker)));
   }
 
   private Command getHopperSystemCheckCommand() {
@@ -235,12 +233,12 @@ public class Hopper extends SubsystemBase {
     io.setSpindexerCurrent(amps);
   }
 
-  public void setUnloadKickerVelocity() {
-    io.setKickerVelocity(UNLOAD_KICKER_VELOCITY);
+  public void kickFuelIntoShooter() {
+    io.setKickerVelocity(KICKER_FUEL_INTO_SHOOTER_VELOCITY);
   }
 
-  public void setSpindexerUnloadVelocity() {
-    io.setSpindexerVelocity(UNLOAD_SPINDEXER_VELOCITY);
+  public void spinFuelIntoKicker() {
+    io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY);
   }
 
   public AngularVelocity getKickerVelocityRPS() {

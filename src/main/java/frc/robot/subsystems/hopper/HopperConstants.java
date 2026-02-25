@@ -73,9 +73,9 @@ public class HopperConstants {
   public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
   public static final double KICKER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
 
-  public static final AngularVelocity UNLOAD_KICKER_VELOCITY =
+  public static final AngularVelocity KICKER_FUEL_INTO_SHOOTER_VELOCITY =
       RotationsPerSecond.of(20.0); // FIXME: Update value
 
-  public static final AngularVelocity UNLOAD_SPINDEXER_VELOCITY =
+  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY =
       RotationsPerSecond.of(4.5); // FIXME: Update value
 }

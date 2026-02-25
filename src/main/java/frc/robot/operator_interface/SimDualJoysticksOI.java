@@ -79,6 +79,11 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getUnjamHopperButton() {
+    return rotateJoystickButtons[3];
+  }
+
+  @Override
   public Trigger getInterruptAll() {
     return rotateJoystickButtons[4];
   }

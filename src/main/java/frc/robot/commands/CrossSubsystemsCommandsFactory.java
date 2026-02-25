@@ -174,8 +174,8 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(drivetrain::holdXstance),
         Commands.sequence(
-            Commands.runOnce(hopper::setSpindexerUnloadVelocity),
-            Commands.runOnce(hopper::setUnloadKickerVelocity)));
+            Commands.runOnce(hopper::spinFuelIntoKicker),
+            Commands.runOnce(hopper::kickFuelIntoShooter)));
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
@@ -316,7 +316,7 @@ public class CrossSubsystemsCommandsFactory {
     unloadHopperOnTheMoveTrigger.whileTrue(
         Commands.parallel(
             Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
-            Commands.runOnce(hopper::setSpindexerUnloadVelocity)));
+            Commands.runOnce(hopper::spinFuelIntoKicker)));
     unloadHopperOnTheMoveTrigger.onFalse(
         Commands.parallel(
             Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
@@ -327,7 +327,7 @@ public class CrossSubsystemsCommandsFactory {
     unloadHopperForPassingTrigger.onTrue(
         Commands.parallel(
             Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
-            Commands.runOnce(hopper::setSpindexerUnloadVelocity)));
+            Commands.runOnce(hopper::spinFuelIntoKicker)));
     unloadHopperForPassingTrigger.onFalse(
         Commands.parallel(
             Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
@@ -346,6 +346,6 @@ public class CrossSubsystemsCommandsFactory {
                         < PASS_ZONE_TOLERANCE_Y);
 
     tooCloseToHubForPassTrigger.onTrue(Commands.runOnce(hopper::stopSpindexer));
-    tooCloseToHubForPassTrigger.onFalse(Commands.runOnce(hopper::setSpindexerUnloadVelocity));
+    tooCloseToHubForPassTrigger.onFalse(Commands.runOnce(hopper::spinFuelIntoKicker));
   }
 }
