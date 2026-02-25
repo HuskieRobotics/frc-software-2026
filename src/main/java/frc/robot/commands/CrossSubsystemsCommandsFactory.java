@@ -7,8 +7,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -18,7 +16,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
-import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -29,6 +26,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterModes;
 import java.util.List;
+import java.util.Optional;
 
 public class CrossSubsystemsCommandsFactory {
 
@@ -67,8 +65,6 @@ public class CrossSubsystemsCommandsFactory {
               .getDriveToPoseDriveMaxAcceleration()
               .in(MetersPerSecondPerSecond));
 
-  private static final double WALL_SNAP_TOLERANCE_METERS = Units.inchesToMeters(30);
-
   private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
   private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
       0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
@@ -76,21 +72,21 @@ public class CrossSubsystemsCommandsFactory {
 
   private static final double JOYSTICK_POWER = 2.0;
 
-  public static ProfiledPIDController xController =
+  public static final ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
           driveKi.get(),
           driveXKd.get(),
           new TrapezoidProfile.Constraints(
               driveToPoseMaxVelocity.get(), driveToPoseMaxAcceleration.get()));
-  public static ProfiledPIDController yController =
+  public static final ProfiledPIDController yController =
       new ProfiledPIDController(
           driveYKp.get(),
           driveKi.get(),
           driveYKd.get(),
           new TrapezoidProfile.Constraints(
               driveToPoseMaxVelocity.get(), driveToPoseMaxAcceleration.get()));
-  public static ProfiledPIDController thetaController =
+  public static final ProfiledPIDController thetaController =
       new ProfiledPIDController(
           thetaKp.get(),
           thetaKi.get(),
@@ -120,25 +116,12 @@ public class CrossSubsystemsCommandsFactory {
     //     .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
     oi.getScoreFromBankButton().onTrue(getDriveToBankCommand(swerveDrivetrain));
 
-    oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(swerveDrivetrain));
+    oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
     Trigger manualShootTrigger =
         oi.getManualShootButton()
             .and(shooterModes::manualShootEnabled)
             .whileTrue(getUnloadShooterCommand(swerveDrivetrain));
-
-    new Trigger(
-            () -> {
-              double currentYPose = swerveDrivetrain.getPose().getY();
-
-              // see which of the two walls we are closer to
-              boolean closerToLeft = currentYPose < WALL_SNAP_TOLERANCE_METERS;
-              boolean closerToRight =
-                  currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
-
-              return (closerToLeft || closerToRight) && !Field2d.getInstance().inTrenchZone();
-            })
-        .whileTrue(getSnapToWallsCommand(swerveDrivetrain));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -170,81 +153,13 @@ public class CrossSubsystemsCommandsFactory {
         () -> shooterModes.manualShootEnabled());
   }
 
-  private static double getModifiedXTranslation() {
-    return TeleopSwerve.modifyAxis(
-            OISelector.getOperatorInterface().getTranslateX(), JOYSTICK_POWER)
-        * RobotConfig.getInstance().getRobotMaxVelocity().in(MetersPerSecond);
-  }
-
-  private static double getModifiedYTranslation() {
-    return TeleopSwerve.modifyAxis(
-            OISelector.getOperatorInterface().getTranslateY(), JOYSTICK_POWER)
-        * RobotConfig.getInstance().getRobotMaxVelocity().in(MetersPerSecond);
-  }
-
-  // this will rotate our robot into a diamond shape while we are near the bump zone
-  public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
-
-    return Commands.run(
-            () -> {
-              double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
-
-              double nearest45DegreeAngle =
-                  (Math.round(((currentRotationPose - 45) / 90)) * 90)
-                      + 45; // this should grab the nearest diamond angle (45+90x)
-
-              Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
-
-              drivetrain.driveFacingAngle(
-                  MetersPerSecond.of(getModifiedXTranslation()),
-                  MetersPerSecond.of(getModifiedYTranslation()),
-                  targetRotation,
-                  false);
-            })
-        .unless(
-            () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
-        .withName("Rotate While Near Bump Command");
-  }
-
-  public static Command getSnapToWallsCommand(SwerveDrivetrain drivetrain) {
-    return Commands.either(
-        Commands.none(),
-        Commands.run(
-                () -> {
-                  Rotation2d currentRotation = drivetrain.getPose().getRotation();
-                  double currentDegrees = currentRotation.getDegrees();
-
-                  double nearest90DegreeAngle =
-                      Math.round(currentDegrees / 90.0) * 90.0; // nearest multiple of 90 degrees
-
-                  Rotation2d targetRotation = Rotation2d.fromDegrees(nearest90DegreeAngle);
-
-                  drivetrain.driveFacingAngle(
-                      MetersPerSecond.of(getModifiedXTranslation()),
-                      MetersPerSecond.of(getModifiedYTranslation()),
-                      targetRotation,
-                      false);
-                })
-            .unless(
-                () ->
-                    !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
-            .withName("Auto Snap To 90 Degree While Near Wall Command"),
-        () -> DriverStation.isAutonomousEnabled());
-  }
-
-  public static Command getSnakeDriveCommand(SwerveDrivetrain drivetrain) {
-    return Commands.run(
-            () -> {
-              double xVelocity = getModifiedXTranslation();
-              double yVelocity = getModifiedYTranslation();
-              Rotation2d targetRotation = new Rotation2d(xVelocity, yVelocity);
-
-              drivetrain.driveFacingAngle(
-                  MetersPerSecond.of(xVelocity),
-                  MetersPerSecond.of(yVelocity),
-                  targetRotation,
-                  false);
-            })
+  public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {
+    return new TeleopSwerve(
+            drivetrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            () -> Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY())))
         .unless(
             () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
         .withName("Snake Drive Command");
@@ -275,7 +190,12 @@ public class CrossSubsystemsCommandsFactory {
       Shooter shooter,
       OperatorInterface oi) {
     return Commands.parallel(
-            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            new TeleopSwerve(
+                swerveDrivetrain,
+                oi::getTranslateX,
+                oi::getTranslateY,
+                oi::getRotate,
+                SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(swerveDrivetrain)),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
             Commands.runOnce(() -> arm.setAngle(Degrees.of(0.0)), arm),
             Commands.runOnce(
@@ -338,7 +258,12 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
-    return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
+    return new TeleopSwerve(
+            drivetrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(drivetrain))
         .withName("Override driveToPose");
   }
 

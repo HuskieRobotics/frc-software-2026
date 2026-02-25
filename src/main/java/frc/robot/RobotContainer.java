@@ -459,16 +459,12 @@ public class RobotContainer {
 
   public void configureRobotContainerTriggers() {
 
-    rotateNearBumpTrigger =
-        new Trigger(
-            () -> (Field2d.getInstance().inBumpZone() && !DriverStation.isAutonomousEnabled()));
-    rotateNearBumpTrigger.whileTrue(
-        CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
-
+    // FIXME: delete or move this
     runHopperOTMandAZTrigger =
         new Trigger(
             () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
     runHopperOTMandAZTrigger.onTrue(
-        Commands.run(() -> shooter.setIdleVelocity())); // FIXME: change to run hopper
+        Commands.run(() -> shooter.setIdleVelocity())
+            .withName("run hopper (entered AZ)")); // FIXME: change to run hopper
   }
 }
