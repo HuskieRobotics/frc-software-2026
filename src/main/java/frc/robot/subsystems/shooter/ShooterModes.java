@@ -175,10 +175,18 @@ public class ShooterModes extends SubsystemBase {
 
     // can add a check for DriverStation.isAutonomousEnabled but that will always fall under
     // timeRemaining < 30
-    if (timeRemaining < 30 || timeRemaining > 130 /*|| DriverStation.isAutonomousEnabled() */) {
+    if (timeRemaining < (30 + SHOOT_TIME_OFFSET_SECONDS)
+        || timeRemaining
+            > (130 + SHOOT_TIME_OFFSET_SECONDS) /*|| DriverStation.isAutonomousEnabled() */) {
       return true;
     } else {
-      timeIntoScoringShifts = 130 - timeRemaining;
+      // Always look SHOOT_TIME_OFFSET_SECONDS into the future to account for the time it takes for
+      // the fuel to reach the hub. We need to stop shooting SHOOT_TIME_OFFSET_SECONDS seconds
+      // before the end of the period to ensure that the fuel we shoot before the end of the period
+      // actually counts. Similarly, we can start shooting SHOOT_TIME_OFFSET_SECONDS seconds before
+      // the start of the next active period because the fuel we shoot at the start of the period
+      // will count as long as it doesn't reach the hub before the start of the period.
+      timeIntoScoringShifts = 130 - timeRemaining + SHOOT_TIME_OFFSET_SECONDS;
     }
 
     if (!gameData.isEmpty()) {
@@ -187,9 +195,9 @@ public class ShooterModes extends SubsystemBase {
           // Blue is inactive first, so if we are blue alliance, we check if closer to 50 seconds
           // (2nd period)
           if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-            return (timeIntoScoringShifts + SHOOT_TIME_OFFSET_SECONDS) % 50 > 25;
+            return timeIntoScoringShifts % 50 > 25;
           } else {
-            return (timeIntoScoringShifts + SHOOT_TIME_OFFSET_SECONDS) % 50 <= 25;
+            return timeIntoScoringShifts % 50 <= 25;
           }
         case 'R':
           // Red is inactive first, so if we are red alliance, we check if closer to 50 seconds (2nd
