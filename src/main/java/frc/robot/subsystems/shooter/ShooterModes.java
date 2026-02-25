@@ -246,6 +246,40 @@ public class ShooterModes extends SubsystemBase {
     this.primaryMode = this.secondaryMode;
   }
 
+  /**
+   * Conditions for triggering the various shooter modes:
+   *
+   * <p>NEAR_TRENCH: when the robot enters the trench zone, it will always switch to the NEAR_TRENCH
+   * mode. When the robot leaves the trench zone, it should return to the previous mode.
+   *
+   * <p>PASS: when the pass toggle is on and the robot is not in the alliance zone or trench zone,
+   * it switches to PASS mode. The robot stays in PASS mode until another trigger occurs.
+   *
+   * <p>SHOOT_OTM: when the shoot on the move toggle is on, the robot is in the alliance zone, not
+   * in the trench zone, and the hub is active, it switches to SHOOT_OTM mode. The robot stays in
+   * SHOOT_OTM mode until another trigger occurs.
+   *
+   * <p>MANUAL_SHOOT: when the shoot on the move toggle is off, the lock shooter toggle is off, the
+   * robot is in the alliance zone, not in the trench zone, and the hub is active, it switches to
+   * MANUAL_SHOOT mode. The robot stays in MANUAL_SHOOT mode until another trigger occurs.
+   *
+   * <p>These aren't shooter modes but other relevant conditions that are set by triggers:
+   *
+   * <p>turret auto locked: when the lock turret for bank toggle is on, or when we are not in the
+   * alliance zone or trench zone and not in PASS mode, the turret will be auto locked to a specific
+   * angle to prepare for the money shot. The turret will be locked until the toggle is turned off
+   * or we enter PASS mode or we enter our alliance zone.
+   *
+   * <p>Exceptional conditions (i.e., manual overrides)
+   *
+   * <p>TESTING: when the testing mode toggle is on, it switches to TESTING mode, which allows us to
+   * set the hood angle, flywheel velocity, and turret angle to specific values for testing
+   * purposes. The robot stays in TESTING mode until the toggle is turned off.
+   *
+   * <p>SHOOTER_LOCKED: when the lock shooter toggle is on, it switches to SHOOTER_LOCKED mode,
+   * which sets the hood angle, flywheel velocity, and turret angle to specific values for a money
+   * shot. The robot stays in SHOOTER_LOCKED mode until the toggle is turned off.
+   */
   public void configureShooterModeTriggers() {
 
     nearTrenchTrigger = new Trigger(() -> Field2d.getInstance().inTrenchZone());
@@ -258,7 +292,6 @@ public class ShooterModes extends SubsystemBase {
                 OISelector.getOperatorInterface().getPassToggle().getAsBoolean()
                     && !Field2d.getInstance().inAllianceZone()
                     && !Field2d.getInstance().inTrenchZone());
-
     passModeTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.PASS)));
 
     collectAndHoldTrigger =
@@ -268,9 +301,9 @@ public class ShooterModes extends SubsystemBase {
                         && !Field2d.getInstance().inAllianceZone()
                         && !Field2d.getInstance().inTrenchZone())
                     || (!this.hubActive && Field2d.getInstance().inAllianceZone()));
-
     collectAndHoldTrigger.onTrue(
         Commands.runOnce(() -> setNormalShooterMode(ShooterMode.COLLECT_AND_HOLD)));
+
     shootOTMTrigger =
         new Trigger(
             () ->
@@ -278,7 +311,6 @@ public class ShooterModes extends SubsystemBase {
                     && OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
                     && !Field2d.getInstance().inTrenchZone()
                     && this.hubActive);
-
     shootOTMTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.SHOOT_OTM)));
 
     canShootTrigger =
@@ -289,7 +321,6 @@ public class ShooterModes extends SubsystemBase {
                     && Field2d.getInstance().inAllianceZone()
                     && !Field2d.getInstance().inTrenchZone()
                     && this.hubActive);
-
     canShootTrigger.onTrue(Commands.runOnce(() -> setNormalShooterMode(ShooterMode.MANUAL_SHOOT)));
 
     turretLockNZTrigger =
@@ -299,7 +330,6 @@ public class ShooterModes extends SubsystemBase {
                     || ((!Field2d.getInstance().inAllianceZone()
                             && !Field2d.getInstance().inTrenchZone())
                         && this.primaryMode != ShooterMode.PASS));
-
     turretLockNZTrigger.onTrue(Commands.runOnce(() -> setTurretAutoLocked(true)));
     turretLockNZTrigger.onFalse(Commands.runOnce(() -> setTurretAutoLocked(false)));
 
