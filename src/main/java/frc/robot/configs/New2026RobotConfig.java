@@ -22,27 +22,27 @@ import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
 // necessary values
 
 public class New2026RobotConfig extends RobotConfig {
-  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 37;
-  private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 61;
-  private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
+  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 24;
+  private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 53;
+  private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
   private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.071045);
 
-  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 40;
-  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 25;
-  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
+  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 61;
+  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 51;
+  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
   private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.025879);
 
-  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 39;
-  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 60;
-  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
+  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 18;
+  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 50;
+  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 9;
   private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.369141);
 
-  private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 38;
-  private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 59;
-  private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
+  private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
+  private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
+  private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
   private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.166748);
 
-  private static final int GYRO_ID = 3;
+  private static final int GYRO_ID = 18;
 
   private static final Distance TRACKWIDTH = Meters.of(0.628650);
   private static final Distance WHEELBASE = Meters.of(0.476250);
