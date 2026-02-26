@@ -113,6 +113,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, vision, oi));
 
     oi.getScoreFromBankButton()
+        .and(shooterModes::isManualShootEnabled)
         .onTrue(getScoreSafeShotCommand(swerveDrivetrain, hopper, oi, shooterModes));
 
     oi.getManualShootButton()
@@ -123,9 +124,6 @@ public class CrossSubsystemsCommandsFactory {
         .onFalse(
             Commands.parallel(
                 Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
-
-    // FIXME: add back .and(shooterModes::manualShootEnabled)
-    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));

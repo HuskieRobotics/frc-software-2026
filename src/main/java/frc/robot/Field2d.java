@@ -195,6 +195,8 @@ public class Field2d {
 
   public void populateTrenchZone() {
 
+    double bufferTrenchX = Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES);
+
     Translation2d[] leftTrenchEdgesBLUE =
         new Translation2d[] {
 

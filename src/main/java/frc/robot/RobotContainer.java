@@ -71,11 +71,8 @@ public class RobotContainer {
   private Shooter shooter;
   private Hopper hopper;
   private Intake intake;
-  private RobotVisualization visualization;
-
   private ShooterModes shooterModes;
-
-  private Trigger rotateNearBumpTrigger;
+  private RobotVisualization visualization;
 
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
