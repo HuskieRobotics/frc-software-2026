@@ -110,7 +110,7 @@ public class CrossSubsystemsCommandsFactory {
     configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter, hopper);
 
     oi.getInterruptAll()
-        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, vision, oi));
+        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
 
     oi.getScoreFromBankButton()
         .and(shooterModes::isManualShootEnabled)
@@ -224,15 +224,9 @@ public class CrossSubsystemsCommandsFactory {
       Intake intake,
       Hopper hopper,
       Shooter shooter,
-      Vision vision,
       OperatorInterface oi) {
     return Commands.parallel(
-            new TeleopSwerve(
-                swerveDrivetrain,
-                oi::getTranslateX,
-                oi::getTranslateY,
-                oi::getRotate,
-                SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(swerveDrivetrain)),
+            SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
             Commands.runOnce(intake::stopRoller),
             Commands.runOnce(hopper::stopKicker),
             Commands.runOnce(hopper::stopSpindexer),
@@ -266,12 +260,7 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
-    return new TeleopSwerve(
-            drivetrain,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(drivetrain))
+    return SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, drivetrain)
         .withName("Override driveToPose");
   }
 
