@@ -191,6 +191,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     flywheelLeadTemperatureStatusSignal = flywheelLead.getDeviceTemp();
     flywheelLeadVoltageStatusSignal = flywheelLead.getMotorVoltage();
     flywheelLeadTorqueCurrentStatusSignal = flywheelLead.getTorqueCurrent();
+    flywheelLeadTorqueCurrentStatusSignal.setUpdateFrequency(1000.0);
 
     // Assign flywheel follow 1 status signals
     flywheelFollow1SupplyCurrentStatusSignal = flywheelFollow1.getSupplyCurrent();
