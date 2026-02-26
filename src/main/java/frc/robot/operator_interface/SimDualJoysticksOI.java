@@ -57,7 +57,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getSnakeDriveButton() {
+  public Trigger getDeployRetractIntakeButton() {
     return translateJoystickButtons[4];
   }
 
@@ -66,16 +66,6 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   @Override
   public double getRotate() {
     return -rotateJoystick.getX();
-  }
-
-  @Override
-  public Trigger getMoveArmMiddlePositionTrigger() {
-    return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getMoveArmHighPositionTrigger() {
-    return rotateJoystickButtons[2];
   }
 
   @Override

@@ -20,7 +20,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.FieldConstants;
-import frc.robot.subsystems.shooter.Shooter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -129,26 +128,23 @@ public class AutonomousCommandsFactory {
 
     autoChooser.addOption(
         "Left Neutral Zone Hopper and Climb",
-        leftNeutralZoneHopperAndClimb(drivetrain, null)); // add shooter later
+        leftNeutralZoneHopperAndClimb(drivetrain)); // add shooter later
 
     autoChooser.addOption(
         "Right Neutral Zone Hopper and Climb",
-        rightNeutralZoneHopperAndClimb(drivetrain, null)); // add shooter later
+        rightNeutralZoneHopperAndClimb(drivetrain)); // add shooter later
 
-    autoChooser.addOption(
-        "Middle Deopt Hopper and Climb", middleDepotHopperAndClimb(drivetrain, null));
+    autoChooser.addOption("Middle Deopt Hopper and Climb", middleDepotHopperAndClimb(drivetrain));
 
-    autoChooser.addOption("Left Depot Hopper and Climb", leftDepotHopperAndClimb(drivetrain, null));
+    autoChooser.addOption("Left Depot Hopper and Climb", leftDepotHopperAndClimb(drivetrain));
+    autoChooser.addOption("Middle Hopper and Climb", middleHopperAndClimb(drivetrain));
 
-    autoChooser.addOption("Middle Hopper and Climb", middleHopperAndClimb(drivetrain, null));
-
-    autoChooser.addOption(
-        "Right Hopper to Neutral Zone x2", rightHopperToNeutralZoneX2(drivetrain));
+    autoChooser.addOption("Right Hopper to Neutral Zone x2", rightHopperToNeutralZoneX2());
 
     autoChooser.addOption("Left Hopper to Neutral Zone x2", leftHopperToNeutralZoneX2());
 
     autoChooser.addOption(
-        "Left Hopper Neutral Zone And Depot", leftHopperNeutralZoneAndDepot(drivetrain, null));
+        "Left Hopper Neutral Zone And Depot", leftHopperNeutralZoneAndDepot(drivetrain));
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain, Vision vision) {
@@ -341,7 +337,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command leftNeutralZoneHopperAndClimb(
-      SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
+      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
     PathPlannerPath driveToBank;
     PathPlannerPath driveToTower;
@@ -373,7 +369,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command rightNeutralZoneHopperAndClimb(
-      SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
+      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
     PathPlannerPath driveToBank;
     PathPlannerPath driveToTower;
@@ -426,7 +422,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command middleDepotHopperAndClimb(
-      SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
+      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
     PathPlannerPath driveToDepot;
     PathPlannerPath depotToTower;
     try {
@@ -465,7 +461,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command leftDepotHopperAndClimb(
-      SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
+      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
     PathPlannerPath driveToDepot;
     PathPlannerPath depotToTower;
     try {
@@ -491,7 +487,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command middleHopperAndClimb(
-      SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
+      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
     PathPlannerPath driveToTower;
     try {
       driveToTower = PathPlannerPath.fromPathFile("Middle Shoot Preload+Climb");
@@ -501,15 +497,14 @@ public class AutonomousCommandsFactory {
       // Low priority for bluffs
       // unload shooter
       // follow path to tower
-      // climb squence
+      // climb sequence
       return Commands.none();
     }
 
     return Commands.sequence(AutoBuilder.followPath(driveToTower));
   }
 
-  private Command rightHopperToNeutralZoneX2(
-      SwerveDrivetrain drivetrain) { // add shooter and intake later
+  private Command rightHopperToNeutralZoneX2() { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
@@ -567,7 +562,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command leftHopperNeutralZoneAndDepot(
-      SwerveDrivetrain drivetrain, Shooter shooter) { // add shooter and intake later
+      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
     PathPlannerPath driveToNeutralZone;
     PathPlannerPath driveToBank;
     PathPlannerPath driveToDepot;

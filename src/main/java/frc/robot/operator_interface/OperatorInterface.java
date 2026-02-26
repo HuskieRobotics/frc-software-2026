@@ -101,6 +101,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getDeployRetractIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
   // OPERATOR TRIGGERS, mostly game-specific
   public default Trigger getPassToggle() {
     return new Trigger(() -> false);
@@ -115,24 +119,6 @@ public interface OperatorInterface {
   }
 
   public default Trigger getAutoSnapsEnabledTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  // XRP EXAMPLE TRIGGERS
-  public default Trigger getMoveArmMiddlePositionTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getMoveArmHighPositionTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  // ELEVATOR EXAMPLE TRIGGERS
-  public default Trigger getRaiseElevatorSlowButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getLowerElevatorSlowButton() {
     return new Trigger(() -> false);
   }
 }
