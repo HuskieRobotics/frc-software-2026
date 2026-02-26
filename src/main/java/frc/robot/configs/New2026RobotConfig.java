@@ -76,7 +76,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_KV = 0.058846;
   private static final double DRIVE_KA = 0.2817;
 
-  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(5.117);
+  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.936);
   private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
