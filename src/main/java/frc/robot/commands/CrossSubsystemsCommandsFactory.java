@@ -10,7 +10,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.RobotConfig;
-import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
@@ -99,8 +98,7 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       Vision vision) {
 
-    oi.getInterruptAll()
-        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, vision, oi));
+    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, oi));
 
     // FIXME: add back .and(shooterModes::manualShootEnabled)
     oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
@@ -154,45 +152,18 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getInterruptAllCommand(
-      SwerveDrivetrain swerveDrivetrain,
-      Intake intake,
-      Hopper hopper,
-      Vision vision,
-      OperatorInterface oi) {
+      SwerveDrivetrain swerveDrivetrain, Intake intake, Hopper hopper, OperatorInterface oi) {
     return Commands.parallel(
             new TeleopSwerve(
                 swerveDrivetrain,
                 oi::getTranslateX,
                 oi::getTranslateY,
                 oi::getRotate,
-                SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(swerveDrivetrain)))
+                SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(swerveDrivetrain)),
+            Commands.runOnce(intake::stopRoller),
+            Commands.runOnce(hopper::stopKicker),
+            Commands.runOnce(hopper::stopSpindexer))
         .withName("interrupt all");
-  }
-
-  private static Command getInterruptAllCommand(
-      DifferentialDrivetrain differentialDrivetrain, Vision vision, OperatorInterface oi) {
-    return Commands.parallel(
-            new ArcadeDrive(differentialDrivetrain, oi::getTranslateX, oi::getRotate))
-        .withName("interrupt all");
-  }
-
-  private static Command getDriveToPoseCommand(
-      SwerveDrivetrain swerveDrivetrain, OperatorInterface oi) {
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    return new DriveToPose(
-            swerveDrivetrain,
-            CrossSubsystemsCommandsFactory::getTargetPose,
-            xController,
-            yController,
-            thetaController,
-            new Transform2d(0.10, 0.05, Rotation2d.fromDegrees(5.0)),
-            true,
-            (atPose) ->
-                LEDs.getInstance()
-                    .requestState(atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
-            CrossSubsystemsCommandsFactory::updatePIDConstants,
-            5.0)
-        .withName("drive to pose");
   }
 
   private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
