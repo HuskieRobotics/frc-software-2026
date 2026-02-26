@@ -66,9 +66,6 @@ public class RobotContainer {
   private Intake intake;
   private RobotVisualization visualization;
 
-  private Trigger rotateNearBumpTrigger;
-  private Trigger runHopperOTMandAZTrigger;
-
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
   private final LoggedNetworkNumber endgameAlert2 =
