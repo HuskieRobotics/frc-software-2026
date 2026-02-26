@@ -120,10 +120,7 @@ public class CrossSubsystemsCommandsFactory {
         .and(shooterModes::isManualShootEnabled)
         .whileTrue(getUnloadShooterCommand(swerveDrivetrain, hopper));
 
-    oi.getManualShootButton()
-        .onFalse(
-            Commands.parallel(
-                Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
+    oi.getManualShootButton().onFalse(Commands.parallel(Commands.runOnce(hopper::stop)));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
@@ -204,10 +201,7 @@ public class CrossSubsystemsCommandsFactory {
   // CAN_SHOOT / non SHOOT_OTM
   public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain, Hopper hopper) {
     return Commands.sequence(
-        Commands.runOnce(drivetrain::holdXstance),
-        Commands.sequence(
-            Commands.runOnce(hopper::spinFuelIntoKicker),
-            Commands.runOnce(hopper::kickFuelIntoShooter)));
+        Commands.runOnce(drivetrain::holdXstance), Commands.runOnce(hopper::feedFuelIntoShooter));
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
@@ -228,8 +222,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.parallel(
             SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
             Commands.runOnce(intake::stopRoller),
-            Commands.runOnce(hopper::stopKicker),
-            Commands.runOnce(hopper::stopSpindexer),
+            Commands.runOnce(hopper::stop),
             Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }
@@ -318,24 +311,14 @@ public class CrossSubsystemsCommandsFactory {
         new Trigger(
             () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
 
-    unloadHopperOnTheMoveTrigger.whileTrue(
-        Commands.parallel(
-            Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
-            Commands.runOnce(hopper::spinFuelIntoKicker)));
-    unloadHopperOnTheMoveTrigger.onFalse(
-        Commands.parallel(
-            Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
+    unloadHopperOnTheMoveTrigger.whileTrue(Commands.runOnce(hopper::feedFuelIntoShooter));
+    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
 
     Trigger unloadHopperForPassingTrigger =
         new Trigger(() -> !Field2d.getInstance().inAllianceZone() && shooterModes.isPassEnabled());
 
-    unloadHopperForPassingTrigger.onTrue(
-        Commands.parallel(
-            Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
-            Commands.runOnce(hopper::spinFuelIntoKicker)));
-    unloadHopperForPassingTrigger.onFalse(
-        Commands.parallel(
-            Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
+    unloadHopperForPassingTrigger.onTrue(Commands.runOnce(hopper::feedFuelIntoShooter));
+    unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
 
     // FIXME: what about passing when we are in the opposing alliance zone? When we cover this case,
     // we need to be careful that we don't exclude when we are near the opposing alliance's hub but
@@ -353,15 +336,7 @@ public class CrossSubsystemsCommandsFactory {
                                 - swerveDrivetrain.getPose().getY())
                         < PASS_ZONE_TOLERANCE_Y);
 
-    // FIXME: add method that stops / starts the spindexer and kicker together instead of having to
-    // do both of these commands every time we want to start or stop the hopper from feeding the
-    // shooter
-    tooCloseToHubForPassTrigger.onTrue(
-        Commands.parallel(
-            Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
-    tooCloseToHubForPassTrigger.onFalse(
-        Commands.parallel(
-            Commands.runOnce(() -> hopper.setKickerVelocity(shooter.getFlywheelLeadVelocity())),
-            Commands.runOnce(hopper::spinFuelIntoKicker)));
+    tooCloseToHubForPassTrigger.onTrue(Commands.runOnce(hopper::stop));
+    tooCloseToHubForPassTrigger.onFalse(Commands.runOnce(hopper::feedFuelIntoShooter));
   }
 }

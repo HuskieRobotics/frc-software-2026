@@ -125,26 +125,18 @@ public class Hopper extends SubsystemBase {
   }
 
   public Command getUnjamCommand() {
-    return Commands.parallel(
-        Commands.sequence(
+    return Commands.sequence(
+        Commands.parallel(
             Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY)),
-            Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME),
-            Commands.runOnce(this::kickFuelIntoShooter)),
-        Commands.sequence(
-            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY)),
-            Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME),
-            Commands.runOnce(this::spinFuelIntoKicker)));
+            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))),
+        Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME),
+        Commands.runOnce(this::feedFuelIntoShooter));
   }
 
   private Command getHopperSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
         .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  stopSpindexer();
-                  stopKicker();
-                }));
+        .andThen(Commands.runOnce(this::stop));
   }
 
   public Command getTestVelocityCommand() {
@@ -233,12 +225,9 @@ public class Hopper extends SubsystemBase {
     io.setSpindexerCurrent(amps);
   }
 
-  public void kickFuelIntoShooter() {
-    io.setKickerVelocity(KICKER_FUEL_INTO_SHOOTER_VELOCITY);
-  }
-
-  public void spinFuelIntoKicker() {
+  public void feedFuelIntoShooter() {
     io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY);
+    io.setKickerVelocity(KICKER_FUEL_INTO_SHOOTER_VELOCITY);
   }
 
   public AngularVelocity getKickerVelocityRPS() {
@@ -249,11 +238,8 @@ public class Hopper extends SubsystemBase {
     return inputs.spindexerVelocity;
   }
 
-  public void stopSpindexer() {
+  public void stop() {
     io.setSpindexerVelocity(RotationsPerSecond.of(0.0));
-  }
-
-  public void stopKicker() {
     io.setKickerVelocity(RotationsPerSecond.of(0.0));
   }
 }
