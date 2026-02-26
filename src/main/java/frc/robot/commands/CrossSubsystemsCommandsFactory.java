@@ -68,8 +68,6 @@ public class CrossSubsystemsCommandsFactory {
       0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
   private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
 
-  private static final double JOYSTICK_POWER = 2.0;
-
   public static final ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
