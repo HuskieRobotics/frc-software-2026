@@ -49,6 +49,7 @@ public class Field2d {
 
   private Region2d transformedAllianceZone;
   private Region2d transformedOpponentAllianceZone;
+  private Region2d transformedNeutralZone;
   private Region2d transformedLeftTrenchZoneBLUE;
   private Region2d transformedRightTrenchZoneBLUE;
   private Region2d transformedLeftTrenchZoneRED;
@@ -138,6 +139,25 @@ public class Field2d {
           new Translation2d(oppAllianceZoneX, FieldConstants.fieldWidth)
         };
     this.transformedOpponentAllianceZone = new Region2d(zoneCorners);
+  }
+
+  public void populateNeutralZone() {
+    Translation2d[] zoneCorners =
+        new Translation2d[] {
+          // near right corner
+          new Translation2d(FieldConstants.LinesVertical.neutralZoneNear, 0.0),
+
+          // far right corner
+          new Translation2d(FieldConstants.LinesVertical.neutralZoneFar, 0.0),
+
+          // far left corner
+          new Translation2d(FieldConstants.LinesVertical.neutralZoneFar, FieldConstants.fieldWidth),
+
+          // near left corner
+          new Translation2d(FieldConstants.LinesVertical.neutralZoneNear, FieldConstants.fieldWidth)
+        };
+
+    this.transformedNeutralZone = new Region2d(zoneCorners);
   }
 
   public void populateOpponentAllianceHighPassZone() {
@@ -370,6 +390,10 @@ public class Field2d {
     transformedOpponentAllianceZone.logPoints("opponentAllianceZone");
   }
 
+  public void logNeutralZonePoints() {
+    transformedNeutralZone.logPoints("neutralZone");
+  }
+
   public void logOpponentAllianceHighPassZonePoints() {
     transformedOpponentAllianceHighPassZone.logPoints("opponentAllianceHighPassZone");
   }
@@ -549,9 +573,7 @@ public class Field2d {
     return alliance;
   }
 
-  public boolean inAllianceZone() {
-    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-
+  public boolean inAllianceZone(Pose2d pose) {
     if (getAlliance() == Alliance.Red) {
       pose = FlippingUtil.flipFieldPose(pose);
     }
@@ -559,14 +581,32 @@ public class Field2d {
     return transformedAllianceZone.contains(pose);
   }
 
-  public boolean inOpponentAllianceZone() {
-    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+  public boolean inAllianceZone() {
+    return inAllianceZone(RobotOdometry.getInstance().getEstimatedPose());
+  }
 
+  public boolean inOpponentAllianceZone(Pose2d pose) {
     if (getAlliance() == Alliance.Red) {
       pose = FlippingUtil.flipFieldPose(pose);
     }
 
     return transformedOpponentAllianceZone.contains(pose);
+  }
+
+  public boolean inOpponentAllianceZone() {
+    return inOpponentAllianceZone(RobotOdometry.getInstance().getEstimatedPose());
+  }
+
+  public boolean inNeutralZone(Pose2d pose) {
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedNeutralZone.contains(pose);
+  }
+
+  public boolean inNeutralZone() {
+    return inNeutralZone(RobotOdometry.getInstance().getEstimatedPose());
   }
 
   public boolean inOpponentAllianceHighPassZone() {
