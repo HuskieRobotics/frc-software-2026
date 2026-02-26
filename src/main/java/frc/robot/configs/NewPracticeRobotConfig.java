@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
@@ -42,7 +43,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
   private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
-  private static final Distance WHEEL_RADIUS = Meters.of(0.050165);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.0515507563);
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
 
   private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
@@ -62,7 +63,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.18755;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 15.0; // determined after manual tuning
+  private static final double DRIVE_KP = 10.0; // determined after manual tuning
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
@@ -86,21 +87,23 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
   // Drive to Pose constants
-  private static final double DRIVE_TO_POSE_DRIVE_KP =
-      8; // from preliminary testing, still needs more tuning
+  private static final double DRIVE_TO_POSE_DRIVE_X_KP = 5.0;
+  private static final double DRIVE_TO_POSE_DRIVE_Y_KP = 5.0;
   private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
   private static final double DRIVE_TO_POSE_THETA_KP =
-      7.5; // 18.0; // from preliminary testing, still needs more tuning
-  private static final double DRIVE_TO_POSE_THETA_KI = 10.0;
+      5; // 18.0; // from preliminary testing, still needs more tuning
+  private static final double DRIVE_TO_POSE_THETA_KI = 0.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06);
   private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
-  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(1.25);
+  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(2);
+  private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION =
+      MetersPerSecondPerSecond.of(4);
 
   private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
 
   // Drive Facing Angle constants
-  private static final double DRIVE_FACING_ANGLE_KP = 2.0;
+  private static final double DRIVE_FACING_ANGLE_KP = 5.0;
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
@@ -122,10 +125,10 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(-11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-127.761)));
+              Units.inchesToMeters(-10.969),
+              Units.inchesToMeters(-10.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
 
   // Back left camera
   // x, y, z, pitch, yaw
@@ -133,10 +136,10 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-8.0165),
-              Units.inchesToMeters(11.4425),
-              Units.inchesToMeters(7.436)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(142.239)));
+              Units.inchesToMeters(-10.969),
+              Units.inchesToMeters(10.729),
+              Units.inchesToMeters(7.434)),
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
   @Override
   public CameraConfig[] getCameraConfigs() {
@@ -383,7 +386,12 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   @Override
   public double getDriveToPoseDriveYKP() {
-    return DRIVE_TO_POSE_DRIVE_KP;
+    return DRIVE_TO_POSE_DRIVE_Y_KP;
+  }
+
+  @Override
+  public double getDriveToPoseDriveXKP() {
+    return DRIVE_TO_POSE_DRIVE_X_KP;
   }
 
   @Override
@@ -414,6 +422,11 @@ public class NewPracticeRobotConfig extends RobotConfig {
   @Override
   public LinearVelocity getDriveToPoseDriveMaxVelocity() {
     return DRIVE_TO_POSE_MAX_VELOCITY;
+  }
+
+  @Override
+  public LinearAcceleration getDriveToPoseDriveMaxAcceleration() {
+    return DRIVE_TO_POSE_MAX_ACCELERATION;
   }
 
   @Override

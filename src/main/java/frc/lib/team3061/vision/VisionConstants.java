@@ -1,21 +1,11 @@
 package frc.lib.team3061.vision;
 
-import edu.wpi.first.wpilibj.Filesystem;
-import java.io.File;
-import java.nio.file.Path;
-
 public final class VisionConstants {
   private static final String CONSTRUCTOR_EXCEPTION = "constant class";
 
   private VisionConstants() {
     throw new IllegalStateException(CONSTRUCTOR_EXCEPTION);
   }
-
-  public static final Path APRILTAG_FIELD_LAYOUT_PATH =
-      new File(Filesystem.getDeployDirectory(), "2026-rebuilt-welded.json").toPath();
-  public static final Path OFFICIAL_APRILTAG_FIELD_LAYOUT_PATH =
-      new File(Filesystem.getDeployDirectory(), "2026-rebuilt-welded.json").toPath();
-  public static final int MAX_NUMBER_TAGS = 32;
 
   public static final String SUBSYSTEM_NAME = "Vision";
 

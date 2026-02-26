@@ -422,11 +422,24 @@
             "title": "Object Detection Enabled",
             "x": 1008.0,
             "y": 16.0,
-            "width": 224.0,
-            "height": 128.0,
+            "width": 288.0,
+            "height": 160.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Object Detection Enabled",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Toggle Auto Snaps",
+            "x": 1008.0,
+            "y": 192.0,
+            "width": 288.0,
+            "height": 176.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Toggle Auto Snaps",
               "period": 0.06,
               "data_type": "boolean"
             }

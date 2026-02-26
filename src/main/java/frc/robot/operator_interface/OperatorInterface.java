@@ -77,7 +77,15 @@ public interface OperatorInterface {
 
   // DRIVER TRIGGERS, mostly game-specific
 
-  public default Trigger getDriveToPoseButton() {
+  public default Trigger getScoreFromBankButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getSnakeDriveButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getManualShootButton() {
     return new Trigger(() -> false);
   }
 
@@ -107,6 +115,10 @@ public interface OperatorInterface {
   }
 
   public default Trigger getObjectDetectionToggle() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoSnapsEnabledTrigger() {
     return new Trigger(() -> false);
   }
 }

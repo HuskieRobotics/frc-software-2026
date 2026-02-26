@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5574733096010975,
-        "y": 7.4465568181818185
+        "x": 5.861411111111112,
+        "y": 3.379944444444444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4890189746659552,
-        "y": 7.0867583397173926
+        "x": 6.2774465049928665,
+        "y": 0.9361911554921551
       },
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "R Sweep Collect"
     },
     {
       "anchor": {
-        "x": 1.9559343794579167,
-        "y": 3.265149786019972
+        "x": 3.535954922894425,
+        "y": 0.5866785290628707
       },
       "prevControl": {
-        "x": 1.8388829549932648,
-        "y": 2.9598267071525965
+        "x": 7.519557774607703,
+        "y": 0.5350927246790309
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tower"
+      "linkedName": "Right Bank"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Neutral Zone+Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

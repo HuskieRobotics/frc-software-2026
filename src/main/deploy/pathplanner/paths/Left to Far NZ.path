@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5574733096010975,
+        "x": 4.404943181818181,
         "y": 7.4465568181818185
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4890189746659552,
-        "y": 7.0867583397173926
+        "x": 6.1351212553495005,
+        "y": 7.560784593437946
       },
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "Left Starting Point"
     },
     {
       "anchor": {
-        "x": 1.9559343794579167,
-        "y": 3.265149786019972
+        "x": 8.735791726105562,
+        "y": 5.684679029957205
       },
       "prevControl": {
-        "x": 1.8388829549932648,
-        "y": 2.9598267071525965
+        "x": 7.90771754636234,
+        "y": 6.758587731811698
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tower"
+      "linkedName": "Real Neutral Zone"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25602968460111386,
+      "rotationDegrees": -87.92385792741993
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -36.158185439808186
   },
   "reversed": false,
-  "folder": "Neutral Zone+Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

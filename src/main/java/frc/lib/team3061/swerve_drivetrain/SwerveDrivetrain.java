@@ -635,6 +635,9 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
           modulePositions);
     }
 
+    // give chassis speeds to odometry for public access throughout the robot
+    this.odometry.updateChassisSpeeds(this.getRobotRelativeSpeeds());
+
     // custom pose vs default pose
     Pose2d pose = this.odometry.getEstimatedPose();
     this.customPose = this.inputs.drivetrain.customPose;

@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.440156918687589,
-        "y": 0.44452211126961516
+        "x": 3.535954922894425,
+        "y": 0.5866785290628707
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.445649072753208,
-        "y": 0.7291726105563499
+        "x": 7.1009777777777785,
+        "y": 0.4372333333333336
       },
       "isLocked": false,
-      "linkedName": "Far Right Start"
+      "linkedName": "Right Bank"
     },
     {
       "anchor": {
-        "x": 8.645221112696147,
-        "y": 2.398259629101284
+        "x": 5.861411111111112,
+        "y": 3.379944444444444
       },
       "prevControl": {
-        "x": 6.932322072447104,
-        "y": 0.9609666761843954
+        "x": 5.5590777777777785,
+        "y": 0.5279333333333334
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "R Sweep Collect"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 40.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 37.568592028827545
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
