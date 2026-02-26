@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This singleton class models the field as a collection of regions. This class is used to create a
@@ -158,6 +159,7 @@ public class Field2d {
             FieldConstants.fieldWidth
                 - RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
             Rotation2d.fromDegrees(-90));
+    Logger.recordOutput("Field2d/blueLeftBank", banks[0]);
 
     // blue right bank
     banks[1] =
@@ -167,31 +169,42 @@ public class Field2d {
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
             Rotation2d.fromDegrees(90));
+    Logger.recordOutput("Field2d/blueRightBank", banks[1]);
 
     // red left bank
     banks[2] = FlippingUtil.flipFieldPose(banks[0]);
+    Logger.recordOutput("Field2d/redLeftBank", banks[2]);
 
     // red right bank
     banks[3] = FlippingUtil.flipFieldPose(banks[1]);
+    Logger.recordOutput("Field2d/redRightBank", banks[3]);
   }
 
   public void populatePassingZones() {
 
-    double PZ_BUFFER_X = 2.0;
-    double PZ_BUFFER_Y = 1.0;
+    double passingZoneBufferX = 2.0;
+    double passingZoneBufferY = 1.0;
 
     // blue left passing zone
     bluePassingZones[0] =
-        new Pose2d(PZ_BUFFER_X, FieldConstants.fieldWidth - PZ_BUFFER_Y, Rotation2d.fromDegrees(0));
+        new Pose2d(
+            passingZoneBufferX,
+            FieldConstants.fieldWidth - passingZoneBufferY,
+            Rotation2d.fromDegrees(0));
+    Logger.recordOutput("Field2d/blueLeftPassingZone", bluePassingZones[0]);
 
     // blue right passing zone
-    bluePassingZones[1] = new Pose2d(PZ_BUFFER_X, PZ_BUFFER_Y, Rotation2d.fromDegrees(0));
+    bluePassingZones[1] =
+        new Pose2d(passingZoneBufferX, passingZoneBufferY, Rotation2d.fromDegrees(0));
+    Logger.recordOutput("Field2d/blueRightPassingZone", bluePassingZones[1]);
 
     // red left passing zone
     redPassingZones[0] = FlippingUtil.flipFieldPose(bluePassingZones[0]);
+    Logger.recordOutput("Field2d/redLeftPassingZone", redPassingZones[0]);
 
     // red right passing zone
     redPassingZones[1] = FlippingUtil.flipFieldPose(bluePassingZones[1]);
+    Logger.recordOutput("Field2d/redRightPassingZone", redPassingZones[1]);
   }
 
   public void populateTrenchZone() {
