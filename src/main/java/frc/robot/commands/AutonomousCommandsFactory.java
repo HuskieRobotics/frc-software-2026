@@ -56,6 +56,12 @@ public class AutonomousCommandsFactory {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
+    autoChooser.addOption("Right to Neutral Zone x2", rightToNeutralZoneX2(hopper));
+
+    autoChooser.addOption("Left to Neutral Zone x2", leftToNeutralZoneX2(hopper));
+
+    autoChooser.addOption("Left Neutral Zone And Depot", leftNeutralZoneAndDepot(hopper));
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -127,9 +133,9 @@ public class AutonomousCommandsFactory {
         "Drive Wheel Radius Characterization",
         this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
 
-    autoChooser.addOption(
-        "Left Neutral Zone Hopper and Climb",
-        leftNeutralZoneHopperAndClimb(drivetrain)); // add shooter later
+    // autoChooser.addOption(
+    //     "Left Neutral Zone Hopper and Climb",
+    //     leftNeutralZoneHopperAndClimb(drivetrain)); // add shooter later
 
     // autoChooser.addOption(
     //     "Right Neutral Zone Hopper and Climb",
@@ -141,11 +147,6 @@ public class AutonomousCommandsFactory {
     // autoChooser.addOption("Left Depot Hopper and Climb", leftDepotHopperAndClimb(drivetrain));
     // autoChooser.addOption("Middle Hopper and Climb", middleHopperAndClimb(drivetrain));
 
-    autoChooser.addOption("Right to Neutral Zone x2", rightToNeutralZoneX2(hopper));
-
-    autoChooser.addOption("Left to Neutral Zone x2", leftToNeutralZoneX2(hopper));
-
-    autoChooser.addOption("Left Neutral Zone And Depot", leftNeutralZoneAndDepot(hopper));
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain, Vision vision) {
@@ -575,6 +576,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
+        Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         AutoBuilder.followPath(driveToBank),
         getUnloadHopperFromBankCommand(hopper));
@@ -589,21 +591,15 @@ public class AutonomousCommandsFactory {
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
-      // follow path to neutral zone
-      // collect fuel
-      // follow path to bank
-      // unload shooter
-      // follow path to depot
-      // collect fuel
-      // follow path to bank again?
-      // unload shooter
+
       return Commands.none();
     }
 
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
+        Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToDepot),
-        Commands.waitSeconds(1));
+        getUnloadHopperFromDepotCommand(hopper));
   }
 }

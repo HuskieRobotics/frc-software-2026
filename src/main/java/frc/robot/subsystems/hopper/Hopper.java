@@ -242,6 +242,11 @@ public class Hopper extends SubsystemBase {
     return inputs.spindexerVelocity;
   }
 
+  public void stop() {
+    stopSpindexer();
+    stopKicker();
+  }
+
   public void stopSpindexer() {
     io.setSpindexerVelocity(RotationsPerSecond.of(0.0));
   }
