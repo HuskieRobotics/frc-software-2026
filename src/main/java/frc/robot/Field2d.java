@@ -178,6 +178,7 @@ public class Field2d {
   public void populatePassingZones() {
 
     double PZ_BUFFER_X = 2.0;
+    double PZ_BUFFER_Y = 1.0;
 
     // blue left passing zone
     bluePassingZones[0] =
