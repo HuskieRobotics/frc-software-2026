@@ -365,8 +365,6 @@ public class RobotContainer {
     configureDrivetrainCommands();
     configureVisionCommands();
 
-    shooterModes.configureShooterModeTriggers();
-
     // register commands for other subsystems
     IntakeCommandsFactory.registerCommands(oi, intake);
     HopperCommandsFactory.registerCommands(oi, hopper);
