@@ -106,8 +106,9 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
 
-    oi.getScoreFromBankButton()
-        .and(shooterModes::isManualShootEnabled)
+    new Trigger(shooterModes::isManualShootEnabled)
+        .or(shooterModes::isLockedShooterEnabled)
+        .and(oi.getScoreFromBankButton())
         .onTrue(getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper));
 
     oi.getManualShootButton()
@@ -126,7 +127,9 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getScoreSafeShotCommand(
       OperatorInterface oi, SwerveDrivetrain drivetrain, Shooter shooter, Hopper hopper) {
     return Commands.sequence(
-        getDriveToBankCommand(drivetrain), getStopAndShootCommand(oi, drivetrain, shooter, hopper));
+            getDriveToBankCommand(drivetrain),
+            getStopAndShootCommand(oi, drivetrain, shooter, hopper))
+        .withName("score safe shot");
   }
 
   public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {
@@ -146,43 +149,22 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getStopAndShootCommand(
       OperatorInterface oi, SwerveDrivetrain drivetrain, Shooter shooter, Hopper hopper) {
     return Commands.sequence(
-        Commands.run(drivetrain::holdXstance),
-        Commands.run(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
-            .until(
-                () -> (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)));
+            Commands.runOnce(drivetrain::holdXstance),
+            Commands.run(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
+                .until(
+                    () ->
+                        (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)))
+        .withName("stop and shoot");
     // add hopper kick method in parallel
-  }
-
-  // this will rotate our robot into a diamond shape while we are near the bump zone
-  public static Command getRotateWhileNearBumpCommand(SwerveDrivetrain drivetrain) {
-
-    return Commands.run(
-        () -> {
-          double currentRotationPose = drivetrain.getPose().getRotation().getDegrees();
-
-          double nearest45DegreeAngle =
-              (Math.round(((currentRotationPose - 45) / 90)) * 90)
-                  + 45; // this should grab the nearest diamond angle (45+90x)
-
-          Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
-
-          drivetrain.driveFacingAngle(
-              RobotConfig.getInstance()
-                  .getRobotMaxVelocity()
-                  .times(OISelector.getOperatorInterface().getTranslateX()),
-              RobotConfig.getInstance()
-                  .getRobotMaxVelocity()
-                  .times(OISelector.getOperatorInterface().getTranslateY()),
-              targetRotation,
-              false);
-        });
   }
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
   public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain, Hopper hopper) {
     return Commands.sequence(
-        Commands.runOnce(drivetrain::holdXstance), Commands.runOnce(hopper::feedFuelIntoShooter));
+            Commands.runOnce(drivetrain::holdXstance),
+            Commands.runOnce(hopper::feedFuelIntoShooter))
+        .withName("unload shooter");
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
@@ -286,12 +268,14 @@ public class CrossSubsystemsCommandsFactory {
 
     Trigger unloadHopperOnTheMoveTrigger = new Trigger(shooterModes::isShootOnTheMoveEnabled);
     unloadHopperOnTheMoveTrigger.whileTrue(
-        Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())));
+        Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
+            .withName("feed fuel (shoot)"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
 
     Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
     unloadHopperForPassingTrigger.whileTrue(
-        Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())));
+        Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
+            .withName("feed fuel (pass)"));
     unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
   }
 }

@@ -365,7 +365,8 @@ public class ShooterModes extends SubsystemBase {
     shooter.setHoodPosition(shooterSetpoints.hoodAngle);
     shooter.setTurretPosition(shooterSetpoints.turretAngle);
 
-    Logger.recordOutput("ShooterModes/targetLandingPosition", targetLandingPosition);
+    Logger.recordOutput(
+        "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
     Logger.recordOutput(
         "ShooterModes/FlywheelVelocitySetpointRPS", shooterSetpoints.flywheelVelocity);
     Logger.recordOutput("ShooterModes/HoodAngleSetpointDegrees", shooterSetpoints.hoodAngle);
