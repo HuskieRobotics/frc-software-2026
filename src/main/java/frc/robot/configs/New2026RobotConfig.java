@@ -61,10 +61,10 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double ANGLE_KD = 0.1;
 
   // values from sysid routines
-  private static final double ANGLE_KS = 0.39776;
-  private static final double ANGLE_KV = 2.6176;
+  private static final double ANGLE_KS = 0.57576;
+  private static final double ANGLE_KV = 2.6475;
   // 0.4399866667 * 2 * Math.PI; // convert from V/(radians/s) to V/(rotations/s)
-  private static final double ANGLE_KA = 0.18755;
+  private static final double ANGLE_KA = 0.15068;
 
   /* Drive Motor PID Values */
   private static final double DRIVE_KP = 12.0; // 0.40997
@@ -72,9 +72,9 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_KD = 0.0;
 
   // values from sysid routines
-  private static final double DRIVE_KS = 3.9848;
-  private static final double DRIVE_KV = 0.058846;
-  private static final double DRIVE_KA = 0.2817;
+  private static final double DRIVE_KS = 2.8277;
+  private static final double DRIVE_KV = 0.060631;
+  private static final double DRIVE_KA = 0.51114;
 
   private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(5.117);
   private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
