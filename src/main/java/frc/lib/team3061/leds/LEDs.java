@@ -57,7 +57,6 @@ public abstract class LEDs extends SubsystemBase {
    */
   public enum States {
     ESTOPPED((leds, section) -> leds.solid(section, Color.kRed)),
-    FALLEN((leds, section) -> leds.strobe(Section.FULL, Color.kWhite, STROBE_FAST_DURATION)),
     AUTO_FADE(
         (leds, section) ->
             leds.solid(
@@ -67,25 +66,25 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED_DEMO_MODE((leds, section) -> leds.updateToPridePattern()),
     NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
-    DISABLED_BETWEEN_AUTO_AND_TELEOP((leds, section) -> leds.solid(section, Color.kGreen)), //FIXME: unsure if DISABLED_BETWEEN_AUTO_AND_TELEOP needs to be a state, or if it should be accounted for in the DISABLED state
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
-    DISTRACTION_DURING_TELEOP((leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
+    DISTRACTION_DURING_TELEOP(
+        (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, END_GAME_ALERT_DURATION)),
-    UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
     DRIVE_TO_POSE_CANCELED(
         (leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
-    READY_TO_SHOOT((leds,section) -> leds.solid(section, Color.kGreen)), // FIXME: determine if the Aimed/Ready to shoot state would be for Shoot OTM or Shoot Manual
-    READY_TO_CLIMB((leds,section) -> leds.solid(section, Color.kPurple)), 
-    PASSING((leds,section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
-    SHOOTING((leds,section) -> leds.bluePulse(section, PULSE_DURATION)),
-    EJECTING_FUEL(
-        (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),
-    RELEASING_FUEL(
-        (leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
+    READY_TO_SHOOT(
+        (leds, section) ->
+            leds.solid(
+                section,
+                Color.kGreen)), // FIXME: determine if the Aimed/Ready to shoot state would be for
+    // Shoot OTM or Shoot Manual
+    SHOOTING((leds, section) -> leds.bluePulse(section, PULSE_DURATION)),
+    PASSING((leds, section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
+    HOPPER_JAMMED((leds, section) -> leds.fire(section, WAVE_SLOW_DURATION)),
+    IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
+    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, BREATH_DURATION)),
     AUTO_DRIVING_TO_POSE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
-    HAS_GAME_PIECE((leds, section) -> leds.solid(section, Color.kBlue)),
-    INDEXING_GAME_PIECE((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
     WAITING_FOR_GAME_PIECE(
         (leds, section) ->
             leds.wave(
@@ -273,7 +272,7 @@ public abstract class LEDs extends SubsystemBase {
     } else {
       wave(
           section,
-          Color.kOrange, //FIXME: Originally was a new Color with RGB values of 255:30:0
+          new Color(255, 30, 0),
           Color.kDarkBlue,
           WAVE_SLOW_CYCLE_LENGTH,
           WAVE_SLOW_DURATION);
@@ -447,10 +446,8 @@ public abstract class LEDs extends SubsystemBase {
     }
   }
 
-  //FIXME: implement this method to create a blue pulse as that is necessary for the shooting state
-  private void bluePulse(Section section, double duration) {
-  
-  }
+  // FIXME: implement this method to create a blue pulse as that is necessary for the shooting state
+  private void bluePulse(Section section, double duration) {}
 
   private void orangePulse(Section section, double duration) {
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
