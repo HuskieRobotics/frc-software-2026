@@ -6,7 +6,6 @@ import static frc.robot.subsystems.hopper.HopperConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -209,25 +208,22 @@ public class Hopper extends SubsystemBase {
         inputs.kickerVelocity.isNear(inputs.kickerReferenceVelocity, KICKER_VELOCITY_TOLERANCE));
   }
 
-  public void setKickerVelocity(AngularVelocity velocity) {
+  private void setKickerVelocity(AngularVelocity velocity) {
     io.setKickerVelocity(velocity);
   }
 
-  public void setSpindexerVelocity(AngularVelocity velocity) {
+  private void setSpindexerVelocity(AngularVelocity velocity) {
     io.setSpindexerVelocity(velocity);
-  }
-
-  public void setKickerCurrent(Current amps) {
-    io.setKickerCurrent(amps);
-  }
-
-  public void setSpindexerCurrent(Current amps) {
-    io.setSpindexerCurrent(amps);
   }
 
   public void feedFuelIntoShooter() {
     io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY);
     io.setKickerVelocity(KICKER_FUEL_INTO_SHOOTER_VELOCITY);
+  }
+
+  public void feedFuelIntoShooter(AngularVelocity kickerVelocity) {
+    io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY);
+    io.setKickerVelocity(kickerVelocity);
   }
 
   public AngularVelocity getKickerVelocityRPS() {
