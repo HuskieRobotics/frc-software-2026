@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.leds.LEDs;
@@ -24,7 +23,6 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterModes;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,22 +103,16 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision,
       Arm arm,
       Elevator elevator,
-      Shooter shooter,
-      ShooterModes shooterModes
+      Shooter shooter
       /*, Hopper hopper */ ) {
 
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, vision, arm, elevator, shooter, oi));
 
-    oi.getScoreFromBankButton()
-        .onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi, shooterModes));
+    // FIXME: add back .and(shooterModes::manualShootEnabled)
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
-
-    Trigger manualShootTrigger =
-        oi.getManualShootButton()
-            .and(shooterModes::manualShootEnabled)
-            .whileTrue(getUnloadShooterCommand(swerveDrivetrain, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
@@ -137,19 +129,13 @@ public class CrossSubsystemsCommandsFactory {
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain /*, Hopper hopper */,
-      OperatorInterface oi,
-      ShooterModes shooterModes) {
+      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi) {
 
     // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
     // shoot_otm && in AZ
 
-    return Commands.either(
-        Commands.sequence(
-            getDriveToBankCommand(drivetrain),
-            getUnloadShooterCommand(drivetrain, oi /*, hopper*/)),
-        Commands.none(),
-        () -> shooterModes.manualShootEnabled());
+    return Commands.sequence(
+        getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain, oi /*, hopper*/));
   }
 
   public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {

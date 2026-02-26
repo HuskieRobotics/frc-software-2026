@@ -51,7 +51,6 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
-import frc.robot.subsystems.shooter.ShooterModes;
 import frc.robot.visualizations.RobotVisualization;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -73,8 +72,6 @@ public class RobotContainer {
   private Elevator elevator;
   private Shooter shooter;
   private RobotVisualization visualization;
-
-  private ShooterModes shooterModes;
 
   private Trigger rotateNearBumpTrigger;
   private Trigger runHopperOTMandAZTrigger;
@@ -158,8 +155,6 @@ public class RobotContainer {
       shooter = new Shooter(new ShooterIO() {});
       visualization = new RobotVisualization(elevator);
     }
-
-    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -371,16 +366,14 @@ public class RobotContainer {
     ArmCommandFactory.registerCommands(oi, arm);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(
-        oi, swerveDrivetrain, vision, arm, elevator, shooter, shooterModes);
+        oi, swerveDrivetrain, vision, arm, elevator, shooter);
 
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision, arm);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, vision, arm, elevator, shooter, shooterModes);
-
-      configureRobotContainerTriggers();
+          oi, swerveDrivetrain, vision, arm, elevator, shooter);
     }
 
     // Endgame alerts
@@ -455,16 +448,5 @@ public class RobotContainer {
     // during a match, this would be the first opportunity to check the alliance color based on FMS
     // data.
     this.checkAllianceColor();
-  }
-
-  public void configureRobotContainerTriggers() {
-
-    // FIXME: delete or move this
-    runHopperOTMandAZTrigger =
-        new Trigger(
-            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
-    runHopperOTMandAZTrigger.onTrue(
-        Commands.run(() -> shooter.setIdleVelocity())
-            .withName("run hopper (entered AZ)")); // FIXME: change to run hopper
   }
 }

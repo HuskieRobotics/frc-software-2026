@@ -152,7 +152,8 @@ public class SwerveDrivetrainCommandFactory {
         boolean closerToRight =
             currentYPose > (FieldConstants.fieldWidth - WALL_SNAP_TOLERANCE_METERS);
 
-        // Don't snap if we are in the trench zone (FIXME: why?)
+        // Don't snap if we are in the trench zone since we want the driver to maintain control
+        // while traversing the trench
         if ((closerToLeft || closerToRight) && !Field2d.getInstance().inTrenchZone()) {
           double nearest90DegreeAngle =
               Math.round(currentRotationDeg / 90.0) * 90.0; // nearest multiple of 90 degrees
