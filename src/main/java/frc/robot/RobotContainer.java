@@ -337,7 +337,7 @@ public class RobotContainer {
     Field2d.getInstance().populateBumpZone();
     Field2d.getInstance().logBumpZonePoints();
     Field2d.getInstance().populateBanks();
-    Field2d.getInstance().populatePassingZones();
+    Field2d.getInstance().populatePassingPoses();
   }
 
   /**

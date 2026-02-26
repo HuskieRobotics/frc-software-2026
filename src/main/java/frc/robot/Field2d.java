@@ -42,8 +42,8 @@ public class Field2d {
   // for all four possible banks depending on alliance
   private Pose2d[] banks = new Pose2d[4];
 
-  private Pose2d[] bluePassingZones = new Pose2d[2];
-  private Pose2d[] redPassingZones = new Pose2d[2];
+  private Pose2d[] bluePassingPoses = new Pose2d[2];
+  private Pose2d[] redPassingPoses = new Pose2d[2];
 
   private Alliance alliance = DriverStation.Alliance.Blue;
 
@@ -58,15 +58,11 @@ public class Field2d {
   private Region2d transformedLeftBumpZoneRED;
   private Region2d transformedRightBumpZoneRED;
 
-  private final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
-
-  private final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
-
-  private final double BUMP_ZONE_BUFFER_X_INCHES = 40;
-
-  private final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
-
-  private final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
+  private static final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
+  private static final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
+  private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
+  private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
+  private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -180,31 +176,30 @@ public class Field2d {
     Logger.recordOutput("Field2d/redRightBank", banks[3]);
   }
 
-  public void populatePassingZones() {
+  public void populatePassingPoses() {
 
-    double passingZoneBufferX = 2.0;
-    double passingZoneBufferY = 1.0;
+    double passingPoseBufferX = 2.0;
+    double passingPoseBufferY = 1.0;
 
     // blue left passing zone
-    bluePassingZones[0] =
+    bluePassingPoses[0] =
         new Pose2d(
-            passingZoneBufferX,
-            FieldConstants.fieldWidth - passingZoneBufferY,
+            passingPoseBufferX,
+            FieldConstants.fieldWidth - passingPoseBufferY,
             Rotation2d.fromDegrees(0));
-    Logger.recordOutput("Field2d/blueLeftPassingZone", bluePassingZones[0]);
+    Logger.recordOutput("Field2d/blueLeftPassingPose", bluePassingPoses[0]);
 
     // blue right passing zone
-    bluePassingZones[1] =
-        new Pose2d(passingZoneBufferX, passingZoneBufferY, Rotation2d.fromDegrees(0));
-    Logger.recordOutput("Field2d/blueRightPassingZone", bluePassingZones[1]);
+    bluePassingPoses[1] =
+        new Pose2d(passingPoseBufferX, passingPoseBufferY, Rotation2d.fromDegrees(0));
+    Logger.recordOutput("Field2d/blueRightPassingPose", bluePassingPoses[1]);
 
     // red left passing zone
-    redPassingZones[0] = FlippingUtil.flipFieldPose(bluePassingZones[0]);
-    Logger.recordOutput("Field2d/redLeftPassingZone", redPassingZones[0]);
-
+    redPassingPoses[0] = FlippingUtil.flipFieldPose(bluePassingPoses[0]);
+    Logger.recordOutput("Field2d/redLeftPassingPose", redPassingPoses[0]);
     // red right passing zone
-    redPassingZones[1] = FlippingUtil.flipFieldPose(bluePassingZones[1]);
-    Logger.recordOutput("Field2d/redRightPassingZone", redPassingZones[1]);
+    redPassingPoses[1] = FlippingUtil.flipFieldPose(bluePassingPoses[1]);
+    Logger.recordOutput("Field2d/redRightPassingPose", redPassingPoses[1]);
   }
 
   public void populateTrenchZone() {
@@ -545,8 +540,8 @@ public class Field2d {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
     return (getAlliance() == Alliance.Blue
-        ? pose.nearest(Arrays.asList(bluePassingZones))
-        : pose.nearest(Arrays.asList(redPassingZones)));
+        ? pose.nearest(Arrays.asList(bluePassingPoses))
+        : pose.nearest(Arrays.asList(redPassingPoses)));
   }
 
   public Translation2d getHubCenter() {
