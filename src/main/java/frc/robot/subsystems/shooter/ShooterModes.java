@@ -67,8 +67,7 @@ public class ShooterModes extends SubsystemBase {
   private final LoggedTunableNumber testingTurretAngle =
       new LoggedTunableNumber("ShooterModes/Testing/TurretAngleDegrees", 0.0);
 
-  // FIXME: act unilaterally or be the same value?
-  // the primary mode and secondary mode will act unilaterally except for when NEAR_TRENCH
+  // the primary mode and secondary mode will be equal except for when NEAR_TRENCH
   private ShooterMode primaryMode;
   private ShooterMode secondaryMode;
 
@@ -153,10 +152,8 @@ public class ShooterModes extends SubsystemBase {
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
   public boolean hubActive() {
-    // FIXME: how is the hub active at home toggle intended to be used?
-    if (!OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean()
-        && !DriverStation.isFMSAttached()) {
-      return false;
+    if (!DriverStation.isFMSAttached()) {
+      return OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
     }
 
     // When connected to the real field, this number only changes in full integer increments, and
