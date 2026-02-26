@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -357,6 +358,7 @@ public class ShooterModes extends SubsystemBase {
     if (Field2d.getInstance().inTrenchZone()) {
       this.currentMode = ShooterMode.NEAR_TRENCH;
       shooterSetpoints.hoodAngle = HOOD_LOWER_ANGLE_LIMIT;
+      LEDs.getInstance().requestState(LEDs.States.IN_TRENCH_ZONE);
     }
 
     shooter.setFlywheelVelocity(shooterSetpoints.flywheelVelocity);
