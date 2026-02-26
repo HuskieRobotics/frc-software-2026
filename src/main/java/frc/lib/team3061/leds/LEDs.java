@@ -66,7 +66,7 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED_DEMO_MODE((leds, section) -> leds.updateToPridePattern()),
     NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
-    AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
+    AUTO((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 127, 0 )),
     DISTRACTION_DURING_TELEOP(
         (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, END_GAME_ALERT_DURATION)),
@@ -83,7 +83,8 @@ public abstract class LEDs extends SubsystemBase {
     KICKER_SPINDEXER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)), //FIXME: Determine if slow or fast strobe duration is needed
     END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)), //FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)
     IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
-    INTAKE_JAMMED((leds,section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)), ////FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
+    INTAKE_JAMMED((leds,section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)), ////FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)    
+    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     WAITING_FOR_GAME_PIECE(
         (leds, section) ->
