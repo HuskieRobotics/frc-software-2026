@@ -57,12 +57,17 @@ public class Field2d {
   private Region2d transformedRightBumpZoneBLUE;
   private Region2d transformedLeftBumpZoneRED;
   private Region2d transformedRightBumpZoneRED;
+  private Region2d transformedOpponentAllianceHighPassZone;
+  private Region2d transformedNoPassZone;
 
+  // FIXME: remove this to avoid gaps between zones?
   private static final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
+
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
   private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
+  private static final double NO_PASS_ZONE_DEPTH_METERS = 2.0;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -126,13 +131,57 @@ public class Field2d {
           // far right corner
           new Translation2d(FieldConstants.fieldLength, 0.0),
 
-          // opposite trench left corner
-          new Translation2d(oppAllianceZoneX, FieldConstants.fieldWidth),
-
           // opposite trench right corner
-          new Translation2d(oppAllianceZoneX, 0.0)
+          new Translation2d(oppAllianceZoneX, 0.0),
+
+          // opposite trench left corner
+          new Translation2d(oppAllianceZoneX, FieldConstants.fieldWidth)
         };
     this.transformedOpponentAllianceZone = new Region2d(zoneCorners);
+  }
+
+  public void populateOpponentAllianceHighPassZone() {
+    Translation2d[] zoneCorners =
+        new Translation2d[] {
+          // far left corner
+          new Translation2d(FieldConstants.fieldLength, FieldConstants.Hub.leftFace.getY()),
+
+          // far right corner
+          new Translation2d(FieldConstants.fieldLength, FieldConstants.Hub.rightFace.getY()),
+
+          // opposite trench right corner
+          new Translation2d(
+              FieldConstants.LinesVertical.oppAllianceZone, FieldConstants.Hub.rightFace.getY()),
+
+          // opposite trench left corner
+          new Translation2d(
+              FieldConstants.LinesVertical.oppAllianceZone, FieldConstants.Hub.leftFace.getY())
+        };
+    this.transformedOpponentAllianceHighPassZone = new Region2d(zoneCorners);
+  }
+
+  public void populateNoPassZone() {
+    Translation2d[] zoneCorners =
+        new Translation2d[] {
+          // near right corner
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone, FieldConstants.Hub.rightFace.getY()),
+
+          // far right corner
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone + NO_PASS_ZONE_DEPTH_METERS,
+              FieldConstants.Hub.rightFace.getY()),
+
+          // far left corner
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone + NO_PASS_ZONE_DEPTH_METERS,
+              FieldConstants.Hub.leftFace.getY()),
+          // bottom left corner
+          new Translation2d(
+              FieldConstants.LinesVertical.allianceZone, FieldConstants.Hub.leftFace.getY())
+        };
+
+    this.transformedNoPassZone = new Region2d(zoneCorners);
   }
 
   /**
@@ -315,6 +364,18 @@ public class Field2d {
 
   public void logAllianceZonePoints() {
     transformedAllianceZone.logPoints("aliianceZone");
+  }
+
+  public void logOpponentAllianceZonePoints() {
+    transformedOpponentAllianceZone.logPoints("opponentAllianceZone");
+  }
+
+  public void logOpponentAllianceHighPassZonePoints() {
+    transformedOpponentAllianceHighPassZone.logPoints("opponentAllianceHighPassZone");
+  }
+
+  public void logNoPassZonePoints() {
+    transformedNoPassZone.logPoints("noPassZone");
   }
 
   public void logTrenchZonePoints() {
@@ -506,6 +567,16 @@ public class Field2d {
     }
 
     return transformedOpponentAllianceZone.contains(pose);
+  }
+
+  public boolean inOpponentAllianceHighPassZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedOpponentAllianceHighPassZone.contains(pose);
   }
 
   public boolean inTrenchZone() {
