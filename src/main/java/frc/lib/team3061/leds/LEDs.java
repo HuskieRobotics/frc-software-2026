@@ -78,12 +78,12 @@ public abstract class LEDs extends SubsystemBase {
                 section,
                 Color.kGreen)), // FIXME: determine if the Aimed/Ready to shoot state would be for
     // Shoot OTM or Shoot Manual
-    SHOOTING((leds, section) -> leds.bluePulse(section, PULSE_DURATION)),
+    SHOOTING((leds, section) -> leds.pulse(section, PULSE_DURATION, 0, 0, 255)),
     PASSING((leds, section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
     HOPPER_JAMMED((leds, section) -> leds.fire(section, WAVE_SLOW_DURATION)),
+    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)), //FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)
     IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
-    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, BREATH_DURATION)),
-    AUTO_DRIVING_TO_POSE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
+    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     WAITING_FOR_GAME_PIECE(
         (leds, section) ->
@@ -446,10 +446,7 @@ public abstract class LEDs extends SubsystemBase {
     }
   }
 
-  // FIXME: implement this method to create a blue pulse as that is necessary for the shooting state
-  private void bluePulse(Section section, double duration) {}
-
-  private void orangePulse(Section section, double duration) {
+  private void pulse(Section section, double duration, int rValue, int gValue, int bValue){
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
     double[] heat = new double[section.end() - section.start()];
     double xDiffPerLed = (2.0 * Math.PI) / heat.length;
@@ -462,10 +459,10 @@ public abstract class LEDs extends SubsystemBase {
     for (int i = 0; i < heat.length; i++) {
       double ratio = heat[i];
 
-      // Orange color
-      int red = (int) (255 * ratio);
-      int green = (int) (30 * ratio);
-      int blue = 0;
+      // Blue color
+      int red = (int) (rValue * ratio);
+      int green = (int) (gValue * ratio);
+      int blue = (int) (bValue * ratio);
 
       // Simulate rising and falling effect
       int offset = (int) (2 * Math.sin(x + (i * 0.2)));
@@ -477,6 +474,64 @@ public abstract class LEDs extends SubsystemBase {
               Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue - offset)));
     }
   }
+
+  // private void bluePulse(Section section, double duration) {
+  //   double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
+  //   double[] heat = new double[section.end() - section.start()];
+  //   double xDiffPerLed = (2.0 * Math.PI) / heat.length;
+
+  //   for (int i = 0; i < heat.length; i++) {
+  //     x += xDiffPerLed;
+  //     heat[i] = (Math.sin(x) + 1.0) / 2.0; // Heat level between 0 and 1
+  //   }
+
+  //   for (int i = 0; i < heat.length; i++) {
+  //     double ratio = heat[i];
+
+  //     // Blue color
+  //     int red = 0;
+  //     int green = 0;
+  //     int blue = (int) (255 * ratio);
+
+  //     // Simulate rising and falling effect
+  //     int offset = (int) (2 * Math.sin(x + (i * 0.2)));
+
+  //     // Apply the color to the LED
+  //     setLEDBuffer(
+  //         section.start() + i,
+  //         new Color(
+  //             Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue - offset)));
+  //   }
+  // }
+
+  // private void orangePulse(Section section, double duration) {
+  //   double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
+  //   double[] heat = new double[section.end() - section.start()];
+  //   double xDiffPerLed = (2.0 * Math.PI) / heat.length;
+
+  //   for (int i = 0; i < heat.length; i++) {
+  //     x += xDiffPerLed;
+  //     heat[i] = (Math.sin(x) + 1.0) / 2.0; // Heat level between 0 and 1
+  //   }
+
+  //   for (int i = 0; i < heat.length; i++) {
+  //     double ratio = heat[i];
+
+  //     // Orange color
+  //     int red = (int) (255 * ratio);
+  //     int green = (int) (30 * ratio);
+  //     int blue = 0;
+
+  //     // Simulate rising and falling effect
+  //     int offset = (int) (2 * Math.sin(x + (i * 0.2)));
+
+  //     // Apply the color to the LED
+  //     setLEDBuffer(
+  //         section.start() + i,
+  //         new Color(
+  //             Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue - offset)));
+  //   }
+  // }
 
   private void stripes(Section section, List<Color> colors, int length, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
