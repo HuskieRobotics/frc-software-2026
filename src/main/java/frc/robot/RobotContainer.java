@@ -155,7 +155,8 @@ public class RobotContainer {
       AutonomousCommandsFactory.getInstance().configureAutoCommands(differentialDrivetrain, vision);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      AutonomousCommandsFactory.getInstance().configureAutoCommands(swerveDrivetrain, vision);
+      AutonomousCommandsFactory.getInstance()
+          .configureAutoCommands(swerveDrivetrain, vision, hopper);
     }
 
     // Alert when tuning
