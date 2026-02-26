@@ -368,17 +368,10 @@ public class RobotContainer {
     // register commands for other subsystems
     IntakeCommandsFactory.registerCommands(oi, intake);
     HopperCommandsFactory.registerCommands(oi, hopper);
+    ShooterCommandsFactory.registerCommands(oi, shooter);
 
-    if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
-      CrossSubsystemsCommandsFactory.registerCommands(oi, differentialDrivetrain, vision);
-    } else if (RobotConfig.getInstance().getDrivetrainType()
-        == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
-      CrossSubsystemsCommandsFactory.registerCommands(
-          oi, swerveDrivetrain, intake, hopper, shooter, shooterModes, vision);
-      ShooterCommandsFactory.registerCommands(oi, shooter);
-
-      configureRobotContainerTriggers();
-    }
+    CrossSubsystemsCommandsFactory.registerCommands(
+        oi, swerveDrivetrain, intake, hopper, shooter, shooterModes, vision);
 
     // Endgame alerts
     new Trigger(
@@ -452,12 +445,5 @@ public class RobotContainer {
     // during a match, this would be the first opportunity to check the alliance color based on FMS
     // data.
     this.checkAllianceColor();
-  }
-
-  public void configureRobotContainerTriggers() {
-
-    rotateNearBumpTrigger = new Trigger(() -> Field2d.getInstance().inBumpZone());
-    rotateNearBumpTrigger.whileTrue(
-        CrossSubsystemsCommandsFactory.getRotateWhileNearBumpCommand(swerveDrivetrain));
   }
 }

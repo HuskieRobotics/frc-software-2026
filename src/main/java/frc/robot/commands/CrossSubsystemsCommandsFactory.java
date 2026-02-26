@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
-import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
@@ -25,32 +24,44 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterModes;
+import java.util.Optional;
 
 public class CrossSubsystemsCommandsFactory {
 
   private static final LoggedTunableNumber driveXKp =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveXKp", RobotConfig.getInstance().getDriveToPoseDriveXKP());
+          "DriveToBank/DriveXKp", RobotConfig.getInstance().getDriveToPoseDriveXKP());
   private static final LoggedTunableNumber driveYKp =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveYKp", RobotConfig.getInstance().getDriveToPoseDriveYKP());
+          "DriveToBank/DriveYKp", RobotConfig.getInstance().getDriveToPoseDriveYKP());
   private static final LoggedTunableNumber driveXKd =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveXKd", RobotConfig.getInstance().getDriveToPoseDriveXKD());
+          "DriveToBank/DriveXKd", RobotConfig.getInstance().getDriveToPoseDriveXKD());
   private static final LoggedTunableNumber driveYKd =
       new LoggedTunableNumber(
-          "DriveToPoseExample/DriveYKd", RobotConfig.getInstance().getDriveToPoseDriveYKD());
+          "DriveToBank/DriveYKd", RobotConfig.getInstance().getDriveToPoseDriveYKD());
   private static final LoggedTunableNumber driveKi =
-      new LoggedTunableNumber("DriveToPoseExample/DriveKi", 0);
+      new LoggedTunableNumber("DriveToBank/DriveKi", 0);
   private static final LoggedTunableNumber thetaKp =
       new LoggedTunableNumber(
-          "DriveToPoseExample/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
+          "DriveToBank/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
   private static final LoggedTunableNumber thetaKd =
       new LoggedTunableNumber(
-          "DriveToPoseExample/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
+          "DriveToBank/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
   private static final LoggedTunableNumber thetaKi =
       new LoggedTunableNumber(
-          "DriveToPoseExample/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
+          "DriveToBank/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
+
+  private static final LoggedTunableNumber driveToPoseMaxVelocity =
+      new LoggedTunableNumber(
+          "DriveToBank/DriveToPoseMaxVelocity",
+          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond));
+  private static final LoggedTunableNumber driveToPoseMaxAcceleration =
+      new LoggedTunableNumber(
+          "DriveToBank/DriveToPoseMaxAcceleration",
+          RobotConfig.getInstance()
+              .getDriveToPoseDriveMaxAcceleration()
+              .in(MetersPerSecondPerSecond));
 
   private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
   private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
@@ -60,27 +71,21 @@ public class CrossSubsystemsCommandsFactory {
   private static final double PASS_ZONE_TOLERANCE_X = 2.0; // meters
   private static final double PASS_ZONE_TOLERANCE_Y = 1.0; // meters
 
-  private static ProfiledPIDController xController =
+  public static final ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
           driveKi.get(),
           driveXKd.get(),
           new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseDriveMaxAcceleration()
-                  .in(MetersPerSecondPerSecond)));
-  private static ProfiledPIDController yController =
+              driveToPoseMaxVelocity.get(), driveToPoseMaxAcceleration.get()));
+  public static final ProfiledPIDController yController =
       new ProfiledPIDController(
           driveYKp.get(),
           driveKi.get(),
           driveYKd.get(),
           new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseDriveMaxAcceleration()
-                  .in(MetersPerSecondPerSecond)));
-  private static ProfiledPIDController thetaController =
+              driveToPoseMaxVelocity.get(), driveToPoseMaxAcceleration.get()));
+  public static final ProfiledPIDController thetaController =
       new ProfiledPIDController(
           thetaKp.get(),
           thetaKi.get(),
@@ -119,17 +124,46 @@ public class CrossSubsystemsCommandsFactory {
             Commands.parallel(
                 Commands.runOnce(hopper::stopKicker), Commands.runOnce(hopper::stopSpindexer)));
 
+    // FIXME: add back .and(shooterModes::manualShootEnabled)
+    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
+
+    oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
     registerSysIdCommands(oi);
   }
 
-  public static void registerCommands(
-      OperatorInterface oi, DifferentialDrivetrain differentialDrivetrain, Vision vision) {
+  // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
+  public static Command getScoreSafeShotCommand(
+      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi) {
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(differentialDrivetrain, vision, oi));
+    // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
+    // shoot_otm && in AZ
 
-    registerSysIdCommands(oi);
+    return Commands.sequence(
+        getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain, oi /*, hopper*/));
+  }
+
+  public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {
+    return new TeleopSwerve(
+            drivetrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            () -> Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY())))
+        .unless(
+            () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
+        .withName("Snake Drive Command");
+  }
+
+  // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
+  // CAN_SHOOT / non SHOOT_OTM
+  public static Command getUnloadShooterCommand(
+      SwerveDrivetrain drivetrain, OperatorInterface oi /*, Hopper hopper */) {
+
+    return Commands.parallel(Commands.run(drivetrain::holdXstance))
+        .until(() -> (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1));
+    // add hopper kick method in parallel
   }
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
@@ -195,7 +229,12 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision,
       OperatorInterface oi) {
     return Commands.parallel(
-            new TeleopSwerve(swerveDrivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            new TeleopSwerve(
+                swerveDrivetrain,
+                oi::getTranslateX,
+                oi::getTranslateY,
+                oi::getRotate,
+                SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(swerveDrivetrain)),
             Commands.runOnce(intake::stopRoller),
             Commands.runOnce(hopper::stopKicker),
             Commands.runOnce(hopper::stopSpindexer),
@@ -203,36 +242,10 @@ public class CrossSubsystemsCommandsFactory {
         .withName("interrupt all");
   }
 
-  private static Command getInterruptAllCommand(
-      DifferentialDrivetrain differentialDrivetrain, Vision vision, OperatorInterface oi) {
-    return Commands.parallel(
-            new ArcadeDrive(differentialDrivetrain, oi::getTranslateX, oi::getRotate))
-        .withName("interrupt all");
-  }
-
-  private static Command getDriveToPoseCommand(
-      SwerveDrivetrain swerveDrivetrain, OperatorInterface oi) {
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    return new DriveToPose(
-            swerveDrivetrain,
-            CrossSubsystemsCommandsFactory::getTargetPose,
-            xController,
-            yController,
-            thetaController,
-            new Transform2d(0.10, 0.05, Rotation2d.fromDegrees(5.0)),
-            true,
-            (atPose) ->
-                LEDs.getInstance()
-                    .requestState(atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
-            CrossSubsystemsCommandsFactory::updatePIDConstants,
-            5.0)
-        .withName("drive to pose");
-  }
-
   private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
     return new DriveToBank(
             drivetrain,
-            () -> Field2d.getInstance().getNearestBank(),
+            CrossSubsystemsCommandsFactory::getTargetBankPose,
             xController,
             yController,
             thetaController,
@@ -255,7 +268,12 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
-    return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
+    return new TeleopSwerve(
+            drivetrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(drivetrain))
         .withName("Override driveToPose");
   }
 
@@ -270,7 +288,7 @@ public class CrossSubsystemsCommandsFactory {
     return Field2d.getInstance().getNearestBank();
   }
 
-  private static void updatePIDConstants(Transform2d poseDifference) {
+  public static void updatePIDConstants(Transform2d poseDifference) {
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(
         xController.hashCode(),

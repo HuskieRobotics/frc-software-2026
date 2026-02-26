@@ -163,6 +163,8 @@ public class DriveToPose extends Command {
           new Translation2d(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond)
               .rotateBy(targetPose.getRotation().unaryMinus());
 
+      Logger.recordOutput("/DriveToPose/Velocities (target frame)", velocitiesInTargetFrame);
+
       xController.reset(this.poseDifferenceInTargetFrame.getX(), velocitiesInTargetFrame.getX());
       yController.reset(this.poseDifferenceInTargetFrame.getY(), velocitiesInTargetFrame.getY());
       thetaController.reset(

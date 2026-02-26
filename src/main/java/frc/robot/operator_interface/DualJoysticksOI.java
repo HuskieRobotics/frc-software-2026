@@ -46,6 +46,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getSnakeDriveButton() {
+    return translateJoystickButtons[4];
+  }
+
+  @Override
   public Trigger getDeployRetractIntakeButton() {
     return translateJoystickButtons[2];
   }

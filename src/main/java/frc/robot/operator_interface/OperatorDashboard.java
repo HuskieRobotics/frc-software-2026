@@ -38,6 +38,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean shooterModesTestingToggle =
       new LoggedTunableBoolean("operatorDashboard/Shooter Modes Testing", false, true);
 
+  public final LoggedTunableBoolean autoSnapsEnabled =
+      new LoggedTunableBoolean("operatorDashboard/Auto Snaps Enabled", true, true);
+
   public OperatorDashboard() {}
 
   @Override
@@ -75,7 +78,13 @@ public class OperatorDashboard implements OperatorInterface {
     return new Trigger(() -> shooterModesTestingToggle.get());
   }
 
+  @Override
   public Trigger getObjectDetectionToggle() {
     return new Trigger(() -> objectDetectionToggle.get());
+  }
+
+  @Override
+  public Trigger getAutoSnapsEnabledTrigger() {
+    return new Trigger(() -> autoSnapsEnabled.get());
   }
 }

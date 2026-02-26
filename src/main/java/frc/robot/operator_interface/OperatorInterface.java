@@ -93,6 +93,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getSnakeDriveButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getOverrideDriveToPoseButton() {
     return new Trigger(() -> false);
   }
@@ -139,17 +143,12 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  // XRP EXAMPLE TRIGGERS
-  public default Trigger getMoveArmMiddlePositionTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getMoveArmHighPositionTrigger() {
-    return new Trigger(() -> false);
-  }
-
   // Shooter triggers
   public default Trigger getZeroHoodButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoSnapsEnabledTrigger() {
     return new Trigger(() -> false);
   }
 }

@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.440156918687589,
-        "y": 7.638416547788873
+        "x": 7.804208273894435,
+        "y": 3.329843081312412
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.704422253922965,
-        "y": 7.056176890156919
+        "x": 6.057489300998573,
+        "y": 0.3410128388017126
       },
       "isLocked": false,
-      "linkedName": "Far Left Start"
+      "linkedName": "RIGHT NZ"
     },
     {
       "anchor": {
-        "x": 8.658159771754635,
-        "y": 5.529415121255349
+        "x": 3.535954922894425,
+        "y": 0.5866785290628707
       },
       "prevControl": {
-        "x": 6.948734098140298,
-        "y": 6.963793573510113
+        "x": 6.201318688942926,
+        "y": 0.6772491424722864
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Bank"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": -40.0
+      "waypointRelativePos": 0.803837953091684,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -42.27368900609383
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Neutral Zone x2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 91.59114027119438
   },
   "useDefaultConstraints": true
 }

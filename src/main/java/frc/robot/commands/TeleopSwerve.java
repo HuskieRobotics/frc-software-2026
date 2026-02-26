@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -32,8 +33,7 @@ public class TeleopSwerve extends Command {
   private final DoubleSupplier translationXSupplier;
   private final DoubleSupplier translationYSupplier;
   private final DoubleSupplier rotationSupplier;
-  private final Supplier<Rotation2d> angleSupplier;
-  private final boolean driveFacingAngle;
+  private final Supplier<Optional<Rotation2d>> angleSupplier;
 
   private static final double DEADBAND = 0.1;
 
@@ -63,8 +63,7 @@ public class TeleopSwerve extends Command {
     this.translationXSupplier = translationXSupplier;
     this.translationYSupplier = translationYSupplier;
     this.rotationSupplier = rotationSupplier;
-    this.angleSupplier = null;
-    this.driveFacingAngle = false;
+    this.angleSupplier = Optional::empty;
 
     addRequirements(drivetrain);
   }
@@ -84,13 +83,13 @@ public class TeleopSwerve extends Command {
       SwerveDrivetrain drivetrain,
       DoubleSupplier translationXSupplier,
       DoubleSupplier translationYSupplier,
-      Supplier<Rotation2d> angleSupplier) {
+      DoubleSupplier rotationSupplier,
+      Supplier<Optional<Rotation2d>> angleSupplier) {
     this.drivetrain = drivetrain;
     this.translationXSupplier = translationXSupplier;
     this.translationYSupplier = translationYSupplier;
-    this.rotationSupplier = null;
+    this.rotationSupplier = rotationSupplier;
     this.angleSupplier = angleSupplier;
-    this.driveFacingAngle = true;
 
     addRequirements(drivetrain);
   }
@@ -112,7 +111,8 @@ public class TeleopSwerve extends Command {
     LinearVelocity yVelocity = maxVelocity.times(yPercentage);
     AngularVelocity rotationalVelocity = RadiansPerSecond.of(0.0);
 
-    if (!this.driveFacingAngle) {
+    Optional<Rotation2d> potentialAngle = this.angleSupplier.get();
+    if (!potentialAngle.isPresent()) {
       double rotationPercentage = modifyAxis(rotationSupplier.getAsDouble(), joystickPower.get());
       rotationalVelocity = maxAngularVelocity.times(rotationPercentage);
     }
@@ -121,8 +121,8 @@ public class TeleopSwerve extends Command {
     Logger.recordOutput("TeleopSwerve/yVelocity", yVelocity);
     Logger.recordOutput("TeleopSwerve/rotationalVelocity", rotationalVelocity);
 
-    if (this.driveFacingAngle) {
-      drivetrain.driveFacingAngle(xVelocity, yVelocity, angleSupplier.get(), true);
+    if (potentialAngle.isPresent()) {
+      drivetrain.driveFacingAngle(xVelocity, yVelocity, potentialAngle.get(), true);
     } else {
       drivetrain.drive(
           xVelocity, yVelocity, rotationalVelocity, true, drivetrain.getFieldRelative());
