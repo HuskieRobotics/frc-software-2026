@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -140,10 +141,12 @@ public class Intake extends SubsystemBase {
     if (rollerJamDetector.update(Math.abs(inputs.rollerStatorCurrent.in(Amps)))) {
       CommandScheduler.getInstance()
           .schedule(
-              Commands.sequence(
+              Commands.sequence(  
                       Commands.runOnce(this::outTakeRoller, this),
                       Commands.waitSeconds(ROLLER_UNJAM_DURATION_SECONDS),
-                      Commands.runOnce(this::startRoller, this))
+                      Commands.runOnce(this::startRoller, this),
+                      Commands.run(
+                      () -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED)))
                   .withTimeout(1.0)
                   .withName("Stop Intake Jammed"));
       rollerJamAlert.set(true);

@@ -80,10 +80,10 @@ public abstract class LEDs extends SubsystemBase {
     // Shoot OTM or Shoot Manual
     SHOOTING((leds, section) -> leds.pulse(section, PULSE_DURATION, 0, 0, 255)),
     PASSING((leds, section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
-    HOPPER_JAMMED((leds, section) -> leds.fire(section, WAVE_SLOW_DURATION)),
+    KICKER_SPINDEXER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)), //FIXME: Determine if slow or fast strobe duration is needed
     END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)), //FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)
     IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
-    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
+    INTAKE_JAMMED((leds,section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)), ////FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     WAITING_FOR_GAME_PIECE(
         (leds, section) ->
