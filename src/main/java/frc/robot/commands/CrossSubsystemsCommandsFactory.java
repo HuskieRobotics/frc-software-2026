@@ -14,8 +14,6 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
-import frc.lib.team3061.vision.Vision;
-import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
@@ -68,9 +66,6 @@ public class CrossSubsystemsCommandsFactory {
       0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
   private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
 
-  private static final double PASS_ZONE_TOLERANCE_X = 2.0; // meters
-  private static final double PASS_ZONE_TOLERANCE_Y = 1.0; // meters
-
   public static final ProfiledPIDController xController =
       new ProfiledPIDController(
           driveXKp.get(),
@@ -104,10 +99,9 @@ public class CrossSubsystemsCommandsFactory {
       Intake intake,
       Hopper hopper,
       Shooter shooter,
-      ShooterModes shooterModes,
-      Vision vision) {
+      ShooterModes shooterModes) {
 
-    configureCrossSubsystemsTriggers(oi, swerveDrivetrain, shooterModes, shooter, hopper);
+    configureCrossSubsystemsTriggers(shooterModes, hopper);
 
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
@@ -118,11 +112,11 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getManualShootButton()
         .and(shooterModes::isManualShootEnabled)
-        .whileTrue(getUnloadShooterCommand(swerveDrivetrain, hopper));
-
-    oi.getManualShootButton().onFalse(Commands.parallel(Commands.runOnce(hopper::stop)));
+        .onTrue(getUnloadShooterCommand(swerveDrivetrain, hopper));
+    oi.getManualShootButton().onFalse(Commands.runOnce(hopper::stop));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
+
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
     registerSysIdCommands(oi);
@@ -300,43 +294,14 @@ public class CrossSubsystemsCommandsFactory {
         thetaKd);
   }
 
-  private static void configureCrossSubsystemsTriggers(
-      OperatorInterface oi,
-      SwerveDrivetrain swerveDrivetrain,
-      ShooterModes shooterModes,
-      Shooter shooter,
-      Hopper hopper) {
+  private static void configureCrossSubsystemsTriggers(ShooterModes shooterModes, Hopper hopper) {
 
-    Trigger unloadHopperOnTheMoveTrigger =
-        new Trigger(
-            () -> Field2d.getInstance().inAllianceZone() && shooterModes.isShootOnTheMoveEnabled());
-
-    unloadHopperOnTheMoveTrigger.whileTrue(Commands.runOnce(hopper::feedFuelIntoShooter));
+    Trigger unloadHopperOnTheMoveTrigger = new Trigger(shooterModes::isShootOnTheMoveEnabled);
+    unloadHopperOnTheMoveTrigger.onTrue(Commands.runOnce(hopper::feedFuelIntoShooter));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
 
-    Trigger unloadHopperForPassingTrigger =
-        new Trigger(() -> !Field2d.getInstance().inAllianceZone() && shooterModes.isPassEnabled());
-
+    Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
     unloadHopperForPassingTrigger.onTrue(Commands.runOnce(hopper::feedFuelIntoShooter));
     unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
-
-    // FIXME: what about passing when we are in the opposing alliance zone? When we cover this case,
-    // we need to be careful that we don't exclude when we are near the opposing alliance's hub but
-    // in the neutral zone in which case it won't block our pass.
-    Trigger tooCloseToHubForPassTrigger =
-        new Trigger(
-            () ->
-                shooterModes.isPassEnabled()
-                    && Math.abs(
-                            FieldConstants.Hub.innerCenterPoint.getMeasureX().in(Meters)
-                                - swerveDrivetrain.getPose().getX())
-                        < PASS_ZONE_TOLERANCE_X
-                    && Math.abs(
-                            FieldConstants.Hub.innerCenterPoint.getMeasureY().in(Meters)
-                                - swerveDrivetrain.getPose().getY())
-                        < PASS_ZONE_TOLERANCE_Y);
-
-    tooCloseToHubForPassTrigger.onTrue(Commands.runOnce(hopper::stop));
-    tooCloseToHubForPassTrigger.onFalse(Commands.runOnce(hopper::feedFuelIntoShooter));
   }
 }

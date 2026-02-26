@@ -371,7 +371,7 @@ public class RobotContainer {
     ShooterCommandsFactory.registerCommands(oi, shooter);
 
     CrossSubsystemsCommandsFactory.registerCommands(
-        oi, swerveDrivetrain, intake, hopper, shooter, shooterModes, vision);
+        oi, swerveDrivetrain, intake, hopper, shooter, shooterModes);
 
     // Endgame alerts
     new Trigger(
