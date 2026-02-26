@@ -579,6 +579,16 @@ public class Field2d {
     return transformedOpponentAllianceHighPassZone.contains(pose);
   }
 
+  public boolean inNoPassZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedNoPassZone.contains(pose);
+  }
+
   public boolean inTrenchZone() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
