@@ -179,7 +179,7 @@ public class ShooterModes extends SubsystemBase {
 
       // each shift is 25 seconds long, request the LED state before the end of each shift
       if ((130 - timeRemaining) % 25 < END_OF_SHIFT_WARNING_SECONDS) {
-        LEDs.getInstance().requestState(LEDs.States.END_OF_SHIFT);
+        LEDs.getInstance().requestState(LEDs.States.END_OF_PERIOD);
       }
     }
 
