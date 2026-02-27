@@ -41,12 +41,12 @@ public abstract class LEDs extends SubsystemBase {
    * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/31?u=gcschmit
    */
 
+  private TreeSet<States> staticStates = new TreeSet<>();
   private TreeSet<States> fullStates = new TreeSet<>();
   private TreeSet<States> shoulderStates = new TreeSet<>();
-  private TreeSet<States> staticStates = new TreeSet<>();
-  private TreeSet<States> staticLowStates = new TreeSet<>();
-  private TreeSet<States> staticMidStates = new TreeSet<>();
   private TreeSet<States> staticHighStates = new TreeSet<>();
+  private TreeSet<States> staticMidStates = new TreeSet<>();
+  private TreeSet<States> staticLowStates = new TreeSet<>();
 
   /**
    * Enum for LED states. Each state has a lambda function that accepts an LED subsystem and section
