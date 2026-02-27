@@ -25,6 +25,8 @@ import org.littletonrobotics.junction.Logger;
 public class ShooterModes extends SubsystemBase {
 
   private static final double SHOOT_TIME_OFFSET_SECONDS = 2.0; // offset for ball travel time to hub
+  private static final double END_OF_SHIFT_WARNING_SECONDS =
+      5.0; // time before the end of the shift to flash the LE#Ds
 
   private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
@@ -173,6 +175,11 @@ public class ShooterModes extends SubsystemBase {
       // the start of the next active period because the fuel we shoot at the start of the period
       // will count as long as it doesn't reach the hub before the start of the period.
       timeIntoScoringShifts = 130 - timeRemaining + SHOOT_TIME_OFFSET_SECONDS;
+
+      // each shift is 25 seconds long, request the LED state before the end of each shift
+      if ((130 - timeRemaining) % 25 < END_OF_SHIFT_WARNING_SECONDS) {
+        LEDs.getInstance().requestState(LEDs.States.END_OF_SHIFT);
+      }
     }
 
     if (!gameData.isEmpty()) {
