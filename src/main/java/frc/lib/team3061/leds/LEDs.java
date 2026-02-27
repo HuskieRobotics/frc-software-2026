@@ -86,14 +86,6 @@ public abstract class LEDs extends SubsystemBase {
     INTAKE_JAMMED((leds,section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)), ////FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)    
     AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
-    WAITING_FOR_GAME_PIECE(
-        (leds, section) ->
-            leds.wave(
-                section,
-                Color.kBlue,
-                new Color(255, 20, 0),
-                WAVE_FAST_CYCLE_LENGTH,
-                WAVE_SLOW_DURATION)),
     DEFAULT((leds, section) -> leds.solid(section, Color.kBlack));
 
     public final BiConsumer<LEDs, Section> setter;
