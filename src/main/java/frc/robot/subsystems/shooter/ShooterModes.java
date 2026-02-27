@@ -357,7 +357,7 @@ public class ShooterModes extends SubsystemBase {
     // shooter doesn't get decapitated
     if (Field2d.getInstance().inTrenchZone()) {
       this.currentMode = ShooterMode.NEAR_TRENCH;
-      shooterSetpoints.hoodAngle = HOOD_LOWER_ANGLE_LIMIT;
+      shooterSetpoints.hoodAngle = HOOD_NEAR_TRENCH_ANGLE_LIMIT;
       LEDs.getInstance().requestState(LEDs.States.IN_TRENCH_ZONE);
     }
 
