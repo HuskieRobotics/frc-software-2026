@@ -3,34 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.6997627520759195,
-        "y": 3.3625504151838665
+        "x": 4.439727164887308,
+        "y": 0.6189561091340454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.656390870186612,
-        "y": 0.004607703283719289
+        "x": 6.484035296128392,
+        "y": 0.5542628138416059
       },
       "isLocked": false,
-      "linkedName": "Right Neutral Zone"
+      "linkedName": "Right Starting Point"
     },
     {
       "anchor": {
-        "x": 3.0094,
-        "y": 0.6488666666666665
+        "x": 8.684037089871612,
+        "y": 2.42413694721826
       },
       "prevControl": {
-        "x": 7.247845934380621,
-        "y": 0.7291726105590408
+        "x": 7.571312410841653,
+        "y": 1.1173323823109853
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Bank"
+      "linkedName": "Right Opponent NZ"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.25,
       "rotationDegrees": 90.0
     }
   ],
@@ -47,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 48.12213046211579
   },
   "reversed": false,
-  "folder": "Neutral Zone+Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

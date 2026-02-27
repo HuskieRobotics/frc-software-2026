@@ -41,8 +41,13 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToPoseButton() {
+  public Trigger getScoreFromBankButton() {
     return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getSnakeDriveButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
@@ -69,6 +74,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public double getRotate() {
     return -rotateJoystick.getX();
+  }
+
+  @Override
+  public Trigger getManualShootButton() {
+    return rotateJoystickButtons[1];
   }
 
   @Override
