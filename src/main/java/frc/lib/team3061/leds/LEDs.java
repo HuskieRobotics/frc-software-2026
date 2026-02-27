@@ -41,12 +41,12 @@ public abstract class LEDs extends SubsystemBase {
    * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/31?u=gcschmit
    */
 
-  private TreeSet<States> staticStates = new TreeSet<>();
   private TreeSet<States> fullStates = new TreeSet<>();
   private TreeSet<States> shoulderStates = new TreeSet<>();
-  private TreeSet<States> staticHighStates = new TreeSet<>();
-  private TreeSet<States> staticMidStates = new TreeSet<>();
+  private TreeSet<States> staticStates = new TreeSet<>();
   private TreeSet<States> staticLowStates = new TreeSet<>();
+  private TreeSet<States> staticMidStates = new TreeSet<>();
+  private TreeSet<States> staticHighStates = new TreeSet<>();
 
   /**
    * Enum for LED states. Each state has a lambda function that accepts an LED subsystem and section
@@ -66,25 +66,20 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED_DEMO_MODE((leds, section) -> leds.updateToPridePattern()),
     NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
-    AUTO((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 127, 0 )),
+    AUTO((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 127, 0)),
     DISTRACTION_DURING_TELEOP(
         (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
-    ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, END_GAME_ALERT_DURATION)),
+    ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
     DRIVE_TO_POSE_CANCELED(
         (leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
-    READY_TO_SHOOT(
-        (leds, section) ->
-            leds.solid(
-                section,
-                Color.kGreen)), // FIXME: determine if the Aimed/Ready to shoot state would be for
-    // Shoot OTM or Shoot Manual
+    READY_TO_SHOOT((leds, section) -> leds.solid(section, Color.kGreen)),
     SHOOTING((leds, section) -> leds.pulse(section, PULSE_DURATION, 0, 0, 255)),
     PASSING((leds, section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
-    KICKER_SPINDEXER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)), //FIXME: Determine if slow or fast strobe duration is needed
-    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)), //FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)
+    HOPPER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)),
+    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)),
     IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
-    INTAKE_JAMMED((leds,section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)), ////FIXME: Determine if the constant duration is appropriate (if it needs to be STROBE_FAST_DURATION or STROBE_SLOW_DURATION)    
-    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255,30, 0)),
+    INTAKE_JAMMED((leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
+    AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     DEFAULT((leds, section) -> leds.solid(section, Color.kBlack));
 
@@ -119,7 +114,6 @@ public abstract class LEDs extends SubsystemBase {
   private static final int MIN_LOOP_CYCLE_COUNT = 10;
   private static final double STROBE_FAST_DURATION = 0.1;
   private static final double STROBE_SLOW_DURATION = 0.2;
-  private static final double END_GAME_ALERT_DURATION = 1.0;
   private static final double BREATH_DURATION = 1.0;
   private static final double PULSE_DURATION = 0.5;
   private static final double RAINBOW_CYCLE_LENGTH = 30.0;
@@ -439,7 +433,7 @@ public abstract class LEDs extends SubsystemBase {
     }
   }
 
-  private void pulse(Section section, double duration, int rValue, int gValue, int bValue){
+  private void pulse(Section section, double duration, int rValue, int gValue, int bValue) {
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
     double[] heat = new double[section.end() - section.start()];
     double xDiffPerLed = (2.0 * Math.PI) / heat.length;
@@ -493,7 +487,8 @@ public abstract class LEDs extends SubsystemBase {
   //     setLEDBuffer(
   //         section.start() + i,
   //         new Color(
-  //             Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue - offset)));
+  //             Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue -
+  // offset)));
   //   }
   // }
 
@@ -522,7 +517,8 @@ public abstract class LEDs extends SubsystemBase {
   //     setLEDBuffer(
   //         section.start() + i,
   //         new Color(
-  //             Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue - offset)));
+  //             Math.max(0, red - offset), Math.max(0, green - offset), Math.max(0, blue -
+  // offset)));
   //   }
   // }
 
