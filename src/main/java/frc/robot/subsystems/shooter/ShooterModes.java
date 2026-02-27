@@ -308,6 +308,12 @@ public class ShooterModes extends SubsystemBase {
           shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
         } else {
           this.currentMode = ShooterMode.MANUAL_SHOOT;
+
+          if (shooter.isFlywheelAtSetPoint()
+              && shooter.isHoodAtSetPoint()
+              && shooter.isTurretAtSetPoint()) {
+            LEDs.getInstance().requestState(LEDs.States.READY_TO_SHOOT);
+          }
         }
       }
 

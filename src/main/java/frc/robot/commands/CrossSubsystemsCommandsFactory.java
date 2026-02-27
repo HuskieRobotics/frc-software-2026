@@ -150,21 +150,15 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi, SwerveDrivetrain drivetrain, Shooter shooter, Hopper hopper) {
     return Commands.sequence(
             Commands.runOnce(drivetrain::holdXstance),
-            Commands.run(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
+            Commands.parallel(
+                    Commands.run(
+                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)))
         .withName("stop and shoot");
     // add hopper kick method in parallel
-  }
-
-  // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
-  // CAN_SHOOT / non SHOOT_OTM
-  public static Command getUnloadShooterCommand(SwerveDrivetrain drivetrain, Hopper hopper) {
-    return Commands.sequence(
-            Commands.runOnce(drivetrain::holdXstance),
-            Commands.runOnce(hopper::feedFuelIntoShooter))
-        .withName("unload shooter");
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
@@ -268,13 +262,19 @@ public class CrossSubsystemsCommandsFactory {
 
     Trigger unloadHopperOnTheMoveTrigger = new Trigger(shooterModes::isShootOnTheMoveEnabled);
     unloadHopperOnTheMoveTrigger.whileTrue(
-        Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
+        Commands.parallel(
+                Commands.runOnce(
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
             .withName("feed fuel (shoot)"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
 
     Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
     unloadHopperForPassingTrigger.whileTrue(
-        Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()))
+        Commands.parallel(
+                Commands.runOnce(
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.PASSING)))
             .withName("feed fuel (pass)"));
     unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
   }

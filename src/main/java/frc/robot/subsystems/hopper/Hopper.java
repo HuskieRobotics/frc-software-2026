@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -128,7 +129,8 @@ public class Hopper extends SubsystemBase {
         Commands.parallel(
             Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY)),
             Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))),
-        Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME),
+        Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED))
+            .withTimeout(KICKER_UNJAM_WAIT_TIME),
         Commands.runOnce(this::feedFuelIntoShooter));
   }
 
