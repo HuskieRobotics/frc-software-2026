@@ -547,6 +547,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
+        Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         AutoBuilder.followPath(driveToBank),
         getUnloadHopperFromBankCommand(hopper));
@@ -585,9 +586,11 @@ public class AutonomousCommandsFactory {
   private Command leftNeutralZoneAndDepot(Hopper hopper) {
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToDepot;
+    PathPlannerPath intakeFromDepot;
     try {
       driveToNeutralZoneAndBack = PathPlannerPath.fromPathFile("L Fuel Sweep");
       driveToDepot = PathPlannerPath.fromPathFile("Left Bank to Depot");
+      intakeFromDepot = PathPlannerPath.fromPathFile("Intake Depot");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
@@ -595,11 +598,13 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
+    // consider not shooting at the bank and going straight to the depot
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
         Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToDepot),
-        getUnloadHopperFromDepotCommand(hopper));
+        Commands.parallel(
+            getUnloadHopperFromDepotCommand(hopper), AutoBuilder.followPath(intakeFromDepot)));
   }
 }
