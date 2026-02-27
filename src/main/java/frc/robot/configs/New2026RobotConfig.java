@@ -22,27 +22,27 @@ import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
 // necessary values
 
 public class New2026RobotConfig extends RobotConfig {
-  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 37;
-  private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 61;
-  private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.117676);
+  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 24;
+  private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 53;
+  private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
+  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.071045);
 
-  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 40;
-  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 25;
-  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.028809);
+  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 61;
+  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 51;
+  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.025879);
 
-  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 39;
-  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 60;
-  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.378906);
+  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 18;
+  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 50;
+  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 9;
+  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.369141);
 
-  private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 38;
-  private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 59;
-  private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959);
+  private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
+  private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
+  private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
+  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.166748);
 
-  private static final int GYRO_ID = 3;
+  private static final int GYRO_ID = 18;
 
   private static final Distance TRACKWIDTH = Meters.of(0.628650);
   private static final Distance WHEELBASE = Meters.of(0.476250);
@@ -61,10 +61,10 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double ANGLE_KD = 0.1;
 
   // values from sysid routines
-  private static final double ANGLE_KS = 0.39776;
-  private static final double ANGLE_KV = 2.6176;
+  private static final double ANGLE_KS = 0.57576;
+  private static final double ANGLE_KV = 2.6475;
   // 0.4399866667 * 2 * Math.PI; // convert from V/(radians/s) to V/(rotations/s)
-  private static final double ANGLE_KA = 0.18755;
+  private static final double ANGLE_KA = 0.15068;
 
   /* Drive Motor PID Values */
   private static final double DRIVE_KP = 12.0; // 0.40997
@@ -72,11 +72,11 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_KD = 0.0;
 
   // values from sysid routines
-  private static final double DRIVE_KS = 3.9848;
-  private static final double DRIVE_KV = 0.058846;
-  private static final double DRIVE_KA = 0.2817;
+  private static final double DRIVE_KS = 2.8277;
+  private static final double DRIVE_KV = 0.060631;
+  private static final double DRIVE_KA = 0.51114;
 
-  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.936);
+  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(5.117);
   private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
@@ -105,7 +105,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
 
   // Drive Facing Angle constants
-  private static final double DRIVE_FACING_ANGLE_KP = 5.0;
+  private static final double DRIVE_FACING_ANGLE_KP = 2.0;
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
