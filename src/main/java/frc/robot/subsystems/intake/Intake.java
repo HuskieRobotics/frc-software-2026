@@ -143,10 +143,9 @@ public class Intake extends SubsystemBase {
           .schedule(
               Commands.sequence(
                       Commands.runOnce(this::outTakeRoller, this),
-                      Commands.waitSeconds(ROLLER_UNJAM_DURATION_SECONDS),
-                      Commands.runOnce(this::startRoller, this),
-                      Commands.run(
-                          () -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED)))
+                      Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED))
+                          .withTimeout(ROLLER_UNJAM_DURATION_SECONDS),
+                      Commands.runOnce(this::startRoller, this))
                   .withTimeout(1.0)
                   .withName("Stop Intake Jammed"));
       rollerJamAlert.set(true);
