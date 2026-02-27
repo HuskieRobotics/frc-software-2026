@@ -140,6 +140,8 @@ public class ShooterConstants {
   public static final Angle LOCK_SHOT_HOOD_ANGLE = Degrees.of(22);
   public static final Angle LOCK_SHOT_TURRET_ANGLE = Degrees.of(30); // FIXME: determine value
 
+  public static final AngularVelocity PIT_TEST_FLYWHEEL_RPS = RotationsPerSecond.of(20);
+
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
   public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =

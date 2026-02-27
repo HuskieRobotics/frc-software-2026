@@ -134,10 +134,6 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getShooterModesTestingToggle() {
-    return new Trigger(() -> false);
-  }
-
   // only for at home
   public default Trigger getHubActiveAtHomeToggle() {
     return new Trigger(() -> false);
@@ -149,6 +145,10 @@ public interface OperatorInterface {
   }
 
   public default Trigger getAutoSnapsEnabledTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getSlowShooterForPitTest() {
     return new Trigger(() -> false);
   }
 }

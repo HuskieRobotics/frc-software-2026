@@ -17,7 +17,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
@@ -47,6 +46,8 @@ public class ShooterModes extends SubsystemBase {
       new InterpolatingDoubleTreeMap();
   private final InterpolatingDoubleTreeMap passDistanceToHoodMap = new InterpolatingDoubleTreeMap();
 
+  private final LoggedTunableNumber shooterTestingEnable =
+      new LoggedTunableNumber("ShooterModes/Testing/EnableTesting", 0.0);
   private final LoggedTunableNumber testingFlywheelVelocity =
       new LoggedTunableNumber("ShooterModes/Testing/FlywheelVelocityRPS", 0.0);
   private final LoggedTunableNumber testingHoodAngle =
@@ -274,10 +275,7 @@ public class ShooterModes extends SubsystemBase {
 
     // check for testing mode first since that overrides all other modes and doesn't rely on any
     // conditions except for the toggle
-    // FIXME: make getShooterModesTestingToggle a tunable instead of something on the operator
-    // console since TUNING has to be enabled for this to be useful
-    if (Constants.TUNING_MODE
-        && OISelector.getOperatorInterface().getShooterModesTestingToggle().getAsBoolean()) {
+    if (shooterTestingEnable.get() != 0) {
       this.currentMode = ShooterMode.TESTING;
       shooter.setFlywheelVelocity(RotationsPerSecond.of(testingFlywheelVelocity.get()));
       shooter.setHoodPosition(Degrees.of(testingHoodAngle.get()));
@@ -358,6 +356,10 @@ public class ShooterModes extends SubsystemBase {
       shooterSetpoints.hoodAngle = LOCK_SHOT_HOOD_ANGLE;
       shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
       this.currentMode = ShooterMode.SHOOTER_LOCKED;
+    }
+
+    if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
+      shooterSetpoints.flywheelVelocity = PIT_TEST_FLYWHEEL_RPS;
     }
 
     // finally, override the hood position if the robot is in a trench zone to ensure that the

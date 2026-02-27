@@ -597,6 +597,19 @@
               "period": 0.06,
               "data_type": "boolean"
             }
+          },
+          {
+            "title": "Slow Shooter For Pit Test",
+            "x": 1008.0,
+            "y": 384.0,
+            "width": 288.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Slow Shooter For Pit Test",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
