@@ -135,8 +135,7 @@ public class ShooterConstants {
 
   public static final double FLYWHEEL_VELOCITY_SCALE_FACTOR = 0.9; // FIXME: determine value
 
-  public static final AngularVelocity LOCK_SHOT_FLYWHEEL_RPS =
-      RotationsPerSecond.of(36);
+  public static final AngularVelocity LOCK_SHOT_FLYWHEEL_RPS = RotationsPerSecond.of(36);
   public static final Angle LOCK_SHOT_HOOD_ANGLE = Degrees.of(22);
   public static final Angle LOCK_SHOT_TURRET_ANGLE = Degrees.of(30); // FIXME: determine value
 

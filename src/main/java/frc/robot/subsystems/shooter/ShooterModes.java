@@ -354,11 +354,12 @@ public class ShooterModes extends SubsystemBase {
 
     } else {
       // assume that the robot is passing and adjust later as needed
-      targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
-      shooterSetpoints = getIdealPassSetpoints(targetLandingPosition);
-      shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
 
       if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) {
+        targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
+        shooterSetpoints = getIdealPassSetpoints(targetLandingPosition);
+        shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+
         this.currentMode = ShooterMode.PASS;
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
@@ -374,6 +375,13 @@ public class ShooterModes extends SubsystemBase {
         }
 
       } else {
+        targetLandingPosition = Field2d.getInstance().getHubCenter();
+        shooterSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
+
+        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+          shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+        }
+
         this.currentMode = ShooterMode.COLLECT_AND_HOLD;
       }
     }
