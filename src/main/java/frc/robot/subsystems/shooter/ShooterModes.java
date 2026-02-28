@@ -509,19 +509,14 @@ public class ShooterModes extends SubsystemBase {
     double deltaY = targetLandingPosition.getY() - (robotPose.getY());
     double distance = Math.hypot(deltaY, deltaX);
 
-    double idealShotVelocity =
-        idealVelocityFromFunction(distance)
-            * FLYWHEEL_VELOCITY_SCALE_FACTOR; // this.hubDistanceToVelocityMap.get(distance);
+    double idealShotVelocity = this.hubDistanceToVelocityMap.get(distance);
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
         new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
-    Angle idealHoodAngle =
-        idealHoodAngleFromFunction(distance)
-            .plus(
-                HOOD_OFFSET_WHEN_SHOOTING); // Degrees.of(this.hubDistanceToHoodMap.get(distance));
+    Angle idealHoodAngle = Degrees.of(this.hubDistanceToHoodMap.get(distance));
 
     return new ShooterSetpoints(
         RotationsPerSecond.of(idealShotVelocity), idealHoodAngle, robotRelativeTurretAngle);
@@ -536,19 +531,14 @@ public class ShooterModes extends SubsystemBase {
     double distance = Math.hypot(deltaY, deltaX);
 
     // function only applies for hub shots but added a constant value to differentiate in sim
-    double idealShotVelocity =
-        idealVelocityFromFunction(distance)
-            * FLYWHEEL_VELOCITY_SCALE_FACTOR; // this.passDistanceToVelocityMap.get(distance);
+    double idealShotVelocity = this.passDistanceToVelocityMap.get(distance);
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
         robotPose.getRotation().minus(new Rotation2d(fieldRelativeTurretAngle));
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
-    Angle idealHoodAngle =
-        idealHoodAngleFromFunction(distance)
-            .plus(
-                HOOD_OFFSET_WHEN_SHOOTING); // Degrees.of(this.passDistanceToHoodMap.get(distance));
+    Angle idealHoodAngle = Degrees.of(this.passDistanceToHoodMap.get(distance));
 
     return new ShooterSetpoints(
         RotationsPerSecond.of(idealShotVelocity), idealHoodAngle, robotRelativeTurretAngle);
