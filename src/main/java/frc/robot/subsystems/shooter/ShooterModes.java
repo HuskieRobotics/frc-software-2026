@@ -46,7 +46,7 @@ public class ShooterModes extends SubsystemBase {
       new InterpolatingDoubleTreeMap();
   private final InterpolatingDoubleTreeMap passDistanceToHoodMap = new InterpolatingDoubleTreeMap();
 
-  private final LoggedTunableNumber shooterTestingEnable =
+  private final LoggedTunableNumber testingEnable =
       new LoggedTunableNumber("ShooterModes/Testing/EnableTesting", 0.0);
   private final LoggedTunableNumber testingFlywheelVelocity =
       new LoggedTunableNumber("ShooterModes/Testing/FlywheelVelocityRPS", 0.0);
@@ -308,7 +308,7 @@ public class ShooterModes extends SubsystemBase {
 
     // check for testing mode first since that overrides all other modes and doesn't rely on any
     // conditions except for the toggle
-    if (shooterTestingEnable.get() != 0) {
+    if (testingEnable.get() == 1) {
       this.currentMode = ShooterMode.TESTING;
       shooter.setFlywheelVelocity(RotationsPerSecond.of(testingFlywheelVelocity.get()));
       shooter.setHoodPosition(Degrees.of(testingHoodAngle.get()));

@@ -46,7 +46,7 @@ public class New2026RobotConfig extends RobotConfig {
 
   private static final Distance TRACKWIDTH = Meters.of(0.628650);
   private static final Distance WHEELBASE = Meters.of(0.476250);
-  private static final Distance WHEEL_RADIUS = Meters.of(0.0508);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.0515507563);
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.302940, -0.379140);
 
@@ -56,7 +56,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double COUPLE_RATIO = 3.857142857142857;
 
   /* Angle Motor PID Values */
-  private static final double ANGLE_KP = 77;
+  private static final double ANGLE_KP = 90;
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD = 0.1;
 
@@ -67,7 +67,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.15068;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 12.0; // 0.40997
+  private static final double DRIVE_KP = 16.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
@@ -109,7 +109,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 85;
+  private static final int LED_COUNT = 27;
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";

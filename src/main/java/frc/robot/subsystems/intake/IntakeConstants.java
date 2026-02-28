@@ -29,7 +29,7 @@ public class IntakeConstants {
   public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(22);
 
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
-  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(21.5);
+  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(3.579);
   public static final Distance DEPLOYED_LINEAR_POSITION =
       Meters.of(DEPLOYED_ANGULAR_POSITION.in(Rotations) * DEPLOYER_CIRCUMFERENCE.in(Meters));
   public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
@@ -53,7 +53,6 @@ public class IntakeConstants {
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2.14;
   public static final boolean ROLLER_MOTOR_INVERTED = false;
-
   public static final AngularVelocity ROLLER_TARGET_VELOCITY =
       RadiansPerSecond.of(40.0); // FIXME: set value
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RadiansPerSecond.of(-40.0);

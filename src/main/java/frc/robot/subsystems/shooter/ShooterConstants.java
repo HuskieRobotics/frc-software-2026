@@ -23,8 +23,7 @@ public class ShooterConstants {
   public static final int FLYWHEEL_FOLLOW_2_MOTOR_ID = 22;
   public static final int HOOD_MOTOR_ID = 23;
   public static final int TURRET_MOTOR_ID = 26;
-  public static final int FUEL_DETECTOR_ENCODER_ID =
-      1; // FIXME: determine the CAN ID for this encoder
+  public static final int FUEL_DETECTOR_ENCODER_ID = 11;
 
   public static final double FLYWHEEL_KP = 8.0;
   public static final double FLYWHEEL_KI = 0.0;
@@ -94,7 +93,7 @@ public class ShooterConstants {
   public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
 
   public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
-  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
+  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // x`FIXME: update when tuning
   public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
   // Hood and turret position setpoints
@@ -145,5 +144,5 @@ public class ShooterConstants {
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
   public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
-      0.1; // meters, FIXME: determine value
+      0.03; // meters, FIXME: determine value
 }
