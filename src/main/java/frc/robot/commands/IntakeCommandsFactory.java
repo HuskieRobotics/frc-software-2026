@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,8 +17,15 @@ public class IntakeCommandsFactory {
         .onTrue(
             Commands.either(
                     Commands.sequence(
-                        Commands.runOnce(intake::stopRoller),
-                        Commands.runOnce(intake::retractIntake),
+                        Commands.parallel(
+                            Commands.runOnce(intake::retractIntake),
+                            Commands.sequence(
+                                Commands.waitUntil(
+                                    () ->
+                                        intake
+                                            .getPosition()
+                                            .lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
+                                Commands.runOnce(intake::stopRoller))),
                         Commands.waitUntil(intake::isRetracted)),
                     Commands.sequence(
                         Commands.runOnce(intake::deployIntake),

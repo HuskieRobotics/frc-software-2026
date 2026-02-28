@@ -37,6 +37,7 @@ public class IntakeConstants {
   public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
   public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
+  public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(2.0);
 
   public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 30.0;
   public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 30.0;

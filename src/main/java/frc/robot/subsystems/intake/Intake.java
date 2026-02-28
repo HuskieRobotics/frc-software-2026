@@ -180,6 +180,10 @@ public class Intake extends SubsystemBase {
     setLinearPosition(RETRACTED_LINEAR_POSITION);
   }
 
+  public Distance getPosition() {
+    return this.deployerLinearPosition;
+  }
+
   public boolean isRollerAtSetpoint(AngularVelocity velocity) {
     return rollerAtSetPointDebouncer.calculate(
         inputs.rollerVelocity.isNear(velocity, IntakeConstants.ROLLER_VELOCITY_TOLERANCE));
