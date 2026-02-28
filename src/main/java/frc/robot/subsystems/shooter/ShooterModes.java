@@ -436,22 +436,26 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private ShooterSetpoints calculateShootOnTheMove(ShooterSetpoints staticSetpoints) {
-    double v = staticSetpoints.flywheelVelocity.in(RotationsPerSecond)* FLYWHEEL_VELOCITY_SCALE_FACTOR * Math.PI * Units.inchesToMeters(3);
+    double v =
+        staticSetpoints.flywheelVelocity.in(RotationsPerSecond)
+            * FLYWHEEL_VELOCITY_SCALE_FACTOR
+            * Math.PI
+            * Units.inchesToMeters(3);
     Angle theta = staticSetpoints.hoodAngle;
     Angle phi = staticSetpoints.turretAngle;
 
-    // speeds need to be field relative
     ChassisSpeeds fieldRelativeSpeeds = getShooterFieldRelativeVelocity();
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
     double robotVy = fieldRelativeSpeeds.vyMetersPerSecond;
 
     double newFlywheelVelocity =
         (Math.sqrt(
-            Math.pow(v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
-                + Math.pow(v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)
-                + Math.pow(v * Math.sin(theta.in(Radians)), 2))) / (Math.PI * FLYWHEEL_VELOCITY_SCALE_FACTOR * Units.inchesToMeters(3));
+                Math.pow(v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
+                    + Math.pow(
+                        v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)
+                    + Math.pow(v * Math.cos(theta.in(Radians)), 2)))
+            / (Math.PI * FLYWHEEL_VELOCITY_SCALE_FACTOR * Units.inchesToMeters(3));
 
-    // angles are converted to degrees
     double newHoodAngle =
         (180.0 / Math.PI)
             * Math.atan2(
@@ -467,8 +471,8 @@ public class ShooterModes extends SubsystemBase {
     double newTurretAngle =
         (180.0 / Math.PI)
             * Math.atan2(
-                (v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
-                (v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx));
+                (v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
+                (v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx));
 
     return new ShooterSetpoints(
         RotationsPerSecond.of(newFlywheelVelocity),
