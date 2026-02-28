@@ -38,8 +38,8 @@ public class IntakeConstants {
   public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
 
-  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 60;
-  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 40;
+  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 5.0;
+  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 4.0;
   public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
 
   public static final double ROLLER_KP = 20;
