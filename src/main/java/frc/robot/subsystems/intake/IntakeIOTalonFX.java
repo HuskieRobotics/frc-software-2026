@@ -43,6 +43,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private PositionVoltage deployerPositionRequest = new PositionVoltage(0);
   private VoltageOut deployerVoltageRequest = new VoltageOut(0);
+  private TorqueCurrentFOC deployerCurrentRequest = new TorqueCurrentFOC(0);
 
   // Alerts
   private final Alert rollerConfigAlert =
@@ -262,6 +263,11 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void setDeployerPosition(Angle angularPosition) {
     deployerMotor.setControl(deployerPositionRequest.withPosition(angularPosition.in(Rotations)));
     this.deployerReferencePosition = angularPosition;
+  }
+
+  @Override
+  public void setDeployerCurrent(Current amps) {
+    this.deployerMotor.setControl(deployerCurrentRequest.withOutput(amps));
   }
 
   private void configDeployerMotor(TalonFX motor) {

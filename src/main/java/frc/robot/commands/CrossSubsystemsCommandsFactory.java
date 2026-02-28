@@ -109,12 +109,15 @@ public class CrossSubsystemsCommandsFactory {
     new Trigger(shooterModes::isManualShootEnabled)
         .or(shooterModes::isLockedShooterEnabled)
         .and(oi.getScoreFromBankButton())
-        .onTrue(getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper));
+        .onTrue(getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake));
 
     oi.getManualShootButton()
         .and(shooterModes::isManualShootEnabled)
-        .onTrue(getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper));
-    oi.getManualShootButton().onFalse(Commands.runOnce(hopper::stop));
+        .onTrue(getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake));
+    oi.getManualShootButton()
+        .onFalse(
+            Commands.parallel(
+                Commands.runOnce(hopper::stop), Commands.runOnce(intake::deployIntake)));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -125,10 +128,14 @@ public class CrossSubsystemsCommandsFactory {
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      OperatorInterface oi, SwerveDrivetrain drivetrain, Shooter shooter, Hopper hopper) {
+      OperatorInterface oi,
+      SwerveDrivetrain drivetrain,
+      Shooter shooter,
+      Hopper hopper,
+      Intake intake) {
     return Commands.sequence(
             getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(oi, drivetrain, shooter, hopper))
+            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake))
         .withName("score safe shot");
   }
 
@@ -147,16 +154,22 @@ public class CrossSubsystemsCommandsFactory {
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
   public static Command getStopAndShootCommand(
-      OperatorInterface oi, SwerveDrivetrain drivetrain, Shooter shooter, Hopper hopper) {
+      OperatorInterface oi,
+      SwerveDrivetrain drivetrain,
+      Shooter shooter,
+      Hopper hopper,
+      Intake intake) {
     return Commands.sequence(
             Commands.runOnce(drivetrain::holdXstance),
             Commands.parallel(
                     Commands.run(
                         () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                    Commands.run(intake::jostleFuel),
                     Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
                 .until(
                     () ->
-                        (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)))
+                        (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
+            Commands.runOnce(intake::deployIntake))
         .withName("stop and shoot");
     // add hopper kick method in parallel
   }

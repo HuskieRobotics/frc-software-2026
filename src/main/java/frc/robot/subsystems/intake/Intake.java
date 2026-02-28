@@ -53,6 +53,8 @@ public class Intake extends SubsystemBase {
 
   private final LoggedTunableNumber deployerVoltage =
       new LoggedTunableNumber("Intake/DeployerVoltage", 0.0);
+  private final LoggedTunableNumber deployerJostleFuelCurrent =
+      new LoggedTunableNumber("Intake/DeployerCurrent", DEPLOYER_JOSTLE_FUEL_CURRENT.in(Amps));
 
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.2);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.2);
@@ -178,6 +180,15 @@ public class Intake extends SubsystemBase {
   public void retractIntake() {
     inDeployedState = false;
     setLinearPosition(RETRACTED_LINEAR_POSITION);
+  }
+
+  public void jostleFuel() {
+    if (this.deployerLinearPosition.gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)) {
+      // only jostle if we're far enough away from the hopper to not cause interference
+      intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
+    } else {
+      intakeIO.setDeployerCurrent(Amps.of(0.0));
+    }
   }
 
   public Distance getPosition() {
