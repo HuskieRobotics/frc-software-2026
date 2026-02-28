@@ -61,14 +61,11 @@ public class Field2d {
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
 
-  // FIXME: remove this to avoid gaps between zones?
-  private static final double ALLIANCE_ZONE_BUFFER_INCHES = 10;
-
-  private static final double TRENCH_ZONE_BUFFER_X_INCHES = 7;
+  private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
-  private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 12;
-  private static final double NO_PASS_ZONE_DEPTH_METERS = 2.0;
+  private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 19;
+  private static final double NO_PASS_ZONE_DEPTH_METERS = 3.0;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -93,23 +90,16 @@ public class Field2d {
   }
 
   public void populateAllianceZone() {
-
-    // since positive x is defined at forward if we move the far side x back 2 inches it should
-    // result in giving us a 2 inch buffer
-    double safeFarSideX =
-        FieldConstants.LinesVertical.allianceZone
-            - Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
-
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // bottom right corner
           new Translation2d(0.0, 0.0),
 
           // top right corner
-          new Translation2d(safeFarSideX, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, 0.0),
 
           // top left corner
-          new Translation2d(safeFarSideX, FieldConstants.fieldWidth),
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, FieldConstants.fieldWidth),
 
           // bottom left corner
           new Translation2d(0.0, FieldConstants.fieldWidth)
@@ -119,11 +109,6 @@ public class Field2d {
   }
 
   public void populateOpponentAllianceZone() {
-
-    double oppAllianceZoneX =
-        FieldConstants.LinesVertical.oppAllianceZone
-            + Units.inchesToMeters(ALLIANCE_ZONE_BUFFER_INCHES);
-
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // far left corner
@@ -133,10 +118,10 @@ public class Field2d {
           new Translation2d(FieldConstants.fieldLength, 0.0),
 
           // opposite trench right corner
-          new Translation2d(oppAllianceZoneX, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, 0.0),
 
           // opposite trench left corner
-          new Translation2d(oppAllianceZoneX, FieldConstants.fieldWidth)
+          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, FieldConstants.fieldWidth)
         };
     this.transformedOpponentAllianceZone = new Region2d(zoneCorners);
   }
@@ -145,16 +130,16 @@ public class Field2d {
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // near right corner
-          new Translation2d(FieldConstants.LinesVertical.neutralZoneNear, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, 0.0),
 
           // far right corner
-          new Translation2d(FieldConstants.LinesVertical.neutralZoneFar, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, 0.0),
 
           // far left corner
-          new Translation2d(FieldConstants.LinesVertical.neutralZoneFar, FieldConstants.fieldWidth),
+          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, FieldConstants.fieldWidth),
 
           // near left corner
-          new Translation2d(FieldConstants.LinesVertical.neutralZoneNear, FieldConstants.fieldWidth)
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, FieldConstants.fieldWidth)
         };
 
     this.transformedNeutralZone = new Region2d(zoneCorners);
@@ -219,7 +204,6 @@ public class Field2d {
     banks[0] =
         new Pose2d(
             FieldConstants.LinesVertical.allianceZone
-                - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             FieldConstants.fieldWidth
                 - RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
@@ -230,7 +214,6 @@ public class Field2d {
     banks[1] =
         new Pose2d(
             FieldConstants.LinesVertical.allianceZone
-                - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
             Rotation2d.fromDegrees(90));
