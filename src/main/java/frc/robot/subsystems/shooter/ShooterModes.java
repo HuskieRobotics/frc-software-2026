@@ -535,7 +535,7 @@ public class ShooterModes extends SubsystemBase {
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
-        robotPose.getRotation().minus(new Rotation2d(fieldRelativeTurretAngle));
+        new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
     Angle idealHoodAngle = Degrees.of(this.passDistanceToHoodMap.get(distance));

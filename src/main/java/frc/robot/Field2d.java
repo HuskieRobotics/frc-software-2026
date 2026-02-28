@@ -222,7 +222,7 @@ public class Field2d {
                 - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             FieldConstants.fieldWidth
-                - RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
+                - RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
             Rotation2d.fromDegrees(-90));
     Logger.recordOutput("Field2d/blueLeftBank", banks[0]);
 
@@ -232,7 +232,7 @@ public class Field2d {
             FieldConstants.LinesVertical.allianceZone
                 - Units.inchesToMeters(TRENCH_ZONE_BUFFER_X_INCHES)
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
-            RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0,
+            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
             Rotation2d.fromDegrees(90));
     Logger.recordOutput("Field2d/blueRightBank", banks[1]);
 

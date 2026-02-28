@@ -114,7 +114,10 @@ public class Intake extends SubsystemBase {
       }
     }
 
-    checkRollerJam();
+    Logger.recordOutput("Intake In Deployed State", inDeployedState);
+    Logger.recordOutput("Are Rollers Active", areRollersActiveState);
+
+    // checkRollerJam();
 
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
@@ -149,7 +152,6 @@ public class Intake extends SubsystemBase {
                       Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED))
                           .withTimeout(ROLLER_UNJAM_DURATION_SECONDS),
                       Commands.runOnce(this::startRoller, this))
-                  .withTimeout(1.0)
                   .withName("Stop Intake Jammed"));
       rollerJamAlert.set(true);
     } else {

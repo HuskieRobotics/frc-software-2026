@@ -169,7 +169,8 @@ public class CrossSubsystemsCommandsFactory {
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
-            Commands.runOnce(intake::deployIntake))
+            Commands.runOnce(intake::deployIntake),
+            Commands.runOnce(hopper::stop))
         .withName("stop and shoot");
     // add hopper kick method in parallel
   }
