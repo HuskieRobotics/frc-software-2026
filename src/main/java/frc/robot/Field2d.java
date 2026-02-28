@@ -231,7 +231,7 @@ public class Field2d {
   public void populatePassingPoses() {
 
     double passingPoseBufferX = 2.0;
-    double passingPoseBufferY = 1.0;
+    double passingPoseBufferY = 2.0;
 
     // blue left passing zone
     bluePassingPoses[0] =

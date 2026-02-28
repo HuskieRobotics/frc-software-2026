@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -435,7 +436,7 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private ShooterSetpoints calculateShootOnTheMove(ShooterSetpoints staticSetpoints) {
-    double v = staticSetpoints.flywheelVelocity.in(RotationsPerSecond);
+    double v = staticSetpoints.flywheelVelocity.in(RotationsPerSecond)* FLYWHEEL_VELOCITY_SCALE_FACTOR * Math.PI * Units.inchesToMeters(3);
     Angle theta = staticSetpoints.hoodAngle;
     Angle phi = staticSetpoints.turretAngle;
 
@@ -445,10 +446,10 @@ public class ShooterModes extends SubsystemBase {
     double robotVy = fieldRelativeSpeeds.vyMetersPerSecond;
 
     double newFlywheelVelocity =
-        Math.sqrt(
+        (Math.sqrt(
             Math.pow(v * Math.cos(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
                 + Math.pow(v * Math.cos(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)
-                + Math.pow(v * Math.sin(theta.in(Radians)), 2));
+                + Math.pow(v * Math.sin(theta.in(Radians)), 2))) / (Math.PI * FLYWHEEL_VELOCITY_SCALE_FACTOR * Units.inchesToMeters(3));
 
     // angles are converted to degrees
     double newHoodAngle =

@@ -40,7 +40,7 @@ public class IntakeConstants {
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
   public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(2.0);
 
-  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-10.0);
+  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-5.0);
 
   public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 30.0;
   public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 30.0;
