@@ -98,14 +98,49 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private void populateMaps() {
-    // FIXME: populate with real data points
-    hubDistanceToVelocityMap.put(0.0, 0.0);
+    // Velocity Shooting into Hub Map
+    hubDistanceToVelocityMap.put(1.8034, 28.0);
+    hubDistanceToVelocityMap.put(2.032, 29.0);
+    hubDistanceToVelocityMap.put(2.413, 30.0);
+    hubDistanceToVelocityMap.put(2.8702, 32.0);
+    hubDistanceToVelocityMap.put(2.9972, 33.0);
+    hubDistanceToVelocityMap.put(3.2512, 34.0);
+    hubDistanceToVelocityMap.put(3.83, 36.0); // slomo1 - or 35.0 from slomo 2?
+    hubDistanceToVelocityMap.put(4.4196, 38.0);
+    hubDistanceToVelocityMap.put(4.72, 39.0);
+    hubDistanceToVelocityMap.put(5.38, 41.0);
 
-    hubDistanceToHoodMap.put(0.0, 0.0);
+    // Hood Angle Shooting into Hub Map
+    hubDistanceToHoodMap.put(1.8034, 22.0);
+    hubDistanceToHoodMap.put(2.032, 22.0);
+    hubDistanceToHoodMap.put(2.413, 22.0);
+    hubDistanceToHoodMap.put(2.8702, 23.0);
+    hubDistanceToHoodMap.put(2.9972, 23.0);
+    hubDistanceToHoodMap.put(3.2512, 25.0);
+    hubDistanceToHoodMap.put(3.83, 22.0); // slomo1 - or 26.0 from slomo 2?
+    hubDistanceToHoodMap.put(4.4196, 27.0);
+    hubDistanceToHoodMap.put(4.72, 27.0);
+    hubDistanceToHoodMap.put(5.38, 28.0);
 
-    passDistanceToVelocityMap.put(0.0, 0.0);
+    // Velocity Passing Map
+    passDistanceToVelocityMap.put(3.9, 30.0);
+    passDistanceToVelocityMap.put(5.05, 34.0);
+    passDistanceToVelocityMap.put(6.45, 38.0);
+    passDistanceToVelocityMap.put(8.07, 43.0);
+    passDistanceToVelocityMap.put(9.55, 46.0);
+    passDistanceToVelocityMap.put(11.05, 51.0);
+    passDistanceToVelocityMap.put(13.0, 57.0);
+    passDistanceToVelocityMap.put(14.0, 60.0);
 
-    passDistanceToHoodMap.put(0.0, 0.0);
+    // Hood Angle Passing Map
+    passDistanceToHoodMap.put(3.9, 29.0);
+    passDistanceToHoodMap.put(5.05, 30.0);
+    passDistanceToHoodMap.put(6.45, 33.0);
+    passDistanceToHoodMap.put(8.07, 36.0);
+    passDistanceToHoodMap.put(9.55, 39.0);
+    passDistanceToHoodMap.put(11.05, 42.0);
+    passDistanceToHoodMap.put(13.0, 46.0);
+    passDistanceToHoodMap.put(14.0, 49.0);
   }
 
   public boolean isShootOnTheMoveEnabled() {
