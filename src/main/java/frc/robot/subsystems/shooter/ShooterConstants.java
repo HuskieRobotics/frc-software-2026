@@ -71,7 +71,7 @@ public class ShooterConstants {
   public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
 
   public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0);
-  public static final Angle HOOD_NEAR_TRENCH_ANGLE_LIMIT = Degrees.of(26.0);
+  public static final Angle HOOD_NEAR_TRENCH_ANGLE_LIMIT = Degrees.of(30.0);
   public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0);
   public static final Angle HOOD_MAX_PASSING_ANGLE = Degrees.of(49.0);
 

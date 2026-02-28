@@ -38,8 +38,8 @@ public class IntakeConstants {
   public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
 
-  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 5.0;
-  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 4.0;
+  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 30.0;
+  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 30.0;
   public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
 
   public static final double ROLLER_KP = 20;
@@ -54,7 +54,7 @@ public class IntakeConstants {
   public static final double ROLLER_GEAR_RATIO = 2.14;
   public static final boolean ROLLER_MOTOR_INVERTED = false;
   public static final AngularVelocity ROLLER_TARGET_VELOCITY =
-      RadiansPerSecond.of(40.0); // FIXME: set value
+      RotationsPerSecond.of(40.0); // FIXME: set value
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RadiansPerSecond.of(-40.0);
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RadiansPerSecond.of(5.0);
 
