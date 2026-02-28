@@ -20,7 +20,7 @@ public class IntakeConstants {
   public static final double DEPLOYER_KG = 0.0;
 
   public static final double DEPLOYER_GEAR_RATIO = 25.0;
-  public static final boolean DEPLOYER_MOTOR_INVERTED = true; // FIXME: check direction
+  public static final boolean DEPLOYER_MOTOR_INVERTED = true;
 
   // Mechanical properties for simulation
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
@@ -52,18 +52,18 @@ public class IntakeConstants {
   // this is the gear ratio for the wheels; the roller, which is mechanically linked to the wheel
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2.14;
-  public static final boolean ROLLER_MOTOR_INVERTED = false; // FIXME: check direction
+  public static final boolean ROLLER_MOTOR_INVERTED = false;
 
   public static final AngularVelocity ROLLER_TARGET_VELOCITY =
-      RadiansPerSecond.of(50); // FIXME: set value
-  public static final AngularVelocity ROLLER_EJECT_VELOCITY = RadiansPerSecond.of(-20);
-  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RadiansPerSecond.of(2.0);
+      RadiansPerSecond.of(40.0); // FIXME: set value
+  public static final AngularVelocity ROLLER_EJECT_VELOCITY = RadiansPerSecond.of(-40.0);
+  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RadiansPerSecond.of(5.0);
 
   public static final double ROLLER_PEAK_CURRENT_LIMIT = 40;
 
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 
-  public static final double ROLLER_JAMMED_CURRENT_AMPS = 50;
+  public static final double ROLLER_JAMMED_CURRENT_AMPS = 39.0;
   public static final double ROLLER_JAMMED_TIME_THRESHOLD_SECONDS = 0.2;
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
 }

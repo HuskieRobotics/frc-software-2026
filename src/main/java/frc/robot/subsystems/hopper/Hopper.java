@@ -143,19 +143,9 @@ public class Hopper extends SubsystemBase {
   public Command getTestVelocityCommand() {
     return Commands.sequence(
         // check if spindexer velocity is at setpoint 1
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY)),
         Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
-
-        // check if spindexer velocity is at setpoint 2
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
-        Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
-
-        // check if spindexer velocity is at setpoint 3
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
-        Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> this.checkSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY)),
 
         // check if kicker velocity is at setpoint 1
         Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS)),

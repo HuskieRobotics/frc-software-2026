@@ -98,24 +98,24 @@ public class ShooterConstants {
   public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
 
   // Hood and turret position setpoints
-  public static final double HOOD_SETPOINT_1_DEGREES = 0.0; // FIXME: determine test points
-  public static final double HOOD_SETPOINT_2_DEGREES = 0.0; // FIXME: determine test points
-  public static final double HOOD_SETPOINT_3_DEGREES = 0.0; // FIXME: determine test points
+  public static final double HOOD_SETPOINT_1_DEGREES = 22.0;
+  public static final double HOOD_SETPOINT_2_DEGREES = 28.0;
+  public static final double HOOD_SETPOINT_3_DEGREES = 49.0;
 
-  public static final double TURRET_SETPOINT_1_DEGREES = 0.0; // FIXME: determine test points
-  public static final double TURRET_SETPOINT_2_DEGREES = 0.0; // FIXME: determine test points
-  public static final double TURRET_SETPOINT_3_DEGREES = 0.0; // FIXME: determine test points
+  public static final double TURRET_SETPOINT_1_DEGREES = 0.0;
+  public static final double TURRET_SETPOINT_2_DEGREES = -180.0;
+  public static final double TURRET_SETPOINT_3_DEGREES = 180.0;
 
   public static final Angle TURRET_LOCK_POSITION_DEGREES =
       Degrees.of(120); // FIXME: determine value
 
   // Velocity setpoints for lead flywheel
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_1_RPS =
-      RotationsPerSecond.of(30); // FIXME: determine test points
+      RotationsPerSecond.of(28.0);
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_2_RPS =
-      RotationsPerSecond.of(60); // FIXME: determine test points
+      RotationsPerSecond.of(36.0);
   public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_3_RPS =
-      RotationsPerSecond.of(90); // FIXME: determine test points
+      RotationsPerSecond.of(60.0);
 
   public static final AngularVelocity FLYWHEEL_MAX_VELOCITY_RPS = RotationsPerSecond.of(60);
 
