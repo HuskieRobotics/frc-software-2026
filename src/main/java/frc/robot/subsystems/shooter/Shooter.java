@@ -172,7 +172,7 @@ public class Shooter extends SubsystemBase {
     return Commands.sequence(
         // check if the velocity is at setpoint 1
         Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
-        Commands.waitSeconds(3),
+        Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
         // check if the velocity is at setpoint 2
         Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
@@ -210,7 +210,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void checkFlywheelVelocity(AngularVelocity flywheelTargetVelocity) {
-    if (shooterInputs.flywheelLeadVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    if (!shooterInputs.flywheelLeadVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
@@ -221,7 +221,7 @@ public class Shooter extends SubsystemBase {
                   + " RPS");
     }
 
-    if (shooterInputs.flywheelFollow1Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    if (!shooterInputs.flywheelFollow1Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
@@ -232,7 +232,7 @@ public class Shooter extends SubsystemBase {
                   + " RPS");
     }
 
-    if (shooterInputs.flywheelFollow2Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    if (!shooterInputs.flywheelFollow2Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
@@ -247,47 +247,28 @@ public class Shooter extends SubsystemBase {
   public void checkPosition(
       double hoodIntendedPositionDegrees, double turretIntendedPositionDegrees) {
     // Check if hood position is where it should be
-    if (Math.abs(shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees)
-        > HOOD_TOLERANCE_ANGLE.in(Degrees)) {
-      if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees < 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Hood position is too low, should be "
-                    + hoodIntendedPositionDegrees
-                    + " but is "
-                    + shooterInputs.hoodPosition);
-      } else if (shooterInputs.hoodPosition.in(Degrees) - hoodIntendedPositionDegrees > 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Hood position is too high, should be "
-                    + hoodIntendedPositionDegrees
-                    + " but is "
-                    + shooterInputs.hoodPosition);
-      }
+    if (!shooterInputs.hoodPosition.isNear(
+        Degrees.of(hoodIntendedPositionDegrees), HOOD_TOLERANCE_ANGLE)) {
+
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "Hood position is out of tolerance, should be "
+                  + hoodIntendedPositionDegrees
+                  + " but is "
+                  + shooterInputs.hoodPosition);
     }
 
     // Check if turret position is where it should be
-    if (Math.abs(shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees)
-        > TURRET_TOLERANCE_ANGLE.in(Degrees)) {
-      if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees < 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Turret position is too low, should be "
-                    + turretIntendedPositionDegrees
-                    + " but is "
-                    + shooterInputs.turretPosition);
-      } else if (shooterInputs.turretPosition.in(Degrees) - turretIntendedPositionDegrees > 0) {
-        FaultReporter.getInstance()
-            .addFault(
-                SUBSYSTEM_NAME,
-                "Turret position is too high, should be "
-                    + turretIntendedPositionDegrees
-                    + " but is "
-                    + shooterInputs.turretPosition);
-      }
+    if (!shooterInputs.turretPosition.isNear(
+        Degrees.of(turretIntendedPositionDegrees), TURRET_TOLERANCE_ANGLE)) {
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "Turret position is out of tolerance, should be "
+                  + turretIntendedPositionDegrees
+                  + " but is "
+                  + shooterInputs.turretPosition);
     }
   }
 
