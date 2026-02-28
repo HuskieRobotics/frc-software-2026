@@ -415,7 +415,8 @@ public class ShooterModes extends SubsystemBase {
 
     // finally, override the hood position if the robot is in a trench zone to ensure that the
     // shooter doesn't get decapitated
-    if (Field2d.getInstance().inTrenchZone()) {
+    if (Field2d.getInstance().inTrenchZone()
+        && shooterSetpoints.hoodAngle.gt(HOOD_NEAR_TRENCH_ANGLE_LIMIT)) {
       this.currentMode = ShooterMode.NEAR_TRENCH;
       shooterSetpoints.hoodAngle = HOOD_NEAR_TRENCH_ANGLE_LIMIT;
       LEDs.getInstance().requestState(LEDs.States.IN_TRENCH_ZONE);
