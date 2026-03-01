@@ -126,9 +126,8 @@ public class Hopper extends SubsystemBase {
 
   public Command getUnjamCommand() {
     return Commands.sequence(
-        Commands.parallel(
-            Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY), this),
-            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY), this)),
+        Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY), this),
+        Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY), this),
         Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED))
             .withTimeout(KICKER_UNJAM_WAIT_TIME),
         Commands.runOnce(this::feedFuelIntoShooter, this));

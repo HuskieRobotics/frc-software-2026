@@ -17,15 +17,10 @@ public class IntakeCommandsFactory {
         .onTrue(
             Commands.either(
                     Commands.sequence(
-                        Commands.parallel(
-                            Commands.runOnce(intake::retractIntake, intake),
-                            Commands.sequence(
-                                Commands.waitUntil(
-                                    () ->
-                                        intake
-                                            .getPosition()
-                                            .lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
-                                Commands.runOnce(intake::stopRoller, intake))),
+                        Commands.runOnce(intake::retractIntake, intake),
+                        Commands.waitUntil(
+                            () -> intake.getPosition().lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
+                        Commands.runOnce(intake::stopRoller, intake),
                         Commands.waitUntil(intake::isRetracted)),
                     Commands.sequence(
                         Commands.runOnce(intake::deployIntake, intake),
