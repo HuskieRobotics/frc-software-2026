@@ -21,6 +21,7 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.FieldConstants;
 import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.shooter.Shooter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -52,15 +53,15 @@ public class AutonomousCommandsFactory {
     return autoChooser.get();
   }
 
-  public void configureAutoCommands(SwerveDrivetrain drivetrain, Vision vision, Hopper hopper) {
+  public void configureAutoCommands(
+      SwerveDrivetrain drivetrain, Vision vision, Hopper hopper, Shooter shooter) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
-    autoChooser.addOption("Right to Neutral Zone x2", rightToNeutralZoneX2(hopper));
+    autoChooser.addOption("Right to Neutral Zone x2", rightToNeutralZoneX2(hopper, shooter));
+    autoChooser.addOption("Left to Neutral Zone x2", leftToNeutralZoneX2(hopper, shooter));
 
-    autoChooser.addOption("Left to Neutral Zone x2", leftToNeutralZoneX2(hopper));
-
-    autoChooser.addOption("Left Neutral Zone And Depot", leftNeutralZoneAndDepot(hopper));
+    autoChooser.addOption("Left Neutral Zone And Depot", leftNeutralZoneAndDepot(hopper, shooter));
 
     /************ Start Point ************
      *
@@ -338,22 +339,12 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
 
-  private Command getUnloadHopperFromBankCommand(Hopper hopper) {
-    return Commands.parallel(
-        Commands.run(
-            () ->
-                hopper.setKickerVelocity(
-                    RotationsPerSecond.of(35.0))), // FIXME: get shooter flywheel velocity
-        Commands.run(() -> hopper.setSpindexerVelocity(RotationsPerSecond.of(4.5))));
+  private Command getUnloadHopperFromBankCommand(Hopper hopper, Shooter shooter) {
+    return Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()));
   }
 
-  private Command getUnloadHopperFromDepotCommand(Hopper hopper) {
-    return Commands.parallel(
-        Commands.run(
-            () ->
-                hopper.setKickerVelocity(
-                    RotationsPerSecond.of(38.0))), // FIXME: get shooter flywheel velocity
-        Commands.run(() -> hopper.setSpindexerVelocity(RotationsPerSecond.of(4.5))));
+  private Command getUnloadHopperFromDepotCommand(Hopper hopper, Shooter shooter) {
+    return Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()));
   }
 
   private Command leftNeutralZoneHopperAndClimb(
@@ -524,7 +515,8 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(AutoBuilder.followPath(driveToTower));
   }
 
-  private Command rightToNeutralZoneX2(Hopper hopper) { // add shooter and intake later
+  private Command rightToNeutralZoneX2(
+      Hopper hopper, Shooter shooter) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
@@ -546,14 +538,15 @@ public class AutonomousCommandsFactory {
     }
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
-        getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
+        getUnloadHopperFromBankCommand(hopper, shooter).withTimeout(5.0),
         Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         AutoBuilder.followPath(driveToBank),
-        getUnloadHopperFromBankCommand(hopper));
+        getUnloadHopperFromBankCommand(hopper, shooter));
   }
 
-  private Command leftToNeutralZoneX2(Hopper hopper) { // add shooter and intake later
+  private Command leftToNeutralZoneX2(
+      Hopper hopper, Shooter shooter) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
@@ -576,14 +569,14 @@ public class AutonomousCommandsFactory {
 
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
-        getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
+        getUnloadHopperFromBankCommand(hopper, shooter).withTimeout(5.0),
         Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         AutoBuilder.followPath(driveToBank),
-        getUnloadHopperFromBankCommand(hopper));
+        getUnloadHopperFromBankCommand(hopper, shooter));
   }
 
-  private Command leftNeutralZoneAndDepot(Hopper hopper) {
+  private Command leftNeutralZoneAndDepot(Hopper hopper, Shooter shooter) {
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToDepot;
     PathPlannerPath intakeFromDepot;
@@ -601,10 +594,11 @@ public class AutonomousCommandsFactory {
     // consider not shooting at the bank and going straight to the depot
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
-        getUnloadHopperFromBankCommand(hopper).withTimeout(5.0),
+        getUnloadHopperFromBankCommand(hopper, shooter).withTimeout(5.0),
         Commands.runOnce(hopper::stop),
         AutoBuilder.followPath(driveToDepot),
         Commands.parallel(
-            getUnloadHopperFromDepotCommand(hopper), AutoBuilder.followPath(intakeFromDepot)));
+            getUnloadHopperFromDepotCommand(hopper, shooter),
+            AutoBuilder.followPath(intakeFromDepot)));
   }
 }
