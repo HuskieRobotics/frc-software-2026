@@ -86,7 +86,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
   private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
   private static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
-  private static final double AUTO_TURN_P_CONTROLLER = 5.0;
+  private static final double AUTO_TURN_P_CONTROLLER = 3.0;
   private static final double AUTO_TURN_I_CONTROLLER = 0.0;
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 

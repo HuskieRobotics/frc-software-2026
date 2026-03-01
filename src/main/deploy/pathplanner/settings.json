@@ -4,9 +4,11 @@
   "holonomicMode": true,
   "pathFolders": [
     "Depot+Climb",
+    "Neutral Zone + Depot",
     "Neutral Zone x2",
     "Neutral Zone+Climb",
-    "Neutral Zone + Depot",
+    "Safe Right NZ + NZ",
+    "Safe NZ + Depot",
     "Tuning",
     "XRP"
   ],

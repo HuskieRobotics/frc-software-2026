@@ -3,36 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2572467902995716,
-        "y": 5.555292439372327
+        "x": 4.37546362339515,
+        "y": 7.431398002853067
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0071765354374915,
-        "y": 5.559898509412826
+        "x": 7.351355206847359,
+        "y": 7.4702139800285305
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "90 degree start left"
     },
     {
       "anchor": {
-        "x": 0.5197432239657629,
-        "y": 5.555292439372327
+        "x": 7.959472182596539,
+        "y": 6.331611982889032
       },
       "prevControl": {
-        "x": 0.7685328781466013,
-        "y": 5.579862908895289
+        "x": 5.721084165478137,
+        "y": 6.1375320970117135
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "inside depot"
+      "linkedName": "Left NZ Grab"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [
     {
-      "name": "Slow by Depot",
-      "minWaypointRelativePos": 0.0,
+      "name": "Slow to collect",
+      "minWaypointRelativePos": 0.6022957461174854,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,
@@ -55,14 +60,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 180.0
+    "velocity": 0,
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Safe NZ + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

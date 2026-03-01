@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.414279600570612,
-        "y": 7.586661911554922
+        "x": 7.959472182596539,
+        "y": 6.331611982889032
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.003098987984406,
-        "y": 7.855833582930402
+        "x": 6.872624821683559,
+        "y": 7.5996005706208445
       },
       "isLocked": false,
-      "linkedName": "Left Starting Point"
+      "linkedName": "Left NZ Grab"
     },
     {
       "anchor": {
-        "x": 1.2572467902995716,
-        "y": 5.555292439372327
+        "x": 3.210984308131241,
+        "y": 7.41845934379458
       },
       "prevControl": {
-        "x": 2.9200801236329044,
-        "y": 5.605681328261214
+        "x": 6.109705995366843,
+        "y": 7.41845934379458
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Left Bank 90 degrees"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Depot+Climb",
+  "folder": "Safe NZ + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.414279600570612,
-        "y": 7.586661911554922
+        "x": 3.188614457831325,
+        "y": 0.5599879518072293
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.003098987984406,
-        "y": 7.855833582930402
+        "x": 2.3471807228915655,
+        "y": 1.161012048192772
       },
       "isLocked": false,
-      "linkedName": "Left Starting Point"
+      "linkedName": "Right Bank"
     },
     {
       "anchor": {
-        "x": 1.2572467902995716,
-        "y": 5.555292439372327
+        "x": 0.5768915662650604,
+        "y": 0.691120481927711
       },
       "prevControl": {
-        "x": 2.9200801236329044,
-        "y": 5.605681328261214
+        "x": 1.6915180722891563,
+        "y": 0.669265060240964
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Depot+Climb",
+  "folder": "Safe Right NZ + NZ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

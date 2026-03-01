@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.414279600570612,
-        "y": 7.586661911554922
+        "x": 3.210984308131241,
+        "y": 7.41845934379458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.003098987984406,
-        "y": 7.855833582930402
+        "x": 2.150014265335235,
+        "y": 5.723495007132667
       },
       "isLocked": false,
-      "linkedName": "Left Starting Point"
+      "linkedName": "Left Bank 90 degrees"
     },
     {
       "anchor": {
@@ -20,15 +20,20 @@
         "y": 5.555292439372327
       },
       "prevControl": {
-        "x": 2.9200801236329044,
-        "y": 5.605681328261214
+        "x": 2.279400855920114,
+        "y": 5.555292439372327
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Depot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,10 +50,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Depot+Climb",
+  "folder": "Safe NZ + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

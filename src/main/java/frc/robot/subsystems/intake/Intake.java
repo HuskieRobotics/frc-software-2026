@@ -207,7 +207,7 @@ public class Intake extends SubsystemBase {
   public Command getDeployAndStartCommand() {
     return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
-        Commands.waitUntil(this::isDeployed),
+        Commands.waitUntil(() -> this.getPosition().gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
         Commands.runOnce(this::startRoller, this));
   }
 
