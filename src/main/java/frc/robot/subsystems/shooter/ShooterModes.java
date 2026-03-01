@@ -332,7 +332,9 @@ public class ShooterModes extends SubsystemBase {
     if (Field2d.getInstance().inAllianceZone()) {
       // assume that if the robot is shooting from rest and adjust later as needed
       targetLandingPosition = Field2d.getInstance().getHubCenter();
-      shooterSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
+      shooterSetpoints =
+          getIdealStaticSetpoints(
+              targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap);
 
       // if the hub is not active, put the robot in collect and hold mode to prepare for when the
       // hub becomes active
@@ -362,7 +364,9 @@ public class ShooterModes extends SubsystemBase {
 
       if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) {
         targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
-        shooterSetpoints = getIdealPassSetpoints(targetLandingPosition);
+        shooterSetpoints =
+            getIdealStaticSetpoints(
+                targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap);
         this.currentMode = ShooterMode.PASS;
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
@@ -379,7 +383,9 @@ public class ShooterModes extends SubsystemBase {
 
       } else {
         targetLandingPosition = Field2d.getInstance().getHubCenter();
-        shooterSetpoints = getIdealStaticShotSetpoints(targetLandingPosition);
+        shooterSetpoints =
+            getIdealStaticSetpoints(
+                targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap);
 
         if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
           shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
@@ -503,31 +509,13 @@ public class ShooterModes extends SubsystemBase {
             + 21.6348611545);
   }
 
-  private ShooterSetpoints getIdealStaticShotSetpoints(Translation2d targetLandingPosition) {
+  private ShooterSetpoints getIdealStaticSetpoints(
+      Translation2d targetLandingPosition,
+      InterpolatingDoubleTreeMap velocityMap,
+      InterpolatingDoubleTreeMap hoodMap) {
     // find our distances to target in x, y and theta
 
     // transform robot pose by calculated robot to shooter transform
-    Pose2d robotPose =
-        RobotOdometry.getInstance().getEstimatedPose().transformBy(ROBOT_TO_TURRET_TRANSFORM);
-
-    double deltaX = targetLandingPosition.getX() - (robotPose.getX());
-    double deltaY = targetLandingPosition.getY() - (robotPose.getY());
-    double distance = Math.hypot(deltaY, deltaX);
-
-    double idealShotVelocity = this.hubDistanceToVelocityMap.get(distance);
-
-    Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
-    Rotation2d robotRelativeTurretAngleRadians =
-        new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
-    Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
-
-    Angle idealHoodAngle = Degrees.of(this.hubDistanceToHoodMap.get(distance));
-
-    return new ShooterSetpoints(
-        RotationsPerSecond.of(idealShotVelocity), idealHoodAngle, robotRelativeTurretAngle);
-  }
-
-  private ShooterSetpoints getIdealPassSetpoints(Translation2d targetLandingPosition) {
     Pose2d robotPose =
         RobotOdometry.getInstance().getEstimatedPose().transformBy(ROBOT_TO_TURRET_TRANSFORM);
 
@@ -535,15 +523,14 @@ public class ShooterModes extends SubsystemBase {
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
     double distance = Math.hypot(deltaY, deltaX);
 
-    // function only applies for hub shots but added a constant value to differentiate in sim
-    double idealShotVelocity = this.passDistanceToVelocityMap.get(distance);
+    double idealShotVelocity = velocityMap.get(distance);
 
     Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
     Rotation2d robotRelativeTurretAngleRadians =
         new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
-    Angle idealHoodAngle = Degrees.of(this.passDistanceToHoodMap.get(distance));
+    Angle idealHoodAngle = Degrees.of(hoodMap.get(distance));
 
     return new ShooterSetpoints(
         RotationsPerSecond.of(idealShotVelocity), idealHoodAngle, robotRelativeTurretAngle);
