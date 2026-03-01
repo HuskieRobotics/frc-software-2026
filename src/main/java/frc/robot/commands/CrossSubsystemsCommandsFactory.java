@@ -114,10 +114,13 @@ public class CrossSubsystemsCommandsFactory {
     oi.getManualShootButton()
         .and(new Trigger(shooterModes::isManualShootEnabled).or(shooterModes::isPassEnabled))
         .onTrue(
-            Commands.either(
-                getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake),
-                getStopAndPassCommand(oi, swerveDrivetrain, shooter, hopper, intake),
-                shooterModes::isManualShootEnabled));
+            getStopAndShootCommand(
+                oi,
+                swerveDrivetrain,
+                shooter,
+                hopper,
+                intake,
+                shooterModes.isPassEnabled() ? LEDs.States.PASSING : LEDs.States.SHOOTING));
 
     oi.getManualShootButton()
         .onFalse(
@@ -141,7 +144,7 @@ public class CrossSubsystemsCommandsFactory {
       Intake intake) {
     return Commands.sequence(
             getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake))
+            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake, LEDs.States.SHOOTING))
         .withName("score safe shot");
   }
 
@@ -164,7 +167,8 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain drivetrain,
       Shooter shooter,
       Hopper hopper,
-      Intake intake) {
+      Intake intake,
+      LEDs.States ledState) {
     return Commands.sequence(
             Commands.runOnce(drivetrain::holdXstance, drivetrain),
             Commands.parallel(
@@ -172,36 +176,13 @@ public class CrossSubsystemsCommandsFactory {
                         () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
                         hopper),
                     Commands.run(intake::jostleFuel, intake),
-                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
+                    Commands.run(() -> LEDs.getInstance().requestState(ledState)))
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
             Commands.runOnce(intake::deployIntake, intake),
             Commands.runOnce(hopper::stop, hopper))
-        .withName("stop and shoot");
-    // add hopper kick method in parallel
-  }
-
-  public static Command getStopAndPassCommand(
-      OperatorInterface oi,
-      SwerveDrivetrain drivetrain,
-      Shooter shooter,
-      Hopper hopper,
-      Intake intake) {
-    return Commands.sequence(
-            Commands.runOnce(drivetrain::holdXstance, drivetrain),
-            Commands.parallel(
-                    Commands.run(
-                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
-                        hopper),
-                    Commands.run(intake::jostleFuel, intake),
-                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.PASSING)))
-                .until(
-                    () ->
-                        (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
-            Commands.runOnce(intake::deployIntake, intake),
-            Commands.runOnce(hopper::stop, hopper))
-        .withName("stop and pass");
+        .withName("stop and shoot or pass");
     // add hopper kick method in parallel
   }
 
@@ -312,14 +293,5 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
             .withName("feed fuel (shoot)"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
-
-    Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
-    unloadHopperForPassingTrigger.whileTrue(
-        Commands.parallel(
-                Commands.runOnce(
-                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
-                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.PASSING)))
-            .withName("feed fuel (pass)"));
-    unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
   }
 }
