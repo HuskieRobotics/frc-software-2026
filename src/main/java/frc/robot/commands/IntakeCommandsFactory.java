@@ -21,7 +21,7 @@ public class IntakeCommandsFactory {
                     intake::inDeployedState)
                 .withName("deploy-retract intake"));
 
-    oi.getStopIntakeRollersButton()
+    oi.getStartStopIntakeRollersButton()
         .onTrue(
             Commands.either(
                     Commands.runOnce(intake::stopRoller, intake),

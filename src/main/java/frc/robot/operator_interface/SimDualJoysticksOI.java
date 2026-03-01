@@ -64,7 +64,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getStopIntakeRollersButton() {
+  public Trigger getStartStopIntakeRollersButton() {
     return rotateJoystickButtons[1];
   }
 

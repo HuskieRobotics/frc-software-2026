@@ -605,9 +605,9 @@ public class AutonomousCommandsFactory {
             intake.getDeployAndStartCommand(), AutoBuilder.followPath(driveToNeutralZoneAndBack)),
         getUnloadHopperCommand(hopper, intake, shooter, 5.0),
         Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(driveToDepot),
-        Commands.parallel(
-            getUnloadHopperCommand(hopper, intake, shooter, 5.0),
-            AutoBuilder.followPath(intakeFromDepot)));
+        AutoBuilder.followPath(driveToDepot)); // ,
+    // Commands.parallel(
+    //     getUnloadHopperCommand(hopper, intake, shooter, 5.0),
+    //     AutoBuilder.followPath(intakeFromDepot)));
   }
 }

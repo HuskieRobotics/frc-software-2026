@@ -257,11 +257,11 @@ public class ShooterModes extends SubsystemBase {
     double xs = ROBOT_TO_TURRET_TRANSFORM.getX();
     double ys = ROBOT_TO_TURRET_TRANSFORM.getY();
 
-    double xFieldTurret = Math.cos(robotHeading) * xs + Math.sin(robotHeading) * ys;
-    double yFieldTurret = Math.cos(robotHeading) * ys - Math.sin(robotHeading) * xs;
+    double xFieldTurret = Math.cos(robotHeading) * xs - Math.sin(robotHeading) * ys;
+    double yFieldTurret = Math.sin(robotHeading) * xs + Math.cos(robotHeading) * ys;
 
-    double tangentialVelocityTurretX = yFieldTurret * drivetrainSpeeds.omegaRadiansPerSecond;
-    double tangentialVelocityTurretY = -xFieldTurret * drivetrainSpeeds.omegaRadiansPerSecond;
+    double tangentialVelocityTurretX = -yFieldTurret * drivetrainSpeeds.omegaRadiansPerSecond;
+    double tangentialVelocityTurretY = xFieldTurret * drivetrainSpeeds.omegaRadiansPerSecond;
 
     return new ChassisSpeeds(
         drivetrainSpeeds.vxMetersPerSecond + tangentialVelocityTurretX,
