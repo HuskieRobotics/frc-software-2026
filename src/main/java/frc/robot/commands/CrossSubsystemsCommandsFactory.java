@@ -310,7 +310,7 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.runOnce(
                     () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
-            .withName("feed fuel (shoot or pass)"));
+            .withName("feed fuel (shoot)"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
 
     Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
