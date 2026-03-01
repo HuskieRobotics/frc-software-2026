@@ -24,7 +24,7 @@ public class IntakeConstants {
 
   // Mechanical properties for simulation
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
-  public static final double DEPLOYER_MASS_KG = 1.5;
+  public static final double DEPLOYER_MASS_KG = 0.15;
   public static final Angle DEPLOYER_MIN_ANGLE = Rotations.of(0);
   public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(22);
 
