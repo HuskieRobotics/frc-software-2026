@@ -249,28 +249,24 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
-    ChassisSpeeds drivetrainSpeeds = RobotOdometry.getInstance().getFieldRelativeSpeeds();
 
+    ChassisSpeeds drivetrainSpeeds = RobotOdometry.getInstance().getFieldRelativeSpeeds();
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
 
-    double robotVelocity = drivetrainSpeeds.vxMetersPerSecond;
+    double robotHeading = robotPose.getRotation().getRadians();
+    double xs = ROBOT_TO_TURRET_TRANSFORM.getX();
+    double ys = ROBOT_TO_TURRET_TRANSFORM.getY();
 
-    double deltaXFieldRelativeTurret =
-        robotPose.getX() * ROBOT_TO_TURRET_TRANSFORM.getX()
-            - robotPose.getY() * ROBOT_TO_TURRET_TRANSFORM.getY();
-    double deltaYFieldRelativeTurret =
-        robotPose.getX() * ROBOT_TO_TURRET_TRANSFORM.getY()
-            + robotPose.getY() * ROBOT_TO_TURRET_TRANSFORM.getX();
+    double xFieldTurret = Math.cos(robotHeading) * xs + Math.sin(robotHeading) * ys;
+    double yFieldTurret = Math.cos(robotHeading) * ys - Math.sin(robotHeading) * xs;
 
-    double tangentialVelocityTurretX =
-        -(drivetrainSpeeds.omegaRadiansPerSecond * deltaYFieldRelativeTurret);
-    double tangentialVelocityTurretY =
-        (drivetrainSpeeds.omegaRadiansPerSecond * deltaXFieldRelativeTurret);
+    double tangentialVelocityTurretX = yFieldTurret * drivetrainSpeeds.omegaRadiansPerSecond;
+    double tangentialVelocityTurretY = -xFieldTurret * drivetrainSpeeds.omegaRadiansPerSecond;
 
     return new ChassisSpeeds(
-        robotVelocity + tangentialVelocityTurretX,
-        robotVelocity + tangentialVelocityTurretY,
-        drivetrainSpeeds.omegaRadiansPerSecond); // FIXME: fix this
+        drivetrainSpeeds.vxMetersPerSecond + tangentialVelocityTurretX,
+        drivetrainSpeeds.vyMetersPerSecond + tangentialVelocityTurretY,
+        drivetrainSpeeds.omegaRadiansPerSecond);
   }
 
   /**
