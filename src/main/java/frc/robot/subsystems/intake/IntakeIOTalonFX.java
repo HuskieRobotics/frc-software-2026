@@ -273,11 +273,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   private void configDeployerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerLimit = DEPLOYER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerTime = DEPLOYER_PEAK_CURRENT_DURATION;
+    config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = DEPLOYER_CONTINUOUS_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit = DEPLOYER_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.MotorOutput.Inverted =

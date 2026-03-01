@@ -42,9 +42,8 @@ public class IntakeConstants {
 
   public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-5.0);
 
-  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 30.0;
-  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 30.0;
-  public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
+  public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 15.0;
+  public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 10.0;
 
   public static final double ROLLER_KP = 20;
   public static final double ROLLER_KI = 0;
