@@ -457,10 +457,10 @@
         "containers": [
           {
             "title": "Pass",
-            "x": 112.0,
-            "y": 0.0,
+            "x": 16.0,
+            "y": 16.0,
             "width": 400.0,
-            "height": 250.0,
+            "height": 256.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Pass",
@@ -469,24 +469,11 @@
             }
           },
           {
-            "title": "Shoot On The Move",
-            "x": 112.0,
-            "y": 288.0,
-            "width": 400.0,
-            "height": 250.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Shoot On The Move",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Lock Shooter",
-            "x": 550.0,
-            "y": 0.0,
-            "width": 400.0,
-            "height": 250.0,
+            "x": 432.0,
+            "y": 16.0,
+            "width": 272.0,
+            "height": 160.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Lock Shooter",
@@ -495,21 +482,8 @@
             }
           },
           {
-            "title": "Lock Turret For Bank",
-            "x": 550.0,
-            "y": 288.0,
-            "width": 400.0,
-            "height": 250.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Lock Turret For Bank",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Object Detection Enabled",
-            "x": 1008.0,
+            "x": 720.0,
             "y": 16.0,
             "width": 288.0,
             "height": 160.0,
@@ -522,21 +496,21 @@
           },
           {
             "title": "Toggle Auto Snaps",
-            "x": 1008.0,
-            "y": 192.0,
-            "width": 288.0,
-            "height": 176.0,
+            "x": 432.0,
+            "y": 176.0,
+            "width": 272.0,
+            "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorDashboard/Toggle Auto Snaps",
+              "topic": "/Tuning/operatorDashboard/Auto Snaps Enabled",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Slow Shooter For Pit Test",
-            "x": 1008.0,
-            "y": 384.0,
+            "x": 720.0,
+            "y": 176.0,
             "width": 288.0,
             "height": 144.0,
             "type": "Toggle Button",

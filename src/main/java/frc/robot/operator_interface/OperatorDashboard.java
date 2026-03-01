@@ -24,7 +24,7 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Lock Turret For Bank", false, true);
 
   public final LoggedTunableBoolean shootOnTheMoveToggle =
-      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, true);
+      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, false);
 
   public final LoggedTunableBoolean objectDetectionToggle =
       new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
