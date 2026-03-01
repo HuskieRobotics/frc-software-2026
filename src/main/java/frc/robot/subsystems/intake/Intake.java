@@ -229,7 +229,7 @@ public class Intake extends SubsystemBase {
 
   private Command getSystemCheckCommand() {
     return Commands.sequence(
-            Commands.runOnce(this::deployIntake),
+            Commands.runOnce(this::deployIntake, this),
             Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
@@ -241,7 +241,7 @@ public class Intake extends SubsystemBase {
                                 "Deployer failed to reach deployed position in System Check");
                       }
                     }),
-            Commands.runOnce(this::startRoller),
+            Commands.runOnce(this::startRoller, this),
             Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
@@ -253,7 +253,7 @@ public class Intake extends SubsystemBase {
                                 "Roller failed to reach target velocity in System Check");
                       }
                     }),
-            Commands.runOnce(this::outTakeRoller),
+            Commands.runOnce(this::outTakeRoller, this),
             Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
@@ -265,8 +265,8 @@ public class Intake extends SubsystemBase {
                                 "Roller failed to reach eject velocity in System Check");
                       }
                     }),
-            Commands.runOnce(this::stopRoller),
-            Commands.runOnce(this::retractIntake),
+            Commands.runOnce(this::stopRoller, this),
+            Commands.runOnce(this::retractIntake, this),
             Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
@@ -281,6 +281,7 @@ public class Intake extends SubsystemBase {
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(
             Commands.sequence(
-                Commands.runOnce(this::stopRoller), Commands.runOnce(this::retractIntake)));
+                Commands.runOnce(this::stopRoller, this),
+                Commands.runOnce(this::retractIntake, this)));
   }
 }

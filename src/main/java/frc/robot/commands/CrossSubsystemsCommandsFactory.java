@@ -117,7 +117,8 @@ public class CrossSubsystemsCommandsFactory {
     oi.getManualShootButton()
         .onFalse(
             Commands.parallel(
-                Commands.runOnce(hopper::stop), Commands.runOnce(intake::deployIntake)));
+                Commands.runOnce(hopper::stop, hopper),
+                Commands.runOnce(intake::deployIntake, intake)));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -160,17 +161,18 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       Intake intake) {
     return Commands.sequence(
-            Commands.runOnce(drivetrain::holdXstance),
+            Commands.runOnce(drivetrain::holdXstance, drivetrain),
             Commands.parallel(
                     Commands.run(
-                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
-                    Commands.run(intake::jostleFuel),
+                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
+                        hopper),
+                    Commands.run(intake::jostleFuel, intake),
                     Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
-            Commands.runOnce(intake::deployIntake),
-            Commands.runOnce(hopper::stop))
+            Commands.runOnce(intake::deployIntake, intake),
+            Commands.runOnce(hopper::stop, hopper))
         .withName("stop and shoot");
     // add hopper kick method in parallel
   }
@@ -192,8 +194,8 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi) {
     return Commands.parallel(
             SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
-            Commands.runOnce(intake::stopRoller),
-            Commands.runOnce(hopper::stop),
+            Commands.runOnce(intake::stopRoller, intake),
+            Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }
@@ -278,18 +280,18 @@ public class CrossSubsystemsCommandsFactory {
     unloadHopperOnTheMoveTrigger.whileTrue(
         Commands.parallel(
                 Commands.runOnce(
-                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
             .withName("feed fuel (shoot)"));
-    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
+    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
 
     Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
     unloadHopperForPassingTrigger.whileTrue(
         Commands.parallel(
                 Commands.runOnce(
-                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.PASSING)))
             .withName("feed fuel (pass)"));
-    unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
+    unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
   }
 }

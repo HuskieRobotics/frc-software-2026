@@ -165,48 +165,48 @@ public class Shooter extends SubsystemBase {
                 () -> {
                   io.setFlywheelVelocity(
                       RotationsPerSecond.of(30)); // FIXME: update value when necessary
-                }));
+                },
+                this));
   }
 
   public Command getTestVelocityCommand() {
     return Commands.sequence(
         // check if the velocity is at setpoint 1
-        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS), this),
         // check if the velocity is at setpoint 2
-        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS), this),
 
         // check if the velocity is at setpoint 3
-        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS), this));
   }
 
   public Command getTestPositionCommand() {
     return Commands.sequence(
         // check if hood and turret are at setpoint 1
-        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_1_DEGREES))),
-        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_1_DEGREES))),
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_1_DEGREES)), this),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_1_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> this.checkPosition(HOOD_SETPOINT_1_DEGREES, TURRET_SETPOINT_1_DEGREES)),
-
+            () -> this.checkPosition(HOOD_SETPOINT_1_DEGREES, TURRET_SETPOINT_1_DEGREES), this),
         // check if hood and turret are at setpoint 2
-        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_2_DEGREES))),
-        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_2_DEGREES))),
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_2_DEGREES)), this),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_2_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> this.checkPosition(HOOD_SETPOINT_2_DEGREES, TURRET_SETPOINT_2_DEGREES)),
+            () -> this.checkPosition(HOOD_SETPOINT_2_DEGREES, TURRET_SETPOINT_2_DEGREES), this),
 
         // check if hood and turret are at setpoint 3
-        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_3_DEGREES))),
-        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_3_DEGREES))),
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_3_DEGREES)), this),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_3_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> this.checkPosition(HOOD_SETPOINT_3_DEGREES, TURRET_SETPOINT_3_DEGREES)));
+            () -> this.checkPosition(HOOD_SETPOINT_3_DEGREES, TURRET_SETPOINT_3_DEGREES), this));
   }
 
   public void checkFlywheelVelocity(AngularVelocity flywheelTargetVelocity) {

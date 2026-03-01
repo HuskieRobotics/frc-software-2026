@@ -18,27 +18,27 @@ public class IntakeCommandsFactory {
             Commands.either(
                     Commands.sequence(
                         Commands.parallel(
-                            Commands.runOnce(intake::retractIntake),
+                            Commands.runOnce(intake::retractIntake, intake),
                             Commands.sequence(
                                 Commands.waitUntil(
                                     () ->
                                         intake
                                             .getPosition()
                                             .lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
-                                Commands.runOnce(intake::stopRoller))),
+                                Commands.runOnce(intake::stopRoller, intake))),
                         Commands.waitUntil(intake::isRetracted)),
                     Commands.sequence(
-                        Commands.runOnce(intake::deployIntake),
+                        Commands.runOnce(intake::deployIntake, intake),
                         Commands.waitUntil(intake::isDeployed),
-                        Commands.runOnce(intake::startRoller)),
+                        Commands.runOnce(intake::startRoller, intake)),
                     intake::inDeployedState)
                 .withName("deploy-retract intake"));
 
     oi.getStopIntakeRollersButton()
         .onTrue(
             Commands.either(
-                    Commands.runOnce(intake::stopRoller),
-                    Commands.runOnce(intake::startRoller),
+                    Commands.runOnce(intake::stopRoller, intake),
+                    Commands.runOnce(intake::startRoller, intake),
                     intake::areRollersActive)
                 .withName("start-stop intake rollers"));
   }

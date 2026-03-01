@@ -340,11 +340,13 @@ public class AutonomousCommandsFactory {
   }
 
   private Command getUnloadHopperFromBankCommand(Hopper hopper, Shooter shooter) {
-    return Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()));
+    return Commands.runOnce(
+        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper);
   }
 
   private Command getUnloadHopperFromDepotCommand(Hopper hopper, Shooter shooter) {
-    return Commands.runOnce(() -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()));
+    return Commands.runOnce(
+        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper);
   }
 
   private Command leftNeutralZoneHopperAndClimb(
@@ -539,7 +541,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper, shooter).withTimeout(5.0),
-        Commands.runOnce(hopper::stop),
+        Commands.runOnce(hopper::stop, hopper),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         AutoBuilder.followPath(driveToBank),
         getUnloadHopperFromBankCommand(hopper, shooter));
@@ -570,7 +572,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper, shooter).withTimeout(5.0),
-        Commands.runOnce(hopper::stop),
+        Commands.runOnce(hopper::stop, hopper),
         AutoBuilder.followPath(driveToNeutralZoneAgain),
         AutoBuilder.followPath(driveToBank),
         getUnloadHopperFromBankCommand(hopper, shooter));
@@ -595,7 +597,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         AutoBuilder.followPath(driveToNeutralZoneAndBack),
         getUnloadHopperFromBankCommand(hopper, shooter).withTimeout(5.0),
-        Commands.runOnce(hopper::stop),
+        Commands.runOnce(hopper::stop, hopper),
         AutoBuilder.followPath(driveToDepot),
         Commands.parallel(
             getUnloadHopperFromDepotCommand(hopper, shooter),
