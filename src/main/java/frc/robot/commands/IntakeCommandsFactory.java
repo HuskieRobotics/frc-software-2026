@@ -16,16 +16,8 @@ public class IntakeCommandsFactory {
     oi.getDeployRetractIntakeButton()
         .onTrue(
             Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(intake::retractIntake, intake),
-                        Commands.waitUntil(
-                            () -> intake.getPosition().lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
-                        Commands.runOnce(intake::stopRoller, intake),
-                        Commands.waitUntil(intake::isRetracted)),
-                    Commands.sequence(
-                        Commands.runOnce(intake::deployIntake, intake),
-                        Commands.waitUntil(intake::isDeployed),
-                        Commands.runOnce(intake::startRoller, intake)),
+                    intake.getRetractAndStopCommand(),
+                    intake.getDeployAndStartCommand(),
                     intake::inDeployedState)
                 .withName("deploy-retract intake"));
 

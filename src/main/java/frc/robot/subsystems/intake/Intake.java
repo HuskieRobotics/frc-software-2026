@@ -185,12 +185,27 @@ public class Intake extends SubsystemBase {
   }
 
   public void jostleFuel() {
+    inDeployedState = false;
     if (this.deployerLinearPosition.gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)) {
       // only jostle if we're far enough away from the hopper to not cause interference
       intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
     } else {
       intakeIO.setDeployerCurrent(Amps.of(0.0));
     }
+  }
+
+  public Command getDeployAndStartCommand() {
+    return Commands.sequence(
+        Commands.runOnce(this::deployIntake, this),
+        Commands.waitUntil(this::isDeployed),
+        Commands.runOnce(this::startRoller, this));
+  }
+
+  public Command getRetractAndStopCommand() {
+    return Commands.sequence(
+        Commands.runOnce(this::retractIntake, this),
+        Commands.waitUntil(() -> this.getPosition().lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
+        Commands.runOnce(this::stopRoller, this));
   }
 
   public Distance getPosition() {
