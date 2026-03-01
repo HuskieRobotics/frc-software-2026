@@ -363,8 +363,6 @@ public class ShooterModes extends SubsystemBase {
       if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) {
         targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
         shooterSetpoints = getIdealPassSetpoints(targetLandingPosition);
-        shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
-
         this.currentMode = ShooterMode.PASS;
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
