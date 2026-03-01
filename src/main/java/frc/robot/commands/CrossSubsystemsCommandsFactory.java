@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -121,8 +122,9 @@ public class CrossSubsystemsCommandsFactory {
     oi.getManualShootButton()
         .onFalse(
             Commands.parallel(
-                Commands.runOnce(hopper::stop, hopper),
-                Commands.runOnce(intake::deployIntake, intake)));
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.runOnce(intake::deployIntake, intake))
+                .withName("stop shooting"));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -285,7 +287,8 @@ public class CrossSubsystemsCommandsFactory {
   private static void configureCrossSubsystemsTriggers(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
 
-    Trigger unloadHopperOnTheMoveTrigger = new Trigger(shooterModes::isShootOnTheMoveEnabled);
+    Trigger unloadHopperOnTheMoveTrigger =
+        new Trigger(shooterModes::isShootOnTheMoveEnabled).and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.whileTrue(
         Commands.parallel(
                 Commands.runOnce(
