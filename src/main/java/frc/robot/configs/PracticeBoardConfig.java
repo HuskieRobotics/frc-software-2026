@@ -94,7 +94,7 @@ public class PracticeBoardConfig extends RobotConfig {
   private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
 
   // Drive Facing Angle constants
-  private static final double DRIVE_FACING_ANGLE_KP = 25.0;
+  private static final double DRIVE_FACING_ANGLE_KP = 5.0;
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 

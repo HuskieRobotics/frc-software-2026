@@ -70,15 +70,15 @@ public abstract class LEDs extends SubsystemBase {
     DISTRACTION_DURING_TELEOP(
         (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
+    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)),
+    IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
+    INTAKE_JAMMED((leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
     DRIVE_TO_POSE_CANCELED(
         (leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
     READY_TO_SHOOT((leds, section) -> leds.solid(section, Color.kGreen)),
     SHOOTING((leds, section) -> leds.pulse(section, PULSE_DURATION, 0, 0, 255)),
     PASSING((leds, section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
     HOPPER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)),
-    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)),
-    IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
-    INTAKE_JAMMED((leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
     AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
@@ -108,7 +108,7 @@ public abstract class LEDs extends SubsystemBase {
    * before updating the LEDs.
    */
   protected static final boolean MIRROR_LEDS = true;
-  protected static final int ACTUAL_LENGTH = 42; // RobotConfig.getInstance().getLEDCount();
+  protected static final int ACTUAL_LENGTH = 27; // RobotConfig.getInstance().getLEDCount();
   protected static final int LENGTH = MIRROR_LEDS ? ACTUAL_LENGTH / 2 : ACTUAL_LENGTH;
   private static final int STATIC_LENGTH = LENGTH / 2;
   private static final int STATIC_SECTION_LENGTH = STATIC_LENGTH / 3;

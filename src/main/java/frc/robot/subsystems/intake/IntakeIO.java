@@ -47,4 +47,6 @@ public interface IntakeIO {
   public default void setDeployerPosition(Angle position) {}
 
   public default void setDeployerVoltage(Voltage volts) {}
+
+  public default void setDeployerCurrent(Current amps) {}
 }

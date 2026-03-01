@@ -6,6 +6,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -42,6 +43,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private PositionVoltage deployerPositionRequest = new PositionVoltage(0);
   private VoltageOut deployerVoltageRequest = new VoltageOut(0);
+  private TorqueCurrentFOC deployerCurrentRequest = new TorqueCurrentFOC(0);
 
   // Alerts
   private final Alert rollerConfigAlert =
@@ -141,6 +143,7 @@ public class IntakeIOTalonFX implements IntakeIO {
             DEPLOYER_MIN_ANGLE.in(Radians),
             DEPLOYER_MAX_ANGLE.in(Radians),
             DEPLOYER_MIN_ANGLE.in(Radians),
+            true,
             SUBSYSTEM_NAME);
   }
 
@@ -262,6 +265,11 @@ public class IntakeIOTalonFX implements IntakeIO {
     this.deployerReferencePosition = angularPosition;
   }
 
+  @Override
+  public void setDeployerCurrent(Current amps) {
+    this.deployerMotor.setControl(deployerCurrentRequest.withOutput(amps));
+  }
+
   private void configDeployerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -276,6 +284,13 @@ public class IntakeIOTalonFX implements IntakeIO {
         DEPLOYER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
+
+    SoftwareLimitSwitchConfigs deployerLimitSwitches = config.SoftwareLimitSwitch;
+
+    deployerLimitSwitches.ForwardSoftLimitEnable = true;
+    deployerLimitSwitches.ForwardSoftLimitThreshold = DEPLOYER_MAX_ANGLE.in(Rotations);
+    deployerLimitSwitches.ReverseSoftLimitEnable = true;
+    deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE.in(Rotations);
 
     config.Feedback.SensorToMechanismRatio = DEPLOYER_GEAR_RATIO;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;

@@ -28,6 +28,7 @@ public class Intake extends SubsystemBase {
 
   private Distance deployerLinearPosition = Meters.of(0);
   private boolean inDeployedState = false;
+  private boolean areRollersActiveState = false;
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
@@ -52,6 +53,8 @@ public class Intake extends SubsystemBase {
 
   private final LoggedTunableNumber deployerVoltage =
       new LoggedTunableNumber("Intake/DeployerVoltage", 0.0);
+  private final LoggedTunableNumber deployerJostleFuelCurrent =
+      new LoggedTunableNumber("Intake/DeployerCurrent", DEPLOYER_JOSTLE_FUEL_CURRENT.in(Amps));
 
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.2);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.2);
@@ -111,7 +114,10 @@ public class Intake extends SubsystemBase {
       }
     }
 
-    checkRollerJam();
+    Logger.recordOutput("Intake In Deployed State", inDeployedState);
+    Logger.recordOutput("Are Rollers Active", areRollersActiveState);
+
+    // checkRollerJam();
 
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
@@ -146,7 +152,6 @@ public class Intake extends SubsystemBase {
                       Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED))
                           .withTimeout(ROLLER_UNJAM_DURATION_SECONDS),
                       Commands.runOnce(this::startRoller, this))
-                  .withTimeout(1.0)
                   .withName("Stop Intake Jammed"));
       rollerJamAlert.set(true);
     } else {
@@ -155,14 +160,17 @@ public class Intake extends SubsystemBase {
   }
 
   public void startRoller() {
+    areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
   }
 
   public void stopRoller() {
+    areRollersActiveState = false;
     intakeIO.setRollerVelocity(RotationsPerSecond.of(0.0));
   }
 
   public void outTakeRoller() {
+    areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_EJECT_VELOCITY);
   }
 
@@ -174,6 +182,19 @@ public class Intake extends SubsystemBase {
   public void retractIntake() {
     inDeployedState = false;
     setLinearPosition(RETRACTED_LINEAR_POSITION);
+  }
+
+  public void jostleFuel() {
+    if (this.deployerLinearPosition.gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)) {
+      // only jostle if we're far enough away from the hopper to not cause interference
+      intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
+    } else {
+      intakeIO.setDeployerCurrent(Amps.of(0.0));
+    }
+  }
+
+  public Distance getPosition() {
+    return this.deployerLinearPosition;
   }
 
   public boolean isRollerAtSetpoint(AngularVelocity velocity) {
@@ -200,6 +221,10 @@ public class Intake extends SubsystemBase {
 
   public boolean inDeployedState() {
     return inDeployedState;
+  }
+
+  public boolean areRollersActive() {
+    return areRollersActiveState;
   }
 
   private Command getSystemCheckCommand() {

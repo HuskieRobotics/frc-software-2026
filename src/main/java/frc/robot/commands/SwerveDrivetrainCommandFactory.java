@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.leds.LEDs;
@@ -34,13 +35,7 @@ public class SwerveDrivetrainCommandFactory {
      * direction. This is why the left joystick's y axis specifies the velocity in the x direction
      * and the left joystick's x axis specifies the velocity in the y direction.
      */
-    swerveDrivetrain.setDefaultCommand(
-        new TeleopSwerve(
-            swerveDrivetrain,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            getTeleopSwerveAngleSupplier(swerveDrivetrain)));
+    swerveDrivetrain.setDefaultCommand(getDefaultTeleopSwerveCommand(oi, swerveDrivetrain));
 
     driveToPoseCanceledTrigger = new Trigger(swerveDrivetrain::getDriveToPoseCanceled);
     driveToPoseCanceledTrigger.onTrue(
@@ -127,7 +122,18 @@ public class SwerveDrivetrainCommandFactory {
     //     .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
   }
 
-  public static Supplier<Optional<Rotation2d>> getTeleopSwerveAngleSupplier(
+  public static Command getDefaultTeleopSwerveCommand(
+      OperatorInterface oi, SwerveDrivetrain drivetrain) {
+    return new TeleopSwerve(
+            drivetrain,
+            oi::getTranslateX,
+            oi::getTranslateY,
+            oi::getRotate,
+            getTeleopSwerveAngleSupplier(drivetrain))
+        .withName("default teleop swerve");
+  }
+
+  private static Supplier<Optional<Rotation2d>> getTeleopSwerveAngleSupplier(
       SwerveDrivetrain drivetrain) {
     return () -> {
       if (OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean()) {
