@@ -238,7 +238,9 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Deployer failed to reach deployed position in System Check");
+                                "Deployer failed to reach deployed position in System Check; was: "
+                                    + inputs.deployerAngularPosition.in(Rotations)
+                                    + " rotations");
                       }
                     }),
             Commands.runOnce(this::startRoller, this),
@@ -250,7 +252,9 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Roller failed to reach target velocity in System Check");
+                                "Roller failed to reach target velocity in System Check; was: "
+                                    + inputs.rollerVelocity.in(RotationsPerSecond)
+                                    + " RPS");
                       }
                     }),
             Commands.runOnce(this::outTakeRoller, this),
@@ -262,7 +266,9 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Roller failed to reach eject velocity in System Check");
+                                "Roller failed to reach eject velocity in System Check; was: "
+                                    + inputs.rollerVelocity.in(RotationsPerSecond)
+                                    + " RPS");
                       }
                     }),
             Commands.runOnce(this::stopRoller, this),
@@ -275,7 +281,9 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Deployer failed to reach retracted position in System Check");
+                                "Deployer failed to reach retracted position in System Check; was: "
+                                    + inputs.deployerAngularPosition.in(Rotations)
+                                    + " rotations");
                       }
                     }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
