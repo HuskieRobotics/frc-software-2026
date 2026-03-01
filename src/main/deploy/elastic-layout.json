@@ -147,19 +147,6 @@
               "period": 0.06,
               "data_type": "boolean"
             }
-          },
-          {
-            "title": "Shooter Modes Testing",
-            "x": 400.0,
-            "y": 336.0,
-            "width": 288.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Shooter Modes Testing",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
           }
         ]
       }
@@ -370,32 +357,6 @@
         "layouts": [],
         "containers": [
           {
-            "title": "FR: activate calibration",
-            "x": 16.0,
-            "y": 128.0,
-            "width": 240.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/northstar_FR/calibration/active",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "FR: capture frame for cal",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 240.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/northstar_FR/calibration/capture_flag",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "enable recording",
             "x": 16.0,
             "y": 0.0,
@@ -435,34 +396,8 @@
             }
           },
           {
-            "title": "FL: activate calibration",
-            "x": 16.0,
-            "y": 384.0,
-            "width": 240.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/northstar_FL/calibration/active",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "FL: capture frame for cal",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 240.0,
-            "height": 128.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/northstar_FL/calibration/capture_flag",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "BL: activate calibration",
-            "x": 528.0,
+            "x": 16.0,
             "y": 128.0,
             "width": 240.0,
             "height": 128.0,
@@ -475,7 +410,7 @@
           },
           {
             "title": "BL: capture frame for cal",
-            "x": 768.0,
+            "x": 256.0,
             "y": 128.0,
             "width": 240.0,
             "height": 128.0,
@@ -488,8 +423,8 @@
           },
           {
             "title": "center: activate calibration",
-            "x": 528.0,
-            "y": 256.0,
+            "x": 512.0,
+            "y": 128.0,
             "width": 240.0,
             "height": 128.0,
             "type": "Toggle Switch",
@@ -501,8 +436,8 @@
           },
           {
             "title": "center: capture frame for cal",
-            "x": 768.0,
-            "y": 256.0,
+            "x": 752.0,
+            "y": 128.0,
             "width": 240.0,
             "height": 128.0,
             "type": "Toggle Button",
@@ -522,10 +457,10 @@
         "containers": [
           {
             "title": "Pass",
-            "x": 112.0,
-            "y": 0.0,
+            "x": 16.0,
+            "y": 16.0,
             "width": 400.0,
-            "height": 250.0,
+            "height": 256.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Pass",
@@ -534,24 +469,11 @@
             }
           },
           {
-            "title": "Shoot On The Move",
-            "x": 112.0,
-            "y": 288.0,
-            "width": 400.0,
-            "height": 250.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Shoot On The Move",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Lock Shooter",
-            "x": 550.0,
-            "y": 0.0,
-            "width": 400.0,
-            "height": 250.0,
+            "x": 432.0,
+            "y": 16.0,
+            "width": 272.0,
+            "height": 160.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Lock Shooter",
@@ -560,21 +482,8 @@
             }
           },
           {
-            "title": "Lock Turret For Bank",
-            "x": 550.0,
-            "y": 288.0,
-            "width": 400.0,
-            "height": 250.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Lock Turret For Bank",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Object Detection Enabled",
-            "x": 1008.0,
+            "x": 720.0,
             "y": 16.0,
             "width": 288.0,
             "height": 160.0,
@@ -587,21 +496,21 @@
           },
           {
             "title": "Toggle Auto Snaps",
-            "x": 1008.0,
-            "y": 192.0,
-            "width": 288.0,
-            "height": 176.0,
+            "x": 432.0,
+            "y": 176.0,
+            "width": 272.0,
+            "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorDashboard/Toggle Auto Snaps",
+              "topic": "/Tuning/operatorDashboard/Auto Snaps Enabled",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Slow Shooter For Pit Test",
-            "x": 1008.0,
-            "y": 384.0,
+            "x": 720.0,
+            "y": 176.0,
             "width": 288.0,
             "height": 144.0,
             "type": "Toggle Button",

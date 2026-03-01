@@ -109,7 +109,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 27;
+  private static final int LED_COUNT = 10;
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";

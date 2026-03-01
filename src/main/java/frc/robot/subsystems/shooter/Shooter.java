@@ -29,6 +29,8 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
+  private boolean systemTestRunning = false;
+
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
@@ -148,8 +150,15 @@ public class Shooter extends SubsystemBase {
     LoggedTracer.record("Shooter");
   }
 
+  public boolean isSystemTestRunning() {
+    return this.systemTestRunning;
+  }
+
   public Command getShooterSystemCheckCommand() {
-    return Commands.sequence(getTestVelocityCommand(), getTestPositionCommand())
+    return Commands.sequence(
+            Commands.runOnce(() -> this.systemTestRunning = true),
+            getTestVelocityCommand(),
+            getTestPositionCommand())
         .until(
             () ->
                 !FaultReporter.getInstance()
@@ -160,53 +169,47 @@ public class Shooter extends SubsystemBase {
         // Then the .until() would stop the rest of the commands from running, because a fault has
         // been detected. Otherwise, if .until() evaluates to false, then the system check keeps
         // running.
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  io.setFlywheelVelocity(
-                      RotationsPerSecond.of(30)); // FIXME: update value when necessary
-                }));
+        .andThen(Commands.runOnce(() -> this.systemTestRunning = false));
   }
 
   public Command getTestVelocityCommand() {
     return Commands.sequence(
         // check if the velocity is at setpoint 1
-        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_1_RPS), this),
         // check if the velocity is at setpoint 2
-        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS)),
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_2_RPS), this),
 
         // check if the velocity is at setpoint 3
-        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> io.setFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
-        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS)));
+        Commands.runOnce(() -> this.checkFlywheelVelocity(FLYWHEEL_VELOCITY_SETPOINT_3_RPS), this));
   }
 
   public Command getTestPositionCommand() {
     return Commands.sequence(
         // check if hood and turret are at setpoint 1
-        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_1_DEGREES))),
-        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_1_DEGREES))),
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_1_DEGREES)), this),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_1_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> this.checkPosition(HOOD_SETPOINT_1_DEGREES, TURRET_SETPOINT_1_DEGREES)),
-
+            () -> this.checkPosition(HOOD_SETPOINT_1_DEGREES, TURRET_SETPOINT_1_DEGREES), this),
         // check if hood and turret are at setpoint 2
-        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_2_DEGREES))),
-        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_2_DEGREES))),
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_2_DEGREES)), this),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_2_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> this.checkPosition(HOOD_SETPOINT_2_DEGREES, TURRET_SETPOINT_2_DEGREES)),
+            () -> this.checkPosition(HOOD_SETPOINT_2_DEGREES, TURRET_SETPOINT_2_DEGREES), this),
 
         // check if hood and turret are at setpoint 3
-        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_3_DEGREES))),
-        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_3_DEGREES))),
+        Commands.runOnce(() -> io.setHoodPosition(Degrees.of(HOOD_SETPOINT_3_DEGREES)), this),
+        Commands.runOnce(() -> io.setTurretPosition(Degrees.of(TURRET_SETPOINT_3_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
-            () -> this.checkPosition(HOOD_SETPOINT_3_DEGREES, TURRET_SETPOINT_3_DEGREES)));
+            () -> this.checkPosition(HOOD_SETPOINT_3_DEGREES, TURRET_SETPOINT_3_DEGREES), this));
   }
 
   public void checkFlywheelVelocity(AngularVelocity flywheelTargetVelocity) {
@@ -221,25 +224,35 @@ public class Shooter extends SubsystemBase {
                   + " RPS");
     }
 
-    if (!shooterInputs.flywheelFollow1Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    AngularVelocity followVelocity = shooterInputs.flywheelFollow1Velocity;
+    if (followVelocity.lt(RotationsPerSecond.of(0))) {
+      followVelocity = followVelocity.unaryMinus();
+    }
+
+    if (!followVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "flywheel follow 1 is out of tolerance, should be "
                   + flywheelTargetVelocity.in(RotationsPerSecond)
                   + " RPS but is "
-                  + shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
+                  + followVelocity.in(RotationsPerSecond)
                   + " RPS");
     }
 
-    if (!shooterInputs.flywheelFollow2Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    followVelocity = shooterInputs.flywheelFollow2Velocity;
+    if (followVelocity.lt(RotationsPerSecond.of(0))) {
+      followVelocity = followVelocity.unaryMinus();
+    }
+
+    if (!followVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "flywheel follow 2 is out of tolerance, should be "
                   + flywheelTargetVelocity.in(RotationsPerSecond)
                   + " RPS but is "
-                  + shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
+                  + followVelocity.in(RotationsPerSecond)
                   + " RPS");
     }
   }
@@ -289,6 +302,11 @@ public class Shooter extends SubsystemBase {
     return flywheelAtSetpointDebouncer.calculate(
         shooterInputs.flywheelLeadVelocity.isNear(
             shooterInputs.flywheelLeadReferenceVelocity, VELOCITY_TOLERANCE));
+  }
+
+  public boolean isTurretNearSetPoint() {
+    return shooterInputs.turretPosition.isNear(
+        shooterInputs.turretReferencePosition, TURRET_DISTANCE_TO_SETPOINT_THRESHOLD);
   }
 
   public void setFlywheelVelocity(AngularVelocity velocity) {

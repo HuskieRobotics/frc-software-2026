@@ -7,11 +7,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -109,15 +111,20 @@ public class CrossSubsystemsCommandsFactory {
     new Trigger(shooterModes::isManualShootEnabled)
         .or(shooterModes::isLockedShooterEnabled)
         .and(oi.getScoreFromBankButton())
-        .onTrue(getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake));
+        .onTrue(
+            getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
-        .and(shooterModes::isManualShootEnabled)
-        .onTrue(getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake));
+        .and(new Trigger(shooterModes::isManualShootEnabled).or(shooterModes::isPassEnabled))
+        .onTrue(
+            getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
+
     oi.getManualShootButton()
         .onFalse(
             Commands.parallel(
-                Commands.runOnce(hopper::stop), Commands.runOnce(intake::deployIntake)));
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.runOnce(intake::deployIntake, intake))
+                .withName("stop shooting"));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -132,10 +139,11 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain drivetrain,
       Shooter shooter,
       Hopper hopper,
-      Intake intake) {
+      Intake intake,
+      ShooterModes shooterModes) {
     return Commands.sequence(
             getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake))
+            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake, shooterModes))
         .withName("score safe shot");
   }
 
@@ -158,20 +166,25 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain drivetrain,
       Shooter shooter,
       Hopper hopper,
-      Intake intake) {
+      Intake intake,
+      ShooterModes shooterModes) {
     return Commands.sequence(
-            Commands.runOnce(drivetrain::holdXstance),
+            Commands.runOnce(drivetrain::holdXstance, drivetrain),
             Commands.parallel(
                     Commands.run(
-                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
-                    Commands.run(intake::jostleFuel),
-                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
+                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
+                        hopper),
+                    Commands.run(intake::jostleFuel, intake),
+                    Commands.either(
+                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                        shooterModes::isPassEnabled))
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
-            Commands.runOnce(intake::deployIntake),
-            Commands.runOnce(hopper::stop))
-        .withName("stop and shoot");
+            Commands.runOnce(intake::deployIntake, intake),
+            Commands.runOnce(hopper::stop, hopper))
+        .withName("stop and shoot or pass");
     // add hopper kick method in parallel
   }
 
@@ -192,8 +205,8 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi) {
     return Commands.parallel(
             SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
-            Commands.runOnce(intake::stopRoller),
-            Commands.runOnce(hopper::stop),
+            Commands.runOnce(intake::stopRoller, intake),
+            Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }
@@ -274,22 +287,20 @@ public class CrossSubsystemsCommandsFactory {
   private static void configureCrossSubsystemsTriggers(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
 
-    Trigger unloadHopperOnTheMoveTrigger = new Trigger(shooterModes::isShootOnTheMoveEnabled);
+    Trigger unloadHopperOnTheMoveTrigger =
+        new Trigger(shooterModes::isShootOnTheMoveEnabled).and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.whileTrue(
         Commands.parallel(
                 Commands.runOnce(
-                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
             .withName("feed fuel (shoot)"));
-    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
+    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
 
-    Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
-    unloadHopperForPassingTrigger.whileTrue(
-        Commands.parallel(
-                Commands.runOnce(
-                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
-                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.PASSING)))
-            .withName("feed fuel (pass)"));
-    unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
+    // when we enable shoot or pass on the move, we will need to add logic to pause the hopper when
+    // the turret is flipping to prevent errant shots
+    // Trigger turretFlippingSides = new Trigger(shooter::isTurretNearSetPoint);
+    // turretFlippingSides.onFalse(
+    //     Commands.runOnce(hopper::stop, hopper).withName("pause hopper; turret flipping"));
   }
 }
