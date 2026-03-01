@@ -81,11 +81,19 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getSnakeDriveButton() {
+  public default Trigger getManualShootButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getManualShootButton() {
+  public default Trigger getStopIntakeRollersButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getUnjamHopperButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getSnakeDriveButton() {
     return new Trigger(() -> false);
   }
 
@@ -110,6 +118,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getLockTurretForBankToggle() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getShootOnTheMoveToggle() {
     return new Trigger(() -> false);
   }
@@ -118,7 +130,25 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getLockShooterToggle() {
+    return new Trigger(() -> false);
+  }
+
+  // only for at home
+  public default Trigger getHubActiveAtHomeToggle() {
+    return new Trigger(() -> false);
+  }
+
+  // Shooter triggers
+  public default Trigger getZeroHoodButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getAutoSnapsEnabledTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getSlowShooterForPitTest() {
     return new Trigger(() -> false);
   }
 }

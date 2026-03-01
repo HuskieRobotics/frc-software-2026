@@ -134,6 +134,32 @@
               "period": 0.06,
               "data_type": "boolean"
             }
+          },
+          {
+            "title": "Hub Active (Home)",
+            "x": 400.0,
+            "y": 192.0,
+            "width": 288.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Hub Active (Home)",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Shooter Modes Testing",
+            "x": 400.0,
+            "y": 336.0,
+            "width": 288.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Shooter Modes Testing",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -144,9 +170,9 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Drivetrain System Check",
+            "title": "Drivetrain",
             "x": 576.0,
-            "y": 48.0,
+            "y": 16.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -160,7 +186,7 @@
           {
             "title": "CheckRan",
             "x": 832.0,
-            "y": 48.0,
+            "y": 16.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -177,7 +203,7 @@
           {
             "title": "SystemOK",
             "x": 960.0,
-            "y": 48.0,
+            "y": 16.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -192,45 +218,147 @@
             }
           },
           {
-            "title": "Faults",
-            "x": 576.0,
-            "y": 176.0,
-            "width": 512.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/Faults",
-              "period": 0.06,
-              "data_type": "string[]",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "LastFault",
-            "x": 576.0,
-            "y": 304.0,
+            "title": "Intake",
+            "x": 16.0,
+            "y": 16.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Command",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/LastFault",
+              "topic": "/SmartDashboard/SystemStatus/Intake/SystemCheck",
               "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
+              "show_type": true,
+              "maximize_button_space": false
             }
           },
           {
-            "title": "Status",
+            "title": "CheckRan",
+            "x": 272.0,
+            "y": 16.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Intake/CheckRan",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "SystemOK",
+            "x": 400.0,
+            "y": 16.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Intake/SystemOK",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Hopper",
+            "x": 16.0,
+            "y": 160.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/SystemStatus/Hopper/SystemCheck",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "CheckRan",
+            "x": 272.0,
+            "y": 160.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Hopper/CheckRan",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "SystemOK",
+            "x": 400.0,
+            "y": 160.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Hopper/SystemOK",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Shooter",
+            "x": 576.0,
+            "y": 160.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/SystemStatus/Shooter/SystemCheck",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "CheckRan",
             "x": 832.0,
-            "y": 304.0,
-            "width": 256.0,
+            "y": 160.0,
+            "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/Status",
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Shooter/CheckRan",
               "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "SystemOK",
+            "x": 960.0,
+            "y": 160.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Shooter/SystemOK",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -396,8 +524,8 @@
             "title": "Pass",
             "x": 112.0,
             "y": 0.0,
-            "width": 560.0,
-            "height": 288.0,
+            "width": 400.0,
+            "height": 250.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Pass",
@@ -409,11 +537,37 @@
             "title": "Shoot On The Move",
             "x": 112.0,
             "y": 288.0,
-            "width": 560.0,
-            "height": 304.0,
+            "width": 400.0,
+            "height": 250.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Shoot On The Move",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Lock Shooter",
+            "x": 550.0,
+            "y": 0.0,
+            "width": 400.0,
+            "height": 250.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Lock Shooter",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Lock Turret For Bank",
+            "x": 550.0,
+            "y": 288.0,
+            "width": 400.0,
+            "height": 250.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Lock Turret For Bank",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -440,6 +594,19 @@
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Toggle Auto Snaps",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Slow Shooter For Pit Test",
+            "x": 1008.0,
+            "y": 384.0,
+            "width": 288.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Slow Shooter For Pit Test",
               "period": 0.06,
               "data_type": "boolean"
             }

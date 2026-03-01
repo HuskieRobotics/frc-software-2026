@@ -42,7 +42,7 @@ public class HopperConstants {
   public static final double KICKER_MOI = 0.5;
 
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE =
-      RotationsPerSecond.of(0.5); // FIXME: Update value
+      RotationsPerSecond.of(1.0); // FIXME: Update value
 
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 39; // FIXME: Update value
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.5;
@@ -51,25 +51,21 @@ public class HopperConstants {
 
   public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
-          -5); // <-- Should be negative (rotations per second) // FIXME: Update value
+          -4.5); // <-- Should be negative (rotations per second) // FIXME: Update value
   public static final AngularVelocity KICKER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
-          -5); // <-- Should be negative (rotations per second) // FIXME: Update value
+          -60.0); // <-- Should be negative (rotations per second) // FIXME: Update value
 
-  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_1_RPS =
-      RotationsPerSecond.of(30); // FIXME: Determine test points
-  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_2_RPS =
-      RotationsPerSecond.of(60); // FIXME: Determine test points
-  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_3_RPS =
-      RotationsPerSecond.of(90); // FIXME: Determine test points
-
-  public static final AngularVelocity SPINDEXER_VELOCITY_SETPOINT_1_RPS =
-      RotationsPerSecond.of(30); // FIXME: Determine test points
-  public static final AngularVelocity SPINDEXER_VELOCITY_SETPOINT_2_RPS =
-      RotationsPerSecond.of(60); // FIXME: Determine test points
-  public static final AngularVelocity SPINDEXER_VELOCITY_SETPOINT_3_RPS =
-      RotationsPerSecond.of(90); // FIXME: Determine test points
+  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_1_RPS = RotationsPerSecond.of(25.0);
+  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_2_RPS = RotationsPerSecond.of(36.0);
+  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_3_RPS = RotationsPerSecond.of(60.0);
 
   public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
   public static final double KICKER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
+
+  public static final AngularVelocity KICKER_FUEL_INTO_SHOOTER_VELOCITY =
+      RotationsPerSecond.of(20.0); // FIXME: Update value
+
+  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY =
+      RotationsPerSecond.of(4.5); // FIXME: Update value
 }

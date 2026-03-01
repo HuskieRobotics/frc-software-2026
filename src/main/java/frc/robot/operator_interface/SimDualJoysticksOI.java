@@ -47,9 +47,14 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getFieldRelativeButton() {
+  public Trigger getManualShootButton() {
     return translateJoystickButtons[2];
   }
+
+  // @Override
+  // public Trigger getFieldRelativeButton() {
+  //   return translateJoystickButtons[2];
+  // }
 
   @Override
   public Trigger getResetPoseToVisionButton() {
@@ -66,6 +71,16 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   @Override
   public double getRotate() {
     return -rotateJoystick.getX();
+  }
+
+  @Override
+  public Trigger getStopIntakeRollersButton() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getUnjamHopperButton() {
+    return rotateJoystickButtons[3];
   }
 
   @Override

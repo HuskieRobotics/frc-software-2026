@@ -70,6 +70,11 @@ public class DualJoysticksOI extends OperatorDashboard {
     return translateJoystickButtons[9];
   }
 
+  @Override
+  public Trigger getZeroHoodButton() {
+    return translateJoystickButtons[10];
+  }
+
   // Rotation Joystick
   @Override
   public double getRotate() {
@@ -79,6 +84,16 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getManualShootButton() {
     return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getStopIntakeRollersButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getUnjamHopperButton() {
+    return rotateJoystickButtons[3];
   }
 
   @Override

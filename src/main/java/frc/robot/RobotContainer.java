@@ -29,7 +29,9 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DifferentialDrivetrainCommandFactory;
+import frc.robot.commands.HopperCommandsFactory;
 import frc.robot.commands.IntakeCommandsFactory;
+import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.New2026RobotConfig;
@@ -45,6 +47,10 @@ import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.shooter.ShooterModes;
 import frc.robot.visualizations.RobotVisualization;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -62,8 +68,10 @@ public class RobotContainer {
   private DifferentialDrivetrain differentialDrivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Shooter shooter;
   private Hopper hopper;
   private Intake intake;
+  private ShooterModes shooterModes;
   private RobotVisualization visualization;
 
   private final LoggedNetworkNumber endgameAlert1 =
@@ -142,8 +150,11 @@ public class RobotContainer {
       // FIXME: initialize other subsystems
       intake = new Intake(new IntakeIO() {});
       hopper = new Hopper(new HopperIO() {});
+      shooter = new Shooter(new ShooterIO() {});
       visualization = new RobotVisualization(intake);
     }
+
+    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -201,14 +212,14 @@ public class RobotContainer {
     VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
     for (int i = 0; i < visionIOs.length; i++) {
       visionIOs[i] =
-          new VisionIOPhotonVision(
-              cameraConfigs[i].id(), FieldConstants.defaultAprilTagType.getLayout());
+          new VisionIONorthstar(FieldConstants.defaultAprilTagType.getLayout(), cameraConfigs[i]);
     }
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
+    shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
 
@@ -226,6 +237,7 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
+    shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -247,25 +259,28 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
+    shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
 
   private void createXRPSubsystems() {
     differentialDrivetrain = new DifferentialDrivetrain(new DifferentialDrivetrainIOXRP());
     vision = new Vision(new VisionIO[] {});
-
+    hopper = new Hopper(new HopperIO() {});
     intake = new Intake(new IntakeIO() {});
+    shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(intake);
   }
 
   private void createPracticeBoardSubsystems() {
     // change the following to connect the subsystem being tested to actual hardware
     swerveDrivetrain = new SwerveDrivetrain(new SwerveDrivetrainIO() {});
-    vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    vision = new Vision(new VisionIO[] {});
 
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
+    shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
   }
 
@@ -285,6 +300,7 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
+    shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -303,6 +319,7 @@ public class RobotContainer {
     // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIO() {});
+    shooter = new Shooter(new ShooterIO() {});
     visualization = new RobotVisualization(intake);
   }
 
@@ -314,12 +331,21 @@ public class RobotContainer {
     Field2d.getInstance().setRegions(new Region2d[] {});
 
     Field2d.getInstance().populateAllianceZone();
+    Field2d.getInstance().populateOpponentAllianceZone();
+    Field2d.getInstance().populateNeutralZone();
+    Field2d.getInstance().populateOpponentAllianceHighPassZone();
+    Field2d.getInstance().populateNoPassZone();
     Field2d.getInstance().logAllianceZonePoints();
+    Field2d.getInstance().logOpponentAllianceZonePoints();
+    Field2d.getInstance().logNeutralZonePoints();
+    Field2d.getInstance().logOpponentAllianceHighPassZonePoints();
+    Field2d.getInstance().logNoPassZonePoints();
     Field2d.getInstance().populateTrenchZone();
     Field2d.getInstance().logTrenchZonePoints();
     Field2d.getInstance().populateBumpZone();
     Field2d.getInstance().logBumpZonePoints();
     Field2d.getInstance().populateBanks();
+    Field2d.getInstance().populatePassingPoses();
   }
 
   /**
@@ -344,8 +370,11 @@ public class RobotContainer {
 
     // register commands for other subsystems
     IntakeCommandsFactory.registerCommands(oi, intake);
+    HopperCommandsFactory.registerCommands(oi, hopper);
+    ShooterCommandsFactory.registerCommands(oi, shooter);
 
-    CrossSubsystemsCommandsFactory.registerCommands(oi, swerveDrivetrain, intake, hopper, vision);
+    CrossSubsystemsCommandsFactory.registerCommands(
+        oi, swerveDrivetrain, intake, hopper, shooter, shooterModes);
 
     // Endgame alerts
     new Trigger(

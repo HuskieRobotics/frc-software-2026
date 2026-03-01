@@ -9,17 +9,19 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
-import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterModes;
 import java.util.Optional;
 
 public class CrossSubsystemsCommandsFactory {
@@ -96,14 +98,29 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain swerveDrivetrain,
       Intake intake,
       Hopper hopper,
-      Vision vision) {
+      Shooter shooter,
+      ShooterModes shooterModes) {
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, oi));
+    configureCrossSubsystemsTriggers(shooterModes, shooter, hopper);
 
-    // FIXME: add back .and(shooterModes::manualShootEnabled)
-    oi.getScoreFromBankButton().onTrue(getScoreSafeShotCommand(swerveDrivetrain /*, hopper*/, oi));
+    oi.getInterruptAll()
+        .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
+
+    new Trigger(shooterModes::isManualShootEnabled)
+        .or(shooterModes::isLockedShooterEnabled)
+        .and(oi.getScoreFromBankButton())
+        .onTrue(getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake));
+
+    oi.getManualShootButton()
+        .and(shooterModes::isManualShootEnabled)
+        .onTrue(getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake));
+    oi.getManualShootButton()
+        .onFalse(
+            Commands.parallel(
+                Commands.runOnce(hopper::stop), Commands.runOnce(intake::deployIntake)));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
+
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
     registerSysIdCommands(oi);
@@ -111,13 +128,15 @@ public class CrossSubsystemsCommandsFactory {
 
   // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
   public static Command getScoreSafeShotCommand(
-      SwerveDrivetrain drivetrain /*, Hopper hopper */, OperatorInterface oi) {
-
-    // check if we are in CAN_SHOOT mode: either grab mode directly (figure out how) or check OI !=
-    // shoot_otm && in AZ
-
+      OperatorInterface oi,
+      SwerveDrivetrain drivetrain,
+      Shooter shooter,
+      Hopper hopper,
+      Intake intake) {
     return Commands.sequence(
-        getDriveToBankCommand(drivetrain), getUnloadShooterCommand(drivetrain, oi /*, hopper*/));
+            getDriveToBankCommand(drivetrain),
+            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake))
+        .withName("score safe shot");
   }
 
   public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {
@@ -134,11 +153,25 @@ public class CrossSubsystemsCommandsFactory {
 
   // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
   // CAN_SHOOT / non SHOOT_OTM
-  public static Command getUnloadShooterCommand(
-      SwerveDrivetrain drivetrain, OperatorInterface oi /*, Hopper hopper */) {
-
-    return Commands.parallel(Commands.run(drivetrain::holdXstance))
-        .until(() -> (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1));
+  public static Command getStopAndShootCommand(
+      OperatorInterface oi,
+      SwerveDrivetrain drivetrain,
+      Shooter shooter,
+      Hopper hopper,
+      Intake intake) {
+    return Commands.sequence(
+            Commands.runOnce(drivetrain::holdXstance),
+            Commands.parallel(
+                    Commands.run(
+                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                    Commands.run(intake::jostleFuel),
+                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
+                .until(
+                    () ->
+                        (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
+            Commands.runOnce(intake::deployIntake),
+            Commands.runOnce(hopper::stop))
+        .withName("stop and shoot");
     // add hopper kick method in parallel
   }
 
@@ -152,17 +185,16 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getInterruptAllCommand(
-      SwerveDrivetrain swerveDrivetrain, Intake intake, Hopper hopper, OperatorInterface oi) {
+      SwerveDrivetrain swerveDrivetrain,
+      Intake intake,
+      Hopper hopper,
+      Shooter shooter,
+      OperatorInterface oi) {
     return Commands.parallel(
-            new TeleopSwerve(
-                swerveDrivetrain,
-                oi::getTranslateX,
-                oi::getTranslateY,
-                oi::getRotate,
-                SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(swerveDrivetrain)),
+            SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
             Commands.runOnce(intake::stopRoller),
-            Commands.runOnce(hopper::stopKicker),
-            Commands.runOnce(hopper::stopSpindexer))
+            Commands.runOnce(hopper::stop),
+            Commands.runOnce(shooter::stopHood, shooter))
         .withName("interrupt all");
   }
 
@@ -192,12 +224,7 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
-    return new TeleopSwerve(
-            drivetrain,
-            oi::getTranslateX,
-            oi::getTranslateY,
-            oi::getRotate,
-            SwerveDrivetrainCommandFactory.getTeleopSwerveAngleSupplier(drivetrain))
+    return SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, drivetrain)
         .withName("Override driveToPose");
   }
 
@@ -242,5 +269,27 @@ public class CrossSubsystemsCommandsFactory {
         thetaKp,
         thetaKi,
         thetaKd);
+  }
+
+  private static void configureCrossSubsystemsTriggers(
+      ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
+
+    Trigger unloadHopperOnTheMoveTrigger = new Trigger(shooterModes::isShootOnTheMoveEnabled);
+    unloadHopperOnTheMoveTrigger.whileTrue(
+        Commands.parallel(
+                Commands.runOnce(
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
+            .withName("feed fuel (shoot)"));
+    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop));
+
+    Trigger unloadHopperForPassingTrigger = new Trigger(shooterModes::isPassEnabled);
+    unloadHopperForPassingTrigger.whileTrue(
+        Commands.parallel(
+                Commands.runOnce(
+                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity())),
+                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.PASSING)))
+            .withName("feed fuel (pass)"));
+    unloadHopperForPassingTrigger.onFalse(Commands.runOnce(hopper::stop));
   }
 }

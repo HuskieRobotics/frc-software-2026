@@ -6,7 +6,6 @@ import static frc.robot.subsystems.hopper.HopperConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,9 +15,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 import org.littletonrobotics.junction.Logger;
 
@@ -85,7 +86,7 @@ public class Hopper extends SubsystemBase {
     SysIdRoutineChooser.getInstance().addOption("Kicker Current", kickerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Spindexer Current", spindexerSysIdRoutine);
 
-    getHopperSystemCheckCommand();
+    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getHopperSystemCheckCommand());
   }
 
   @Override
@@ -108,62 +109,43 @@ public class Hopper extends SubsystemBase {
       }
     }
 
-    if (frc.robot.Constants.getMode() != Mode.SIM) {
-      if (spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps)))) {
-        CommandScheduler.getInstance()
-            .schedule(
-                Commands.sequence(
-                    Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))
-                        .withName("spindexer jammed"),
-                    Commands.waitSeconds(SPINDEXER_UNJAM_WAIT_TIME)));
-        spindexerJammedAlert.set(true);
-      } else {
-        spindexerJammedAlert.set(false);
-      }
+    if (Constants.getMode() != Constants.Mode.SIM) {
+      kickerJammedAlert.set(
+          kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps))));
+      spindexerJammedAlert.set(
+          spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps))));
 
-      if (kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps)))) {
+      if (kickerSpikeDetector.getAsBoolean() || spindexerSpikeDetector.getAsBoolean()) {
         CommandScheduler.getInstance()
-            .schedule(
-                Commands.sequence(
-                    Commands.runOnce(() -> io.setKickerVelocity(KICKER_UNJAM_VELOCITY))
-                        .withName("kicker jammed"),
-                    Commands.waitSeconds(KICKER_UNJAM_WAIT_TIME)));
-        kickerJammedAlert.set(true);
-      } else {
-        kickerJammedAlert.set(false);
+            .schedule(this.getUnjamCommand().withName("auto unjam hopper"));
       }
     }
 
     LoggedTracer.record(SUBSYSTEM_NAME);
   }
 
+  public Command getUnjamCommand() {
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY)),
+            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY))),
+        Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED))
+            .withTimeout(KICKER_UNJAM_WAIT_TIME),
+        Commands.runOnce(this::feedFuelIntoShooter));
+  }
+
   private Command getHopperSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
         .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  stopSpindexer();
-                  stopKicker();
-                }));
+        .andThen(Commands.runOnce(this::stop));
   }
 
   public Command getTestVelocityCommand() {
     return Commands.sequence(
         // check if spindexer velocity is at setpoint 1
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
+        Commands.runOnce(() -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY)),
         Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_1_RPS)),
-
-        // check if spindexer velocity is at setpoint 2
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
-        Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_2_RPS)),
-
-        // check if spindexer velocity is at setpoint 3
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
-        Commands.waitSeconds(3),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPINDEXER_VELOCITY_SETPOINT_3_RPS)),
+        Commands.runOnce(() -> this.checkSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY)),
 
         // check if kicker velocity is at setpoint 1
         Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS)),
@@ -218,20 +200,22 @@ public class Hopper extends SubsystemBase {
         inputs.kickerVelocity.isNear(inputs.kickerReferenceVelocity, KICKER_VELOCITY_TOLERANCE));
   }
 
-  public void setKickerVelocity(AngularVelocity velocity) {
+  private void setKickerVelocity(AngularVelocity velocity) {
     io.setKickerVelocity(velocity);
   }
 
-  public void setSpindexerVelocity(AngularVelocity velocity) {
+  private void setSpindexerVelocity(AngularVelocity velocity) {
     io.setSpindexerVelocity(velocity);
   }
 
-  public void setKickerCurrent(Current amps) {
-    io.setKickerCurrent(amps);
+  public void feedFuelIntoShooter() {
+    io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY);
+    io.setKickerVelocity(KICKER_FUEL_INTO_SHOOTER_VELOCITY);
   }
 
-  public void setSpindexerCurrent(Current amps) {
-    io.setSpindexerCurrent(amps);
+  public void feedFuelIntoShooter(AngularVelocity kickerVelocity) {
+    io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY);
+    io.setKickerVelocity(kickerVelocity);
   }
 
   public AngularVelocity getKickerVelocityRPS() {
@@ -243,15 +227,7 @@ public class Hopper extends SubsystemBase {
   }
 
   public void stop() {
-    stopSpindexer();
-    stopKicker();
-  }
-
-  public void stopSpindexer() {
     io.setSpindexerVelocity(RotationsPerSecond.of(0.0));
-  }
-
-  public void stopKicker() {
     io.setKickerVelocity(RotationsPerSecond.of(0.0));
   }
 }
