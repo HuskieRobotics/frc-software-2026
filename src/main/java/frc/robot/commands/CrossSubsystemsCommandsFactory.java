@@ -293,5 +293,11 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
             .withName("feed fuel (shoot)"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
+
+    // when we enable shoot or pass on the move, we will need to add logic to pause the hopper when
+    // the turret is flipping to prevent errant shots
+    // Trigger turretFlippingSides = new Trigger(shooter::isTurretNearSetPoint);
+    // turretFlippingSides.onFalse(
+    //     Commands.runOnce(hopper::stop, hopper).withName("pause hopper; turret flipping"));
   }
 }

@@ -304,6 +304,11 @@ public class Shooter extends SubsystemBase {
             shooterInputs.flywheelLeadReferenceVelocity, VELOCITY_TOLERANCE));
   }
 
+  public boolean isTurretNearSetPoint() {
+    return shooterInputs.turretPosition.isNear(
+        shooterInputs.turretReferencePosition, TURRET_DISTANCE_TO_SETPOINT_THRESHOLD);
+  }
+
   public void setFlywheelVelocity(AngularVelocity velocity) {
     io.setFlywheelVelocity(velocity);
   }
