@@ -114,8 +114,8 @@ public class Intake extends SubsystemBase {
       }
     }
 
-    Logger.recordOutput("Intake In Deployed State", inDeployedState);
-    Logger.recordOutput("Are Rollers Active", areRollersActiveState);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/Deployed", inDeployedState);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/Rollers Active", areRollersActiveState);
 
     // checkRollerJam();
 
