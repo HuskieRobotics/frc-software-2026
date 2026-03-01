@@ -317,6 +317,12 @@ public class ShooterModes extends SubsystemBase {
       return;
     }
 
+    // check if the shooter system test is running; if so, don't update the shooter setpoints so the
+    // test can control the shooter without interference from the shooter modes logic
+    if (!DriverStation.isFMSAttached() && shooter.isSystemTestRunning()) {
+      return;
+    }
+
     // determine if the robot will be potentially shooting or passing, which is based on  whether we
     // are in the alliance zone or not
 

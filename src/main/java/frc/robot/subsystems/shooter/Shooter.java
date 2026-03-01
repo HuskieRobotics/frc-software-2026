@@ -29,6 +29,8 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
+  private boolean systemTestRunning = false;
+
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
@@ -148,8 +150,15 @@ public class Shooter extends SubsystemBase {
     LoggedTracer.record("Shooter");
   }
 
+  public boolean isSystemTestRunning() {
+    return this.systemTestRunning;
+  }
+
   public Command getShooterSystemCheckCommand() {
-    return Commands.sequence(getTestVelocityCommand(), getTestPositionCommand())
+    return Commands.sequence(
+            Commands.runOnce(() -> this.systemTestRunning = true),
+            getTestVelocityCommand(),
+            getTestPositionCommand())
         .until(
             () ->
                 !FaultReporter.getInstance()
@@ -160,13 +169,7 @@ public class Shooter extends SubsystemBase {
         // Then the .until() would stop the rest of the commands from running, because a fault has
         // been detected. Otherwise, if .until() evaluates to false, then the system check keeps
         // running.
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  io.setFlywheelVelocity(
-                      RotationsPerSecond.of(30)); // FIXME: update value when necessary
-                },
-                this));
+        .andThen(Commands.runOnce(() -> this.systemTestRunning = false));
   }
 
   public Command getTestVelocityCommand() {
@@ -221,25 +224,35 @@ public class Shooter extends SubsystemBase {
                   + " RPS");
     }
 
-    if (!shooterInputs.flywheelFollow1Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    AngularVelocity followVelocity = shooterInputs.flywheelFollow1Velocity;
+    if (followVelocity.lt(RotationsPerSecond.of(0))) {
+      followVelocity = followVelocity.unaryMinus();
+    }
+
+    if (!followVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "flywheel follow 1 is out of tolerance, should be "
                   + flywheelTargetVelocity.in(RotationsPerSecond)
                   + " RPS but is "
-                  + shooterInputs.flywheelFollow1Velocity.in(RotationsPerSecond)
+                  + followVelocity.in(RotationsPerSecond)
                   + " RPS");
     }
 
-    if (!shooterInputs.flywheelFollow2Velocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
+    followVelocity = shooterInputs.flywheelFollow2Velocity;
+    if (followVelocity.lt(RotationsPerSecond.of(0))) {
+      followVelocity = followVelocity.unaryMinus();
+    }
+
+    if (!followVelocity.isNear(flywheelTargetVelocity, VELOCITY_TOLERANCE)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "flywheel follow 2 is out of tolerance, should be "
                   + flywheelTargetVelocity.in(RotationsPerSecond)
                   + " RPS but is "
-                  + shooterInputs.flywheelFollow2Velocity.in(RotationsPerSecond)
+                  + followVelocity.in(RotationsPerSecond)
                   + " RPS");
     }
   }
