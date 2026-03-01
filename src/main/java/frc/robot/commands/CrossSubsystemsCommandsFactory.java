@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -109,18 +110,13 @@ public class CrossSubsystemsCommandsFactory {
     new Trigger(shooterModes::isManualShootEnabled)
         .or(shooterModes::isLockedShooterEnabled)
         .and(oi.getScoreFromBankButton())
-        .onTrue(getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake));
+        .onTrue(
+            getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
         .and(new Trigger(shooterModes::isManualShootEnabled).or(shooterModes::isPassEnabled))
         .onTrue(
-            getStopAndShootCommand(
-                oi,
-                swerveDrivetrain,
-                shooter,
-                hopper,
-                intake,
-                shooterModes.isPassEnabled() ? LEDs.States.PASSING : LEDs.States.SHOOTING));
+            getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
         .onFalse(
@@ -141,10 +137,11 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain drivetrain,
       Shooter shooter,
       Hopper hopper,
-      Intake intake) {
+      Intake intake,
+      ShooterModes shooterModes) {
     return Commands.sequence(
             getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake, LEDs.States.SHOOTING))
+            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake, shooterModes))
         .withName("score safe shot");
   }
 
@@ -168,7 +165,7 @@ public class CrossSubsystemsCommandsFactory {
       Shooter shooter,
       Hopper hopper,
       Intake intake,
-      LEDs.States ledState) {
+      ShooterModes shooterModes) {
     return Commands.sequence(
             Commands.runOnce(drivetrain::holdXstance, drivetrain),
             Commands.parallel(
@@ -176,7 +173,10 @@ public class CrossSubsystemsCommandsFactory {
                         () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
                         hopper),
                     Commands.run(intake::jostleFuel, intake),
-                    Commands.run(() -> LEDs.getInstance().requestState(ledState)))
+                    Commands.either(
+                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                        shooterModes::isPassEnabled))
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
