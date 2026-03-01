@@ -131,7 +131,12 @@ public class Vision extends SubsystemBase {
       this.inputs[i] = new VisionIOInputsAutoLogged();
       this.aprilTagInputs[i] = new AprilTagVisionIOInputsAutoLogged();
       this.objDetectInputs[i] = new ObjDetectVisionIOInputsAutoLogged();
-      this.disconnectedAlerts[i] = new Alert("camera" + i + " is disconnected", AlertType.kError);
+      this.disconnectedAlerts[i] =
+          new Alert(
+              "camera "
+                  + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                  + " is disconnected",
+              AlertType.kError);
       this.camerasToConsider.add(i);
 
       tagPoses.add(new ArrayList<>());
