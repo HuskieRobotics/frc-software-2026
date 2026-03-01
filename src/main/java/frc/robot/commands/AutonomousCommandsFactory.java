@@ -348,7 +348,9 @@ public class AutonomousCommandsFactory {
         Commands.parallel(
                 Commands.run(
                     () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
-                Commands.run(intake::jostleFuel, intake))
+                Commands.repeatingSequence(
+                    Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
+                    Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
             .withTimeout(timeout),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));

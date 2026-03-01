@@ -174,7 +174,9 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.run(
                         () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
                         hopper),
-                    Commands.run(intake::jostleFuel, intake),
+                    Commands.repeatingSequence(
+                        Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
+                        Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)),
                     Commands.either(
                         Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                         Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
