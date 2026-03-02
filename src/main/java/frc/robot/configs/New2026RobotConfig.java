@@ -380,7 +380,7 @@ public class New2026RobotConfig extends RobotConfig {
 
   @Override
   public Mass getMass() {
-    return Pounds.of(111.0);
+    return Pounds.of(137.6);
   }
 
   @Override
