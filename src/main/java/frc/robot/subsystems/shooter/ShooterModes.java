@@ -448,7 +448,13 @@ public class ShooterModes extends SubsystemBase {
             * Math.PI
             * Units.inchesToMeters(3);
     Angle theta = staticSetpoints.hoodAngle;
-    Angle phi = staticSetpoints.turretAngle;
+
+    Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
+    Angle phi =
+        Radians.of(
+            new Rotation2d(staticSetpoints.turretAngle)
+                .plus(robotPose.getRotation())
+                .getRadians());
 
     ChassisSpeeds fieldRelativeSpeeds = getShooterFieldRelativeVelocity();
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
@@ -475,10 +481,12 @@ public class ShooterModes extends SubsystemBase {
                 v * Math.cos(theta.in(Radians)));
 
     double newTurretAngle =
-        (180.0 / Math.PI)
-            * Math.atan2(
-                (v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
-                (v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx));
+        new Rotation2d(
+                Math.atan2(
+                    (v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
+                    (v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx)))
+            .minus(robotPose.getRotation())
+            .getDegrees();
 
     return new ShooterSetpoints(
         RotationsPerSecond.of(newFlywheelVelocity),
