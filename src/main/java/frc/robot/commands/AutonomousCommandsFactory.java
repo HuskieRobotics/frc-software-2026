@@ -593,10 +593,12 @@ public class AutonomousCommandsFactory {
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToDepot;
     PathPlannerPath intakeFromDepot;
+    PathPlannerPath leaveDepot;
     try {
       driveToNeutralZoneAndBack = PathPlannerPath.fromPathFile("L Fuel Sweep");
       driveToDepot = PathPlannerPath.fromPathFile("Left Bank to Depot");
       intakeFromDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
@@ -610,10 +612,10 @@ public class AutonomousCommandsFactory {
             intake.getDeployAndStartCommand(), AutoBuilder.followPath(driveToNeutralZoneAndBack)),
         getUnloadHopperCommand(hopper, intake, shooter, 5.0),
         Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(driveToDepot)); // ,
-    // Commands.parallel(
-    //     getUnloadHopperCommand(hopper, intake, shooter, 5.0),
-    //     AutoBuilder.followPath(intakeFromDepot)));
+        AutoBuilder.followPath(driveToDepot),
+        AutoBuilder.followPath(intakeFromDepot),
+        AutoBuilder.followPath(leaveDepot),
+        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
   }
 
   private Command leftSafeNeutralZoneAndDepot(Hopper hopper, Intake intake, Shooter shooter) {
