@@ -92,7 +92,7 @@ public class ShooterConstants {
   public static final int TURRET_CONTINUOUS_CURRENT_LIMIT = 15;
   public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
 
-  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(0.5);
+  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(1.0);
   public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // x`FIXME: update when tuning
   public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
   public static final Angle TURRET_DISTANCE_TO_SETPOINT_THRESHOLD =

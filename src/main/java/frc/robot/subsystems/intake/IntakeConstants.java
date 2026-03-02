@@ -59,7 +59,7 @@ public class IntakeConstants {
   public static final AngularVelocity ROLLER_TARGET_VELOCITY =
       RotationsPerSecond.of(35.0); // FIXME: set value
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
-  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
+  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
   public static final double ROLLER_PEAK_CURRENT_LIMIT = 60.0;
 
