@@ -53,6 +53,10 @@ public class Region2d {
       }
       iterator.next();
     }
+    if (!poses.isEmpty()) {
+      // add the first point again at the end to close the loop when visualizing
+      poses.add(poses.get(0));
+    }
 
     Logger.recordOutput("Region2d/" + nameForLog, poses.toArray(Pose2d[]::new));
 
