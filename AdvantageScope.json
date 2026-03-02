@@ -22,16 +22,21 @@
             "/Drivetrain/FL",
             "/Drivetrain/FR",
             "/RealOutputs/CommandsAll",
-            "/RealOutputs/Vision/BR",
-            "/RealOutputs/Vision/BL",
             "/RealOutputs/DriveToPose",
             "/Vision/center",
             "/Vision/BR",
-            "/Vision/BL"
+            "/Vision/BL",
+            "/Tuning",
+            "/Tuning/operatorDashboard",
+            "/RealOutputs/SystemStatus/Intake",
+            "/RealOutputs/SystemStatus/Hopper",
+            "/RealOutputs/SystemStatus/Shooter",
+            "/RealOutputs/Vision",
+            "/RealOutputs/RobotOdometry"
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 1,
           "tabs": [
             {
               "type": 0,
@@ -129,6 +134,15 @@
                     "options": {
                       "position": "center"
                     }
+                  },
+                  {
+                    "type": "arrow",
+                    "logKey": "/RealOutputs/ShooterModes/targetLandingPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "position": "front"
+                    }
                   }
                 ],
                 "field": "FRC:2026 Field",
@@ -150,7 +164,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "3061 (2025)"
+                      "model": "3061 Robot (2026)"
                     }
                   },
                   {
@@ -188,7 +202,7 @@
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "model": "3061 (2025)",
+                      "model": "3061 Robot (2026)",
                       "color": "#00ff00"
                     }
                   },
@@ -198,7 +212,7 @@
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "model": "3061 (2025)",
+                      "model": "3061 Robot (2026)",
                       "color": "#ff0000"
                     }
                   }
@@ -210,14 +224,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  1.4695761589768238e-15,
-                  5.999999999999999,
-                  -12
+                  -7.77516946144781,
+                  3.6658138045132427,
+                  -6.161639724372671
                 ],
                 "cameraTarget": [
-                  0,
-                  0.5,
-                  0
+                  -6.557472343072671,
+                  -0.28329924705271436,
+                  -0.3590121548991614
                 ]
               },
               "controlsHeight": 200
@@ -496,6 +510,16 @@
                       "color": "#c0b487",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Hopper/KickerReferenceVelocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#5f4528",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "rightSources": [
@@ -516,6 +540,16 @@
                     "visible": true,
                     "options": {
                       "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Hopper/SpindexerReferenceVelocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa",
                       "size": "normal"
                     }
                   }
@@ -546,6 +580,15 @@
                     "visible": true,
                     "options": {
                       "color": "#858584"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/CommandsAll/auto unjam hopper",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
                     }
                   }
                 ],
@@ -580,6 +623,26 @@
                       "color": "#2b66a2",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/ShooterModes/FlywheelVelocitySetpointRPS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#5f4528",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Shooter/FlywheelLeadReferenceVelocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "rightSources": [
@@ -600,6 +663,46 @@
                     "visible": true,
                     "options": {
                       "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/ShooterModes/HoodAngleSetpointDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/ShooterModes/TurretAngleSetpointDegrees",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Shooter/HoodReferencePosition",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Shooter/TurretReferencePosition",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
                       "size": "normal"
                     }
                   }
@@ -788,7 +891,38 @@
                     }
                   }
                 ],
-                "rightSources": [],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Drivetrain/ConstrainPoseToFieldCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/RobotOdometry/updateTime",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/RobotOdometry/visionTime",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  }
+                ],
                 "discreteSources": [
                   {
                     "type": "stripes",
@@ -806,6 +940,24 @@
                     "visible": true,
                     "options": {
                       "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/IsUpdating",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/IsEnabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
                     }
                   }
                 ],
