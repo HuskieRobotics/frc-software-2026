@@ -11,8 +11,8 @@ public class HopperConstants {
   public static final int SPINDEXER_ID = 14;
   public static final int KICKER_ID = 19;
 
-  public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value
-  public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 40; // FIXME: Update value
+  public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 60; // FIXME: Update value
+  public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 60; // FIXME: Update value
 
   public static final double SPINDEXER_GEAR_RATIO = 18.0;
   public static final double KICKER_GEAR_RATIO = 1.0;
@@ -44,9 +44,9 @@ public class HopperConstants {
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE =
       RotationsPerSecond.of(1.0); // FIXME: Update value
 
-  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 39; // FIXME: Update value
+  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS = 59; // FIXME: Update value
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.5;
-  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS = 39; // FIXME: Update value
+  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS = 59; // FIXME: Update value
   public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.5;
 
   public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
