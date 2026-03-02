@@ -9,7 +9,7 @@ public final class VisionConstants {
 
   public static final String SUBSYSTEM_NAME = "Vision";
 
-  public static final boolean ENABLE_DETAILED_LOGGING = false;
+  public static final boolean ENABLE_POSE_PERSISTENCE_LOGGING = false;
   public static final boolean CALIBRATE_CAMERA_TRANSFORMS = false;
 
   // an accepted pose must be within this many seconds of the current time in order to qualify for

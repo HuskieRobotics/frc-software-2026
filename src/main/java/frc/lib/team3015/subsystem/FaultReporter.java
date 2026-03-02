@@ -159,7 +159,7 @@ public class FaultReporter {
     CommandScheduler.getInstance()
         .schedule(
             Commands.repeatingSequence(
-                    Commands.runOnce(this::checkForFaultsWhenDisabled), Commands.waitSeconds(1.0))
+                    Commands.runOnce(this::checkForFaultsWhenDisabled), Commands.waitSeconds(5.0))
                 .ignoringDisable(true)
                 .withName("check for faults when disabled"));
   }
