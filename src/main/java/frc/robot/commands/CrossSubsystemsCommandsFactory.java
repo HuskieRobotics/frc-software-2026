@@ -171,9 +171,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(drivetrain::holdXstance, drivetrain),
             Commands.parallel(
-                    Commands.run(
-                        () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()),
-                        hopper),
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
                     Commands.repeatingSequence(
                         Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
                         Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)),
@@ -293,8 +291,7 @@ public class CrossSubsystemsCommandsFactory {
         new Trigger(shooterModes::isShootOnTheMoveEnabled).and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.whileTrue(
         Commands.parallel(
-                Commands.runOnce(
-                    () -> hopper.feedFuelIntoShooter(shooter.getFlywheelLeadVelocity()), hopper),
+                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
             .withName("feed fuel (shoot)"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
