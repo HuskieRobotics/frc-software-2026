@@ -13,6 +13,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
@@ -32,6 +34,7 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
+  private double shotVelocityMultiplier = 1.0;
 
   /*
   Create interpolating tree map for data points
@@ -87,6 +90,7 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
+    registerVelocityDial();
   }
 
   @Override
@@ -95,6 +99,7 @@ public class ShooterModes extends SubsystemBase {
 
     determineModeAndSetShooter();
 
+    Logger.recordOutput("ShooterModes/Shot Multiplier", this.shotVelocityMultiplier);
     Logger.recordOutput("ShooterModes/CurrentMode", this.currentMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
   }
@@ -339,7 +344,7 @@ public class ShooterModes extends SubsystemBase {
       targetLandingPosition = Field2d.getInstance().getHubCenter();
       shooterSetpoints =
           getIdealStaticSetpoints(
-              targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap);
+              targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap, true);
 
       // if the hub is not active, put the robot in collect and hold mode to prepare for when the
       // hub becomes active
@@ -371,7 +376,7 @@ public class ShooterModes extends SubsystemBase {
         targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
         shooterSetpoints =
             getIdealStaticSetpoints(
-                targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap);
+                targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap, false);
 
         this.currentMode = ShooterMode.MANUAL_PASS;
 
@@ -398,7 +403,7 @@ public class ShooterModes extends SubsystemBase {
         targetLandingPosition = Field2d.getInstance().getHubCenter();
         shooterSetpoints =
             getIdealStaticSetpoints(
-                targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap);
+                targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap, true);
 
         if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
           shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
@@ -505,6 +510,26 @@ public class ShooterModes extends SubsystemBase {
         Degrees.of(newTurretAngle));
   }
 
+  // increases shot velocities by 1%
+  public void registerVelocityDial() {
+    SmartDashboard.putData(
+        SUBSYSTEM_NAME + "/Increase Shot Velocity 1%",
+        Commands.runOnce(this::incrementShotVelocity));
+    SmartDashboard.putData(
+        SUBSYSTEM_NAME + "/Decrease Shot Velocity 1%",
+        Commands.runOnce(this::decrementShotVelocity));
+  }
+
+  // increases shot velocities by 1%
+  public void incrementShotVelocity() {
+    this.shotVelocityMultiplier += 0.01;
+  }
+
+  // decreases shot velocities by 1%
+  public void decrementShotVelocity() {
+    this.shotVelocityMultiplier -= 0.01;
+  }
+
   private double idealVelocityFromFunction(double distance) {
     double vMetersPerSecond =
         0.0094236446 * Math.pow(distance, 3)
@@ -531,7 +556,8 @@ public class ShooterModes extends SubsystemBase {
   private ShooterSetpoints getIdealStaticSetpoints(
       Translation2d targetLandingPosition,
       InterpolatingDoubleTreeMap velocityMap,
-      InterpolatingDoubleTreeMap hoodMap) {
+      InterpolatingDoubleTreeMap hoodMap,
+      boolean isShootingHub) {
     // find our distances to target in x, y and theta
 
     // transform robot pose by calculated robot to shooter transform
@@ -550,6 +576,11 @@ public class ShooterModes extends SubsystemBase {
     Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
 
     Angle idealHoodAngle = Degrees.of(hoodMap.get(distance));
+
+    // if we are shooting into the hub, apply the shot velocity multiplier (don't apply for passes)
+    if (isShootingHub) {
+      idealShotVelocity *= this.shotVelocityMultiplier;
+    }
 
     return new ShooterSetpoints(
         RotationsPerSecond.of(idealShotVelocity), idealHoodAngle, robotRelativeTurretAngle);
