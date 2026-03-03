@@ -6,6 +6,7 @@ package frc.lib.team3061.swerve_drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.lib.team3061.swerve_drivetrain.SwerveDrivetrainConstants.*;
+import static frc.robot.Constants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -644,12 +645,6 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     Logger.recordOutput(SUBSYSTEM_NAME + "/Pose", pose);
     Logger.recordOutput(SUBSYSTEM_NAME + "/CustomPose", this.customPose);
 
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/FRPose",
-        pose.transformBy(
-            new Transform2d(
-                RobotConfig.getInstance().getFrontRightCornerPosition(), new Rotation2d())));
-
     // check for position outside the field due to slipping
     if (pose.getX() < 0) {
       this.resetPose(new Pose2d(0, pose.getY(), pose.getRotation()));
@@ -670,12 +665,20 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/FieldRelative", this.getFieldRelative());
 
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/Speed",
-        Math.hypot(
-            inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond,
-            inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond),
-        MetersPerSecond);
+    if (ENABLE_EXTRA_LOGGING) {
+      Logger.recordOutput(
+          SUBSYSTEM_NAME + "/FRPose",
+          pose.transformBy(
+              new Transform2d(
+                  RobotConfig.getInstance().getFrontRightCornerPosition(), new Rotation2d())));
+
+      Logger.recordOutput(
+          SUBSYSTEM_NAME + "/Speed",
+          Math.hypot(
+              inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond,
+              inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond),
+          MetersPerSecond);
+    }
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();

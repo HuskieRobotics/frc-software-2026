@@ -44,7 +44,8 @@ public class SwerveDrivetrainCommandFactory {
                         () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
                         swerveDrivetrain)
                     .withTimeout(0.5),
-                Commands.runOnce(() -> swerveDrivetrain.setDriveToPoseCanceled(false)))
+                Commands.runOnce(
+                    () -> swerveDrivetrain.setDriveToPoseCanceled(false), swerveDrivetrain))
             .withName("cancel drive to pose"));
 
     // field-relative toggle

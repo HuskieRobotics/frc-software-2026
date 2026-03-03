@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.5574733096010975,
-        "y": 7.4465568181818185
+        "x": 3.0169044222539223,
+        "y": 7.586661911554922
       },
       "prevControl": {
-        "x": 7.1243453336869225,
-        "y": 7.392128192418068
+        "x": 6.583776446339748,
+        "y": 7.532233285791171
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,7 +50,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Neutral Zone+Climb",
+  "folder": "[NON BLUFF] Neutral Zone+Climb",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -36.158185439808186

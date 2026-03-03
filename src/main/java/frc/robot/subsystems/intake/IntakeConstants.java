@@ -24,7 +24,7 @@ public class IntakeConstants {
 
   // Mechanical properties for simulation
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
-  public static final double DEPLOYER_MASS_KG = 1.5;
+  public static final double DEPLOYER_MASS_KG = 0.15;
   public static final Angle DEPLOYER_MIN_ANGLE = Rotations.of(0);
   public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(22);
 
@@ -38,13 +38,12 @@ public class IntakeConstants {
   public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
   public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
-  public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(2.0);
+  public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(3.0);
 
-  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-5.0);
+  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-10.0);
 
-  public static final double DEPLOYER_PEAK_CURRENT_LIMIT = 30.0;
-  public static final double DEPLOYER_CONTINUOUS_CURRENT_LIMIT = 30.0;
-  public static final double DEPLOYER_PEAK_CURRENT_DURATION = 0.5;
+  public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 25.0;
+  public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 20.0;
 
   public static final double ROLLER_KP = 20;
   public static final double ROLLER_KI = 0;
@@ -58,11 +57,11 @@ public class IntakeConstants {
   public static final double ROLLER_GEAR_RATIO = 2.14;
   public static final boolean ROLLER_MOTOR_INVERTED = false;
   public static final AngularVelocity ROLLER_TARGET_VELOCITY =
-      RotationsPerSecond.of(40.0); // FIXME: set value
+      RotationsPerSecond.of(27.0); // FIXME: set value
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
-  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
+  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
-  public static final double ROLLER_PEAK_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_PEAK_CURRENT_LIMIT = 60.0;
 
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 

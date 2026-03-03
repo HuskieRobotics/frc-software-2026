@@ -85,7 +85,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getStopIntakeRollersButton() {
+  public default Trigger getStartStopIntakeRollersButton() {
     return new Trigger(() -> false);
   }
 

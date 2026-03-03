@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -27,7 +28,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
-import frc.lib.team3061.sim.ArmSystemSim;
+import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
@@ -75,7 +76,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       new LoggedTunableNumber("Intake/Deployer/kS", DEPLOYER_KS);
 
   private VelocitySystemSim rollerSim;
-  private ArmSystemSim deployerSim;
+  private ElevatorSystemSim deployerSim;
 
   private StatusSignal<Voltage> rollerVoltageSS;
   private StatusSignal<AngularVelocity> rollerVelocitySS;
@@ -134,16 +135,15 @@ public class IntakeIOTalonFX implements IntakeIO {
         new VelocitySystemSim(
             rollerMotor, ROLLER_MOTOR_INVERTED, ROLLER_KV, ROLLER_KA + 0.001, ROLLER_GEAR_RATIO);
     this.deployerSim =
-        new ArmSystemSim(
+        new ElevatorSystemSim(
             deployerMotor,
             DEPLOYER_MOTOR_INVERTED,
             DEPLOYER_GEAR_RATIO,
-            DEPLOYER_LENGTH_METERS,
             DEPLOYER_MASS_KG,
-            DEPLOYER_MIN_ANGLE.in(Radians),
-            DEPLOYER_MAX_ANGLE.in(Radians),
-            DEPLOYER_MIN_ANGLE.in(Radians),
-            true,
+            Units.inchesToMeters(0.5),
+            RETRACTED_LINEAR_POSITION.in(Meters),
+            DEPLOYED_LINEAR_POSITION.in(Meters),
+            RETRACTED_LINEAR_POSITION.in(Meters),
             SUBSYSTEM_NAME);
   }
 
@@ -273,11 +273,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   private void configDeployerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerLimit = DEPLOYER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerTime = DEPLOYER_PEAK_CURRENT_DURATION;
+    config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = DEPLOYER_CONTINUOUS_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit = DEPLOYER_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.MotorOutput.Inverted =

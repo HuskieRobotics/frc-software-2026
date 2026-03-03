@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 1.5078111111111112,
-        "y": 0.08451111111111187
+        "y": 0.08451111111111276
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,7 +50,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Neutral Zone+Climb",
+  "folder": "[NON BLUFF] Neutral Zone+Climb",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

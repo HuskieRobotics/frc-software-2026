@@ -28,6 +28,7 @@ public final class Constants {
   // set to true in order to change all Tunable values via AdvantageScope
   public static final boolean TUNING_MODE = false;
   public static final boolean DEMO_MODE = false;
+  public static final boolean ENABLE_EXTRA_LOGGING = false;
 
   private static final RobotType ROBOT = RobotType.ROBOT_COMPETITION;
 

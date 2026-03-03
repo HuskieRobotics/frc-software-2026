@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.817146932952923,
-        "y": 4.843666191155493
+        "x": 3.210984308131241,
+        "y": 7.41845934379458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.941041369472182,
-        "y": 7.483152639087019
+        "x": 2.150014265335235,
+        "y": 5.723495007132667
       },
       "isLocked": false,
-      "linkedName": "LEFT NZ"
+      "linkedName": "Left Bank 90 degrees"
     },
     {
       "anchor": {
-        "x": 3.5574733096010975,
-        "y": 7.4465568181818185
+        "x": 1.2,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 6.1193278031816964,
-        "y": 7.420679500064844
+        "x": 2.2221540656205425,
+        "y": 6.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "Depot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Neutral Zone x2",
+  "folder": "[NON BLUFF] Safe NZ + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -92.43664824681014
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

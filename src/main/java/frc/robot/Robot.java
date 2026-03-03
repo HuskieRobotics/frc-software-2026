@@ -63,11 +63,8 @@ public class Robot extends LoggedRobot {
 
   private final Timer disabledTimer = new Timer();
   private final Timer canInitialErrorTimer = new Timer();
-  private final Timer canErrorTimer = new Timer();
   private final Timer canivoreErrorTimer = new Timer();
 
-  private final Alert canErrorAlert =
-      new Alert("CAN errors detected, robot may not be controllable.", AlertType.kError);
   private final Alert canivoreErrorAlert =
       new Alert("CANivore error detected, robot may not be controllable.", AlertType.kError);
   private final Alert logReceiverQueueAlert =
@@ -181,7 +178,6 @@ public class Robot extends LoggedRobot {
 
     // Start timers
     canInitialErrorTimer.restart();
-    canErrorTimer.restart();
     canivoreErrorTimer.restart();
     disabledTimer.restart();
 
@@ -240,20 +236,6 @@ public class Robot extends LoggedRobot {
     LoggedTracer.record("Commands");
 
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
-
-    // Check CAN status
-    var canStatus = RobotController.getCANStatus();
-    Logger.recordOutput("CANStatus/OffCount", canStatus.busOffCount);
-    Logger.recordOutput("CANStatus/TxFullCount", canStatus.txFullCount);
-    Logger.recordOutput("CANStatus/ReceiveErrorCount", canStatus.receiveErrorCount);
-    Logger.recordOutput("CANStatus/TransmitErrorCount", canStatus.transmitErrorCount);
-
-    if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
-      canErrorTimer.restart();
-    }
-    canErrorAlert.set(
-        !canErrorTimer.hasElapsed(CAN_ERROR_TIME_THRESHOLD)
-            && canInitialErrorTimer.hasElapsed(CAN_ERROR_TIME_THRESHOLD));
 
     // Log CANivore status
     if (Constants.getMode() == Mode.REAL) {

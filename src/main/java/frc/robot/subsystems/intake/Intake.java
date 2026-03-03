@@ -114,8 +114,8 @@ public class Intake extends SubsystemBase {
       }
     }
 
-    Logger.recordOutput("Intake In Deployed State", inDeployedState);
-    Logger.recordOutput("Are Rollers Active", areRollersActiveState);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/Deployed", inDeployedState);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/Rollers Active", areRollersActiveState);
 
     // checkRollerJam();
 
@@ -184,13 +184,38 @@ public class Intake extends SubsystemBase {
     setLinearPosition(RETRACTED_LINEAR_POSITION);
   }
 
-  public void jostleFuel() {
+  public void jostleFuelIn() {
+    inDeployedState = false;
     if (this.deployerLinearPosition.gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)) {
       // only jostle if we're far enough away from the hopper to not cause interference
       intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
     } else {
       intakeIO.setDeployerCurrent(Amps.of(0.0));
     }
+  }
+
+  public void jostleFuelOut() {
+    inDeployedState = false;
+    if (this.deployerLinearPosition.lt(DEPLOYED_LINEAR_POSITION)) {
+      // only jostle if we're far enough away from the hopper to not cause interference
+      intakeIO.setDeployerCurrent(Amps.of(-deployerJostleFuelCurrent.get()));
+    } else {
+      intakeIO.setDeployerCurrent(Amps.of(0.0));
+    }
+  }
+
+  public Command getDeployAndStartCommand() {
+    return Commands.sequence(
+        Commands.runOnce(this::deployIntake, this),
+        Commands.waitUntil(() -> this.getPosition().gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
+        Commands.runOnce(this::startRoller, this));
+  }
+
+  public Command getRetractAndStopCommand() {
+    return Commands.sequence(
+        Commands.runOnce(this::retractIntake, this),
+        Commands.waitUntil(() -> this.getPosition().lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
+        Commands.runOnce(this::stopRoller, this));
   }
 
   public Distance getPosition() {
@@ -229,7 +254,7 @@ public class Intake extends SubsystemBase {
 
   private Command getSystemCheckCommand() {
     return Commands.sequence(
-            Commands.runOnce(this::deployIntake),
+            Commands.runOnce(this::deployIntake, this),
             Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
@@ -238,10 +263,12 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Deployer failed to reach deployed position in System Check");
+                                "Deployer failed to reach deployed position in System Check; was: "
+                                    + inputs.deployerAngularPosition.in(Rotations)
+                                    + " rotations");
                       }
                     }),
-            Commands.runOnce(this::startRoller),
+            Commands.runOnce(this::startRoller, this),
             Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
@@ -250,10 +277,12 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Roller failed to reach target velocity in System Check");
+                                "Roller failed to reach target velocity in System Check; was: "
+                                    + inputs.rollerVelocity.in(RotationsPerSecond)
+                                    + " RPS");
                       }
                     }),
-            Commands.runOnce(this::outTakeRoller),
+            Commands.runOnce(this::outTakeRoller, this),
             Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
@@ -262,11 +291,13 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Roller failed to reach eject velocity in System Check");
+                                "Roller failed to reach eject velocity in System Check; was: "
+                                    + inputs.rollerVelocity.in(RotationsPerSecond)
+                                    + " RPS");
                       }
                     }),
-            Commands.runOnce(this::stopRoller),
-            Commands.runOnce(this::retractIntake),
+            Commands.runOnce(this::stopRoller, this),
+            Commands.runOnce(this::retractIntake, this),
             Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
@@ -275,12 +306,15 @@ public class Intake extends SubsystemBase {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
-                                "Deployer failed to reach retracted position in System Check");
+                                "Deployer failed to reach retracted position in System Check; was: "
+                                    + inputs.deployerAngularPosition.in(Rotations)
+                                    + " rotations");
                       }
                     }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(
             Commands.sequence(
-                Commands.runOnce(this::stopRoller), Commands.runOnce(this::retractIntake)));
+                Commands.runOnce(this::stopRoller, this),
+                Commands.runOnce(this::retractIntake, this)));
   }
 }

@@ -86,7 +86,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
   private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
   private static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
-  private static final double AUTO_TURN_P_CONTROLLER = 5.0;
+  private static final double AUTO_TURN_P_CONTROLLER = 3.0;
   private static final double AUTO_TURN_I_CONTROLLER = 0.0;
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
@@ -109,7 +109,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 27;
+  private static final int LED_COUNT = 10;
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
@@ -380,7 +380,7 @@ public class New2026RobotConfig extends RobotConfig {
 
   @Override
   public Mass getMass() {
-    return Pounds.of(111.0);
+    return Pounds.of(137.6);
   }
 
   @Override

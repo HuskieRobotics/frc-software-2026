@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.535954922894425,
-        "y": 0.5866785290628707
+        "x": 3.188614457831325,
+        "y": 0.5599879518072293
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5083666204693182,
-        "y": 0.796371063537432
+        "x": 2.1610261554062182,
+        "y": 0.7696804862817905
       },
       "isLocked": false,
       "linkedName": "Right Bank"
@@ -45,7 +45,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Neutral Zone+Climb",
+  "folder": "[NON BLUFF] Neutral Zone+Climb",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

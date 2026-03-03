@@ -1,6 +1,7 @@
 package frc.lib.team3061.vision;
 
 import static frc.lib.team3061.vision.VisionConstants.*;
+import static frc.robot.Constants.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
@@ -131,7 +132,12 @@ public class Vision extends SubsystemBase {
       this.inputs[i] = new VisionIOInputsAutoLogged();
       this.aprilTagInputs[i] = new AprilTagVisionIOInputsAutoLogged();
       this.objDetectInputs[i] = new ObjDetectVisionIOInputsAutoLogged();
-      this.disconnectedAlerts[i] = new Alert("camera" + i + " is disconnected", AlertType.kError);
+      this.disconnectedAlerts[i] =
+          new Alert(
+              "camera "
+                  + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                  + " is disconnected",
+              AlertType.kError);
       this.camerasToConsider.add(i);
 
       tagPoses.add(new ArrayList<>());
@@ -287,7 +293,7 @@ public class Vision extends SubsystemBase {
             final int finalCameraIndex = cameraIndex;
             for (int tagID = 1; tagID < FieldConstants.aprilTagCount; tagID++) {
               if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
-                if (ENABLE_DETAILED_LOGGING) {
+                if (ENABLE_POSE_PERSISTENCE_LOGGING) {
                   lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
                 }
                 Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
@@ -298,7 +304,7 @@ public class Vision extends SubsystemBase {
               }
             }
             robotPosesAccepted.get(cameraIndex).add(estimatedRobotPose3d);
-            if (ENABLE_DETAILED_LOGGING) {
+            if (ENABLE_POSE_PERSISTENCE_LOGGING) {
               lastPoseEstimationAcceptedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
             }
 
@@ -333,7 +339,7 @@ public class Vision extends SubsystemBase {
                     });
               }
             }
-            if (ENABLE_DETAILED_LOGGING) {
+            if (ENABLE_POSE_PERSISTENCE_LOGGING) {
               lastPoseEstimationRejectedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
             }
           }
@@ -376,44 +382,46 @@ public class Vision extends SubsystemBase {
         }
       }
 
-      // Log data for this camera
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
-          Timer.getTimestamp() - this.lastTimestamps[cameraIndex]);
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/CyclesWithNoResults",
-          this.cyclesWithNoResults[cameraIndex]);
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/TagPoses",
-          tagPoses.get(cameraIndex).toArray(Pose3d[]::new));
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/RejectedTagPoses",
-          rejectedTagPoses.get(cameraIndex).toArray(Pose3d[]::new));
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/CameraPoses",
-          cameraPoses.get(cameraIndex).toArray(new Pose3d[cameraPoses.get(cameraIndex).size()]));
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/RobotPoses",
-          robotPoses.get(cameraIndex).toArray(new Pose3d[robotPoses.get(cameraIndex).size()]));
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/RobotPosesAccepted",
-          robotPosesAccepted
-              .get(cameraIndex)
-              .toArray(new Pose3d[robotPosesAccepted.get(cameraIndex).size()]));
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/RobotPosesRejected",
-          robotPosesRejected
-              .get(cameraIndex)
-              .toArray(new Pose3d[robotPosesRejected.get(cameraIndex).size()]));
-      Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraLocation + "/CameraAxes",
-          new Pose3d(RobotOdometry.getInstance().getEstimatedPose())
-              .plus(
-                  RobotConfig.getInstance()
-                      .getCameraConfigs()[cameraIndex]
-                      .robotToCameraTransform()));
+      if (ENABLE_EXTRA_LOGGING) {
+        // Log data for this camera
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
+            Timer.getTimestamp() - this.lastTimestamps[cameraIndex]);
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/CyclesWithNoResults",
+            this.cyclesWithNoResults[cameraIndex]);
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/TagPoses",
+            tagPoses.get(cameraIndex).toArray(Pose3d[]::new));
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/RejectedTagPoses",
+            rejectedTagPoses.get(cameraIndex).toArray(Pose3d[]::new));
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/CameraPoses",
+            cameraPoses.get(cameraIndex).toArray(new Pose3d[cameraPoses.get(cameraIndex).size()]));
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/RobotPoses",
+            robotPoses.get(cameraIndex).toArray(new Pose3d[robotPoses.get(cameraIndex).size()]));
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/RobotPosesAccepted",
+            robotPosesAccepted
+                .get(cameraIndex)
+                .toArray(new Pose3d[robotPosesAccepted.get(cameraIndex).size()]));
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/RobotPosesRejected",
+            robotPosesRejected
+                .get(cameraIndex)
+                .toArray(new Pose3d[robotPosesRejected.get(cameraIndex).size()]));
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/" + cameraLocation + "/CameraAxes",
+            new Pose3d(RobotOdometry.getInstance().getEstimatedPose())
+                .plus(
+                    RobotConfig.getInstance()
+                        .getCameraConfigs()[cameraIndex]
+                        .robotToCameraTransform()));
+      }
 
-      if (!ENABLE_DETAILED_LOGGING) {
+      if (!ENABLE_POSE_PERSISTENCE_LOGGING) {
         allRobotPosesAccepted.addAll(robotPosesAccepted.get(cameraIndex));
         allRobotPosesRejected.addAll(robotPosesRejected.get(cameraIndex));
         allTagPoses.addAll(tagPoses.get(cameraIndex));
@@ -422,7 +430,7 @@ public class Vision extends SubsystemBase {
     }
 
     // Log summary data
-    if (ENABLE_DETAILED_LOGGING) {
+    if (ENABLE_POSE_PERSISTENCE_LOGGING) {
       for (Map.Entry<Pose3d, Double> entry : lastPoseEstimationAcceptedTimes.entrySet()) {
         if (Timer.getTimestamp() - entry.getValue() < POSE_LOG_TIME_SECS) {
           allRobotPosesAccepted.add(entry.getKey());
@@ -433,7 +441,7 @@ public class Vision extends SubsystemBase {
         SUBSYSTEM_NAME + "/RobotPosesAccepted",
         allRobotPosesAccepted.toArray(new Pose3d[allRobotPosesAccepted.size()]));
 
-    if (ENABLE_DETAILED_LOGGING) {
+    if (ENABLE_POSE_PERSISTENCE_LOGGING) {
       for (Map.Entry<Pose3d, Double> entry : lastPoseEstimationRejectedTimes.entrySet()) {
         if (Timer.getTimestamp() - entry.getValue() < POSE_LOG_TIME_SECS) {
           allRobotPosesRejected.add(entry.getKey());
@@ -444,10 +452,12 @@ public class Vision extends SubsystemBase {
         SUBSYSTEM_NAME + "/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
-    allRobotPoses.addAll(allRobotPosesAccepted);
-    allRobotPoses.addAll(allRobotPosesRejected);
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
+    if (ENABLE_EXTRA_LOGGING) {
+      allRobotPoses.addAll(allRobotPosesAccepted);
+      allRobotPoses.addAll(allRobotPosesRejected);
+      Logger.recordOutput(
+          SUBSYSTEM_NAME + "/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
+    }
 
     // Log detected object poses
     Logger.recordOutput(
@@ -455,7 +465,7 @@ public class Vision extends SubsystemBase {
         allDetectedObjectPoses.toArray(new Pose3d[allDetectedObjectPoses.size()]));
 
     // Log tag poses
-    if (ENABLE_DETAILED_LOGGING) {
+    if (ENABLE_POSE_PERSISTENCE_LOGGING) {
       for (Map.Entry<Integer, Double> detectionEntry : lastTagDetectionTimes.entrySet()) {
         if (Timer.getTimestamp() - detectionEntry.getValue() < TAG_LOG_TIME_SECS) {
           layout.getTagPose(detectionEntry.getKey()).ifPresent(allTagPoses::add);

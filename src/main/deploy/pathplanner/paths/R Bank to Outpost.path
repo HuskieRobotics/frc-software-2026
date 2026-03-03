@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5574733096010975,
-        "y": 7.4465568181818185
+        "x": 3.188614457831325,
+        "y": 0.5599879518072293
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.185473309600758,
-        "y": 7.668267929300767
+        "x": 2.3471807228915655,
+        "y": 1.161012048192772
       },
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "Right Bank"
     },
     {
       "anchor": {
-        "x": 8.735791726105562,
-        "y": 5.684679029957205
+        "x": 0.5768915662650604,
+        "y": 0.691120481927711
       },
       "prevControl": {
-        "x": 8.788655229478655,
-        "y": 8.577180572070274
+        "x": 1.6915180722891563,
+        "y": 0.669265060240964
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Real Neutral Zone"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6,
-      "rotationDegrees": -90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -36.158185439808186
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Neutral Zone x2",
+  "folder": "[NON BLUFF] Safe Right NZ + NZ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

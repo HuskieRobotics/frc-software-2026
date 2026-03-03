@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.404943181818181,
-        "y": 7.4465568181818185
+        "x": 4.414279600570612,
+        "y": 7.586661911554922
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.1351212553495005,
-        "y": 7.560784593437946
+        "x": 6.144457674101932,
+        "y": 7.700889686811049
       },
       "isLocked": false,
       "linkedName": "Left Starting Point"
@@ -50,7 +50,7 @@
     "rotation": -36.158185439808186
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Non Bluff Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
