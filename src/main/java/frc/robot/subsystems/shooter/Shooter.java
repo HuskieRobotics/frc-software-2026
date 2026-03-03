@@ -147,7 +147,7 @@ public class Shooter extends SubsystemBase {
         SUBSYSTEM_NAME + "/pose",
         new Pose3d(RobotOdometry.getInstance().getEstimatedPose()).plus(shooterPose));
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "turret not near setpoint", isTurretNotNearSetPoint());
+    Logger.recordOutput(SUBSYSTEM_NAME + "/turret not near setpoint", isTurretNotNearSetPoint());
 
     LoggedTracer.record("Shooter");
   }
