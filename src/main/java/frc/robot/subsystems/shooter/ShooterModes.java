@@ -159,8 +159,12 @@ public class ShooterModes extends SubsystemBase {
     return this.currentMode == ShooterMode.NEAR_TRENCH;
   }
 
-  public boolean isPassEnabled() {
+  public boolean isManualPassEnabled() {
     return this.currentMode == ShooterMode.MANUAL_PASS;
+  }
+
+  public boolean isPassOnTheMoveEnabled() {
+    return this.currentMode == ShooterMode.PASS_OTM;
   }
 
   public boolean isManualShootEnabled() {
