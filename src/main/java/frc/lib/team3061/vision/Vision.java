@@ -382,7 +382,7 @@ public class Vision extends SubsystemBase {
         }
       }
 
-      if (true || ENABLE_EXTRA_LOGGING) {
+      if (ENABLE_EXTRA_LOGGING) {
         // Log data for this camera
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
@@ -452,7 +452,7 @@ public class Vision extends SubsystemBase {
         SUBSYSTEM_NAME + "/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
-    if (true || ENABLE_EXTRA_LOGGING) {
+    if (ENABLE_EXTRA_LOGGING) {
       allRobotPoses.addAll(allRobotPosesAccepted);
       allRobotPoses.addAll(allRobotPosesRejected);
       Logger.recordOutput(
