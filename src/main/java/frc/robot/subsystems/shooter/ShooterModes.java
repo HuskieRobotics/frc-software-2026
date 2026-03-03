@@ -61,7 +61,8 @@ public class ShooterModes extends SubsystemBase {
     SHOOT_OTM, // shoot on the move
     COLLECT_AND_HOLD, // collecting and holding fuel in hopper
     NEAR_TRENCH, // near the trench zone
-    PASS, // passing mode,
+    MANUAL_PASS, // passing mode,
+    PASS_OTM, // passing on the move
     SHOOTER_LOCKED, // set our manual hood, turret, and flywheel values for money shot
     TESTING // testing mode for testing
   }
@@ -159,7 +160,7 @@ public class ShooterModes extends SubsystemBase {
   }
 
   public boolean isPassEnabled() {
-    return this.currentMode == ShooterMode.PASS;
+    return this.currentMode == ShooterMode.MANUAL_PASS;
   }
 
   public boolean isManualShootEnabled() {
@@ -368,10 +369,14 @@ public class ShooterModes extends SubsystemBase {
             getIdealStaticSetpoints(
                 targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap);
 
-        // update the setpoints based on the robots velocity for shoot on the move
-        shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+        this.currentMode = ShooterMode.MANUAL_PASS;
 
-        this.currentMode = ShooterMode.PASS;
+        // update the setpoints based on the robots velocity for shoot on the move if toggle is enabled
+        if (OISelector.getOperatorInterface().getPassOnTheMoveToggle().getAsBoolean()) {
+          shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+          this.currentMode = ShooterMode.PASS_OTM;
+        }
+        
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
         // to be the high pass setpoints

@@ -126,6 +126,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getPassOnTheMoveToggle() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getObjectDetectionToggle() {
     return new Trigger(() -> false);
   }
