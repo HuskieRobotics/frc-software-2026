@@ -62,12 +62,7 @@ public class AutonomousCommandsFactory {
     autoChooser.addOption(
         "Right to Neutral Zone x2", rightToNeutralZoneX2(hopper, intake, shooter));
 
-    autoChooser.addOption(
-        "SAFE Right to Neutral Zone x2", rightSafeToNeutralZoneX2(hopper, intake, shooter));
     autoChooser.addOption("Left to Neutral Zone x2", leftToNeutralZoneX2(hopper, intake, shooter));
-
-    autoChooser.addOption(
-        "SAFE Left Neutral Zone and Depot", leftSafeNeutralZoneAndDepot(hopper, intake, shooter));
 
     autoChooser.addOption(
         "Left Neutral Zone And Depot", leftNeutralZoneAndDepot(hopper, intake, shooter));
@@ -142,21 +137,6 @@ public class AutonomousCommandsFactory {
     autoChooser.addOption( // start by driving slowing in a circle to align wheels
         "Drive Wheel Radius Characterization",
         this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
-
-    // autoChooser.addOption(
-    //     "Left Neutral Zone Hopper and Climb",
-    //     leftNeutralZoneHopperAndClimb(drivetrain)); // add shooter later
-
-    // autoChooser.addOption(
-    //     "Right Neutral Zone Hopper and Climb",
-    //     rightNeutralZoneHopperAndClimb(drivetrain)); // add shooter later
-
-    // autoChooser.addOption("Middle Depot Hopper and Climb",
-    // middleDepotHopperAndClimb(drivetrain));
-
-    // autoChooser.addOption("Left Depot Hopper and Climb", leftDepotHopperAndClimb(drivetrain));
-    // autoChooser.addOption("Middle Hopper and Climb", middleHopperAndClimb(drivetrain));
-
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain, Vision vision) {
@@ -529,37 +509,6 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(AutoBuilder.followPath(driveToTower));
   }
 
-  private Command rightSafeToNeutralZoneX2(Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath rightFuelGrab;
-    PathPlannerPath sweepCollect;
-    PathPlannerPath fuelGrabToBank;
-    PathPlannerPath sweepCollectToBank;
-    try {
-      rightFuelGrab = PathPlannerPath.fromPathFile("R Fuel Grab");
-      fuelGrabToBank = PathPlannerPath.fromPathFile("R Grab to Bank");
-      sweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
-      sweepCollectToBank = PathPlannerPath.fromPathFile("R Sweep to Bank");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-      // 3rd priority for Bluffs
-      // Follow path to neutral zone
-      // collect fuel
-      // follow path to bank
-      // unload shoot
-      // repeat
-      return Commands.none();
-    }
-    return Commands.sequence(
-        Commands.parallel(intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelGrab)),
-        AutoBuilder.followPath(fuelGrabToBank),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0),
-        Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(sweepCollect),
-        AutoBuilder.followPath(sweepCollectToBank),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
-  }
-
   private Command rightToNeutralZoneX2(Hopper hopper, Intake intake, Shooter shooter) {
     PathPlannerPath rightFuelSweep;
     PathPlannerPath sweepCollect;
@@ -643,38 +592,6 @@ public class AutonomousCommandsFactory {
         Commands.parallel(
             intake.getDeployAndStartCommand(), AutoBuilder.followPath(driveToNeutralZoneAndBack)),
         getUnloadHopperCommand(hopper, intake, shooter, 6.0),
-        Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(driveToDepot),
-        AutoBuilder.followPath(intakeFromDepot),
-        AutoBuilder.followPath(leaveDepot),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
-  }
-
-  private Command leftSafeNeutralZoneAndDepot(Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath startToNeutralZone;
-    PathPlannerPath neutralZoneToBank;
-    PathPlannerPath driveToDepot;
-    PathPlannerPath intakeFromDepot;
-    PathPlannerPath leaveDepot;
-    try {
-      startToNeutralZone = PathPlannerPath.fromPathFile("L to Fuel Grab");
-      neutralZoneToBank = PathPlannerPath.fromPathFile("L Fuel Grab to Bank");
-      driveToDepot = PathPlannerPath.fromPathFile("L Bank to Depot Rotated");
-      intakeFromDepot = PathPlannerPath.fromPathFile("Intake Depot");
-      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    // consider not shooting at the bank and going straight to the depot
-    return Commands.sequence(
-        Commands.parallel(
-            intake.getDeployAndStartCommand(), AutoBuilder.followPath(startToNeutralZone)),
-        AutoBuilder.followPath(neutralZoneToBank),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0),
         Commands.runOnce(hopper::stop, hopper),
         AutoBuilder.followPath(driveToDepot),
         AutoBuilder.followPath(intakeFromDepot),
