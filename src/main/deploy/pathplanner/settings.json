@@ -3,14 +3,14 @@
   "robotLength": 0.76835,
   "holonomicMode": true,
   "pathFolders": [
-    "Depot+Climb",
     "Neutral Zone + Depot",
-    "Neutral Zone x2",
-    "Neutral Zone+Climb",
-    "Safe Right NZ + NZ",
-    "Safe NZ + Depot",
+    "Non Bluff Paths",
     "Tuning",
-    "XRP"
+    "XRP",
+    "[NON BLUFF] Depot+Climb",
+    "[NON BLUFF] Neutral Zone+Climb",
+    "[NON BLUFF] Safe NZ + Depot",
+    "[NON BLUFF] Safe Right NZ + NZ"
   ],
   "autoFolders": [
     "XRP",
