@@ -26,7 +26,7 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean shootOnTheMoveToggle =
       new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, true);
 
-  public final LoggedTunableBoolean passOnTheMoveToggle = 
+  public final LoggedTunableBoolean passOnTheMoveToggle =
       new LoggedTunableBoolean("operatorDashboard/Pass On The Move", false, true);
 
   // public final LoggedTunableBoolean objectDetectionToggle =

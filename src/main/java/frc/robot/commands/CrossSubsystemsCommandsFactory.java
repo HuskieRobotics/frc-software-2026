@@ -287,7 +287,8 @@ public class CrossSubsystemsCommandsFactory {
   private static void configureCrossSubsystemsTriggers(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
     Trigger unloadHopperOnTheMoveTrigger =
-        new Trigger(() -> shooterModes.isShootOnTheMoveEnabled() || shooterModes.isManualPassEnabled())
+        new Trigger(
+                () -> shooterModes.isShootOnTheMoveEnabled() || shooterModes.isManualPassEnabled())
             .and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.onTrue(
         Commands.repeatingSequence(

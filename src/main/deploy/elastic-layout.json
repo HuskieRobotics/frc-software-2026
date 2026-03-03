@@ -147,6 +147,19 @@
               "period": 0.06,
               "data_type": "boolean"
             }
+          },
+          {
+            "title": "Slow Shooter For Pit Test",
+            "x": 400.0,
+            "y": 352.0,
+            "width": 288.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Slow Shooter For Pit Test",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -459,7 +472,7 @@
             "title": "Pass",
             "x": 16.0,
             "y": 16.0,
-            "width": 400.0,
+            "width": 576.0,
             "height": 256.0,
             "type": "Toggle Button",
             "properties": {
@@ -470,10 +483,10 @@
           },
           {
             "title": "Lock Shooter",
-            "x": 432.0,
+            "x": 640.0,
             "y": 16.0,
             "width": 272.0,
-            "height": 160.0,
+            "height": 144.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Lock Shooter",
@@ -482,24 +495,11 @@
             }
           },
           {
-            "title": "Object Detection Enabled",
-            "x": 720.0,
-            "y": 16.0,
-            "width": 288.0,
-            "height": 160.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Object Detection Enabled",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Toggle Auto Snaps",
-            "x": 432.0,
-            "y": 176.0,
+            "x": 640.0,
+            "y": 160.0,
             "width": 272.0,
-            "height": 144.0,
+            "height": 128.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Auto Snaps Enabled",
@@ -508,14 +508,27 @@
             }
           },
           {
-            "title": "Slow Shooter For Pit Test",
-            "x": 720.0,
-            "y": 176.0,
-            "width": 288.0,
-            "height": 144.0,
+            "title": "Shoot On The Move",
+            "x": 16.0,
+            "y": 288.0,
+            "width": 272.0,
+            "height": 256.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorDashboard/Slow Shooter For Pit Test",
+              "topic": "/Tuning/operatorDashboard/Shoot On The Move",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Pass On The Move",
+            "x": 336.0,
+            "y": 288.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Pass On The Move",
               "period": 0.06,
               "data_type": "boolean"
             }

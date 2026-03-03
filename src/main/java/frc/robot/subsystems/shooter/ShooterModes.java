@@ -375,12 +375,12 @@ public class ShooterModes extends SubsystemBase {
 
         this.currentMode = ShooterMode.MANUAL_PASS;
 
-        // update the setpoints based on the robots velocity for shoot on the move if toggle is enabled
+        // update the setpoints based on the robots velocity for shoot on the move if toggle is
+        // enabled
         if (OISelector.getOperatorInterface().getPassOnTheMoveToggle().getAsBoolean()) {
           shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
           this.currentMode = ShooterMode.PASS_OTM;
         }
-        
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
         // to be the high pass setpoints
