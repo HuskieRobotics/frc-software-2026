@@ -110,7 +110,7 @@ public class ShooterModes extends SubsystemBase {
     hubDistanceToVelocityMap.put(4.4196, 38.0);
     hubDistanceToVelocityMap.put(4.72, 39.0);
     hubDistanceToVelocityMap.put(5.38, 41.0);
-    hubDistanceToVelocityMap.put(6.22, 42.0);
+    // hubDistanceToVelocityMap.put(6.22, 42.0);
 
     // Hood Angle Shooting into Hub Map
     hubDistanceToHoodMap.put(1.8034, 22.0);
