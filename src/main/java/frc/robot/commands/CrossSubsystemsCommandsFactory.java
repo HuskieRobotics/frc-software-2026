@@ -115,7 +115,7 @@ public class CrossSubsystemsCommandsFactory {
             getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
-        .and(new Trigger(shooterModes::isManualShootEnabled).or(shooterModes::isPassEnabled))
+        .and(shooterModes::isManualShootEnabled)
         .onTrue(
             getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
@@ -286,20 +286,22 @@ public class CrossSubsystemsCommandsFactory {
 
   private static void configureCrossSubsystemsTriggers(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
-
     Trigger unloadHopperOnTheMoveTrigger =
-        new Trigger(shooterModes::isShootOnTheMoveEnabled).and(DriverStation::isTeleopEnabled);
-    unloadHopperOnTheMoveTrigger.whileTrue(
-        Commands.parallel(
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.SHOOTING)))
-            .withName("feed fuel (shoot)"));
+        new Trigger(() -> shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassEnabled())
+            .and(DriverStation::isTeleopEnabled);
+    unloadHopperOnTheMoveTrigger.onTrue(
+        Commands.repeatingSequence(
+                Commands.parallel(
+                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                        Commands.repeatingSequence(
+                            Commands.either(
+                                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                                Commands.run(
+                                    () -> LEDs.getInstance().requestState(States.SHOOTING)),
+                                shooterModes::isPassEnabled)))
+                    .until(shooter::isTurretNotNearSetPoint)
+                    .andThen(Commands.runOnce(hopper::stop, hopper)))
+            .withName("feed fuel"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
-
-    // when we enable shoot or pass on the move, we will need to add logic to pause the hopper when
-    // the turret is flipping to prevent errant shots
-    // Trigger turretFlippingSides = new Trigger(shooter::isTurretNearSetPoint);
-    // turretFlippingSides.onFalse(
-    //     Commands.runOnce(hopper::stop, hopper).withName("pause hopper; turret flipping"));
   }
 }

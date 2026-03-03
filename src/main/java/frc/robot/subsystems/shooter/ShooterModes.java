@@ -367,6 +367,10 @@ public class ShooterModes extends SubsystemBase {
         shooterSetpoints =
             getIdealStaticSetpoints(
                 targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap);
+
+        // update the setpoints based on the robots velocity for shoot on the move
+        shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+
         this.currentMode = ShooterMode.PASS;
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
