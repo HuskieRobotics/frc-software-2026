@@ -60,6 +60,9 @@ public class AutonomousCommandsFactory {
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     autoChooser.addOption(
+        "Right to Neutral Zone x2", rightToNeutralZoneX2(hopper, intake, shooter));
+
+    autoChooser.addOption(
         "SAFE Right to Neutral Zone x2", rightSafeToNeutralZoneX2(hopper, intake, shooter));
     autoChooser.addOption("Left to Neutral Zone x2", leftToNeutralZoneX2(hopper, intake, shooter));
 
@@ -557,6 +560,35 @@ public class AutonomousCommandsFactory {
         getUnloadHopperCommand(hopper, intake, shooter, 5.0));
   }
 
+  private Command rightToNeutralZoneX2(Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath rightFuelSweep;
+    PathPlannerPath sweepCollect;
+    PathPlannerPath sweepCollectToBank;
+    try {
+      rightFuelSweep = PathPlannerPath.fromPathFile("R Fuel Sweep");
+      sweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
+      sweepCollectToBank = PathPlannerPath.fromPathFile("R Sweep to Bank");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      // 3rd priority for Bluffs
+      // Follow path to neutral zone
+      // collect fuel
+      // follow path to bank
+      // unload shoot
+      // repeat
+      return Commands.none();
+    }
+    return Commands.sequence(
+        Commands.parallel(
+            intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
+        getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+        Commands.runOnce(hopper::stop, hopper),
+        AutoBuilder.followPath(sweepCollect),
+        AutoBuilder.followPath(sweepCollectToBank),
+        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
+  }
+
   private Command leftToNeutralZoneX2(
       Hopper hopper, Intake intake, Shooter shooter) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
@@ -610,7 +642,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         Commands.parallel(
             intake.getDeployAndStartCommand(), AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0),
+        getUnloadHopperCommand(hopper, intake, shooter, 6.0),
         Commands.runOnce(hopper::stop, hopper),
         AutoBuilder.followPath(driveToDepot),
         AutoBuilder.followPath(intakeFromDepot),

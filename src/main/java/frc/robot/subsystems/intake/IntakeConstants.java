@@ -57,7 +57,7 @@ public class IntakeConstants {
   public static final double ROLLER_GEAR_RATIO = 2.14;
   public static final boolean ROLLER_MOTOR_INVERTED = false;
   public static final AngularVelocity ROLLER_TARGET_VELOCITY =
-      RotationsPerSecond.of(35.0); // FIXME: set value
+      RotationsPerSecond.of(27.0); // FIXME: set value
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 

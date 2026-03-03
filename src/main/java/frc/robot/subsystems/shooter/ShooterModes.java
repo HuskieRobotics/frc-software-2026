@@ -452,9 +452,7 @@ public class ShooterModes extends SubsystemBase {
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
     Angle phi =
         Radians.of(
-            new Rotation2d(staticSetpoints.turretAngle)
-                .plus(robotPose.getRotation())
-                .getRadians());
+            new Rotation2d(staticSetpoints.turretAngle).plus(robotPose.getRotation()).getRadians());
 
     ChassisSpeeds fieldRelativeSpeeds = getShooterFieldRelativeVelocity();
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
