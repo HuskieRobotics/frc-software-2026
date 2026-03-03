@@ -534,14 +534,19 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
     return Commands.sequence(
-        Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
-        Commands.parallel(
-            intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
-        getUnloadHopperCommand(hopper, intake, shooter, 6.0),
-        Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(sweepCollect),
-        AutoBuilder.followPath(sweepCollectToBank),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
+            Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
+            Commands.parallel(
+                intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
+            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            Commands.runOnce(hopper::stop, hopper),
+            AutoBuilder.followPath(sweepCollect),
+            AutoBuilder.followPath(sweepCollectToBank),
+            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+            });
   }
 
   private Command leftToNeutralZoneX2(
@@ -572,14 +577,20 @@ public class AutonomousCommandsFactory {
     }
 
     return Commands.sequence(
-        Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
-        Commands.parallel(
-            intake.getDeployAndStartCommand(), AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0),
-        Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(driveToNeutralZoneAgain),
-        AutoBuilder.followPath(driveToBank),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
+            Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
+            Commands.parallel(
+                intake.getDeployAndStartCommand(),
+                AutoBuilder.followPath(driveToNeutralZoneAndBack)),
+            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            Commands.runOnce(hopper::stop, hopper),
+            AutoBuilder.followPath(driveToNeutralZoneAgain),
+            AutoBuilder.followPath(driveToBank),
+            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+            });
   }
 
   private Command leftNeutralZoneAndDepot(
@@ -604,14 +615,20 @@ public class AutonomousCommandsFactory {
 
     // consider not shooting at the bank and going straight to the depot
     return Commands.sequence(
-        Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
-        Commands.parallel(
-            intake.getDeployAndStartCommand(), AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-        getUnloadHopperCommand(hopper, intake, shooter, 6.0),
-        Commands.runOnce(hopper::stop, hopper),
-        AutoBuilder.followPath(driveToDepot),
-        AutoBuilder.followPath(intakeFromDepot),
-        AutoBuilder.followPath(leaveDepot),
-        getUnloadHopperCommand(hopper, intake, shooter, 5.0));
+            Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
+            Commands.parallel(
+                intake.getDeployAndStartCommand(),
+                AutoBuilder.followPath(driveToNeutralZoneAndBack)),
+            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            Commands.runOnce(hopper::stop, hopper),
+            AutoBuilder.followPath(driveToDepot),
+            AutoBuilder.followPath(intakeFromDepot),
+            AutoBuilder.followPath(leaveDepot),
+            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+            });
   }
 }

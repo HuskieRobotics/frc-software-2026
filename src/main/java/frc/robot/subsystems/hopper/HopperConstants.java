@@ -38,7 +38,7 @@ public class HopperConstants {
   public static final double KICKER_KA = 0.0;
   public static final double KICKER_KS = 6.25;
 
-  public static final double KICKER_MOI = 0.5;
+  public static final double KICKER_MOI = 0.05;
 
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE = RotationsPerSecond.of(2.0);
 
