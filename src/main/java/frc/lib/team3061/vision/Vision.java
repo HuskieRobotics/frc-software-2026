@@ -473,6 +473,8 @@ public class Vision extends SubsystemBase {
       }
     }
     Logger.recordOutput(SUBSYSTEM_NAME + "/AprilTags", allTagPoses.toArray(Pose3d[]::new));
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/RejectedAprilTags", allRejectedTagPoses.toArray(Pose3d[]::new));
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsEnabled", isEnabled);
     Logger.recordOutput(
