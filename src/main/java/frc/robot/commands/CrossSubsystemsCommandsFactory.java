@@ -288,7 +288,8 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
-                () -> shooterModes.isShootOnTheMoveEnabled() || shooterModes.isManualPassEnabled())
+                () ->
+                    shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.onTrue(
         Commands.repeatingSequence(
@@ -299,7 +300,7 @@ public class CrossSubsystemsCommandsFactory {
                                 Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                                 Commands.run(
                                     () -> LEDs.getInstance().requestState(States.SHOOTING)),
-                                shooterModes::isManualPassEnabled)))
+                                shooterModes::isPassOnTheMoveEnabled)))
                     .until(shooter::isTurretNotNearSetPoint)
                     .andThen(Commands.runOnce(hopper::stop, hopper)))
             .withName("feed fuel"));
