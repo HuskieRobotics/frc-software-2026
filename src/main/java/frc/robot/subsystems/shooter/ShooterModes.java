@@ -26,7 +26,16 @@ import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
 
-  private static final double SHOOT_TIME_OFFSET_SECONDS = 2.0; // offset for ball travel time to hub
+  // Stop shooting 0.75 seconds before the end of the period to account for the time it takes for
+  // the fuel to reach the hub (approximately 1.25s) and ensure the fuel is processed within the 3
+  // second window after the end of the period (almost all fuel is processed within 2.5 seconds)
+  private static final double STOP_SHOOTING_TIME_OFFSET_SECONDS = 0.75;
+
+  // Start shooting 1.75 seconds before the start of the period to account for the time it takes for
+  // the fuel to reach the hub (approximately 1.25s) and ensure the fuel isn't processed until the
+  // period starts (almost no fuel is processed before 0.5 seconds elapse)
+  private static final double START_SHOOTING_TIME_OFFSET_SECONDS = 1.75;
+
   private static final double END_OF_SHIFT_WARNING_SECONDS =
       5.0; // time before the end of the shift to flash the LE#Ds
 
@@ -95,7 +104,7 @@ public class ShooterModes extends SubsystemBase {
 
   @Override
   public void periodic() {
-    this.hubActive = isHubActive();
+    this.hubActive = isSafeToShootInHub();
 
     determineModeAndSetShooter();
 
@@ -188,74 +197,98 @@ public class ShooterModes extends SubsystemBase {
   // whose goal will go inactive first
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
-  public boolean isHubActive() {
+  public boolean isSafeToShootInHub() {
     if (!DriverStation.isFMSAttached()) {
       return OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
     }
 
+    // The value will count down the time remaining in the current period (auto or teleop).
     // When connected to the real field, this number only changes in full integer increments, and
-    // always counts down.
+    //  always counts down.
     // When the DS is in practice mode, this number is a floating point number, and counts down.
     // When the DS is in teleop or autonomous mode, this number is a floating point number, and
-    // counts up.
+    //  counts up.
 
     double timeRemaining = DriverStation.getMatchTime();
-
-    // figure out if time is increasing or decreasing
-
-    // Real Field
-    double timeIntoScoringShifts;
     String gameData = DriverStation.getGameSpecificMessage();
 
-    // hub active in auto/transition period and endgame (// time < 30 = auto or endgame, time > 130
-    // = transition period)
-
-    // can add a check for DriverStation.isAutonomousEnabled but that will always fall under
-    // timeRemaining < 30
-    if (timeRemaining < (30 + SHOOT_TIME_OFFSET_SECONDS)
-        || timeRemaining
-            > (130 + SHOOT_TIME_OFFSET_SECONDS) /*|| DriverStation.isAutonomousEnabled() */) {
+    // Auto (20 s) - always safe to shoot and don't need to stop early
+    if (timeRemaining < 20) {
       return true;
-    } else {
-      // Always look SHOOT_TIME_OFFSET_SECONDS into the future to account for the time it takes for
-      // the fuel to reach the hub. We need to stop shooting SHOOT_TIME_OFFSET_SECONDS seconds
-      // before the end of the period to ensure that the fuel we shoot before the end of the period
-      // actually counts. Similarly, we can start shooting SHOOT_TIME_OFFSET_SECONDS seconds before
-      // the start of the next active period because the fuel we shoot at the start of the period
-      // will count as long as it doesn't reach the hub before the start of the period.
-      timeIntoScoringShifts = 130 - timeRemaining + SHOOT_TIME_OFFSET_SECONDS;
+    }
 
-      // each shift is 25 seconds long, request the LED state before the end of each shift
-      if ((130 - timeRemaining) % 25 < END_OF_SHIFT_WARNING_SECONDS) {
+    // if we are in shift 1 - 4, give a warning on the LEDs when we are within the
+    // END_OF_SHIFT_WARNING_SECONDS before the end of the shift
+    if (timeRemaining < 130 && timeRemaining > 30) {
+      if ((timeRemaining - 30) % 25 < END_OF_SHIFT_WARNING_SECONDS) {
         LEDs.getInstance().requestState(LEDs.States.END_OF_PERIOD);
       }
     }
 
+    boolean isInactiveFirst = false;
     if (!gameData.isEmpty()) {
       switch (gameData.charAt(0)) {
         case 'B':
-          // Blue is inactive first, so if we are blue alliance, we check if closer to 50 seconds
-          // (2nd period)
-          if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-            return timeIntoScoringShifts % 50 > 25;
-          } else {
-            return timeIntoScoringShifts % 50 <= 25;
-          }
+          // Blue is inactive first
+          isInactiveFirst = Field2d.getInstance().getAlliance() == Alliance.Blue;
+          break;
         case 'R':
-          // Red is inactive first, so if we are red alliance, we check if closer to 50 seconds (2nd
-          // period)
-          if (Field2d.getInstance().getAlliance() == Alliance.Red) {
-            return timeIntoScoringShifts % 50 > 25;
-          } else {
-            return timeIntoScoringShifts % 50 <= 25;
-          }
+          // Red is inactive first
+          isInactiveFirst = Field2d.getInstance().getAlliance() == Alliance.Red;
+          break;
         default:
           // This is corrupt data
           return true;
       }
     }
 
-    return true;
+    if (isInactiveFirst) {
+      // Transition - safe to shoot but need to stop early
+      if (timeRemaining > 130 + STOP_SHOOTING_TIME_OFFSET_SECONDS) {
+        return true;
+      }
+      // Shift 1 - not safe to shoot but start shooting before shift 2 starts
+      else if (timeRemaining > 105 + START_SHOOTING_TIME_OFFSET_SECONDS) {
+        return false;
+      }
+      // Shift 2 - safe to shoot but need to stop early
+      else if (timeRemaining > 80 + STOP_SHOOTING_TIME_OFFSET_SECONDS) {
+        return true;
+      }
+      // Shift 3 - not safe to shoot but start shooting before shift 4 starts
+      else if (timeRemaining > 55 + START_SHOOTING_TIME_OFFSET_SECONDS) {
+        return false;
+      }
+      // Shift 4 and End Game - safe to shoot
+      else {
+        return true;
+      }
+    } else {
+      // Transition - safe to shoot and don't need to stop early
+      if (timeRemaining > 130) {
+        return true;
+      }
+      // Shift 1 - safe to shoot but need to stop early
+      else if (timeRemaining > 105 + STOP_SHOOTING_TIME_OFFSET_SECONDS) {
+        return true;
+      }
+      // Shift 2 - not safe to shoot but start shooting before shift 3 starts
+      else if (timeRemaining > 80 + START_SHOOTING_TIME_OFFSET_SECONDS) {
+        return false;
+      }
+      // Shift 3 - safe to shoot but need to stop early
+      else if (timeRemaining > 55 + STOP_SHOOTING_TIME_OFFSET_SECONDS) {
+        return true;
+      }
+      // Shift 4 - not safe to shoot but start shooting before end game starts
+      else if (timeRemaining > 30 + START_SHOOTING_TIME_OFFSET_SECONDS) {
+        return false;
+      }
+      // End Game - safe to shoot and don't need to stop early
+      else {
+        return true;
+      }
+    }
   }
 
   private ChassisSpeeds getShooterFieldRelativeVelocity() {
