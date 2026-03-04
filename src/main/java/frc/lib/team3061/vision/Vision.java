@@ -272,6 +272,7 @@ public class Vision extends SubsystemBase {
           boolean acceptPose =
               acceptPoseForPoseReset
                   && (arePoseRotationsReasonable(estimatedRobotPose3d)
+                      || observation.type() == PoseObservationType.MULTI_TAG
                       || DriverStation.isDisabled());
 
           Matrix<N3, N1> stdDev = null;
