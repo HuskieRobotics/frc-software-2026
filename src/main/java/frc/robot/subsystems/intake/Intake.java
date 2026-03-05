@@ -176,7 +176,7 @@ public class Intake extends SubsystemBase {
 
   public void deployIntake() {
     inDeployedState = true;
-    setLinearPosition(DEPLOYED_LINEAR_POSITION);
+    intakeIO.setDeployerCurrent(DEPLOYER_CURRENT);
   }
 
   public void retractIntake() {
