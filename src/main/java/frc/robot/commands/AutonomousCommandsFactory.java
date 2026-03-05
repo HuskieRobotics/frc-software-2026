@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -534,7 +535,14 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
     return Commands.sequence(
-            Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
+            Commands.runOnce(
+                () -> {
+                  Pose2d pose = startingPose;
+                  if (drivetrain.shouldFlipAutoPath()) {
+                    pose = FlippingUtil.flipFieldPose(startingPose);
+                  }
+                  drivetrain.resetPose(pose);
+                }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, 6.0),
@@ -577,7 +585,14 @@ public class AutonomousCommandsFactory {
     }
 
     return Commands.sequence(
-            Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
+            Commands.runOnce(
+                () -> {
+                  Pose2d pose = startingPose;
+                  if (drivetrain.shouldFlipAutoPath()) {
+                    pose = FlippingUtil.flipFieldPose(startingPose);
+                  }
+                  drivetrain.resetPose(pose);
+                }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
@@ -615,7 +630,14 @@ public class AutonomousCommandsFactory {
 
     // consider not shooting at the bank and going straight to the depot
     return Commands.sequence(
-            Commands.runOnce(() -> drivetrain.resetPose(startingPose)),
+            Commands.runOnce(
+                () -> {
+                  Pose2d pose = startingPose;
+                  if (drivetrain.shouldFlipAutoPath()) {
+                    pose = FlippingUtil.flipFieldPose(startingPose);
+                  }
+                  drivetrain.resetPose(pose);
+                }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
