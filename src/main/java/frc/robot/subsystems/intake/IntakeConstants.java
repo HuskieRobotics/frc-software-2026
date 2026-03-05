@@ -41,7 +41,7 @@ public class IntakeConstants {
   public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(3.0);
 
   public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-10.0);
-  public static final Current DEPLOYER_CURRENT = Amps.of(10.0);
+  public static final Current DEPLOYER_CURRENT = Amps.of(5.0);
 
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 25.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 20.0;
