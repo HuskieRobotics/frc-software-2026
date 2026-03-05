@@ -130,7 +130,7 @@ public class New2026RobotConfig extends RobotConfig {
               Units.inchesToMeters(-8.969),
               Units.inchesToMeters(-11.729),
               Units.inchesToMeters(7.434)),
-          new Rotation3d(0, Units.degreesToRadians(-22), Units.degreesToRadians(-90.0)));
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
 
   // Back left camera
   // x, y, z, pitch, yaw
@@ -140,7 +140,7 @@ public class New2026RobotConfig extends RobotConfig {
               Units.inchesToMeters(-8.969),
               Units.inchesToMeters(11.729),
               Units.inchesToMeters(7.434)),
-          new Rotation3d(0, Units.degreesToRadians(-22), Units.degreesToRadians(90.0)));
+          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
   // Center camera
   // x, y, z, pitch, yaw
