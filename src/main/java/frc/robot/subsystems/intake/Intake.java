@@ -37,6 +37,11 @@ public class Intake extends SubsystemBase {
           IntakeConstants.ROLLER_JAMMED_CURRENT_AMPS,
           IntakeConstants.ROLLER_JAMMED_TIME_THRESHOLD_SECONDS);
 
+  private final CurrentSpikeDetector deployerSpikeDetector =
+      new CurrentSpikeDetector(
+          IntakeConstants.DEPLOYER_STALL_CURRENT,
+          IntakeConstants.DEPLOYER_STALL_TIME_THRESHOLD_SECONDS);
+
   private final Alert rollerJamAlert = new Alert("Intake roller jammed", Alert.AlertType.kError);
 
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Intake/TestingMode", 0);
@@ -119,6 +124,8 @@ public class Intake extends SubsystemBase {
 
     // checkRollerJam();
 
+    checkDeployerStall();
+
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
         inputs.rollerVelocity.isNear(ROLLER_TARGET_VELOCITY, ROLLER_VELOCITY_TOLERANCE));
@@ -159,6 +166,12 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  private void checkDeployerStall() {
+    if (deployerSpikeDetector.update(Math.abs(inputs.deployerStatorCurrent.in(Amps)))) {
+      intakeIO.setDeployerVoltage(Volts.of(0.0));
+    }
+  }
+
   public void startRoller() {
     areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
@@ -176,7 +189,7 @@ public class Intake extends SubsystemBase {
 
   public void deployIntake() {
     inDeployedState = true;
-    intakeIO.setDeployerCurrent(DEPLOYER_CURRENT);
+    intakeIO.setDeployerVoltage(DEPLOYER_VOLTAGE);
   }
 
   public void retractIntake() {
