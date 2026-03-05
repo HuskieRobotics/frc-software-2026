@@ -1077,7 +1077,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
         MetersPerSecond.of(
             inputs.drivetrain.swerveMeasuredStates[swerveModuleNumber].speedMetersPerSecond);
     if (!isOffset) {
-      if (!velocityMeasured.isNear(velocityTarget.unaryMinus(), velocityTolerance)) {
+      if (!velocityMeasured.isNear(velocityTarget, velocityTolerance)) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
@@ -1089,7 +1089,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
                     + velocityMeasured);
       }
     } else { // if there is an offset, check the velocity in the opposite direction
-      if (!velocityMeasured.isNear(velocityTarget, velocityTolerance)) {
+      if (!velocityMeasured.isNear(velocityTarget.unaryMinus(), velocityTolerance)) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,

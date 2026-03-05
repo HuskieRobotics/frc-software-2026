@@ -204,7 +204,8 @@ public class Vision extends SubsystemBase {
     }
 
     // Update recording state
-    boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
+    // boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
+    boolean shouldRecord = recordingRequest.get();
     for (VisionIO io : this.visionIOs) {
       io.setRecording(shouldRecord);
     }
