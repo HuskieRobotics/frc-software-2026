@@ -124,7 +124,7 @@ public class Intake extends SubsystemBase {
 
     // checkRollerJam();
 
-    checkDeployerStall();
+    // checkDeployerStall();
 
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
@@ -189,7 +189,7 @@ public class Intake extends SubsystemBase {
 
   public void deployIntake() {
     inDeployedState = true;
-    intakeIO.setDeployerVoltage(DEPLOYER_VOLTAGE);
+    setLinearPosition(DEPLOYED_LINEAR_POSITION);
   }
 
   public void retractIntake() {
