@@ -272,7 +272,7 @@ public class Intake extends SubsystemBase {
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake, this),
-            Commands.waitSeconds(2.0)
+            Commands.waitSeconds(1.0)
                 .andThen(
                     () -> {
                       if (!inputs.deployerAngularPosition.isNear(
@@ -315,7 +315,7 @@ public class Intake extends SubsystemBase {
                     }),
             Commands.runOnce(this::stopRoller, this),
             Commands.runOnce(this::retractIntake, this),
-            Commands.waitSeconds(2.0)
+            Commands.waitSeconds(1.0)
                 .andThen(
                     () -> {
                       if (!inputs.deployerAngularPosition.isNear(
