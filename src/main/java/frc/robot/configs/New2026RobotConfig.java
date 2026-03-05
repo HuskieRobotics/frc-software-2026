@@ -116,7 +116,7 @@ public class New2026RobotConfig extends RobotConfig {
   private static final String CENTER_CAMERA_SERIAL_NUMBER = "25249734";
 
   private static final int MONO_EXPOSURE = 2200;
-  private static final double MONO_GAIN = 17.5;
+  private static final double MONO_GAIN = 15;
   private static final double MONO_DENOISE = 1.0;
 
   private static final int COLOR_EXPOSURE = 4500;
