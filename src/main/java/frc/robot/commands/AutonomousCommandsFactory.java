@@ -545,7 +545,7 @@ public class AutonomousCommandsFactory {
                 }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(sweepCollect),
             AutoBuilder.followPath(sweepCollectToBank),
@@ -596,7 +596,7 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToNeutralZoneAgain),
             AutoBuilder.followPath(driveToBank),
