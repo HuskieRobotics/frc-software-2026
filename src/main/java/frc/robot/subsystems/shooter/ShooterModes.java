@@ -469,6 +469,7 @@ public class ShooterModes extends SubsystemBase {
 
     if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
       shooterSetpoints.flywheelVelocity = PIT_TEST_FLYWHEEL_RPS;
+      shooterSetpoints.hoodAngle = HOOD_MAX_PASSING_ANGLE;
     }
 
     // finally, override the hood position if the robot is in a trench zone to ensure that the
