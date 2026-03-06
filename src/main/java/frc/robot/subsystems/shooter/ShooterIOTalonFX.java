@@ -24,7 +24,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -557,8 +556,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretPosition(Angle position) {
-    turret.setControl(
-        turretPositionRequest.withPosition(Units.degreesToRotations(position.in(Degrees))));
+    turret.setControl(turretPositionRequest.withPosition(position));
     this.turretReferencePosition = position.copy();
   }
 
@@ -569,8 +567,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setHoodPosition(Angle position) {
-    hood.setControl(
-        hoodPositionRequest.withPosition(Units.degreesToRotations(position.in(Degrees))));
+    hood.setControl(hoodPositionRequest.withPosition(position));
     this.hoodReferencePosition = position.copy();
   }
 
