@@ -59,7 +59,7 @@
           ]
         },
         "tabs": {
-          "selected": 27,
+          "selected": 20,
           "tabs": [
             {
               "type": 0,
@@ -457,7 +457,7 @@
                     "type": "stepped",
                     "logKey": "/RealOutputs/Intake/DeployerLinearPosition",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
@@ -467,7 +467,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/DeployerReferencePosition",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#c0b487",
                       "size": "normal"
@@ -477,7 +477,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/DeployerAngularPosition",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#858584",
                       "size": "normal"
@@ -648,7 +648,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/KickerVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#c0b487",
                       "size": "normal"
@@ -658,7 +658,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/KickerReferenceVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#5f4528",
                       "size": "normal"
@@ -670,7 +670,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerStatorCurrent",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#af2437",
                       "size": "normal"
@@ -680,7 +680,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#80588e",
                       "size": "normal"
@@ -690,7 +690,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerReferenceVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#d993aa",
                       "size": "normal"
@@ -1315,7 +1315,7 @@
               },
               "controllerUUID": "bwe8zvnzfca4ejqa0dpw8qv5qby8vvpu",
               "renderer": null,
-              "controlsHeight": 294
+              "controlsHeight": 361
             },
             {
               "type": 9,
@@ -1619,6 +1619,84 @@
                 "stepSize": 50
               },
               "controllerUUID": "4meca9ddx7g5nv0bxlz8pmqh22j6vqhb",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Battery",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/BatteryVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Autonomous",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Enabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "2mcy62rc5y73sl5vsuvq4rx2yf3wa6bz",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 6,
+              "title": "Statistics",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "independent",
+                    "logKey": "/RealOutputs/BatteryVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  }
+                ],
+                "timeRange": "visible",
+                "rangeMin": 0,
+                "rangeMax": 14,
+                "stepSize": 0.1
+              },
+              "controllerUUID": "a79o3ghumn8gwiiw1d2wtj1fe6eog43k",
               "renderer": null,
               "controlsHeight": 200
             },
