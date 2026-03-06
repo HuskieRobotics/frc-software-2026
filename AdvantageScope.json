@@ -7,7 +7,7 @@
       "height": 949,
       "state": {
         "sidebar": {
-          "width": 289,
+          "width": 271,
           "expanded": [
             "/NetworkInputs/SmartDashboard",
             "/RealOutputs/DriveToPose/pose difference (target frame)",
@@ -17,10 +17,8 @@
             "/RealOutputs/Vision/1",
             "/RealOutputs/Vision/0",
             "/RealOutputs/CommandsAll",
-            "/Vision/center",
             "/Vision/BR",
             "/Vision/BL",
-            "/Tuning",
             "/Tuning/operatorDashboard",
             "/RealOutputs/SystemStatus/Intake",
             "/RealOutputs/SystemStatus/Hopper",
@@ -32,7 +30,6 @@
             "/Vision/BL/PoseObservations/1",
             "/Vision/BL/PoseObservations/0",
             "/RealOutputs/Vision/BR",
-            "/RealOutputs/Vision/BL",
             "/Vision/BR/PoseObservations/1",
             "/Vision/BR/PoseObservations/0",
             "/Drivetrain/SwerveReferenceStates",
@@ -53,13 +50,21 @@
             "/NetworkInputs/Tuning",
             "/NetworkInputs/Tuning/operatorDashboard",
             "/Drivetrain/FR",
-            "/RealOutputs",
             "/RealOutputs/Vision",
-            "/Vision"
+            "/RealOutputs",
+            "/SystemStats",
+            "/SystemStats/NTClients",
+            "/SystemStats/NTClients/northstar_BR@2",
+            "/SystemStats/NTClients/northstar_BR@1",
+            "/SystemStats/NTClients/northstar_BL@2",
+            "/SystemStats/NTClients/northstar_BL@1",
+            "/SystemStats/NTClients/Elastic@3",
+            "/Vision",
+            "/RealOutputs/Vision/BL"
           ]
         },
         "tabs": {
-          "selected": 20,
+          "selected": 5,
           "tabs": [
             {
               "type": 0,
@@ -283,7 +288,18 @@
               "type": 1,
               "title": "States",
               "controller": {
-                "leftSources": [],
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/ShooterModes/Shot Multiplier",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
                 "rightSources": [],
                 "discreteSources": [
                   {
@@ -348,6 +364,15 @@
                     "options": {
                       "color": "#858584"
                     }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/CommandsAll/stop and shoot or pass",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
+                    }
                   }
                 ],
                 "leftLockedRange": null,
@@ -365,7 +390,7 @@
               },
               "controllerUUID": "01v027bomseysaasaypek4rwozllc57u",
               "renderer": null,
-              "controlsHeight": 404
+              "controlsHeight": 454
             },
             {
               "type": 1,
@@ -562,7 +587,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/RollerReferenceVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e5b31b",
                       "size": "normal"
@@ -572,7 +597,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/RollerVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#af2437",
                       "size": "normal"
@@ -584,7 +609,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/RollerStatorCurrent",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#80588e",
                       "size": "normal"
@@ -609,6 +634,15 @@
                     "visible": true,
                     "options": {
                       "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/BrownedOut",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
                     }
                   }
                 ],
@@ -638,7 +672,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/KickerStatorCurrent",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -1624,21 +1658,32 @@
             },
             {
               "type": 1,
-              "title": "Battery",
+              "title": "Power",
               "controller": {
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/RealOutputs/BatteryVoltage",
+                    "logKey": "/SystemStats/BatteryVoltage",
                     "logType": "Number",
                     "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/SystemStats/BatteryCurrent",
+                    "logType": "Number",
+                    "visible": false,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
                     }
                   }
                 ],
-                "rightSources": [],
                 "discreteSources": [
                   {
                     "type": "stripes",
@@ -1656,6 +1701,15 @@
                     "visible": true,
                     "options": {
                       "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/BrownedOut",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
                     }
                   }
                 ],
@@ -1678,16 +1732,25 @@
             },
             {
               "type": 6,
-              "title": "Statistics",
+              "title": "Power",
               "controller": {
                 "sources": [
                   {
                     "type": "independent",
-                    "logKey": "/RealOutputs/BatteryVoltage",
+                    "logKey": "/SystemStats/BatteryCurrent",
                     "logType": "Number",
                     "visible": true,
                     "options": {
                       "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/SystemStats/BatteryVoltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
                     }
                   }
                 ],
@@ -1699,6 +1762,76 @@
               "controllerUUID": "a79o3ghumn8gwiiw1d2wtj1fe6eog43k",
               "renderer": null,
               "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "NT Clients",
+              "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/NTClients/northstar_BL@1/Connected",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/NTClients/northstar_BL@2/Connected",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/NTClients/northstar_BR@1/Connected",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/NTClients/northstar_BR@2/Connected",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/NTClients/Elastic@3/Connected",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "fnma74fnxofs4qf1roc1weih1bcc0mnt",
+              "renderer": null,
+              "controlsHeight": 272
             },
             {
               "type": 1,
