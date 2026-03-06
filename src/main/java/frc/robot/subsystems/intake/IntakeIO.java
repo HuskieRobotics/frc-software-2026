@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
@@ -36,6 +37,11 @@ public interface IntakeIO {
 
     Angle deployerClosedLoopError = Rotations.of(0);
     Angle deployerClosedLoopReference = Rotations.of(0);
+
+    boolean deployerDetectorConnected = false;
+    boolean deployerDetectorHasSignal = false;
+    Distance deployerDetectorDistanceToTarget = Meters.of(0.0); // FIXME: determine if necessary
+    double deployerDetectorSignalStrength = 0.0;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}

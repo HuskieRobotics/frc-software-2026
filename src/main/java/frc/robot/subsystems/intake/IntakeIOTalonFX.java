@@ -5,6 +5,8 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,15 +14,18 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
@@ -37,6 +42,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private TalonFX rollerMotor;
   private TalonFX deployerMotor;
+  private CANrange deployerCANRange;
 
   // Control requests
   private VelocityTorqueCurrentFOC rollerVelocityRequest = new VelocityTorqueCurrentFOC(0);
@@ -51,6 +57,8 @@ public class IntakeIOTalonFX implements IntakeIO {
       new Alert("Failed to apply configuration for Intake Roller.", AlertType.kError);
   private final Alert deployerConfigAlert =
       new Alert("Failed to apply configuration for Intake Deployer.", AlertType.kError);
+  private final Alert canRangeConfigAlert =
+      new Alert("Failed to apply configuration for Intake CANrange", AlertType.kError);
 
   // Tunables
   private final LoggedTunableNumber rollerKp =
@@ -75,6 +83,11 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final LoggedTunableNumber deployerKs =
       new LoggedTunableNumber("Intake/Deployer/kS", DEPLOYER_KS);
 
+  private final LoggedTunableNumber intakeDetectorMinSignalStrength =
+      new LoggedTunableNumber("Intake/Detector Min Signal Strength", CAN_RANGE_MIN_STRENGTH);
+  private final LoggedTunableNumber intakeDetectorProximityThreshold =
+      new LoggedTunableNumber("Intake/Proximity Threshold", CAN_RANGE_PROXIMITY_THRESHOLD);
+
   private VelocitySystemSim rollerSim;
   private ElevatorSystemSim deployerSim;
 
@@ -90,15 +103,21 @@ public class IntakeIOTalonFX implements IntakeIO {
   private StatusSignal<Current> deployerSupplyCurrentSS;
   private StatusSignal<Temperature> deployerTempSS;
 
+  private StatusSignal<Distance> deployerSensorDistanceSS;
+  private StatusSignal<Double> deployerSensorSignalStrengthSS;
+  private StatusSignal<Boolean> deployerSensorDetectedSignalSS;
+
   private AngularVelocity rollerReferenceVelocity = RotationsPerSecond.of(0.0);
   private Angle deployerReferencePosition = Rotations.of(0);
 
   private Debouncer connectedRollerDebouncer = new Debouncer(0.5);
   private Debouncer connectedDeployerDebouncer = new Debouncer(0.5);
+  private Debouncer connectedCANRangeDebouncer = new Debouncer(0.5);
 
   public IntakeIOTalonFX() {
     rollerMotor = new TalonFX(ROLLER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     deployerMotor = new TalonFX(DEPLOYER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    deployerCANRange = new CANrange(DEPLOYER_CAN_RANGE_ID, RobotConfig.getInstance().getCANBus());
 
     // Initialize Signals
     rollerVoltageSS = rollerMotor.getMotorVoltage();
@@ -113,6 +132,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     deployerSupplyCurrentSS = deployerMotor.getSupplyCurrent();
     deployerTempSS = deployerMotor.getDeviceTemp();
 
+    deployerSensorDistanceSS = deployerCANRange.getDistance();
+    deployerSensorSignalStrengthSS = deployerCANRange.getSignalStrength();
+    deployerSensorDetectedSignalSS = deployerCANRange.getIsDetected();
+
     // Register with Phoenix6Util for optimized refreshing
     Phoenix6Util.registerSignals(
         true,
@@ -125,10 +148,14 @@ public class IntakeIOTalonFX implements IntakeIO {
         deployerPositionSS,
         deployerStatorCurrentSS,
         deployerSupplyCurrentSS,
-        deployerTempSS);
+        deployerTempSS,
+        deployerSensorSignalStrengthSS,
+        deployerSensorDetectedSignalSS,
+        deployerSensorDistanceSS);
 
     configDeployerMotor(deployerMotor);
     configRollerMotor(rollerMotor);
+    configFuelDetector(deployerCANRange, "Intake CANrange", canRangeConfigAlert);
 
     // Initialize Simulation
     this.rollerSim =
@@ -175,6 +202,11 @@ public class IntakeIOTalonFX implements IntakeIO {
                 deployerTempSS,
                 deployerPositionSS));
 
+    inputs.deployerDetectorConnected =
+        connectedCANRangeDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                deployerSensorDistanceSS, deployerSensorSignalStrengthSS, deployerSensorDetectedSignalSS));
+
     // Update Roller Inputs
     inputs.rollerVelocity = rollerVelocitySS.getValue();
     inputs.rollerStatorCurrent = rollerStatorCurrentSS.getValue();
@@ -191,6 +223,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.deployerAngularPosition = deployerPositionSS.getValue();
     inputs.deployerReferencePosition = this.deployerReferencePosition;
 
+    inputs.deployerDetectorHasSignal = deployerSensorDetectedSignalSS.getValue();
+
     if (Constants.TUNING_MODE) {
       inputs.rollerClosedLoopError =
           Rotations.of(rollerMotor.getClosedLoopError().getValueAsDouble());
@@ -201,6 +235,9 @@ public class IntakeIOTalonFX implements IntakeIO {
           Rotations.of(deployerMotor.getClosedLoopError().getValueAsDouble());
       inputs.deployerClosedLoopReference =
           Rotations.of(deployerMotor.getClosedLoopReference().getValueAsDouble());
+
+      inputs.deployerDetectorDistanceToTarget = deployerSensorDistanceSS.getValue();
+      inputs.deployerDetectorSignalStrength = deployerSensorSignalStrengthSS.getValue();
     }
 
     LoggedTunableNumber.ifChanged(
@@ -236,6 +273,19 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerKd,
         rollerKs,
         rollerKv);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        detectorConfig -> {
+          ProximityParamsConfigs config = new ProximityParamsConfigs();
+          deployerCANRange.getConfigurator().refresh(config);
+          config.MinSignalStrengthForValidMeasurement = detectorConfig[0];
+          config.ProximityThreshold = detectorConfig[1];
+
+          deployerCANRange.getConfigurator().apply(config);
+        },
+        intakeDetectorMinSignalStrength,
+        intakeDetectorProximityThreshold);
 
     if (Constants.getMode() == Constants.Mode.SIM) {
       deployerSim.updateSim();
@@ -328,5 +378,20 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, rollerConfigAlert);
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Roller Motor", motor);
+  }
+
+  private void configFuelDetector(CANrange encoder, String encoderName, Alert configAlert) {
+    CANrangeConfiguration config = new CANrangeConfiguration();
+
+    config.ProximityParams.MinSignalStrengthForValidMeasurement =
+        intakeDetectorMinSignalStrength.get();
+
+    config.ProximityParams.ProximityThreshold = intakeDetectorProximityThreshold.get();
+
+    config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
+
+    Phoenix6Util.applyAndCheckConfiguration(encoder, config, configAlert);
+
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, encoderName, encoder);
   }
 }

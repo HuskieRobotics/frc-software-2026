@@ -10,6 +10,7 @@ public class IntakeConstants {
 
   public static final int ROLLER_MOTOR_ID = 42;
   public static final int DEPLOYER_MOTOR_ID = 33;
+  public static final int DEPLOYER_CAN_RANGE_ID = 60;
 
   public static final double DEPLOYER_KP = 100.0;
   public static final double DEPLOYER_KI = 0;
@@ -71,4 +72,8 @@ public class IntakeConstants {
   public static final double ROLLER_JAMMED_CURRENT_AMPS = 39.0;
   public static final double ROLLER_JAMMED_TIME_THRESHOLD_SECONDS = 0.2;
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
+
+  // fuel detector detection constants
+  public static final double CAN_RANGE_MIN_STRENGTH = 2000;
+  public static final double CAN_RANGE_PROXIMITY_THRESHOLD = 0.03; // meters
 }
