@@ -205,7 +205,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.deployerDetectorConnected =
         connectedCANRangeDebouncer.calculate(
             BaseStatusSignal.isAllGood(
-                deployerSensorDistanceSS, deployerSensorSignalStrengthSS, deployerSensorDetectedSignalSS));
+                deployerSensorDistanceSS,
+                deployerSensorSignalStrengthSS,
+                deployerSensorDetectedSignalSS));
 
     // Update Roller Inputs
     inputs.rollerVelocity = rollerVelocitySS.getValue();
