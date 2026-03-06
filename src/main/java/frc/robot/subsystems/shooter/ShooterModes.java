@@ -43,8 +43,9 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
-  private double shotVelocityMultiplier = 0.97;
+  private double shotVelocityMultiplier = 0.96;
   private double turretAngleAdjustment = 0.0;
+
 
   /*
   Create interpolating tree map for data points
