@@ -44,6 +44,7 @@ public class ShooterModes extends SubsystemBase {
 
   private boolean hubActive;
   private double shotVelocityMultiplier = 0.97;
+  private double turretAngleAdjustment = 0.0;
 
   /*
   Create interpolating tree map for data points
@@ -100,6 +101,7 @@ public class ShooterModes extends SubsystemBase {
 
     populateMaps();
     registerVelocityDial();
+    registerTurretDial();
   }
 
   @Override
@@ -109,6 +111,7 @@ public class ShooterModes extends SubsystemBase {
     determineModeAndSetShooter();
 
     Logger.recordOutput("ShooterModes/Shot Multiplier", this.shotVelocityMultiplier);
+    Logger.recordOutput("ShooterModes/Turret Angle Adjustment", this.turretAngleAdjustment);
     Logger.recordOutput("ShooterModes/CurrentMode", this.currentMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
   }
@@ -564,6 +567,23 @@ public class ShooterModes extends SubsystemBase {
     this.shotVelocityMultiplier -= 0.01;
   }
 
+  public void registerTurretDial() {
+    SmartDashboard.putData(
+        SUBSYSTEM_NAME + "/Aim Turret Left 1 deg", Commands.runOnce(this::incrementTurretAngle));
+    SmartDashboard.putData(
+        SUBSYSTEM_NAME + "/Aim Turret Right 1 deg", Commands.runOnce(this::decrementTurretAngle));
+  }
+  
+  // increases turret angle by 1 deg
+  public void incrementTurretAngle() {
+    this.turretAngleAdjustment += 1.0;
+  }
+
+  // decreases turret angle by 1 deg
+  public void decrementTurretAngle() {
+    this.turretAngleAdjustment -= 1.0;
+  }
+
   private double idealVelocityFromFunction(double distance) {
     double vMetersPerSecond =
         0.0094236446 * Math.pow(distance, 3)
@@ -614,6 +634,8 @@ public class ShooterModes extends SubsystemBase {
     // if we are shooting into the hub, apply the shot velocity multiplier (don't apply for passes)
     if (isShootingHub) {
       idealShotVelocity *= this.shotVelocityMultiplier;
+      robotRelativeTurretAngle =
+          robotRelativeTurretAngle.plus(Degrees.of(this.turretAngleAdjustment));
     }
 
     return new ShooterSetpoints(
