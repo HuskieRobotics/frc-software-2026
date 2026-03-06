@@ -115,7 +115,11 @@ public class CrossSubsystemsCommandsFactory {
             getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
-        .and(() -> (shooterModes.isManualShootEnabled() || shooterModes.isManualPassEnabled()))
+        .and(
+            () ->
+                (shooterModes.isManualShootEnabled()
+                    || shooterModes.isManualPassEnabled()
+                    || shooterModes.isLockedShooterEnabled()))
         .onTrue(
             getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
