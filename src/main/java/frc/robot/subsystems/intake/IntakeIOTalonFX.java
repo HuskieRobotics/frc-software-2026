@@ -225,7 +225,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.deployerAngularPosition = deployerPositionSS.getValue();
     inputs.deployerReferencePosition = this.deployerReferencePosition;
 
-    inputs.deployerDetectorHasSignal = deployerSensorDetectedSignalSS.getValue();
+    inputs.deployerDetectorFullyExtended = deployerSensorDetectedSignalSS.getValue();
 
     if (Constants.TUNING_MODE) {
       inputs.rollerClosedLoopError =

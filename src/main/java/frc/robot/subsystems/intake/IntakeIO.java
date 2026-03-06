@@ -39,7 +39,7 @@ public interface IntakeIO {
     Angle deployerClosedLoopReference = Rotations.of(0);
 
     boolean deployerDetectorConnected = false;
-    boolean deployerDetectorHasSignal = false;
+    boolean deployerDetectorFullyExtended = false;
     Distance deployerDetectorDistanceToTarget = Meters.of(0.0); // FIXME: determine if necessary
     double deployerDetectorSignalStrength = 0.0;
   }
