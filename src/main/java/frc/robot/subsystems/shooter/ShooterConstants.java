@@ -120,7 +120,7 @@ public class ShooterConstants {
 
   public static final AngularVelocity FLYWHEEL_MAX_VELOCITY_RPS = RotationsPerSecond.of(60);
 
-  public static final double COMMAND_WAIT_TIME_SECONDS = 1;
+  public static final double COMMAND_WAIT_TIME_SECONDS = 2.0;
 
   public static final double HOOD_CURRENT_THRESHOLD_AMPS = 35.0;
   public static final double HOOD_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
