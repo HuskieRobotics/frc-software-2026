@@ -46,7 +46,6 @@ public class ShooterModes extends SubsystemBase {
   private double shotVelocityMultiplier = 0.96;
   private double turretAngleAdjustment = 0.0;
 
-
   /*
   Create interpolating tree map for data points
   First tree map is for our shoot on the move mode
@@ -574,7 +573,7 @@ public class ShooterModes extends SubsystemBase {
     SmartDashboard.putData(
         SUBSYSTEM_NAME + "/Aim Turret Right 1 deg", Commands.runOnce(this::decrementTurretAngle));
   }
-  
+
   // increases turret angle by 1 deg
   public void incrementTurretAngle() {
     this.turretAngleAdjustment += 1.0;
