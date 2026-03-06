@@ -113,6 +113,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getForceDeployIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
   // OPERATOR TRIGGERS, mostly game-specific
   public default Trigger getPassToggle() {
     return new Trigger(() -> false);
