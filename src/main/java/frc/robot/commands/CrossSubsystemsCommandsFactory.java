@@ -186,8 +186,10 @@ public class CrossSubsystemsCommandsFactory {
                 .until(
                     () ->
                         (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
-            Commands.runOnce(intake::deployIntake, intake),
-            Commands.runOnce(hopper::stop, hopper))
+            Commands.parallel(
+                SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, drivetrain),
+                Commands.runOnce(intake::getDeployAndStartCommand, intake),
+                Commands.runOnce(hopper::stop, hopper)))
         .withName("stop and shoot or pass");
     // add hopper kick method in parallel
   }
