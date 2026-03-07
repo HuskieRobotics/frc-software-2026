@@ -113,7 +113,6 @@ public class New2026RobotConfig extends RobotConfig {
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
-  private static final String CENTER_CAMERA_SERIAL_NUMBER = "25249734";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 15;
@@ -142,14 +141,6 @@ public class New2026RobotConfig extends RobotConfig {
               Units.inchesToMeters(7.434)),
           new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
-  // Center camera
-  // x, y, z, pitch, yaw
-  private static final Transform3d ROBOT_TO_CENTER_CAMERA =
-      new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(0.0), Units.inchesToMeters(0.0), Units.inchesToMeters(0.0)),
-          new Rotation3d(0, Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
-
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
@@ -173,16 +164,6 @@ public class New2026RobotConfig extends RobotConfig {
           .exposure(MONO_EXPOSURE)
           .gain(MONO_GAIN)
           .denoise(MONO_DENOISE)
-          .stdDevFactor(1.0)
-          .build(),
-      CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_CENTER_CAMERA)
-          .id(CENTER_CAMERA_SERIAL_NUMBER)
-          .location("center")
-          .width(1280)
-          .height(960)
-          .exposure(COLOR_EXPOSURE)
-          .gain(COLOR_GAIN)
           .stdDevFactor(1.0)
           .build(),
     };

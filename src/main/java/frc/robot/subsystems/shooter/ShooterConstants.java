@@ -120,7 +120,7 @@ public class ShooterConstants {
 
   public static final AngularVelocity FLYWHEEL_MAX_VELOCITY_RPS = RotationsPerSecond.of(60);
 
-  public static final double COMMAND_WAIT_TIME_SECONDS = 1;
+  public static final double COMMAND_WAIT_TIME_SECONDS = 2.0;
 
   public static final double HOOD_CURRENT_THRESHOLD_AMPS = 35.0;
   public static final double HOOD_CURRENT_TIME_THRESHOLD_SECONDS = 0.1;
@@ -140,7 +140,7 @@ public class ShooterConstants {
   public static final Angle LOCK_SHOT_HOOD_ANGLE = Degrees.of(22);
   public static final Angle LOCK_SHOT_TURRET_ANGLE = Degrees.of(30); // FIXME: determine value
 
-  public static final AngularVelocity PIT_TEST_FLYWHEEL_RPS = RotationsPerSecond.of(10);
+  public static final AngularVelocity PIT_TEST_FLYWHEEL_RPS = RotationsPerSecond.of(20);
 
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value

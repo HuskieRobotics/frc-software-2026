@@ -13,6 +13,9 @@ public class IntakeCommandsFactory {
 
   public static void registerCommands(OperatorInterface oi, Intake intake) {
 
+    oi.getForceDeployIntakeButton()
+        .onTrue(intake.getDeployAndStartCommand().withName("force-deploy intake"));
+
     oi.getDeployRetractIntakeButton()
         .onTrue(
             Commands.either(

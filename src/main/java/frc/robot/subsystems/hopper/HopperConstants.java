@@ -65,5 +65,5 @@ public class HopperConstants {
       RotationsPerSecond.of(20.0); // FIXME: Update value
 
   public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY =
-      RotationsPerSecond.of(3.25); // FIXME: was 4.5
+      RotationsPerSecond.of(4.5); // FIXME: was 4.5
 }
