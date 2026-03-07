@@ -10,7 +10,7 @@ public class IntakeConstants {
 
   public static final int ROLLER_MOTOR_ID = 42;
   public static final int DEPLOYER_MOTOR_ID = 33;
-  public static final int DEPLOYER_CAN_RANGE_ID = 60;
+  public static final int DEPLOYER_CAN_RANGE_ID = 15;
 
   public static final double DEPLOYER_KP = 100.0;
   public static final double DEPLOYER_KI = 0;
