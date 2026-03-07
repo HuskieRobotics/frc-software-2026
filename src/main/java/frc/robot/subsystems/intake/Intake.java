@@ -186,12 +186,22 @@ public class Intake extends SubsystemBase {
 
   public void jostleFuelIn() {
     inDeployedState = false;
-    intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
+    if (this.deployerLinearPosition.gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)) {
+      // only jostle if we're far enough away from the hopper to not cause interference
+      intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
+    } else {
+      intakeIO.setDeployerCurrent(Amps.of(0.0));
+    }
   }
 
   public void jostleFuelOut() {
     inDeployedState = false;
-    intakeIO.setDeployerCurrent(Amps.of(-deployerJostleFuelCurrent.get()));
+     if (this.deployerLinearPosition.lt(DEPLOYED_LINEAR_POSITION)) {
+      // only jostle if we're far enough away from the hopper to not cause interference
+      intakeIO.setDeployerCurrent(Amps.of(-deployerJostleFuelCurrent.get()));
+    } else {
+      intakeIO.setDeployerCurrent(Amps.of(0.0));
+    }
   }
 
   public Command getDeployAndStartCommand() {
