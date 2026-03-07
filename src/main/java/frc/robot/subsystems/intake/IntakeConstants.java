@@ -30,7 +30,7 @@ public class IntakeConstants {
 
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
   public static final Angle DEPLOYED_ANGULAR_POSITION =
-      Rotations.of(3.8244); // was 3.579 for 11.25 inches, now is 3.6605 for 11.5 inches
+      Rotations.of(3.8244); // 12 inches
   public static final Distance DEPLOYED_LINEAR_POSITION =
       Meters.of(DEPLOYED_ANGULAR_POSITION.in(Rotations) * DEPLOYER_CIRCUMFERENCE.in(Meters));
   public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
