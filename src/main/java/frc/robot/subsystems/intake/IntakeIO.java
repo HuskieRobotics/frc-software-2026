@@ -55,4 +55,6 @@ public interface IntakeIO {
   public default void setDeployerVoltage(Voltage volts) {}
 
   public default void setDeployerCurrent(Current amps) {}
+
+  public default void resetDeployerExtendedPosition() {}
 }

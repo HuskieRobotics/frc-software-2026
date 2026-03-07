@@ -308,18 +308,28 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setDeployerVoltage(Voltage voltage) {
-    this.deployerMotor.setControl(deployerVoltageRequest.withOutput(voltage));
+    this.deployerMotor.setControl(
+        deployerVoltageRequest.withLimitForwardMotion(false).withOutput(voltage));
   }
 
   @Override
   public void setDeployerPosition(Angle angularPosition) {
-    deployerMotor.setControl(deployerPositionRequest.withPosition(angularPosition.in(Rotations)));
+    deployerMotor.setControl(
+        deployerPositionRequest
+            .withLimitForwardMotion(false)
+            .withPosition(angularPosition.in(Rotations)));
     this.deployerReferencePosition = angularPosition;
   }
 
   @Override
   public void setDeployerCurrent(Current amps) {
-    this.deployerMotor.setControl(deployerCurrentRequest.withOutput(amps));
+    this.deployerMotor.setControl(
+        deployerCurrentRequest.withLimitForwardMotion(false).withOutput(amps));
+  }
+
+  @Override
+  public void resetDeployerExtendedPosition() {
+    deployerVoltageRequest.withLimitForwardMotion(true).withOutput(0.0);
   }
 
   private void configDeployerMotor(TalonFX motor) {
@@ -353,6 +363,13 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.Slot0.kA = DEPLOYER_KA;
     config.Slot0.kG = DEPLOYER_KG;
     config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+    // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
+    // limit switch, but we will set it using a control request
+    config.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = true;
+    config.HardwareLimitSwitch.ForwardLimitAutosetPositionValue =
+        DEPLOYED_ANGULAR_POSITION.in(Rotations);
+    config.HardwareLimitSwitch.ForwardLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, deployerConfigAlert);
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Deployer Motor", motor);
