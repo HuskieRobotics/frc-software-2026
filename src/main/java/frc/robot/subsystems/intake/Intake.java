@@ -196,7 +196,7 @@ public class Intake extends SubsystemBase {
 
   public void jostleFuelOut() {
     inDeployedState = false;
-     if (this.deployerLinearPosition.lt(DEPLOYED_LINEAR_POSITION)) {
+    if (this.deployerLinearPosition.lt(DEPLOYED_LINEAR_POSITION)) {
       // only jostle if we're far enough away from the hopper to not cause interference
       intakeIO.setDeployerCurrent(Amps.of(-deployerJostleFuelCurrent.get()));
     } else {
