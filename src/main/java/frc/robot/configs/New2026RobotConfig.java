@@ -111,7 +111,7 @@ public class New2026RobotConfig extends RobotConfig {
 
   private static final int LED_COUNT = 10;
 
-  private static final String BR_CAMERA_SERIAL_NUMBER = "40686739";
+  private static final String BR_CAMERA_SERIAL_NUMBER = "40708569";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
 
   private static final int MONO_EXPOSURE = 2200;
