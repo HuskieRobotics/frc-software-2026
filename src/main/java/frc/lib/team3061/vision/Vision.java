@@ -204,10 +204,11 @@ public class Vision extends SubsystemBase {
     }
 
     // Update recording state
-    boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
-    for (VisionIO io : this.visionIOs) {
-      io.setRecording(shouldRecord);
-    }
+    // boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
+    // boolean shouldRecord = recordingRequest.get();
+    // for (VisionIO io : this.visionIOs) {
+    //   io.setRecording(shouldRecord);
+    // }
 
     this.allRobotPoses.clear();
     this.allRobotPosesAccepted.clear();
@@ -272,6 +273,7 @@ public class Vision extends SubsystemBase {
           boolean acceptPose =
               acceptPoseForPoseReset
                   && (arePoseRotationsReasonable(estimatedRobotPose3d)
+                      || observation.type() == PoseObservationType.MULTI_TAG
                       || DriverStation.isDisabled());
 
           Matrix<N3, N1> stdDev = null;
@@ -473,6 +475,8 @@ public class Vision extends SubsystemBase {
       }
     }
     Logger.recordOutput(SUBSYSTEM_NAME + "/AprilTags", allTagPoses.toArray(Pose3d[]::new));
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/RejectedAprilTags", allRejectedTagPoses.toArray(Pose3d[]::new));
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsEnabled", isEnabled);
     Logger.recordOutput(

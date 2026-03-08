@@ -147,6 +147,19 @@
               "period": 0.06,
               "data_type": "boolean"
             }
+          },
+          {
+            "title": "Slow Shooter For Pit Test",
+            "x": 400.0,
+            "y": 352.0,
+            "width": 288.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Slow Shooter For Pit Test",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -459,7 +472,7 @@
             "title": "Pass",
             "x": 16.0,
             "y": 16.0,
-            "width": 400.0,
+            "width": 272.0,
             "height": 256.0,
             "type": "Toggle Button",
             "properties": {
@@ -470,10 +483,10 @@
           },
           {
             "title": "Lock Shooter",
-            "x": 432.0,
-            "y": 16.0,
-            "width": 272.0,
-            "height": 160.0,
+            "x": 320.0,
+            "y": 416.0,
+            "width": 256.0,
+            "height": 128.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Lock Shooter",
@@ -482,24 +495,11 @@
             }
           },
           {
-            "title": "Object Detection Enabled",
-            "x": 720.0,
-            "y": 16.0,
-            "width": 288.0,
-            "height": 160.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Object Detection Enabled",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Toggle Auto Snaps",
-            "x": 432.0,
-            "y": 176.0,
-            "width": 272.0,
-            "height": 144.0,
+            "x": 320.0,
+            "y": 288.0,
+            "width": 256.0,
+            "height": 128.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Auto Snaps Enabled",
@@ -508,16 +508,111 @@
             }
           },
           {
-            "title": "Slow Shooter For Pit Test",
-            "x": 720.0,
-            "y": 176.0,
-            "width": 288.0,
-            "height": 144.0,
+            "title": "Shoot On The Move",
+            "x": 16.0,
+            "y": 288.0,
+            "width": 272.0,
+            "height": 256.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorDashboard/Slow Shooter For Pit Test",
+              "topic": "/Tuning/operatorDashboard/Shoot On The Move",
               "period": 0.06,
               "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Pass On The Move",
+            "x": 320.0,
+            "y": 16.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Pass On The Move",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Increase Shot Velocity 1%",
+            "x": 640.0,
+            "y": 16.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter/Increase Shot Velocity 1%",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "Decrease Shot Velocity 1%",
+            "x": 640.0,
+            "y": 144.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter/Decrease Shot Velocity 1%",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "Shot Multiplier",
+            "x": 912.0,
+            "y": 16.0,
+            "width": 272.0,
+            "height": 240.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ShooterModes/Shot Multiplier",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "Turret Angle Adjustment",
+            "x": 912.0,
+            "y": 288.0,
+            "width": 272.0,
+            "height": 256.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/ShooterModes/Turret Angle Adjustment",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "Aim Turret Left 1 deg",
+            "x": 640.0,
+            "y": 288.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter/Aim Turret Left 1 deg",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "Aim Turret Right 1 deg",
+            "x": 640.0,
+            "y": 416.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter/Aim Turret Right 1 deg",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
             }
           }
         ]

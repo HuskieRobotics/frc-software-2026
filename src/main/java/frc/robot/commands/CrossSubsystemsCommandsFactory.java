@@ -115,15 +115,21 @@ public class CrossSubsystemsCommandsFactory {
             getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
-        .and(shooterModes::isManualShootEnabled)
+        .and(
+            () ->
+                (shooterModes.isManualShootEnabled()
+                    || shooterModes.isManualPassEnabled()
+                    || shooterModes.isLockedShooterEnabled()))
         .onTrue(
             getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     oi.getManualShootButton()
         .onFalse(
             Commands.parallel(
-                    Commands.runOnce(hopper::stop, hopper),
-                    Commands.runOnce(intake::deployIntake, intake))
+                    SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
+                        oi, swerveDrivetrain),
+                    Commands.runOnce(intake::getDeployAndStartCommand, intake),
+                    Commands.runOnce(hopper::stop, hopper))
                 .withName("stop shooting"));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
@@ -168,22 +174,15 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       Intake intake,
       ShooterModes shooterModes) {
-    return Commands.sequence(
-            Commands.runOnce(drivetrain::holdXstance, drivetrain),
-            Commands.parallel(
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                    Commands.repeatingSequence(
-                        Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
-                        Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)),
-                    Commands.either(
-                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                        shooterModes::isPassEnabled))
-                .until(
-                    () ->
-                        (Math.abs(oi.getTranslateX()) > 0.1 || Math.abs(oi.getTranslateY()) > 0.1)),
-            Commands.runOnce(intake::deployIntake, intake),
-            Commands.runOnce(hopper::stop, hopper))
+    return Commands.parallel(
+            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+            Commands.repeatingSequence(
+                Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
+                Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)),
+            Commands.either(
+                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                shooterModes::isManualPassEnabled))
         .withName("stop and shoot or pass");
     // add hopper kick method in parallel
   }
@@ -287,7 +286,9 @@ public class CrossSubsystemsCommandsFactory {
   private static void configureCrossSubsystemsTriggers(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
     Trigger unloadHopperOnTheMoveTrigger =
-        new Trigger(() -> shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassEnabled())
+        new Trigger(
+                () ->
+                    shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.onTrue(
         Commands.repeatingSequence(
@@ -298,7 +299,7 @@ public class CrossSubsystemsCommandsFactory {
                                 Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                                 Commands.run(
                                     () -> LEDs.getInstance().requestState(States.SHOOTING)),
-                                shooterModes::isPassEnabled)))
+                                shooterModes::isPassOnTheMoveEnabled)))
                     .until(shooter::isTurretNotNearSetPoint)
                     .andThen(Commands.runOnce(hopper::stop, hopper)))
             .withName("feed fuel"));

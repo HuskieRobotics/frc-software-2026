@@ -29,8 +29,7 @@ public class IntakeConstants {
   public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(22);
 
   public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
-  public static final Angle DEPLOYED_ANGULAR_POSITION =
-      Rotations.of(3.6605); // was 3.579 for 11.25 inches, now is 3.6605 for 11.5 inches
+  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(3.8244); // 12 inches
   public static final Distance DEPLOYED_LINEAR_POSITION =
       Meters.of(DEPLOYED_ANGULAR_POSITION.in(Rotations) * DEPLOYER_CIRCUMFERENCE.in(Meters));
   public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
@@ -40,7 +39,7 @@ public class IntakeConstants {
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
   public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(3.0);
 
-  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-10.0);
+  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
 
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 25.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 20.0;
@@ -61,7 +60,7 @@ public class IntakeConstants {
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
-  public static final double ROLLER_PEAK_CURRENT_LIMIT = 60.0;
+  public static final double ROLLER_PEAK_CURRENT_LIMIT = 50.0;
 
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 

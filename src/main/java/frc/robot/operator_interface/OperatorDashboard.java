@@ -20,14 +20,17 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean passToggle =
       new LoggedTunableBoolean("operatorDashboard/Pass", false, true);
 
-  public final LoggedTunableBoolean lockTurretForBankToggle =
-      new LoggedTunableBoolean("operatorDashboard/Lock Turret For Bank", false, true);
+  // public final LoggedTunableBoolean lockTurretForBankToggle =
+  //     new LoggedTunableBoolean("operatorDashboard/Lock Turret For Bank", false, true);
 
   public final LoggedTunableBoolean shootOnTheMoveToggle =
       new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, true);
 
-  public final LoggedTunableBoolean objectDetectionToggle =
-      new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
+  public final LoggedTunableBoolean passOnTheMoveToggle =
+      new LoggedTunableBoolean("operatorDashboard/Pass On The Move", false, true);
+
+  // public final LoggedTunableBoolean objectDetectionToggle =
+  //     new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
 
   public final LoggedTunableBoolean hubActiveAtHomeToggle =
       new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", true, true);
@@ -48,14 +51,19 @@ public class OperatorDashboard implements OperatorInterface {
     return new Trigger(() -> passToggle.get());
   }
 
-  @Override
-  public Trigger getLockTurretForBankToggle() {
-    return new Trigger(() -> lockTurretForBankToggle.get());
-  }
+  // @Override
+  // public Trigger getLockTurretForBankToggle() {
+  //   return new Trigger(() -> lockTurretForBankToggle.get());
+  // }
 
   @Override
   public Trigger getShootOnTheMoveToggle() {
     return new Trigger(() -> shootOnTheMoveToggle.get());
+  }
+
+  @Override
+  public Trigger getPassOnTheMoveToggle() {
+    return new Trigger(() -> passOnTheMoveToggle.get());
   }
 
   @Override
@@ -73,10 +81,10 @@ public class OperatorDashboard implements OperatorInterface {
     return new Trigger(() -> lockShooterToggle.get());
   }
 
-  @Override
-  public Trigger getObjectDetectionToggle() {
-    return new Trigger(() -> objectDetectionToggle.get());
-  }
+  // @Override
+  // public Trigger getObjectDetectionToggle() {
+  //   return new Trigger(() -> objectDetectionToggle.get());
+  // }
 
   @Override
   public Trigger getAutoSnapsEnabledTrigger() {
