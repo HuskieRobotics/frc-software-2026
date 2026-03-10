@@ -38,6 +38,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.FlywheelSystemSim;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 
@@ -556,7 +557,12 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTurretPosition(Angle position) {
-    turret.setControl(turretPositionRequest.withPosition(position));
+    turret.setControl(
+        turretPositionRequest
+            .withPosition(position)
+            .withVelocity(
+                RadiansPerSecond.of(
+                    -RobotOdometry.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond)));
     this.turretReferencePosition = position.copy();
   }
 
