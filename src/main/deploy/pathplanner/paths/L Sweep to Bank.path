@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.871488888888889,
-        "y": 4.710211111111112
+        "x": 5.889124999999999,
+        "y": 4.581261363636363
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.0796433666191145,
-        "y": 7.237318116975748
+        "x": 7.097279477730225,
+        "y": 7.108368369501
       },
       "isLocked": false,
       "linkedName": "L Sweep Collect"
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "slow down on the way back",
+      "minWaypointRelativePos": 0.502692998204668,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
