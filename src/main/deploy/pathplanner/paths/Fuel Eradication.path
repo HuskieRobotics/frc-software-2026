@@ -1,0 +1,153 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.414279600570612,
+        "y": 7.586661911554922
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.235089680903943,
+        "y": 7.505075437383758
+      },
+      "isLocked": false,
+      "linkedName": "Left Starting Point"
+    },
+    {
+      "anchor": {
+        "x": 8.902790697674419,
+        "y": 5.097763864042934
+      },
+      "prevControl": {
+        "x": 8.77298747763864,
+        "y": 8.245491949910553
+      },
+      "nextControl": {
+        "x": 8.96113994728089,
+        "y": 3.682794561086021
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.643184257602861,
+        "y": 2.193416815742397
+      },
+      "prevControl": {
+        "x": 8.728901440628313,
+        "y": 1.8810632636045144
+      },
+      "nextControl": {
+        "x": 8.557467074577408,
+        "y": 2.50577036788028
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.026618962432917,
+        "y": 5.097763864042934
+      },
+      "prevControl": {
+        "x": 8.041304238957322,
+        "y": 4.062451869072439
+      },
+      "nextControl": {
+        "x": 7.994168157423971,
+        "y": 7.385545617173523
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.026618962432917,
+        "y": 7.586661911554922
+      },
+      "prevControl": {
+        "x": 8.780745733937614,
+        "y": 7.670081482537042
+      },
+      "nextControl": {
+        "x": 7.272492190928222,
+        "y": 7.503242340572801
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.0169044222539223,
+        "y": 7.586661911554922
+      },
+      "prevControl": {
+        "x": 5.6204296861193015,
+        "y": 7.6361963915186095
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Left Bank"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 0.9,
+      "rotationDegrees": -99.462
+    },
+    {
+      "waypointRelativePos": 1.2,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -119.99999999999999
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "slow down on the way back",
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}
