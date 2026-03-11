@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -46,6 +47,7 @@ public class Vision extends SubsystemBase {
   private final AprilTagVisionIOInputsAutoLogged[] aprilTagInputs;
   private final ObjDetectVisionIOInputsAutoLogged[] objDetectInputs;
 
+  private final Debouncer fmsAttachedDebouncer = new Debouncer(3.0, DebounceType.kRising);
   private final LoggedNetworkBoolean recordingRequest =
       new LoggedNetworkBoolean("/SmartDashboard/Enable Recording", false);
 
@@ -204,7 +206,9 @@ public class Vision extends SubsystemBase {
     }
 
     // Update recording state
-    boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
+    boolean shouldRecord =
+        // Ensure that match info can be published before recording
+        fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) || recordingRequest.get();
     for (VisionIO io : this.visionIOs) {
       io.setRecording(shouldRecord);
     }
