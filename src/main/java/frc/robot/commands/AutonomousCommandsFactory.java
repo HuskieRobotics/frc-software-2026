@@ -381,18 +381,11 @@ public class AutonomousCommandsFactory {
       PathPlannerPath secondSweepToBank) {
     return Commands.sequence(
             Commands.runOnce(matchTimer::restart),
-            Commands.runOnce(
-                () -> {
-                  Pose2d pose = startingPose;
-                  if (drivetrain.shouldFlipAutoPath()) {
-                    pose = FlippingUtil.flipFieldPose(startingPose);
-                  }
-                  drivetrain.resetPose(pose);
-                }),
+            setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
-            // alternate between unloading hopper and running sweeps until not enough time in the
-            // auto
+            // alternate between unloading hopper and running sweeps until not enough time left in
+            // the auto to do so
             Commands.repeatingSequence(
                 getUnloadHopperCommand(hopper, intake, shooter),
                 Commands.runOnce(hopper::stop, hopper),
@@ -411,6 +404,17 @@ public class AutonomousCommandsFactory {
               hopper.stop();
               intake.deployIntake();
             });
+  }
+
+  private Command setStartingPoseForAuto(Pose2d startingPose, SwerveDrivetrain drivetrain) {
+    return Commands.runOnce(
+        () -> {
+          Pose2d pose = startingPose;
+          if (drivetrain.shouldFlipAutoPath()) {
+            pose = FlippingUtil.flipFieldPose(startingPose);
+          }
+          drivetrain.resetPose(pose);
+        });
   }
 
   private Command rightToNeutralZoneX2(
