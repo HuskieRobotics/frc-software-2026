@@ -8,16 +8,15 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
-import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.FieldConstants;
@@ -36,6 +35,8 @@ public class AutonomousCommandsFactory {
 
   private final Alert pathFileMissingAlert =
       new Alert("Could not find the specified path file.", AlertType.kError);
+
+  private Timer hopperUnloadTimer = new Timer();
 
   /**
    * Returns the singleton instance of this class.
@@ -339,128 +340,20 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
 
-  private Command getUnloadHopperCommand(
-      Hopper hopper, Intake intake, Shooter shooter, double timeout) {
+  private Command getUnloadHopperCommand(Hopper hopper, Intake intake, Shooter shooter) {
+    // we weren't shooting when we got back so it will take 1 second for the debouncer to turn true
+    hopperUnloadTimer.reset();
+    hopperUnloadTimer.start();
+
     return Commands.sequence(
         Commands.parallel(
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                Commands.repeatingSequence(
+                Commands.repeatingSequence( // FIXME: to change
                     Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
                     Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
-            .withTimeout(timeout),
+            .until(() -> (hopperUnloadTimer.get() > 2.0 && !shooter.getFuelDetected())),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
-  }
-
-  private Command leftNeutralZoneHopperAndClimb(
-      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
-    PathPlannerPath driveToNeutralZone;
-    PathPlannerPath driveToBank;
-    PathPlannerPath driveToTower;
-    try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("Left to Far NZ");
-      driveToBank = PathPlannerPath.fromPathFile("Left Far NZ to Bank");
-      driveToTower = PathPlannerPath.fromPathFile("Left Bank to Tower");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-    // 1st priority for bluff
-    // follow path to neutral zone
-    // change pathplanner path to collect fuel
-    // follow path to near bank
-    // drive to bank command
-    // unload shoot for x seconds
-    // follow path to tower
-    // climb sequence command
-
-    return Commands.sequence(
-        AutoBuilder.followPath(driveToNeutralZone),
-        Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToBank),
-        Commands.waitSeconds(4),
-        AutoBuilder.followPath(driveToTower));
-  }
-
-  private Command rightNeutralZoneHopperAndClimb(
-      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
-    PathPlannerPath driveToNeutralZone;
-    PathPlannerPath driveToBank;
-    PathPlannerPath driveToTower;
-    try {
-      driveToNeutralZone = PathPlannerPath.fromPathFile("Right to Far NZ");
-      driveToBank = PathPlannerPath.fromPathFile("Right Far NZ to Bank");
-      driveToTower = PathPlannerPath.fromPathFile("Right Bank to Tower");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    // 1st priority for bluffs
-    // follow path to neutral zone
-    // collect fuel with timeout x OR another PathPlannerPath to drive along the NZ
-    // follow path to near bank
-    // drive to bank command
-    // unload shooter for x seconds
-    // follow path to tower
-    // climb sequence command
-    return Commands.sequence(
-        AutoBuilder.followPath(driveToNeutralZone),
-        Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToBank),
-        Commands.waitSeconds(1),
-        AutoBuilder.followPath(driveToTower),
-        new DriveToPose(
-            drivetrain,
-            this::getTowerPose,
-            CrossSubsystemsCommandsFactory.xController,
-            CrossSubsystemsCommandsFactory.yController,
-            CrossSubsystemsCommandsFactory.thetaController,
-            new Transform2d(
-                Units.inchesToMeters(1.0), Units.inchesToMeters(1.0), Rotation2d.fromDegrees(5)),
-            true,
-            (atPose) ->
-                LEDs.getInstance()
-                    .requestState(atPose ? LEDs.States.AT_POSE : LEDs.States.AUTO_DRIVING_TO_POSE),
-            CrossSubsystemsCommandsFactory::updatePIDConstants,
-            5));
-
-    // return Commands.sequence(
-    //     AutoBuilder.followPath(driveToNeutralZone),
-    //     Commands.waitSeconds(1),
-    //     AutoBuilder.followPath(driveToBank),
-    //     Commands.waitSeconds(1),
-    //     AutoBuilder.followPath(driveToTower));
-  }
-
-  private Command middleDepotHopperAndClimb(
-      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
-    PathPlannerPath driveToDepot;
-    PathPlannerPath depotToTower;
-    try {
-      driveToDepot = PathPlannerPath.fromPathFile("Middle Go To Depot");
-      depotToTower = PathPlannerPath.fromPathFile("Depot to Tower");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-    // 2nd Prority for Bluffs
-    // follow path to depot
-    // collect fuel
-    // unload shooter
-    // follow path to tower
-    // climb sequence
-
-    return Commands.sequence(
-        AutoBuilder.followPath(driveToDepot),
-        Commands.waitSeconds(1),
-        AutoBuilder.followPath(depotToTower));
   }
 
   private Pose2d getTowerPose() {
@@ -476,55 +369,12 @@ public class AutonomousCommandsFactory {
         Rotation2d.fromDegrees(-90));
   }
 
-  private Command leftDepotHopperAndClimb(
-      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
-    PathPlannerPath driveToDepot;
-    PathPlannerPath depotToTower;
-    try {
-      driveToDepot = PathPlannerPath.fromPathFile("Left Go to Depot");
-      depotToTower = PathPlannerPath.fromPathFile("Depot to Tower");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-    // 2nd Prority for Bluffs
-    // follow path to depot
-    // collect fuel
-    // unload shooter
-    // follow path to tower
-    // climb sequence
-
-    return Commands.sequence(
-        AutoBuilder.followPath(driveToDepot),
-        Commands.waitSeconds(1),
-        AutoBuilder.followPath(depotToTower));
-  }
-
-  private Command middleHopperAndClimb(
-      SwerveDrivetrain drivetrain /*, Shooter shooter*/) { // add shooter and intake later
-    PathPlannerPath driveToTower;
-    try {
-      driveToTower = PathPlannerPath.fromPathFile("Middle Shoot Preload+Climb");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-      // Low priority for bluffs
-      // unload shooter
-      // follow path to tower
-      // climb sequence
-      return Commands.none();
-    }
-
-    return Commands.sequence(AutoBuilder.followPath(driveToTower));
-  }
-
   private Command rightToNeutralZoneX2(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
     PathPlannerPath rightFuelSweep;
     PathPlannerPath sweepCollect;
     PathPlannerPath sweepCollectToBank;
+
     final Pose2d startingPose;
     try {
       rightFuelSweep = PathPlannerPath.fromPathFile("R Fuel Sweep");
@@ -534,12 +384,7 @@ public class AutonomousCommandsFactory {
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
-      // 3rd priority for Bluffs
-      // Follow path to neutral zone
-      // collect fuel
-      // follow path to bank
-      // unload shoot
-      // repeat
+
       return Commands.none();
     }
     return Commands.sequence(
@@ -553,11 +398,11 @@ public class AutonomousCommandsFactory {
                 }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(sweepCollect),
             AutoBuilder.followPath(sweepCollectToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -598,11 +443,11 @@ public class AutonomousCommandsFactory {
                 }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(sweepCollect),
             AutoBuilder.followPath(sweepCollectToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -649,11 +494,11 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToNeutralZoneAgain),
             AutoBuilder.followPath(driveToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -700,11 +545,11 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToNeutralZoneAgain),
             AutoBuilder.followPath(driveToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -745,12 +590,12 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            getUnloadHopperCommand(hopper, intake, shooter),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToDepot),
             AutoBuilder.followPath(intakeFromDepot),
             AutoBuilder.followPath(leaveDepot),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter))
         .finallyDo(
             () -> {
               hopper.stop();
