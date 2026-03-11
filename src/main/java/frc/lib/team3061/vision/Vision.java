@@ -54,6 +54,9 @@ public class Vision extends SubsystemBase {
   private double[] lastTimestamps;
   private int[] cyclesWithNoResults;
   private int[] updatePoseCount;
+
+  private final double disconnectedTimeout = 0.5;
+  private final Timer[] disconnectedTimers;
   private Alert[] disconnectedAlerts;
 
   private List<Integer> camerasToConsider = new ArrayList<>();
@@ -120,6 +123,7 @@ public class Vision extends SubsystemBase {
     this.inputs = new VisionIOInputsAutoLogged[visionIOs.length];
     this.aprilTagInputs = new AprilTagVisionIOInputsAutoLogged[visionIOs.length];
     this.objDetectInputs = new ObjDetectVisionIOInputsAutoLogged[visionIOs.length];
+    this.disconnectedTimers = new Timer[visionIOs.length];
     this.disconnectedAlerts = new Alert[visionIOs.length];
     this.camerasToConsider = new ArrayList<>();
 
@@ -148,6 +152,11 @@ public class Vision extends SubsystemBase {
       robotPoses.add(new ArrayList<>());
       robotPosesAccepted.add(new ArrayList<>());
       robotPosesRejected.add(new ArrayList<>());
+    }
+
+    for (int i = 0; i < visionIOs.length; i++) {
+      disconnectedTimers[i] = new Timer();
+      disconnectedTimers[i].start();
     }
 
     this.layout = FieldConstants.defaultAprilTagType.getLayout();
@@ -213,6 +222,28 @@ public class Vision extends SubsystemBase {
       io.setRecording(shouldRecord);
     }
 
+    // Update disconnected alerts & LEDs
+    boolean anyNTDisconnected = false;
+    for (int i = 0; i < visionIOs.length; i++) {
+      if (aprilTagInputs[i].timestamps.length > 0 || objDetectInputs[i].timestamps.length > 0) {
+        disconnectedTimers[i].reset();
+      }
+      boolean disconnected =
+          disconnectedTimers[i].hasElapsed(disconnectedTimeout) || !inputs[i].connected;
+      if (disconnected) {
+        disconnectedAlerts[i].setText(
+            inputs[i].connected
+                ? "camera "
+                    + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                    + " connected to NT but not publishing frames"
+                : "camera "
+                    + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                    + " disconnected from NT");
+      }
+      disconnectedAlerts[i].set(disconnected);
+      anyNTDisconnected = anyNTDisconnected || !inputs[i].connected;
+    }
+
     this.allRobotPoses.clear();
     this.allRobotPosesAccepted.clear();
     this.allRobotPosesRejected.clear();
@@ -222,8 +253,6 @@ public class Vision extends SubsystemBase {
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
       String cameraLocation = RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location();
-
-      disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;
 
       // Initialize logging values
