@@ -614,6 +614,40 @@
               "show_type": true,
               "maximize_button_space": false
             }
+          },
+          {
+            "title": "BL",
+            "x": 1200.0,
+            "y": 16.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/Vision/BL/Connected",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "BR",
+            "x": 1200.0,
+            "y": 144.0,
+            "width": 128.0,
+            "height": 112.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/Vision/BR/Connected",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
           }
         ]
       }
