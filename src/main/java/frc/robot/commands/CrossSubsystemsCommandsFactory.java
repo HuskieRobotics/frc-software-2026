@@ -129,7 +129,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.parallel(
                     SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
                         oi, swerveDrivetrain),
-                    Commands.runOnce(intake::getDeployAndStartCommand, intake),
+                    // Commands.runOnce(intake::getDeployAndStartCommand, intake),
                     Commands.runOnce(hopper::stop, hopper))
                 .withName("stop shooting"));
 
