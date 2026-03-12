@@ -18,16 +18,13 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Enable Vision", true, true);
 
   public final LoggedTunableBoolean passToggle =
-      new LoggedTunableBoolean("operatorDashboard/Pass", false, true);
-
-  // public final LoggedTunableBoolean lockTurretForBankToggle =
-  //     new LoggedTunableBoolean("operatorDashboard/Lock Turret For Bank", false, true);
+      new LoggedTunableBoolean("operatorDashboard/Pass", false, false);
 
   public final LoggedTunableBoolean shootOnTheMoveToggle =
-      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, true);
+      new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, false);
 
   public final LoggedTunableBoolean passOnTheMoveToggle =
-      new LoggedTunableBoolean("operatorDashboard/Pass On The Move", false, true);
+      new LoggedTunableBoolean("operatorDashboard/Pass On The Move", false, false);
 
   // public final LoggedTunableBoolean objectDetectionToggle =
   //     new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
@@ -36,10 +33,10 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", true, true);
 
   public final LoggedTunableBoolean lockShooterToggle =
-      new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, true);
+      new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, false);
 
   public final LoggedTunableBoolean autoSnapsEnabled =
-      new LoggedTunableBoolean("operatorDashboard/Auto Snaps Enabled", true, true);
+      new LoggedTunableBoolean("operatorDashboard/Auto Snaps Enabled", false, false);
 
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);
