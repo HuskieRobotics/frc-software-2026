@@ -20,6 +20,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
@@ -77,7 +78,8 @@ public class ShooterModes extends SubsystemBase {
     MANUAL_PASS, // passing mode,
     PASS_OTM, // passing on the move
     SHOOTER_LOCKED, // set our manual hood, turret, and flywheel values for money shot
-    TESTING // testing mode for testing
+    TESTING, // testing mode for testing
+    DEMO_MODE // only for this branch for demo mode
   }
 
   private class ShooterSetpoints {
@@ -190,6 +192,10 @@ public class ShooterModes extends SubsystemBase {
 
   public boolean isLockedShooterEnabled() {
     return this.currentMode == ShooterMode.SHOOTER_LOCKED;
+  }
+
+  public boolean isDemoModeEnabled() {
+    return this.currentMode == ShooterMode.DEMO_MODE;
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
@@ -352,144 +358,153 @@ public class ShooterModes extends SubsystemBase {
    * shot. The robot stays in SHOOTER_LOCKED mode until the toggle is turned off.
    */
   private void determineModeAndSetShooter() {
-
-    // check for testing mode first since that overrides all other modes and doesn't rely on any
-    // conditions except for the toggle
-    if (testingEnable.get() == 1) {
-      this.currentMode = ShooterMode.TESTING;
-      shooter.setFlywheelVelocity(RotationsPerSecond.of(testingFlywheelVelocity.get()));
-      shooter.setHoodPosition(Degrees.of(testingHoodAngle.get()));
-      shooter.setTurretPosition(Degrees.of(testingTurretAngle.get()));
-      return;
-    }
-
-    // check if the shooter system test is running; if so, don't update the shooter setpoints so the
-    // test can control the shooter without interference from the shooter modes logic
-    if (!DriverStation.isFMSAttached() && shooter.isSystemTestRunning()) {
-      return;
-    }
-
-    // determine if the robot will be potentially shooting or passing, which is based on  whether we
-    // are in the alliance zone or not
-
     ShooterSetpoints shooterSetpoints;
-    Translation2d targetLandingPosition;
-
-    if (Field2d.getInstance().inAllianceZone()) {
-      // assume that if the robot is shooting from rest and adjust later as needed
-      targetLandingPosition = Field2d.getInstance().getHubCenter();
+    if (Constants.DEMO_MODE) {
+      this.currentMode = ShooterMode.DEMO_MODE;
       shooterSetpoints =
-          getIdealStaticSetpoints(
-              targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap, true);
-
-      // if the hub is not active, put the robot in collect and hold mode to prepare for when the
-      // hub becomes active
-      if (!this.hubActive) {
-        this.currentMode = ShooterMode.COLLECT_AND_HOLD;
-      } else {
-        // if the hub is active, the robot is either shooting on the move or manually shooting based
-        // on the shoot on the move toggle
-        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-          this.currentMode = ShooterMode.SHOOT_OTM;
-
-          // update the setpoints based on the robots velocity for shoot on the move
-          shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
-        } else {
-          this.currentMode = ShooterMode.MANUAL_SHOOT;
-
-          if (shooter.isFlywheelAtSetPoint()
-              && shooter.isHoodAtSetPoint()
-              && shooter.isTurretAtSetPoint()) {
-            LEDs.getInstance().requestState(LEDs.States.READY_TO_SHOOT);
-          }
-        }
+          new ShooterSetpoints(PIT_TEST_FLYWHEEL_RPS, HOOD_MAX_PASSING_ANGLE, Degrees.of(90.0));
+    } else {
+      // check for testing mode first since that overrides all other modes and doesn't rely on any
+      // conditions except for the toggle
+      if (testingEnable.get() == 1) {
+        this.currentMode = ShooterMode.TESTING;
+        shooter.setFlywheelVelocity(RotationsPerSecond.of(testingFlywheelVelocity.get()));
+        shooter.setHoodPosition(Degrees.of(testingHoodAngle.get()));
+        shooter.setTurretPosition(Degrees.of(testingTurretAngle.get()));
+        return;
       }
 
-    } else {
-      // assume that the robot is passing and adjust later as needed
+      // check if the shooter system test is running; if so, don't update the shooter setpoints so
+      // the
+      // test can control the shooter without interference from the shooter modes logic
+      if (!DriverStation.isFMSAttached() && shooter.isSystemTestRunning()) {
+        return;
+      }
 
-      if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) {
-        targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
-        shooterSetpoints =
-            getIdealStaticSetpoints(
-                targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap, false);
+      // determine if the robot will be potentially shooting or passing, which is based on  whether
+      // we
+      // are in the alliance zone or not
 
-        this.currentMode = ShooterMode.MANUAL_PASS;
+      Translation2d targetLandingPosition;
 
-        // update the setpoints based on the robots velocity for shoot on the move if toggle is
-        // enabled
-        if (OISelector.getOperatorInterface().getPassOnTheMoveToggle().getAsBoolean()) {
-          shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
-          this.currentMode = ShooterMode.PASS_OTM;
-        }
-
-        // check if the robot is in the high pass zone and override the hood and flywheel setpoints
-        // to be the high pass setpoints
-        if (Field2d.getInstance().inOpponentAllianceHighPassZone()) {
-          shooterSetpoints.flywheelVelocity = FLYWHEEL_PASS_OVER_NET_VELOCITY;
-          shooterSetpoints.hoodAngle = HOOD_LOWER_ANGLE_LIMIT;
-        }
-        // check if the robot is in the no pass zone and switch to collect and hold mode if so to
-        // prevent shooting
-        else if (Field2d.getInstance().inNoPassZone()) {
-          this.currentMode = ShooterMode.COLLECT_AND_HOLD;
-        }
-
-      } else {
+      if (Field2d.getInstance().inAllianceZone()) {
+        // assume that if the robot is shooting from rest and adjust later as needed
         targetLandingPosition = Field2d.getInstance().getHubCenter();
         shooterSetpoints =
             getIdealStaticSetpoints(
                 targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap, true);
 
-        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
-          shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+        // if the hub is not active, put the robot in collect and hold mode to prepare for when the
+        // hub becomes active
+        if (!this.hubActive) {
+          this.currentMode = ShooterMode.COLLECT_AND_HOLD;
+        } else {
+          // if the hub is active, the robot is either shooting on the move or manually shooting
+          // based
+          // on the shoot on the move toggle
+          if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+            this.currentMode = ShooterMode.SHOOT_OTM;
+
+            // update the setpoints based on the robots velocity for shoot on the move
+            shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+          } else {
+            this.currentMode = ShooterMode.MANUAL_SHOOT;
+
+            if (shooter.isFlywheelAtSetPoint()
+                && shooter.isHoodAtSetPoint()
+                && shooter.isTurretAtSetPoint()) {
+              LEDs.getInstance().requestState(LEDs.States.READY_TO_SHOOT);
+            }
+          }
         }
 
-        this.currentMode = ShooterMode.COLLECT_AND_HOLD;
+      } else {
+        // assume that the robot is passing and adjust later as needed
+
+        if (OISelector.getOperatorInterface().getPassToggle().getAsBoolean()) {
+          targetLandingPosition = Field2d.getInstance().getNearestPassingZone().getTranslation();
+          shooterSetpoints =
+              getIdealStaticSetpoints(
+                  targetLandingPosition, passDistanceToVelocityMap, passDistanceToHoodMap, false);
+
+          this.currentMode = ShooterMode.MANUAL_PASS;
+
+          // update the setpoints based on the robots velocity for shoot on the move if toggle is
+          // enabled
+          if (OISelector.getOperatorInterface().getPassOnTheMoveToggle().getAsBoolean()) {
+            shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+            this.currentMode = ShooterMode.PASS_OTM;
+          }
+
+          // check if the robot is in the high pass zone and override the hood and flywheel
+          // setpoints
+          // to be the high pass setpoints
+          if (Field2d.getInstance().inOpponentAllianceHighPassZone()) {
+            shooterSetpoints.flywheelVelocity = FLYWHEEL_PASS_OVER_NET_VELOCITY;
+            shooterSetpoints.hoodAngle = HOOD_LOWER_ANGLE_LIMIT;
+          }
+          // check if the robot is in the no pass zone and switch to collect and hold mode if so to
+          // prevent shooting
+          else if (Field2d.getInstance().inNoPassZone()) {
+            this.currentMode = ShooterMode.COLLECT_AND_HOLD;
+          }
+
+        } else {
+          targetLandingPosition = Field2d.getInstance().getHubCenter();
+          shooterSetpoints =
+              getIdealStaticSetpoints(
+                  targetLandingPosition, hubDistanceToVelocityMap, hubDistanceToHoodMap, true);
+
+          if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+            shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
+          }
+
+          this.currentMode = ShooterMode.COLLECT_AND_HOLD;
+        }
       }
-    }
 
-    //
-    // OVERRIDES
-    //
+      //
+      // OVERRIDES
+      //
 
-    // if the robot is in the collect and hold state, check if the lock turret for bank shot
-    // override is on; if so, override the turret setpoint to be the bank shot turret angle to
-    // prepare for the money shot
-    if (this.currentMode == ShooterMode.COLLECT_AND_HOLD
-        && OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean()) {
-      shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
-    }
+      // if the robot is in the collect and hold state, check if the lock turret for bank shot
+      // override is on; if so, override the turret setpoint to be the bank shot turret angle to
+      // prepare for the money shot
+      if (this.currentMode == ShooterMode.COLLECT_AND_HOLD
+          && OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean()) {
+        shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
+      }
 
-    // if the lock shooter manual override is on, override the setpoints to be the bank shot
-    // setpoints
-    if (OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean()) {
-      shooterSetpoints.flywheelVelocity = LOCK_SHOT_FLYWHEEL_RPS;
-      shooterSetpoints.hoodAngle = LOCK_SHOT_HOOD_ANGLE;
-      shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
-      this.currentMode = ShooterMode.SHOOTER_LOCKED;
-    }
+      // if the lock shooter manual override is on, override the setpoints to be the bank shot
+      // setpoints
+      if (OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean()) {
+        shooterSetpoints.flywheelVelocity = LOCK_SHOT_FLYWHEEL_RPS;
+        shooterSetpoints.hoodAngle = LOCK_SHOT_HOOD_ANGLE;
+        shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
+        this.currentMode = ShooterMode.SHOOTER_LOCKED;
+      }
 
-    if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
-      shooterSetpoints.flywheelVelocity = PIT_TEST_FLYWHEEL_RPS;
-      shooterSetpoints.hoodAngle = HOOD_MAX_PASSING_ANGLE;
-    }
+      if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
+        shooterSetpoints.flywheelVelocity = PIT_TEST_FLYWHEEL_RPS;
+        shooterSetpoints.hoodAngle = HOOD_MAX_PASSING_ANGLE;
+      }
 
-    // finally, override the hood position if the robot is in a trench zone to ensure that the
-    // shooter doesn't get decapitated
-    if (Field2d.getInstance().inTrenchZone()
-        && shooterSetpoints.hoodAngle.gt(HOOD_NEAR_TRENCH_ANGLE_LIMIT)) {
-      this.currentMode = ShooterMode.NEAR_TRENCH;
-      shooterSetpoints.hoodAngle = HOOD_NEAR_TRENCH_ANGLE_LIMIT;
-      LEDs.getInstance().requestState(LEDs.States.IN_TRENCH_ZONE);
+      // finally, override the hood position if the robot is in a trench zone to ensure that the
+      // shooter doesn't get decapitated
+      if (Field2d.getInstance().inTrenchZone()
+          && shooterSetpoints.hoodAngle.gt(HOOD_NEAR_TRENCH_ANGLE_LIMIT)) {
+        this.currentMode = ShooterMode.NEAR_TRENCH;
+        shooterSetpoints.hoodAngle = HOOD_NEAR_TRENCH_ANGLE_LIMIT;
+        LEDs.getInstance().requestState(LEDs.States.IN_TRENCH_ZONE);
+      }
     }
 
     shooter.setFlywheelVelocity(shooterSetpoints.flywheelVelocity);
     shooter.setHoodPosition(shooterSetpoints.hoodAngle);
     shooter.setTurretPosition(shooterSetpoints.turretAngle);
 
-    Logger.recordOutput(
-        "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
+    // Logger.recordOutput(
+    //     "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
     Logger.recordOutput(
         "ShooterModes/FlywheelVelocitySetpointRPS", shooterSetpoints.flywheelVelocity);
     Logger.recordOutput("ShooterModes/HoodAngleSetpointDegrees", shooterSetpoints.hoodAngle);
