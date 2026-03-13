@@ -65,22 +65,21 @@ public class AutonomousCommandsFactory {
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     autoChooser.addOption(
-        "Right to Neutral Zone x2", rightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        "Right Neutral Zone x2", rightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Left to Neutral Zone x2", leftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        "Right Neutral Zone and Outpost",
+        rightNeutralZoneAndOutpost(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Safe Right to Neutral Zone x2",
+        "Left Neutral Zone x2", leftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+
+    autoChooser.addOption(
+        "Safe Right Neutral Zone x2",
         safeRightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Safe Left to Neutral Zone x2",
-        safeLeftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
-
-    autoChooser.addOption(
-        "Left Neutral Zone And Depot",
-        leftNeutralZoneAndDepot(drivetrain, hopper, intake, shooter));
+        "Safe Left Neutral Zone x2", safeLeftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
 
     /************ Start Point ************
      *
@@ -343,7 +342,8 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
 
-  private Command getUnloadHopperCommand(Hopper hopper, Intake intake, Shooter shooter) {
+  private Command getUnloadHopperCommand(
+      Hopper hopper, Intake intake, Shooter shooter, boolean checkForFuel) {
     hopperUnloadTimer.restart();
 
     return Commands.sequence(
@@ -352,7 +352,9 @@ public class AutonomousCommandsFactory {
                 Commands.repeatingSequence( // FIXME: to change
                     Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
                     Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
-            .until(() -> (hopperUnloadTimer.get() > 2.0 && !shooter.getFuelDetected())),
+            .until(
+                () ->
+                    (checkForFuel && hopperUnloadTimer.get() > 2.0 && !shooter.getFuelDetected())),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
   }
@@ -387,7 +389,7 @@ public class AutonomousCommandsFactory {
             // alternate between unloading hopper and running sweeps until not enough time left in
             // the auto to do so
             Commands.repeatingSequence(
-                getUnloadHopperCommand(hopper, intake, shooter),
+                getUnloadHopperCommand(hopper, intake, shooter, true),
                 Commands.runOnce(hopper::stop, hopper),
                 Commands.either(
                     Commands.sequence(
@@ -397,7 +399,7 @@ public class AutonomousCommandsFactory {
                             AutoBuilder.followPath(secondSweepToBank),
                             Commands.none(),
                             () -> matchTimer.get() < 12.5)),
-                    getUnloadHopperCommand(hopper, intake, shooter),
+                    getUnloadHopperCommand(hopper, intake, shooter, true),
                     (() -> matchTimer.get() < 12.5))))
         .finallyDo(
             () -> {
@@ -536,6 +538,50 @@ public class AutonomousCommandsFactory {
         secondSweepToBank);
   }
 
+  private Command rightNeutralZoneAndOutpost(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath sweepCollect;
+    PathPlannerPath sweepToOutpost;
+    PathPlannerPath bankToOutpost;
+    final Pose2d startingPose;
+
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep");
+      sweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
+      sweepToOutpost = PathPlannerPath.fromPathFile("R Sweep to Outpost");
+      bankToOutpost = PathPlannerPath.fromPathFile("R Bank to Outpost");
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            Commands.parallel(
+                intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
+            getUnloadHopperCommand(hopper, intake, shooter, true),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.either(
+                Commands.sequence(
+                    AutoBuilder.followPath(sweepCollect),
+                    AutoBuilder.followPath(sweepToOutpost),
+                    getUnloadHopperCommand(hopper, intake, shooter, false)),
+                Commands.sequence(
+                    AutoBuilder.followPath(bankToOutpost),
+                    getUnloadHopperCommand(hopper, intake, shooter, false)),
+                () -> matchTimer.get() < 10.0))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+            });
+  }
+
   // DEPRECATED FOR NOW
   private Command leftNeutralZoneAndDepot(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
@@ -570,12 +616,12 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter),
+            getUnloadHopperCommand(hopper, intake, shooter, true),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToDepot),
             AutoBuilder.followPath(intakeFromDepot),
             AutoBuilder.followPath(leaveDepot),
-            getUnloadHopperCommand(hopper, intake, shooter))
+            getUnloadHopperCommand(hopper, intake, shooter, true))
         .finallyDo(
             () -> {
               hopper.stop();
