@@ -20,12 +20,12 @@ public class HopperConstants {
   public static final boolean SPINDEXER_MOTOR_INVERTED = true;
   public static final boolean KICKER_MOTOR_INVERTED = true;
 
-  public static final double SPINDEXER_KP = 64.0;
+  public static final double SPINDEXER_KP = 80.0;
   public static final double SPINDEXER_KI = 0.0;
   public static final double SPINDEXER_KD = 0.0;
-  public static final double SPINDEXER_KV = 0.08;
-  public static final double SPINDEXER_KA = 0.027564;
-  public static final double SPINDEXER_KS = 2.5;
+  public static final double SPINDEXER_KV = 0.16;
+  public static final double SPINDEXER_KA = 0.0;
+  public static final double SPINDEXER_KS = 3.9;
 
   public static final double SPINDEXER_MOI = 0.5;
 
