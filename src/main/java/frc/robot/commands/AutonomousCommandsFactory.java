@@ -36,7 +36,7 @@ public class AutonomousCommandsFactory {
   private final Alert pathFileMissingAlert =
       new Alert("Could not find the specified path file.", AlertType.kError);
 
-  private Timer hopperUnloadTimer = new Timer();
+  private Timer hopperUnloadTimer;
   private Timer matchTimer;
 
   /**
@@ -53,6 +53,7 @@ public class AutonomousCommandsFactory {
 
   private AutonomousCommandsFactory() {
     matchTimer = new Timer();
+    hopperUnloadTimer = new Timer();
   }
 
   public Command getAutonomousCommand() {
@@ -344,17 +345,19 @@ public class AutonomousCommandsFactory {
 
   private Command getUnloadHopperCommand(
       Hopper hopper, Intake intake, Shooter shooter, boolean checkForFuel) {
-    hopperUnloadTimer.restart();
 
     return Commands.sequence(
+        Commands.runOnce(() -> hopperUnloadTimer.restart()),
         Commands.parallel(
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                Commands.repeatingSequence( // FIXME: to change
+            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+            Commands.repeatingSequence( // FIXME: to change
                     Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
-                    Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
-            .until(
-                () ->
-                    (checkForFuel && hopperUnloadTimer.get() > 2.0 && !shooter.getFuelDetected())),
+                    Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2))
+                .until(
+                    () ->
+                        (checkForFuel
+                            && hopperUnloadTimer.get() > 2.0
+                            && !shooter.getFuelDetected()))),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
   }
