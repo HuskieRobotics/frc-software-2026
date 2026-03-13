@@ -8,30 +8,30 @@ public class HopperConstants {
 
   public static final String SUBSYSTEM_NAME = "Hopper";
 
-  public static final int SPINDEXER_ID = 14;
+  public static final int SPINDEXER_ID = 10;
   public static final int KICKER_ID = 19;
 
   public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 60; // FIXME: Update value
   public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 60; // FIXME: Update value
 
-  public static final double SPINDEXER_GEAR_RATIO = 18.0;
+  public static final double SPINDEXER_GEAR_RATIO = 8.0;
   public static final double KICKER_GEAR_RATIO = 1.0;
 
   public static final boolean SPINDEXER_MOTOR_INVERTED = true;
   public static final boolean KICKER_MOTOR_INVERTED = true;
 
-  public static final double SPINDEXER_KP = 64.0;
+  public static final double SPINDEXER_KP = 20.0;
   public static final double SPINDEXER_KI = 0.0;
   public static final double SPINDEXER_KD = 0.0;
-  public static final double SPINDEXER_KV = 0.08;
-  public static final double SPINDEXER_KA = 0.027564;
-  public static final double SPINDEXER_KS = 2.5;
+  public static final double SPINDEXER_KV = 0.16;
+  public static final double SPINDEXER_KA = 0.0;
+  public static final double SPINDEXER_KS = 3.9;
 
   public static final double SPINDEXER_MOI = 0.5;
 
   public static final AngularVelocity SPINDEXER_VELOCITY_TOLERANCE = RotationsPerSecond.of(0.4);
 
-  public static final double KICKER_KP = 11.0;
+  public static final double KICKER_KP = 5.0;
   public static final double KICKER_KI = 0.0;
   public static final double KICKER_KD = 0.0;
   public static final double KICKER_KV = 0.22;
@@ -65,5 +65,5 @@ public class HopperConstants {
       RotationsPerSecond.of(20.0); // FIXME: Update value
 
   public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY =
-      RotationsPerSecond.of(4.5); // FIXME: was 4.5
+      RotationsPerSecond.of(2.5); // FIXME: was 4.5
 }
