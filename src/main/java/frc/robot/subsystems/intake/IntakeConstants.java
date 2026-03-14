@@ -19,7 +19,7 @@ public class IntakeConstants {
   public static final double DEPLOYER_KA = 0.0;
   public static final double DEPLOYER_KG = 0.0;
 
-  public static final double DEPLOYER_GEAR_RATIO = 25.0;
+  public static final double DEPLOYER_GEAR_RATIO = 5.0;
   public static final boolean DEPLOYER_MOTOR_INVERTED = true;
 
   // Mechanical properties for simulation
