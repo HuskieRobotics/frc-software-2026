@@ -603,14 +603,7 @@ public class AutonomousCommandsFactory {
     }
 
     return Commands.sequence(
-            Commands.runOnce(
-                () -> {
-                  Pose2d pose = startingPose;
-                  if (drivetrain.shouldFlipAutoPath()) {
-                    pose = FlippingUtil.flipFieldPose(startingPose);
-                  }
-                  drivetrain.resetPose(pose);
-                }),
+            setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
