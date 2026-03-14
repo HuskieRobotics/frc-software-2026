@@ -19,7 +19,6 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
-import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
@@ -161,8 +160,6 @@ public class CrossSubsystemsCommandsFactory {
             oi::getTranslateY,
             oi::getRotate,
             () -> Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY())))
-        .unless(
-            () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
         .withName("Snake Drive Command");
   }
 
