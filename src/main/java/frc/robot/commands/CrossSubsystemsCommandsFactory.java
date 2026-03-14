@@ -206,8 +206,7 @@ public class CrossSubsystemsCommandsFactory {
                         intake
                             .getPosition()
                             .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
-                Commands.runOnce(shooter::resetFuelCount),
-                Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_CYCLE_FUEL_COUNT)))
+                Commands.waitSeconds(0.5)))
         .withName("Jostle");
   }
 
