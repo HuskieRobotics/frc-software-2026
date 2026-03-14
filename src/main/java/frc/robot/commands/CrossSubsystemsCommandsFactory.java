@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -176,15 +177,35 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes) {
     return Commands.parallel(
             hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-            Commands.repeatingSequence(
-                Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
-                Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)),
+            getJostleCommand(intake, shooter),
             Commands.either(
                 Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                 Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
                 shooterModes::isManualPassEnabled))
         .withName("stop and shoot or pass");
     // add hopper kick method in parallel
+  }
+
+  private static Command getJostleCommand(Intake intake, Shooter shooter) {
+    return Commands.sequence(
+            Commands.runOnce(shooter::resetFuelCount),
+            Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT),
+            Commands.repeatingSequence(
+                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
+                Commands.waitUntil(
+                    () ->
+                        intake
+                            .getPosition()
+                            .isNear(JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
+                Commands.waitUntil(
+                    () ->
+                        intake
+                            .getPosition()
+                            .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+                Commands.runOnce(shooter::resetFuelCount),
+                Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_CYCLE_FUEL_COUNT)))
+        .withName("Jostle");
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {

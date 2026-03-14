@@ -31,6 +31,9 @@ public class Shooter extends SubsystemBase {
 
   private boolean systemTestRunning = false;
 
+  private int fuelCount = 0;
+  private boolean previousHasFuel = false;
+
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
   private final LoggedTunableNumber flyWheelLeadVelocity =
@@ -110,6 +113,11 @@ public class Shooter extends SubsystemBase {
     // the jam detectors must be updated every cycle in order to function properly
     hoodJamDetector.update(shooterInputs.hoodStatorCurrent.in(Amps));
     turretJamDetector.update(shooterInputs.turretStatorCurrent.in(Amps));
+
+    if (shooterInputs.fuelDetectorHasFuel && !previousHasFuel) {
+      fuelCount++;
+    }
+    previousHasFuel = shooterInputs.fuelDetectorHasFuel;
 
     if (testingMode.get() == 1) {
       // Flywheel Lead
@@ -371,5 +379,18 @@ public class Shooter extends SubsystemBase {
 
   public AngularVelocity getFlywheelLeadVelocity() {
     return shooterInputs.flywheelLeadVelocity;
+  }
+
+  public boolean hasFuel() {
+    return shooterInputs.fuelDetectorHasFuel;
+  }
+
+  public int getFuelCount() {
+    return fuelCount;
+  }
+
+  public void resetFuelCount() {
+    fuelCount = 0;
+    previousHasFuel = false;
   }
 }

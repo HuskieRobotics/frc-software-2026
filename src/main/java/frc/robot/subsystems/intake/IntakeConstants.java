@@ -39,8 +39,6 @@ public class IntakeConstants {
       Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
   public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(3.0);
 
-  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
-
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 25.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 20.0;
 
@@ -55,8 +53,7 @@ public class IntakeConstants {
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2.14;
   public static final boolean ROLLER_MOTOR_INVERTED = false;
-  public static final AngularVelocity ROLLER_TARGET_VELOCITY =
-      RotationsPerSecond.of(27.0); // FIXME: set value
+  public static final AngularVelocity ROLLER_TARGET_VELOCITY = RotationsPerSecond.of(27.0);
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
@@ -67,4 +64,10 @@ public class IntakeConstants {
   public static final double ROLLER_JAMMED_CURRENT_AMPS = 39.0;
   public static final double ROLLER_JAMMED_TIME_THRESHOLD_SECONDS = 0.2;
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
+
+  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
+  public static final Distance JOSTLE_RETRACTED_POSITION = Inches.of(4.0);
+  public static final Distance JOSTLE_EXTENDED_POSITION = Inches.of(6.0);
+  public static final int JOSTLE_INITIAL_FUEL_COUNT = 15;
+  public static final int JOSTLE_CYCLE_FUEL_COUNT = 10;
 }
