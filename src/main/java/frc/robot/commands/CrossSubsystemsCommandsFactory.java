@@ -160,7 +160,7 @@ public class CrossSubsystemsCommandsFactory {
             oi::getTranslateY,
             oi::getRotate,
             () -> {
-              if (Math.hypot(oi.getTranslateX(), oi.getTranslateY()) > 0.04) {
+              if (Math.hypot(oi.getTranslateX(), oi.getTranslateY()) > 0.06) {
                 return Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY()));
               } else {
                 return Optional.empty();
