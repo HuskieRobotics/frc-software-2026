@@ -623,7 +623,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/Vision/BL/Connected",
+              "topic": "/AdvantageKit/RealOutputs/Vision/BL/sending frames",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -640,7 +640,7 @@
             "height": 112.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/Vision/BR/Connected",
+              "topic": "/AdvantageKit/RealOutputs/Vision/BR/sending frames",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,

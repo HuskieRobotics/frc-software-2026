@@ -225,7 +225,9 @@ public class Vision extends SubsystemBase {
     // Update disconnected alerts & LEDs
     boolean anyNTDisconnected = false;
     for (int i = 0; i < visionIOs.length; i++) {
-      if (aprilTagInputs[i].timestamps.length > 0 || objDetectInputs[i].timestamps.length > 0) {
+      if (aprilTagInputs[i].timestamps.length > 0
+          || objDetectInputs[i].timestamps.length > 0
+          || inputs[i].poseObservations.length > 0) {
         disconnectedTimers[i].reset();
       }
       boolean disconnected =
@@ -241,6 +243,12 @@ public class Vision extends SubsystemBase {
                     + " disconnected from NT");
       }
       disconnectedAlerts[i].set(disconnected);
+      Logger.recordOutput(
+          SUBSYSTEM_NAME
+              + "/"
+              + RobotConfig.getInstance().getCameraConfigs()[i].location()
+              + "/sending frames",
+          !disconnected);
       anyNTDisconnected = anyNTDisconnected || !inputs[i].connected;
     }
 
