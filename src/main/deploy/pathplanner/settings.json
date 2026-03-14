@@ -3,21 +3,21 @@
   "robotLength": 0.76835,
   "holonomicMode": true,
   "pathFolders": [
-    "Neutral Zone + Depot",
-    "Non Bluff Paths",
+    "Left Sweep",
+    "Fuel Eradication",
+    "Right Sweep",
+    "Right Sweep and Outpost",
+    "Safe Sweeps",
     "Tuning",
     "XRP",
-    "[NON BLUFF] Depot+Climb",
-    "[NON BLUFF] Neutral Zone+Climb",
-    "[NON BLUFF] Safe NZ + Depot",
-    "[NON BLUFF] Safe Right NZ + NZ"
+    "[Unused] Depot Paths"
   ],
   "autoFolders": [
     "XRP",
     "Tuning"
   ],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 6.0,
+  "defaultMaxVel": 4.85,
+  "defaultMaxAccel": 7.5,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

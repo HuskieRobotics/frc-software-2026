@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.32258600237248,
+        "x": 6.322586002372481,
         "y": 0.6619928825622776
       },
       "isLocked": false,
@@ -78,12 +78,26 @@
       "rotationDegrees": 90.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "slow down on the way back",
+      "minWaypointRelativePos": 2.0,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 4.85,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -94,7 +108,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Safe Sweeps",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

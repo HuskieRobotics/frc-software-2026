@@ -5,6 +5,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -49,6 +50,8 @@ public class Shooter extends SubsystemBase {
   private final Debouncer hoodAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
+
+  private final Debouncer fuelDetectedDebouncer = new Debouncer(1.5, DebounceType.kFalling);
 
   private CurrentSpikeDetector hoodJamDetector =
       new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
@@ -371,5 +374,12 @@ public class Shooter extends SubsystemBase {
 
   public AngularVelocity getFlywheelLeadVelocity() {
     return shooterInputs.flywheelLeadVelocity;
+  }
+
+  public boolean getFuelDetected() {
+    Logger.recordOutput(
+        "Shooter/Fuel Detected Debounced",
+        fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel));
+    return fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
   }
 }
