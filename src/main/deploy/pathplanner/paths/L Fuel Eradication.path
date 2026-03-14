@@ -82,7 +82,11 @@
       "rotationDegrees": -110.0
     },
     {
-      "waypointRelativePos": 1.3,
+      "waypointRelativePos": 1.25,
+      "rotationDegrees": -110.0
+    },
+    {
+      "waypointRelativePos": 1.5,
       "rotationDegrees": 160.0
     },
     {
@@ -124,7 +128,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Fuel Eradication",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

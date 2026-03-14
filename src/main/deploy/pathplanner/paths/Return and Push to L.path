@@ -8,23 +8,23 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.188614457831325,
-        "y": 0.559987951807229
+        "x": 5.552881597717547,
+        "y": 0.5609700427960058
       },
       "isLocked": false,
       "linkedName": "Right Bank"
     },
     {
       "anchor": {
-        "x": 6.468980322003578,
+        "x": 6.1,
         "y": 2.047388193202146
       },
       "prevControl": {
-        "x": 6.468980322003578,
+        "x": 6.1,
         "y": 0.2926405551339244
       },
       "nextControl": {
-        "x": 6.468980322003578,
+        "x": 6.1,
         "y": 3.5563506261180677
       },
       "isLocked": false,
@@ -32,15 +32,15 @@
     },
     {
       "anchor": {
-        "x": 6.322951699463328,
+        "x": 6.0,
         "y": 6.363345259391771
       },
       "prevControl": {
-        "x": 6.322951699463328,
+        "x": 6.0,
         "y": 5.876312835958433
       },
       "nextControl": {
-        "x": 6.322951699463328,
+        "x": 6.0,
         "y": 6.947459749552772
       },
       "isLocked": false,
@@ -48,15 +48,15 @@
     },
     {
       "anchor": {
-        "x": 7.491180679785331,
+        "x": 7.610128388017117,
         "y": 7.586661911554922
       },
       "prevControl": {
-        "x": 8.21330805365352,
+        "x": 8.332255761885305,
         "y": 7.4032179446389925
       },
       "nextControl": {
-        "x": 7.069320214669051,
+        "x": 7.188267922900836,
         "y": 7.693828264758498
       },
       "isLocked": false,
@@ -86,7 +86,7 @@
       "rotationDegrees": 110.0
     },
     {
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.35,
       "rotationDegrees": 110.0
     },
     {
@@ -132,7 +132,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Fuel Eradication",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

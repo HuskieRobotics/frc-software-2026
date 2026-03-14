@@ -74,6 +74,8 @@ public class AutonomousCommandsFactory {
 
     autoChooser.addOption("Left Sweep", leftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
+    autoChooser.addOption("Fuel Eradication", fuelEradication(drivetrain, hopper, intake, shooter));
+
     autoChooser.addOption(
         "Safe Right Sweep", safeRightNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
@@ -577,6 +579,43 @@ public class AutonomousCommandsFactory {
                     AutoBuilder.followPath(bankToOutpost),
                     getUnloadHopperCommand(hopper, intake, shooter, false)),
                 () -> matchTimer.get() < 10.0))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+            });
+  }
+
+  private Command fuelEradication(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Eradication");
+      secondSweep = PathPlannerPath.fromPathFile("Return and Push to L");
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+            Commands.runOnce(
+                () -> {
+                  Pose2d pose = startingPose;
+                  if (drivetrain.shouldFlipAutoPath()) {
+                    pose = FlippingUtil.flipFieldPose(startingPose);
+                  }
+                  drivetrain.resetPose(pose);
+                }),
+            Commands.parallel(
+                intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            AutoBuilder.followPath(secondSweep),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
             () -> {
               hopper.stop();
