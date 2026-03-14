@@ -121,9 +121,7 @@ public class TeleopSwerve extends Command {
     Logger.recordOutput("TeleopSwerve/yVelocity", yVelocity);
     Logger.recordOutput("TeleopSwerve/rotationalVelocity", rotationalVelocity);
 
-    if (potentialAngle.isPresent()
-        && !(Math.abs(translationXSupplier.getAsDouble()) < 0.04
-            && Math.abs(translationYSupplier.getAsDouble()) < 0.04)) {
+    if (potentialAngle.isPresent()) {
       drivetrain.driveFacingAngle(xVelocity, yVelocity, potentialAngle.get(), true);
     } else {
       drivetrain.drive(

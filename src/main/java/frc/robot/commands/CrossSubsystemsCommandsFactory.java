@@ -159,7 +159,13 @@ public class CrossSubsystemsCommandsFactory {
             oi::getTranslateX,
             oi::getTranslateY,
             oi::getRotate,
-            () -> Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY())))
+            () -> {
+              if (Math.hypot(oi.getTranslateX(), oi.getTranslateY()) > 0.04) {
+                return Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY()));
+              } else {
+                return Optional.empty();
+              }
+            })
         .withName("Snake Drive Command");
   }
 
