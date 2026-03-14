@@ -66,22 +66,19 @@ public class AutonomousCommandsFactory {
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     autoChooser.addOption(
-        "Right Neutral Zone x2", rightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        "Right Sweep", rightNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Right Neutral Zone and Outpost",
-        rightNeutralZoneAndOutpost(drivetrain, hopper, intake, shooter));
+        "Right Sweep and Outpost",
+        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter));
+
+    autoChooser.addOption("Left Sweep", leftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Left Neutral Zone x2", leftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        "Safe Right Sweep", safeRightNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Safe Right Neutral Zone x2",
-        safeRightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
-
-    autoChooser.addOption(
-        "Safe Left Neutral Zone x2", safeLeftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
-
+        "Safe Left Sweep", safeLeftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -422,7 +419,7 @@ public class AutonomousCommandsFactory {
         });
   }
 
-  private Command rightToNeutralZoneX2(
+  private Command rightNeutralZoneSweep(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
     PathPlannerPath firstFuelSweep;
     PathPlannerPath secondSweepCollect;
@@ -450,7 +447,7 @@ public class AutonomousCommandsFactory {
         secondSweepToBank);
   }
 
-  private Command safeRightToNeutralZoneX2(
+  private Command safeRightNeutralZoneSweep(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
     PathPlannerPath safeFirstFuelSweep;
     PathPlannerPath secondSweepCollect;
@@ -478,7 +475,7 @@ public class AutonomousCommandsFactory {
         sweepCollectToBank);
   }
 
-  private Command leftToNeutralZoneX2(
+  private Command leftNeutralZoneSweep(
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
@@ -509,7 +506,7 @@ public class AutonomousCommandsFactory {
         secondSweepToBank);
   }
 
-  private Command safeLeftToNeutralZoneX2(
+  private Command safeLeftNeutralZoneSweep(
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
@@ -541,7 +538,7 @@ public class AutonomousCommandsFactory {
         secondSweepToBank);
   }
 
-  private Command rightNeutralZoneAndOutpost(
+  private Command rightNeutralZoneSweepAndOutpost(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
     PathPlannerPath firstSweep;
     PathPlannerPath sweepCollect;
