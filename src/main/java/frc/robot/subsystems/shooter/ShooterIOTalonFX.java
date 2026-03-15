@@ -658,7 +658,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.Slot0.kV = turretKV.get();
     turretConfig.Slot0.kA = turretKA.get();
 
-    turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.00075;
+    turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.00015;
     turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
     turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
