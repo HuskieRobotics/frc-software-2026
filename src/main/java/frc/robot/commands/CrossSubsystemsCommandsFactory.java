@@ -114,7 +114,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
-    new Trigger(DriverStation::isDisabled).onTrue(getTurretStuckAndRotateCommand(shooter, hopper));
+    new Trigger(shooter::isTurretStuck).onTrue(getTurretStuckAndRotateCommand(shooter, hopper));
 
     oi.getManualShootButton()
         .and(
