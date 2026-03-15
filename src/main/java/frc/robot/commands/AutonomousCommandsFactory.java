@@ -24,6 +24,7 @@ import frc.lib.team6328.util.FieldConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterModes;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -56,28 +57,33 @@ public class AutonomousCommandsFactory {
   }
 
   public void configureAutoCommands(
-      SwerveDrivetrain drivetrain, Vision vision, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Vision vision,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     autoChooser.addOption(
-        "Right to Neutral Zone x2", rightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        "Right to Neutral Zone x2",
+        rightToNeutralZoneX2(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
-        "Left to Neutral Zone x2", leftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        "Left to Neutral Zone x2",
+        leftToNeutralZoneX2(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
         "Safe Right to Neutral Zone x2",
-        safeRightToNeutralZoneX2(drivetrain, hopper, intake, shooter));
-
+        safeRightToNeutralZoneX2(drivetrain, hopper, intake, shooter, shooterModes));
     autoChooser.addOption(
         "Safe Left to Neutral Zone x2",
-        safeLeftToNeutralZoneX2(drivetrain, hopper, intake, shooter));
+        safeLeftToNeutralZoneX2(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
         "Left Neutral Zone And Depot",
-        leftNeutralZoneAndDepot(drivetrain, hopper, intake, shooter));
-
+        leftNeutralZoneAndDepot(drivetrain, hopper, intake, shooter, shooterModes));
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -340,13 +346,16 @@ public class AutonomousCommandsFactory {
   }
 
   private Command getUnloadHopperCommand(
-      Hopper hopper, Intake intake, Shooter shooter, double timeout) {
+      Hopper hopper, Intake intake, Shooter shooter, ShooterModes shooterModes, double timeout) {
     return Commands.sequence(
-        Commands.parallel(
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                Commands.repeatingSequence(
-                    Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
-                    Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
+        Commands.repeatingSequence(
+                Commands.parallel(
+                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                        Commands.repeatingSequence(
+                            Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
+                            Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
+                    .until(shooterModes::isTurretNotNearSetPoint)
+                    .andThen(Commands.runOnce(hopper::stop, hopper)))
             .withTimeout(timeout),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
@@ -521,7 +530,11 @@ public class AutonomousCommandsFactory {
   }
 
   private Command rightToNeutralZoneX2(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) { // add shooter and intake later
     PathPlannerPath rightFuelSweep;
     PathPlannerPath sweepCollect;
     PathPlannerPath sweepCollectToBank;
@@ -553,11 +566,11 @@ public class AutonomousCommandsFactory {
                 }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 20.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(sweepCollect),
             AutoBuilder.followPath(sweepCollectToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 15.0))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -566,7 +579,11 @@ public class AutonomousCommandsFactory {
   }
 
   private Command safeRightToNeutralZoneX2(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
     PathPlannerPath rightFuelSweep;
     PathPlannerPath sweepCollect;
     PathPlannerPath sweepCollectToBank;
@@ -598,11 +615,11 @@ public class AutonomousCommandsFactory {
                 }),
             Commands.parallel(
                 intake.getDeployAndStartCommand(), AutoBuilder.followPath(rightFuelSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 20.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(sweepCollect),
             AutoBuilder.followPath(sweepCollectToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 15.0))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -614,7 +631,8 @@ public class AutonomousCommandsFactory {
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
-      Shooter shooter) { // add shooter and intake later
+      Shooter shooter,
+      ShooterModes shooterModes) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
@@ -649,11 +667,11 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 20.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToNeutralZoneAgain),
             AutoBuilder.followPath(driveToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 15.0))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -665,7 +683,8 @@ public class AutonomousCommandsFactory {
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
-      Shooter shooter) { // add shooter and intake later
+      Shooter shooter,
+      ShooterModes shooterModes) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToNeutralZoneAgain;
     PathPlannerPath driveToBank;
@@ -700,11 +719,11 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 20.0),
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 20.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToNeutralZoneAgain),
             AutoBuilder.followPath(driveToBank),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 15.0))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -713,7 +732,11 @@ public class AutonomousCommandsFactory {
   }
 
   private Command leftNeutralZoneAndDepot(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToDepot;
     PathPlannerPath intakeFromDepot;
@@ -745,12 +768,12 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartCommand(),
                 AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, 6.0),
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 6.0),
             Commands.runOnce(hopper::stop, hopper),
             AutoBuilder.followPath(driveToDepot),
             AutoBuilder.followPath(intakeFromDepot),
             AutoBuilder.followPath(leaveDepot),
-            getUnloadHopperCommand(hopper, intake, shooter, 15.0))
+            getUnloadHopperCommand(hopper, intake, shooter, shooterModes, 15.0))
         .finallyDo(
             () -> {
               hopper.stop();

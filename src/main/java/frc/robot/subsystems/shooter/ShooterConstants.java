@@ -96,8 +96,10 @@ public class ShooterConstants {
   public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(1.0);
   public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // x`FIXME: update when tuning
   public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
-  public static final Angle TURRET_DISTANCE_TO_SETPOINT_THRESHOLD =
-      Degrees.of(15.0); // FIXME: update when tuning
+  public static final Angle TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING =
+      Degrees.of(5.0); // FIXME: update when tuning
+  public static final Angle TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING =
+      Degrees.of(10.0); // FIXME: update when tuning
 
   // Hood and turret position setpoints
   public static final double HOOD_SETPOINT_1_DEGREES = 22.0;
@@ -148,5 +150,6 @@ public class ShooterConstants {
   public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
       0.03; // meters, FIXME: determine value
 
-  public static final Time TURRET_OUTSIDE_SETPOINT_THRESHOLD = Seconds.of(0.5);
+  public static final Time TURRET_OUTSIDE_SETPOINT_THRESHOLD =
+      Seconds.of(1.0); // FIXME: determine value
 }

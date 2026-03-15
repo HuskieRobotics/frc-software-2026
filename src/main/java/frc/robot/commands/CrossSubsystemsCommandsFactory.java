@@ -188,13 +188,16 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       Intake intake,
       ShooterModes shooterModes) {
-    return Commands.parallel(
-            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-            getJostleCommand(intake, shooter),
-            Commands.either(
-                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                shooterModes::isManualPassEnabled))
+    return Commands.repeatingSequence(
+            Commands.parallel(
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    getJostleCommand(intake, shooter),
+                    Commands.either(
+                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                        shooterModes::isManualPassEnabled))
+                .until(shooterModes::isTurretNotNearSetPoint)
+                .andThen(Commands.runOnce(hopper::stop, hopper)))
         .withName("stop and shoot or pass");
     // add hopper kick method in parallel
   }
@@ -351,7 +354,7 @@ public class CrossSubsystemsCommandsFactory {
                                 Commands.run(
                                     () -> LEDs.getInstance().requestState(States.SHOOTING)),
                                 shooterModes::isPassOnTheMoveEnabled)))
-                    .until(shooter::isTurretNotNearSetPoint)
+                    .until(shooterModes::isTurretNotNearSetPoint)
                     .andThen(Commands.runOnce(hopper::stop, hopper)))
             .withName("feed fuel"));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));

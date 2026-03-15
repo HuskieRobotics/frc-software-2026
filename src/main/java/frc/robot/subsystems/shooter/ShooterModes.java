@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,6 +46,8 @@ public class ShooterModes extends SubsystemBase {
   private boolean hubActive;
   private double shotVelocityMultiplier = 0.96;
   private double turretAngleAdjustment = 0.0;
+
+  private Timer turretOutsideSetpointTimer = new Timer();
 
   /*
   Create interpolating tree map for data points
@@ -110,10 +113,18 @@ public class ShooterModes extends SubsystemBase {
 
     determineModeAndSetShooter();
 
+    if (isTurretNotNearSetPoint()) {
+      turretOutsideSetpointTimer.start();
+    } else {
+      turretOutsideSetpointTimer.reset();
+    }
+
     Logger.recordOutput("ShooterModes/Shot Multiplier", this.shotVelocityMultiplier);
     Logger.recordOutput("ShooterModes/Turret Angle Adjustment", this.turretAngleAdjustment);
     Logger.recordOutput("ShooterModes/CurrentMode", this.currentMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
+    Logger.recordOutput("ShooterModes/turret not near setpoint", isTurretNotNearSetPoint());
+    Logger.recordOutput("Turret Outside Setpoint Time Elapsed", turretOutsideSetpointTimer.get());
   }
 
   private void populateMaps() {
@@ -190,6 +201,18 @@ public class ShooterModes extends SubsystemBase {
 
   public boolean isLockedShooterEnabled() {
     return this.currentMode == ShooterMode.SHOOTER_LOCKED;
+  }
+
+  public boolean isTurretNotNearSetPoint() {
+    Angle threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING;
+    if (currentMode == ShooterMode.PASS_OTM || currentMode == ShooterMode.MANUAL_PASS) {
+      threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING;
+    }
+    return !shooter.getTurretPosition().isNear(shooter.getTurretReferencePosition(), threshold);
+  }
+
+  public boolean isTurretStuck() {
+    return turretOutsideSetpointTimer.hasElapsed(TURRET_OUTSIDE_SETPOINT_THRESHOLD);
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
