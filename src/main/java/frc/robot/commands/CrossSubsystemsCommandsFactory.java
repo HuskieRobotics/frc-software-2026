@@ -112,7 +112,12 @@ public class CrossSubsystemsCommandsFactory {
         .or(shooterModes::isLockedShooterEnabled)
         .and(oi.getScoreFromBankButton())
         .onTrue(
-            getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
+            getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes))
+        .onFalse(
+            Commands.either(
+                getSnakeDriveCommand(oi, swerveDrivetrain),
+                SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
+                oi.getSnakeDriveButton()));
 
     new Trigger(shooter::isTurretStuck).onTrue(getTurretStuckAndRotateCommand(shooter, hopper));
 
@@ -128,8 +133,11 @@ public class CrossSubsystemsCommandsFactory {
     oi.getManualShootButton()
         .onFalse(
             Commands.parallel(
-                    SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
-                        oi, swerveDrivetrain),
+                    Commands.either(
+                        getSnakeDriveCommand(oi, swerveDrivetrain),
+                        SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
+                            oi, swerveDrivetrain),
+                        oi.getSnakeDriveButton()),
                     Commands.runOnce(intake::getDeployAndStartCommand, intake),
                     Commands.runOnce(hopper::stop, hopper))
                 .withName("stop shooting"));
