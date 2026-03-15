@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 
 public class ShooterConstants {
@@ -146,4 +147,6 @@ public class ShooterConstants {
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
   public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
       0.03; // meters, FIXME: determine value
+
+  public static final Time TURRET_OUTSIDE_SETPOINT_THRESHOLD = Seconds.of(0.5);
 }

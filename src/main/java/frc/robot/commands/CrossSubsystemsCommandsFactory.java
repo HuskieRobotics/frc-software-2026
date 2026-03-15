@@ -114,6 +114,8 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
+    new Trigger(DriverStation::isDisabled).onTrue(getTurretStuckAndRotateCommand(shooter, hopper));
+
     oi.getManualShootButton()
         .and(
             () ->
@@ -208,6 +210,24 @@ public class CrossSubsystemsCommandsFactory {
                             .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
                 Commands.waitSeconds(0.5)))
         .withName("Jostle");
+  }
+
+  private static Command getTurretStuckAndRotateCommand(Shooter shooter, Hopper hopper) {
+    double[] clearedPosition = {
+      0
+    }; // use an array to capture the angle in real time and not at start up when register commands
+    // is called
+
+    return Commands.parallel(
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> clearedPosition[0] = -shooter.getTurretReferencePosition().in(Degrees),
+                    shooter),
+                Commands.run(
+                        () -> shooter.setTurretPosition(Degrees.of(clearedPosition[0])), shooter)
+                    .until(shooter::isTurretAtSetPoint)))
+        .andThen(hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity));
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {

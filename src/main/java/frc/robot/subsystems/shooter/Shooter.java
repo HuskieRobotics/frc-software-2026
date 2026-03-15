@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +34,7 @@ public class Shooter extends SubsystemBase {
 
   private int fuelCount = 0;
   private boolean previousHasFuel = false;
+  private Timer turretOutsideSetpointTimer = new Timer();
 
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
@@ -113,6 +115,15 @@ public class Shooter extends SubsystemBase {
     // the jam detectors must be updated every cycle in order to function properly
     hoodJamDetector.update(shooterInputs.hoodStatorCurrent.in(Amps));
     turretJamDetector.update(shooterInputs.turretStatorCurrent.in(Amps));
+
+    if (isTurretNotNearSetPoint()) {
+      turretOutsideSetpointTimer.start();
+    } else {
+      turretOutsideSetpointTimer.stop();
+      turretOutsideSetpointTimer.reset();
+    }
+
+    Logger.recordOutput("Turret Outside Setpoint Time Elapsed", turretOutsideSetpointTimer.get());
 
     if (shooterInputs.fuelDetectorHasFuel && !previousHasFuel) {
       fuelCount++;
@@ -319,6 +330,10 @@ public class Shooter extends SubsystemBase {
         shooterInputs.turretReferencePosition, TURRET_DISTANCE_TO_SETPOINT_THRESHOLD);
   }
 
+  public boolean isTurretStuck() {
+    return turretOutsideSetpointTimer.hasElapsed(TURRET_OUTSIDE_SETPOINT_THRESHOLD);
+  }
+
   public void setFlywheelVelocity(AngularVelocity velocity) {
     io.setFlywheelVelocity(velocity);
   }
@@ -375,6 +390,10 @@ public class Shooter extends SubsystemBase {
 
   public Angle getTurretPosition() {
     return shooterInputs.turretPosition;
+  }
+
+  public Angle getTurretReferencePosition() {
+    return shooterInputs.turretReferencePosition;
   }
 
   public AngularVelocity getFlywheelLeadVelocity() {
