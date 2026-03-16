@@ -68,6 +68,5 @@ public class IntakeConstants {
   public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
   public static final Distance JOSTLE_RETRACTED_POSITION = Inches.of(4.0);
   public static final Distance JOSTLE_EXTENDED_POSITION = Inches.of(6.0);
-  public static final int JOSTLE_INITIAL_FUEL_COUNT = 15;
-  public static final int JOSTLE_CYCLE_FUEL_COUNT = 10;
+  public static final int JOSTLE_INITIAL_FUEL_COUNT = 10;
 }

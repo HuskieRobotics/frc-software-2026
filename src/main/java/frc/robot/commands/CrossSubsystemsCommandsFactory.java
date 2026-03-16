@@ -108,11 +108,17 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
 
-    new Trigger(shooterModes::isManualShootEnabled)
-        .or(shooterModes::isLockedShooterEnabled)
-        .and(oi.getScoreFromBankButton())
+    oi.getForceSafeShootButton()
         .onTrue(
-            getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes))
+            Commands.either(
+                getScoreSafeShotCommand(
+                    oi, swerveDrivetrain, shooter, hopper, intake, shooterModes),
+                getForceShootCommand(oi, shooter, hopper, intake, shooterModes),
+                () ->
+                    (shooterModes.isManualShootEnabled()
+                        || shooterModes.isLockedShooterEnabled())));
+
+    oi.getForceSafeShootButton()
         .onFalse(
             Commands.either(
                 getSnakeDriveCommand(oi, swerveDrivetrain),
@@ -120,11 +126,6 @@ public class CrossSubsystemsCommandsFactory {
                 oi.getSnakeDriveButton()));
 
     oi.getManualShootButton()
-        .and(
-            () ->
-                (shooterModes.isManualShootEnabled()
-                    || shooterModes.isManualPassEnabled()
-                    || shooterModes.isLockedShooterEnabled()))
         .onTrue(
             getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
@@ -177,8 +178,6 @@ public class CrossSubsystemsCommandsFactory {
         .withName("Snake Drive Command");
   }
 
-  // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
-  // CAN_SHOOT / non SHOOT_OTM
   public static Command getStopAndShootCommand(
       OperatorInterface oi,
       SwerveDrivetrain drivetrain,
@@ -200,6 +199,25 @@ public class CrossSubsystemsCommandsFactory {
     // add hopper kick method in parallel
   }
 
+  public static Command getForceShootCommand(
+      OperatorInterface oi,
+      Shooter shooter,
+      Hopper hopper,
+      Intake intake,
+      ShooterModes shooterModes) {
+    return Commands.repeatingSequence(
+            Commands.parallel(
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    getUnrestrictedJostleCommand(intake, shooter),
+                    Commands.either(
+                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                        shooterModes::isManualPassEnabled))
+                .until(shooterModes::isTurretNotNearSetPoint)
+                .andThen(Commands.runOnce(hopper::stop, hopper)))
+        .withName("force shoot or pass");
+  }
+
   private static Command getJostleCommand(Intake intake, Shooter shooter) {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
@@ -219,6 +237,24 @@ public class CrossSubsystemsCommandsFactory {
                             .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
                 Commands.waitSeconds(0.5)))
         .withName("Jostle");
+  }
+
+  private static Command getUnrestrictedJostleCommand(Intake intake, Shooter shooter) {
+    return Commands.repeatingSequence(
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
+            Commands.waitUntil(
+                () ->
+                    intake
+                        .getPosition()
+                        .isNear(JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
+            Commands.waitUntil(
+                () ->
+                    intake
+                        .getPosition()
+                        .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+            Commands.waitSeconds(0.5))
+        .withName("Unrestricted Jostle");
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
