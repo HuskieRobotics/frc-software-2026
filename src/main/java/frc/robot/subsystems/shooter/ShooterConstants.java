@@ -151,5 +151,7 @@ public class ShooterConstants {
       0.03; // meters, FIXME: determine value
 
   public static final Time TURRET_OUTSIDE_SETPOINT_THRESHOLD =
-      Seconds.of(1.0); // FIXME: determine value
+      Seconds.of(2.0); // FIXME: determine value
+  public static final Angle TURRET_STUCK_ROTATION_ADJUSTMENT = Degrees.of(180.0);
+  public static final Time TURRET_UNJAM_DURATION = Seconds.of(1.0); // FIXME: determine value
 }
