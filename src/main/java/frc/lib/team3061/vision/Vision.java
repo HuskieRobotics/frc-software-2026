@@ -636,9 +636,16 @@ public class Vision extends SubsystemBase {
                 .poseForRobotToCameraTransformCalibration());
 
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraTransform", robotToCameraTransform);
+        SUBSYSTEM_NAME
+            + "/"
+            + RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location()
+            + "/RobotToCameraTransform",
+        robotToCameraTransform);
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraPose",
+        SUBSYSTEM_NAME
+            + "/"
+            + RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location()
+            + "/RobotToCameraPose",
         RobotConfig.getInstance()
             .getCameraConfigs()[cameraIndex]
             .poseForRobotToCameraTransformCalibration());

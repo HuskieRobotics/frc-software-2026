@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,6 +18,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
+import frc.lib.team6328.util.FieldConstants;
 
 // FIXME: a lot of this is copied directly from the practice bot config, we must update all the
 // necessary values
@@ -141,11 +143,49 @@ public class New2026RobotConfig extends RobotConfig {
               Units.inchesToMeters(7.434)),
           new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
+  // use AprilTag ID 29 for empirical determination of the robot-to-camera transform
+  private static final Pose3d ROBOT_TO_TAG_29_BACK_CAMERAS =
+      FieldConstants.defaultAprilTagType
+          .getLayout()
+          .getTagPose(29)
+          .get()
+          .transformBy(
+              new Transform3d(
+                  Units.inchesToMeters(15.125),
+                  Units.inchesToMeters(0.0),
+                  -Units.inchesToMeters(21.75),
+                  new Rotation3d()));
+
+  private static final Pose3d ROBOT_TO_TAG_29_LEFT_CAMERA =
+      FieldConstants.defaultAprilTagType
+          .getLayout()
+          .getTagPose(29)
+          .get()
+          .transformBy(
+              new Transform3d(
+                  Units.inchesToMeters(15.125),
+                  Units.inchesToMeters(14.0),
+                  -Units.inchesToMeters(21.75),
+                  new Rotation3d(0, 0, Units.degreesToRadians(90))));
+
+  private static final Pose3d ROBOT_TO_TAG_29_RIGHT_CAMERA =
+      FieldConstants.defaultAprilTagType
+          .getLayout()
+          .getTagPose(29)
+          .get()
+          .transformBy(
+              new Transform3d(
+                  Units.inchesToMeters(15.125),
+                  -Units.inchesToMeters(14.0),
+                  -Units.inchesToMeters(21.75),
+                  new Rotation3d(0, 0, Units.degreesToRadians(-90))));
+
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_29_RIGHT_CAMERA)
           .id(BR_CAMERA_SERIAL_NUMBER)
           .location("BR")
           .width(1800)
@@ -157,6 +197,7 @@ public class New2026RobotConfig extends RobotConfig {
           .build(),
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BL_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_29_LEFT_CAMERA)
           .id(BL_CAMERA_SERIAL_NUMBER)
           .location("BL")
           .width(1800)
