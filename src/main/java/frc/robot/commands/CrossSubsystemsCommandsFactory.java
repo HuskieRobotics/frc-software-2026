@@ -120,10 +120,15 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getForceSafeShootButton()
         .onFalse(
-            Commands.either(
-                getSnakeDriveCommand(oi, swerveDrivetrain),
-                SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, swerveDrivetrain),
-                oi.getSnakeDriveButton()));
+            Commands.parallel(
+                    Commands.either(
+                        getSnakeDriveCommand(oi, swerveDrivetrain),
+                        SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
+                            oi, swerveDrivetrain),
+                        oi.getSnakeDriveButton()),
+                    Commands.runOnce(intake::getDeployAndStartCommand, intake),
+                    Commands.runOnce(hopper::stop, hopper))
+                .withName("stop force-shooting"));
 
     oi.getManualShootButton()
         .onTrue(
