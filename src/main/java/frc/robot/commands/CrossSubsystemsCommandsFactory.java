@@ -108,12 +108,31 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
 
+    /**
+     * Behavior of the shoot buttons (manual shoot and force safe shoot) is as follows for each of
+     * the shooter modes:
+     *
+     * <p>MANUAL_SHOOT:
+     *
+     * <p>SHOOT_OTM
+     *
+     * <p>COLLECT_AND_HOLD
+     *
+     * <p>NEAR_TRENCH
+     *
+     * <p>MANUAL_PASS
+     *
+     * <p>PASS_OTM
+     *
+     * <p>SHOOTER_LOCKED
+     */
+
     // normal stop and shoot command, triggered by the right trigger (rotate 1)
     // this can be run in any mode, and will use the typical stop and shoot
     // if we are in a shoot on the move mode, it will let the hopper keep running to feed fuel into
     // the shooter
     oi.getManualShootButton()
-        .onTrue(
+        .whileTrue(
             getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
     // return to snake driving (probably unnecessary since we don't xstance anymore)
@@ -213,21 +232,21 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    // let the hopper continue to do its thing if we are in shoot on the move mode
-                    Commands.either(
-                        Commands.none(),
-                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                        () ->
-                            (shooterModes.isShootOnTheMoveEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled())),
-                    getJostleCommand(intake, shooter),
-                    Commands.either(
-                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                        () ->
-                            shooterModes.isManualPassEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled())))
-                .until(shooterModes::isTurretNotNearSetPoint)
+                // let the hopper continue to do its thing if we are in shoot on the move mode
+                Commands.either(
+                    Commands.none(),
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    () ->
+                        (shooterModes.isShootOnTheMoveEnabled()
+                            || shooterModes.isPassOnTheMoveEnabled())),
+                getJostleCommand(intake, shooter),
+                Commands.either(
+                    Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                    Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                    () ->
+                        shooterModes.isManualPassEnabled()
+                            || shooterModes.isPassOnTheMoveEnabled())))
+        .until(shooterModes::isTurretNotNearSetPoint)
         .andThen(
             // let the hopper continue to run if shooting on the move
             Commands.either(
@@ -247,21 +266,21 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    // let the hopper continue to do its thing if we are in shoot on the move mode
-                    Commands.either(
-                        Commands.none(),
-                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                        () ->
-                            (shooterModes.isShootOnTheMoveEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled())),
-                    getUnrestrictedJostleCommand(intake, shooter),
-                    Commands.either(
-                        Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                        Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                        () ->
-                            shooterModes.isManualPassEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled())))
-                .until(shooterModes::isTurretNotNearSetPoint)
+                // let the hopper continue to do its thing if we are in shoot on the move mode
+                Commands.either(
+                    Commands.none(),
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    () ->
+                        (shooterModes.isShootOnTheMoveEnabled()
+                            || shooterModes.isPassOnTheMoveEnabled())),
+                getUnrestrictedJostleCommand(intake, shooter),
+                Commands.either(
+                    Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                    Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                    () ->
+                        shooterModes.isManualPassEnabled()
+                            || shooterModes.isPassOnTheMoveEnabled())))
+        .until(shooterModes::isTurretNotNearSetPoint)
         .andThen(Commands.runOnce(hopper::stop, hopper))
         .withName("force shoot or pass");
   }
@@ -270,20 +289,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT),
-            Commands.repeatingSequence(
-                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
-                Commands.waitUntil(
-                    () ->
-                        intake
-                            .getPosition()
-                            .isNear(JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
-                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
-                Commands.waitUntil(
-                    () ->
-                        intake
-                            .getPosition()
-                            .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
-                Commands.waitSeconds(0.5)))
+            getUnrestrictedJostleCommand(intake, shooter))
         .withName("Jostle");
   }
 

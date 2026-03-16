@@ -164,7 +164,7 @@ public class New2026RobotConfig extends RobotConfig {
           .transformBy(
               new Transform3d(
                   Units.inchesToMeters(15.125),
-                  Units.inchesToMeters(14.0),
+                  Units.inchesToMeters(18.125),
                   -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
@@ -176,7 +176,7 @@ public class New2026RobotConfig extends RobotConfig {
           .transformBy(
               new Transform3d(
                   Units.inchesToMeters(15.125),
-                  -Units.inchesToMeters(14.0),
+                  -Units.inchesToMeters(18.125),
                   -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
