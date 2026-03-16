@@ -247,14 +247,7 @@ public class CrossSubsystemsCommandsFactory {
                         shooterModes.isManualPassEnabled()
                             || shooterModes.isPassOnTheMoveEnabled())))
         .until(shooterModes::isTurretNotNearSetPoint)
-        .andThen(
-            // let the hopper continue to run if shooting on the move
-            Commands.either(
-                Commands.none(),
-                Commands.runOnce(hopper::stop, hopper),
-                () ->
-                    (shooterModes.isShootOnTheMoveEnabled()
-                        || shooterModes.isPassOnTheMoveEnabled())))
+        .andThen(Commands.runOnce(hopper::stop, hopper))
         .withName("stop and shoot or pass");
   }
 
