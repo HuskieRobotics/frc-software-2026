@@ -126,7 +126,13 @@ public class CrossSubsystemsCommandsFactory {
                             oi, swerveDrivetrain),
                         oi.getSnakeDriveButton()),
                     Commands.runOnce(intake::getDeployAndStartCommand, intake),
-                    Commands.runOnce(hopper::stop, hopper))
+                    // let the hopper continue to run if shooting on the move
+                    Commands.either(
+                        Commands.none(),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            (shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled())))
                 .withName("stop shooting"));
 
     // this is bound to the left trigger (translate 1)
@@ -143,7 +149,7 @@ public class CrossSubsystemsCommandsFactory {
                     (shooterModes.isManualShootEnabled()
                         || shooterModes.isLockedShooterEnabled())));
 
-    // return to driving normally (probably unnecessary since we don't xstance anymore)                  
+    // return to driving normally (probably unnecessary since we don't xstance anymore)
     oi.getForceSafeShootButton()
         .onFalse(
             Commands.parallel(
@@ -153,7 +159,12 @@ public class CrossSubsystemsCommandsFactory {
                             oi, swerveDrivetrain),
                         oi.getSnakeDriveButton()),
                     Commands.runOnce(intake::getDeployAndStartCommand, intake),
-                    Commands.runOnce(hopper::stop, hopper))
+                    Commands.either(
+                        Commands.none(),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            (shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled())))
                 .withName("stop force-shooting"));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
@@ -215,16 +226,16 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
                         () ->
                             shooterModes.isManualPassEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled()))
+                                || shooterModes.isPassOnTheMoveEnabled())))
                 .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(
-                    // let the hopper continue to run if shooting on the move
-                    Commands.either(
-                        Commands.none(),
-                        Commands.runOnce(hopper::stop, hopper),
-                        () ->
-                            (shooterModes.isShootOnTheMoveEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled()))))
+        .andThen(
+            // let the hopper continue to run if shooting on the move
+            Commands.either(
+                Commands.none(),
+                Commands.runOnce(hopper::stop, hopper),
+                () ->
+                    (shooterModes.isShootOnTheMoveEnabled()
+                        || shooterModes.isPassOnTheMoveEnabled())))
         .withName("stop and shoot or pass");
   }
 
@@ -249,16 +260,9 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
                         () ->
                             shooterModes.isManualPassEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled()))
+                                || shooterModes.isPassOnTheMoveEnabled())))
                 .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(
-                    // let the hopper continue to run if shooting on the move
-                    Commands.either(
-                        Commands.none(),
-                        Commands.runOnce(hopper::stop, hopper),
-                        () ->
-                            (shooterModes.isShootOnTheMoveEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled()))))
+        .andThen(Commands.runOnce(hopper::stop, hopper))
         .withName("force shoot or pass");
   }
 
