@@ -108,32 +108,15 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
 
-    oi.getForceSafeShootButton()
-        .onTrue(
-            Commands.either(
-                getScoreSafeShotCommand(
-                    oi, swerveDrivetrain, shooter, hopper, intake, shooterModes),
-                getForceShootCommand(oi, shooter, hopper, intake, shooterModes),
-                () ->
-                    (shooterModes.isManualShootEnabled()
-                        || shooterModes.isLockedShooterEnabled())));
-
-    oi.getForceSafeShootButton()
-        .onFalse(
-            Commands.parallel(
-                    Commands.either(
-                        getSnakeDriveCommand(oi, swerveDrivetrain),
-                        SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
-                            oi, swerveDrivetrain),
-                        oi.getSnakeDriveButton()),
-                    Commands.runOnce(intake::getDeployAndStartCommand, intake),
-                    Commands.runOnce(hopper::stop, hopper))
-                .withName("stop force-shooting"));
-
+    // normal stop and shoot command, triggered by the right trigger (rotate 1)
+    // this can be run in any mode, and will use the typical stop and shoot
+    // if we are in a shoot on the move mode, it will let the hopper keep running to feed fuel into
+    // the shooter
     oi.getManualShootButton()
         .onTrue(
             getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
 
+    // return to snake driving (probably unnecessary since we don't xstance anymore)
     oi.getManualShootButton()
         .onFalse(
             Commands.parallel(
@@ -145,6 +128,33 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.runOnce(intake::getDeployAndStartCommand, intake),
                     Commands.runOnce(hopper::stop, hopper))
                 .withName("stop shooting"));
+
+    // this is bound to the left trigger (translate 1)
+    // this does a typical shot but starts the intake jostle immediately instead of
+    // waiting for 10 balls to pass through
+    // this also has the option to drive to bank, but will likely be deprecated
+    oi.getForceSafeShootButton()
+        .onTrue(
+            Commands.either(
+                getScoreSafeShotCommand(
+                    oi, swerveDrivetrain, shooter, hopper, intake, shooterModes),
+                getForceShootCommand(oi, shooter, hopper, intake, shooterModes),
+                () ->
+                    (shooterModes.isManualShootEnabled()
+                        || shooterModes.isLockedShooterEnabled())));
+
+    // return to driving normally (probably unnecessary since we don't xstance anymore)                  
+    oi.getForceSafeShootButton()
+        .onFalse(
+            Commands.parallel(
+                    Commands.either(
+                        getSnakeDriveCommand(oi, swerveDrivetrain),
+                        SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
+                            oi, swerveDrivetrain),
+                        oi.getSnakeDriveButton()),
+                    Commands.runOnce(intake::getDeployAndStartCommand, intake),
+                    Commands.runOnce(hopper::stop, hopper))
+                .withName("stop force-shooting"));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -192,16 +202,30 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    // let the hopper continue to do its thing if we are in shoot on the move mode
+                    Commands.either(
+                        Commands.none(),
+                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                        () ->
+                            (shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled())),
                     getJostleCommand(intake, shooter),
                     Commands.either(
                         Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                         Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                        shooterModes::isManualPassEnabled))
+                        () ->
+                            shooterModes.isManualPassEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))
                 .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(Commands.runOnce(hopper::stop, hopper)))
+                .andThen(
+                    // let the hopper continue to run if shooting on the move
+                    Commands.either(
+                        Commands.none(),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            (shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))))
         .withName("stop and shoot or pass");
-    // add hopper kick method in parallel
   }
 
   public static Command getForceShootCommand(
@@ -212,14 +236,29 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    // let the hopper continue to do its thing if we are in shoot on the move mode
+                    Commands.either(
+                        Commands.none(),
+                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                        () ->
+                            (shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled())),
                     getUnrestrictedJostleCommand(intake, shooter),
                     Commands.either(
                         Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                         Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                        shooterModes::isManualPassEnabled))
+                        () ->
+                            shooterModes.isManualPassEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))
                 .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(Commands.runOnce(hopper::stop, hopper)))
+                .andThen(
+                    // let the hopper continue to run if shooting on the move
+                    Commands.either(
+                        Commands.none(),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            (shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))))
         .withName("force shoot or pass");
   }
 
