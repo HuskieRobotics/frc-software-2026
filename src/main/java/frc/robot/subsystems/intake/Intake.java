@@ -212,10 +212,10 @@ public class Intake extends SubsystemBase {
   }
 
   public Command getRetractAndStopCommand() {
-    return Commands.parallel(
-        Commands.sequence(
-            Commands.runOnce(this::retractIntake, this), Commands.waitUntil(this::isRetracted)),
-        Commands.runOnce(this::stopRoller, this));
+    return Commands.sequence(
+        Commands.runOnce(this::stopRoller, this),
+        Commands.runOnce(this::retractIntake, this),
+        Commands.waitUntil(this::isRetracted));
   }
 
   public Distance getPosition() {
