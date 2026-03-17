@@ -143,11 +143,11 @@ public class New2026RobotConfig extends RobotConfig {
               Units.inchesToMeters(7.434)),
           new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
-  // use AprilTag ID 29 for empirical determination of the robot-to-camera transform
-  private static final Pose3d ROBOT_TO_TAG_29_BACK_CAMERAS =
+  // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
+  private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
       FieldConstants.defaultAprilTagType
           .getLayout()
-          .getTagPose(29)
+          .getTagPose(13)
           .get()
           .transformBy(
               new Transform3d(
@@ -156,10 +156,10 @@ public class New2026RobotConfig extends RobotConfig {
                   -Units.inchesToMeters(21.75),
                   new Rotation3d()));
 
-  private static final Pose3d ROBOT_TO_TAG_29_LEFT_CAMERA =
+  private static final Pose3d ROBOT_TO_TAG_13_LEFT_CAMERA =
       FieldConstants.defaultAprilTagType
           .getLayout()
-          .getTagPose(29)
+          .getTagPose(13)
           .get()
           .transformBy(
               new Transform3d(
@@ -168,10 +168,10 @@ public class New2026RobotConfig extends RobotConfig {
                   -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
-  private static final Pose3d ROBOT_TO_TAG_29_RIGHT_CAMERA =
+  private static final Pose3d ROBOT_TO_TAG_13_RIGHT_CAMERA =
       FieldConstants.defaultAprilTagType
           .getLayout()
-          .getTagPose(29)
+          .getTagPose(13)
           .get()
           .transformBy(
               new Transform3d(
@@ -185,7 +185,7 @@ public class New2026RobotConfig extends RobotConfig {
     return new CameraConfig[] {
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
-          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_29_RIGHT_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_RIGHT_CAMERA)
           .id(BR_CAMERA_SERIAL_NUMBER)
           .location("BR")
           .width(1800)
@@ -197,7 +197,7 @@ public class New2026RobotConfig extends RobotConfig {
           .build(),
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BL_CAMERA)
-          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_29_LEFT_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_LEFT_CAMERA)
           .id(BL_CAMERA_SERIAL_NUMBER)
           .location("BL")
           .width(1800)
