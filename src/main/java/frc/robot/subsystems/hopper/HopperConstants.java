@@ -20,12 +20,12 @@ public class HopperConstants {
   public static final boolean SPINDEXER_MOTOR_INVERTED = true;
   public static final boolean KICKER_MOTOR_INVERTED = true;
 
-  public static final double SPINDEXER_KP = 64.0;
+  public static final double SPINDEXER_KP = 80.0;
   public static final double SPINDEXER_KI = 0.0;
   public static final double SPINDEXER_KD = 0.0;
-  public static final double SPINDEXER_KV = 0.08;
-  public static final double SPINDEXER_KA = 0.027564;
-  public static final double SPINDEXER_KS = 2.5;
+  public static final double SPINDEXER_KV = 0.17;
+  public static final double SPINDEXER_KA = 0.0;
+  public static final double SPINDEXER_KS = 5.8;
 
   public static final double SPINDEXER_MOI = 0.5;
 
@@ -51,7 +51,7 @@ public class HopperConstants {
 
   public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
-          -4.5); // <-- Should be negative (rotations per second) // FIXME: Update value
+          -12); // <-- Should be negative (rotations per second) // FIXME: Update value
   public static final AngularVelocity KICKER_UNJAM_VELOCITY =
       RotationsPerSecond.of(
           -60.0); // <-- Should be negative (rotations per second) // FIXME: Update value
@@ -60,12 +60,11 @@ public class HopperConstants {
   public static final AngularVelocity KICKER_VELOCITY_SETPOINT_2_RPS = RotationsPerSecond.of(36.0);
   public static final AngularVelocity KICKER_VELOCITY_SETPOINT_3_RPS = RotationsPerSecond.of(60.0);
 
-  public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
-  public static final double KICKER_UNJAM_WAIT_TIME = 1.0; // FIXME: update value
+  public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0;
+  public static final double KICKER_UNJAM_WAIT_TIME = 1.0;
 
   public static final AngularVelocity KICKER_FUEL_INTO_SHOOTER_VELOCITY =
-      RotationsPerSecond.of(20.0); // FIXME: Update value
+      RotationsPerSecond.of(20.0);
 
-  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY =
-      RotationsPerSecond.of(4.5); // FIXME: was 4.5
+  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY = RotationsPerSecond.of(16.0);
 }
