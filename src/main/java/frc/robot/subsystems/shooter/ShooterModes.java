@@ -404,7 +404,7 @@ public class ShooterModes extends SubsystemBase {
 
       // if the hub is not active, put the robot in collect and hold mode to prepare for when the
       // hub becomes active
-      if (!this.hubActive) {
+      if (!this.hubActive || Field2d.getInstance().inTowerNoPassZone()) {
         this.currentMode = ShooterMode.COLLECT_AND_HOLD;
       } else {
         // if the hub is active, the robot is either shooting on the move or manually shooting based
