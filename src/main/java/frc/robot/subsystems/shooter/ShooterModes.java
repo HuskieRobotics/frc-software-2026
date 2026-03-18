@@ -123,8 +123,9 @@ public class ShooterModes extends SubsystemBase {
     Logger.recordOutput("ShooterModes/CurrentMode", this.currentMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
     Logger.recordOutput("ShooterModes/turret not near setpoint", isTurretNotNearSetPoint());
-    Logger.recordOutput("Turret Outside Setpoint Time Elapsed", turretOutsideSetpointTimer.get());
-    Logger.recordOutput("Turret Unjamming Time Elapsed", turretUnJammingTimer.get());
+    Logger.recordOutput(
+        "ShooterModes/Turret Outside Setpoint Time Elapsed", turretOutsideSetpointTimer.get());
+    Logger.recordOutput("ShooterModes/Turret Unjamming Time Elapsed", turretUnJammingTimer.get());
   }
 
   private void populateMaps() {
