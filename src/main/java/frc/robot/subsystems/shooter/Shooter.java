@@ -21,6 +21,7 @@ import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -33,6 +34,7 @@ public class Shooter extends SubsystemBase {
 
   private int fuelCount = 0;
   private boolean previousHasFuel = false;
+  private int simulatedFuelCounter = 0;
 
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
@@ -114,6 +116,14 @@ public class Shooter extends SubsystemBase {
     hoodJamDetector.update(shooterInputs.hoodStatorCurrent.in(Amps));
     turretJamDetector.update(shooterInputs.turretStatorCurrent.in(Amps));
 
+    if (Constants.getMode() == Constants.Mode.SIM) {
+      simulatedFuelCounter++;
+      if (simulatedFuelCounter >= 5) { // every 1/10 second (5 cycles)
+        fuelCount++;
+        simulatedFuelCounter = 0;
+      }
+    }
+
     if (shooterInputs.fuelDetectorHasFuel && !previousHasFuel) {
       fuelCount++;
     }
@@ -154,6 +164,7 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/pose",
         new Pose3d(RobotOdometry.getInstance().getEstimatedPose()).plus(shooterPose));
+    Logger.recordOutput(SUBSYSTEM_NAME + "/fuelCount", fuelCount);
 
     LoggedTracer.record("Shooter");
   }
