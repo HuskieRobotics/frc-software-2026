@@ -231,7 +231,8 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getJostleCommand(Intake intake, Shooter shooter) {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
-            Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT),
+            Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
+                .withTimeout(2.0),
             getForceJostleCommand(intake))
         .withName("Jostle");
   }
