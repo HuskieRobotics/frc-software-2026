@@ -155,7 +155,7 @@ public class CrossSubsystemsCommandsFactory {
         .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
         .whileTrue(
             getStopAndShootCommand(
-                shooter, hopper, intake, shooterModes, getForceJostleCommand(intake, shooter)));
+                shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -232,11 +232,11 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT),
-            getForceJostleCommand(intake, shooter))
+            getForceJostleCommand(intake))
         .withName("Jostle");
   }
 
-  private static Command getForceJostleCommand(Intake intake, Shooter shooter) {
+  private static Command getForceJostleCommand(Intake intake) {
     return Commands.repeatingSequence(
             Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
             Commands.waitUntil(
