@@ -217,12 +217,12 @@ public class CrossSubsystemsCommandsFactory {
                 .andThen(Commands.runOnce(hopper::stop, hopper)))
         .finallyDo(
             () -> {
+              CommandScheduler.getInstance().schedule(intake.getDeployAndStartCommand());
               if (shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled()) {
                 CommandScheduler.getInstance()
                     .schedule(getShootWhenAimedCommand(shooterModes, shooter, hopper));
               } else {
                 hopper.stop();
-                CommandScheduler.getInstance().schedule(intake.getDeployAndStartCommand());
               }
             })
         .withName("shoot or pass");
@@ -357,7 +357,7 @@ public class CrossSubsystemsCommandsFactory {
                 () ->
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
-    unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
+    unloadHopperOnTheMoveTrigger.whileTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
   }
 
   private static Command getShootWhenAimedCommand(
