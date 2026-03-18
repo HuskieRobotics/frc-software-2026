@@ -27,7 +27,7 @@ public class HopperConstants {
   public static final double SPINDEXER_KA = 0.0;
   public static final double SPINDEXER_KS = 5.8;
 
-  public static final double SPINDEXER_MOI = 0.5;
+  public static final double SPINDEXER_MOI = 0.05;
 
   public static final AngularVelocity SPINDEXER_VELOCITY_TOLERANCE = RotationsPerSecond.of(0.4);
 
@@ -38,7 +38,7 @@ public class HopperConstants {
   public static final double KICKER_KA = 0.0;
   public static final double KICKER_KS = 6.25;
 
-  public static final double KICKER_MOI = 0.05;
+  public static final double KICKER_MOI = 0.01;
 
   public static final AngularVelocity KICKER_VELOCITY_TOLERANCE = RotationsPerSecond.of(2.0);
 
