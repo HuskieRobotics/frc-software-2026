@@ -240,10 +240,11 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.repeatingSequence(
             Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
             Commands.waitUntil(
-                () ->
-                    intake
-                        .getPosition()
-                        .isNear(JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+                    () ->
+                        intake
+                            .getPosition()
+                            .isNear(JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE))
+                .withTimeout(1.0),
             Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
             Commands.waitUntil(
                 () ->
