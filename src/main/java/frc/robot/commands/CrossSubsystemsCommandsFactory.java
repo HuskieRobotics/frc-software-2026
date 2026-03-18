@@ -359,7 +359,8 @@ public class CrossSubsystemsCommandsFactory {
                 () ->
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
-    unloadHopperOnTheMoveTrigger.whileTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
+    unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
+    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
   }
 
   private static Command getShootWhenAimedCommand(
@@ -374,7 +375,6 @@ public class CrossSubsystemsCommandsFactory {
                             shooterModes::isPassOnTheMoveEnabled)))
                 .until(shooterModes::isTurretNotNearSetPoint)
                 .andThen(Commands.runOnce(hopper::stop, hopper)))
-        .finallyDo(hopper::stop)
         .withName("shoot when aimed");
   }
 }
