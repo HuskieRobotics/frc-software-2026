@@ -36,12 +36,12 @@
         "y": 5.218887303851641
       },
       "prevControl": {
-        "x": 7.543459156131629,
-        "y": 4.19690134926755
+        "x": 7.5151610519640535,
+        "y": 4.192699062973746
       },
       "nextControl": {
-        "x": 7.027888730385163,
-        "y": 7.366704707560627
+        "x": 7.053766048502139,
+        "y": 7.625477888730385
       },
       "isLocked": false,
       "linkedName": null
@@ -84,8 +84,21 @@
       "minWaypointRelativePos": 2.0,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 3.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow down to collect balls",
+      "minWaypointRelativePos": 0.65,
+      "maxWaypointRelativePos": 0.95,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -96,7 +109,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.85,
+    "maxVelocity": 3.0,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

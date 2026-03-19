@@ -358,7 +358,7 @@ public class AutonomousCommandsFactory {
                 CrossSubsystemsCommandsFactory.getJostleCommand(intake, shooter))
             .until(
                 () ->
-                    (checkForFuel && hopperUnloadTimer.get() > 2.0 && !shooter.getFuelDetected())),
+                    (checkForFuel && hopperUnloadTimer.get() > 5.0 && !shooter.getFuelDetected())),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
   }

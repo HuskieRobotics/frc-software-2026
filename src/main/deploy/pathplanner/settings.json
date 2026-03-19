@@ -16,7 +16,7 @@
     "XRP",
     "Tuning"
   ],
-  "defaultMaxVel": 4.85,
+  "defaultMaxVel": 3.0,
   "defaultMaxAccel": 7.5,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
