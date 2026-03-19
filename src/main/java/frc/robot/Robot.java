@@ -208,7 +208,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     if (!TUNING_MODE) {
-      Threads.setCurrentThreadPriority(true, 10);
+      Threads.setCurrentThreadPriority(true, 1);
     }
   }
 
