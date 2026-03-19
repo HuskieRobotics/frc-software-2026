@@ -232,7 +232,7 @@ public class CrossSubsystemsCommandsFactory {
         .withName("shoot or pass");
   }
 
-  private static Command getJostleCommand(Intake intake, Shooter shooter) {
+  public static Command getJostleCommand(Intake intake, Shooter shooter) {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)

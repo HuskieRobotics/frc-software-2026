@@ -392,6 +392,13 @@ public class Shooter extends SubsystemBase {
     return shooterInputs.flywheelLeadVelocity;
   }
 
+  public boolean getFuelDetected() {
+    Logger.recordOutput(
+        "Shooter/Fuel Detected Debounced",
+        fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel));
+    return fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
+  }
+
   public boolean hasFuel() {
     return shooterInputs.fuelDetectorHasFuel;
   }
