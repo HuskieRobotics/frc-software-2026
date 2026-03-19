@@ -241,24 +241,42 @@ public class CrossSubsystemsCommandsFactory {
         .withName("Jostle");
   }
 
+  // starts the sequence by bringing the intake in to 5 inches
+  // waits until we are there, then starts repeating sequence:
+  //   wait 0.5s
+  //   extend intake out to 11 inches
+  //   retract intake back to 3.5 inches
   public static Command getForceJostleCommand(Intake intake) {
-    return Commands.repeatingSequence(
-            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
+    return Commands.sequence(
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_FIRST_RETRACT_POSITION)),
             Commands.deadline(
-                Commands.waitSeconds(1.0),
+                Commands.waitSeconds(0.75),
                 Commands.waitUntil(
                     () ->
                         intake
                             .getPosition()
                             .isNear(
-                                JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE))),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
-            Commands.waitUntil(
-                () ->
-                    intake
-                        .getPosition()
-                        .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)))
+                                JOSTLE_FIRST_RETRACT_POSITION,
+                                DEPLOYER_LINEAR_POSITION_TOLERANCE))),
+            Commands.repeatingSequence(
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
+                Commands.waitUntil(
+                    () ->
+                        intake
+                            .getPosition()
+                            .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+                Commands.runOnce(
+                    () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.75),
+                    Commands.waitUntil(
+                        () ->
+                            intake
+                                .getPosition()
+                                .isNear(
+                                    JOSTLE_SUBSEQUENT_RETRACT_POSITION,
+                                    DEPLOYER_LINEAR_POSITION_TOLERANCE)))))
         .withName("Force Jostle");
   }
 
