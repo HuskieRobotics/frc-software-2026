@@ -14,7 +14,7 @@ public class HopperConstants {
   public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 60;
   public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 60;
 
-  public static final double SPINDEXER_GEAR_RATIO = 6.0;
+  public static final double SPINDEXER_GEAR_RATIO = 8.0;
   public static final double KICKER_GEAR_RATIO = 1.0;
 
   public static final boolean SPINDEXER_MOTOR_INVERTED = true;
@@ -23,9 +23,9 @@ public class HopperConstants {
   public static final double SPINDEXER_KP = 80.0;
   public static final double SPINDEXER_KI = 0.0;
   public static final double SPINDEXER_KD = 0.0;
-  public static final double SPINDEXER_KV = 0.17;
+  public static final double SPINDEXER_KV = 0.16;
   public static final double SPINDEXER_KA = 0.0;
-  public static final double SPINDEXER_KS = 5.8;
+  public static final double SPINDEXER_KS = 3.9;
 
   public static final double SPINDEXER_MOI = 0.05;
 
