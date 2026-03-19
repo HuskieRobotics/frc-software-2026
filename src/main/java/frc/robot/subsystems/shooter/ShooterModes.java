@@ -44,7 +44,7 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
-  private double shotVelocityMultiplier = 0.96;
+  private double shotVelocityMultiplier = 0.98;
   private double turretAngleAdjustment = 0.0;
 
   private Timer turretOutsideSetpointTimer = new Timer();

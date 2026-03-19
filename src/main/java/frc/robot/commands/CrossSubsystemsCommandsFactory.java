@@ -144,8 +144,12 @@ public class CrossSubsystemsCommandsFactory {
     oi.getManualShootButton()
         .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
         .whileTrue(
-            getStopAndShootCommand(
-                shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)));
+            Commands.either(
+                getStopAndShootCommand(
+                    shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)),
+                getStopAndShootCommand(
+                    shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)),
+                shooterModes::isManualShootEnabled));
 
     // this is bound to the left trigger (translate 1)
     // this does a typical shot but starts the intake jostle immediately instead of
@@ -232,7 +236,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
-                .withTimeout(2.0),
+                .withTimeout(2.5),
             getForceJostleCommand(intake))
         .withName("Jostle");
   }
@@ -240,20 +244,22 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getForceJostleCommand(Intake intake) {
     return Commands.repeatingSequence(
             Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
-            Commands.waitUntil(
+            Commands.deadline(
+                Commands.waitSeconds(1.0),
+                Commands.waitUntil(
                     () ->
                         intake
                             .getPosition()
-                            .isNear(JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE))
-                .withTimeout(1.0),
+                            .isNear(
+                                JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE))),
+            Commands.waitSeconds(0.5),
             Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
             Commands.waitUntil(
                 () ->
                     intake
                         .getPosition()
-                        .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
-            Commands.waitSeconds(0.5))
-        .withName("Unrestricted Jostle");
+                        .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)))
+        .withName("Force Jostle");
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {

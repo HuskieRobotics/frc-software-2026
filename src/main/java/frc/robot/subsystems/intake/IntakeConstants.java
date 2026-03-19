@@ -69,7 +69,7 @@ public class IntakeConstants {
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
 
   public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
-  public static final Distance JOSTLE_RETRACTED_POSITION = Inches.of(3.0);
+  public static final Distance JOSTLE_RETRACTED_POSITION = Inches.of(5.0);
   public static final Distance JOSTLE_EXTENDED_POSITION = Inches.of(11.0);
   public static final int JOSTLE_INITIAL_FUEL_COUNT = 10;
 }
