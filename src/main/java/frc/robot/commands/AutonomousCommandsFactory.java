@@ -23,6 +23,7 @@ import frc.lib.team6328.util.FieldConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterModes;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -61,7 +62,12 @@ public class AutonomousCommandsFactory {
   }
 
   public void configureAutoCommands(
-      SwerveDrivetrain drivetrain, Vision vision, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Vision vision,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
@@ -349,9 +355,7 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(() -> hopperUnloadTimer.restart()),
         Commands.parallel(
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                Commands.repeatingSequence( // FIXME: to change
-                    Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
-                    Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)))
+                CrossSubsystemsCommandsFactory.getJostleCommand(intake, shooter))
             .until(
                 () ->
                     (checkForFuel && hopperUnloadTimer.get() > 2.0 && !shooter.getFuelDetected())),
@@ -618,7 +622,11 @@ public class AutonomousCommandsFactory {
 
   // DEPRECATED FOR NOW
   private Command leftNeutralZoneAndDepot(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) { // add shooter and intake later
     PathPlannerPath driveToNeutralZoneAndBack;
     PathPlannerPath driveToDepot;
     PathPlannerPath intakeFromDepot;

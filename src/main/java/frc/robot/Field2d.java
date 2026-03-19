@@ -60,12 +60,14 @@ public class Field2d {
   private Region2d transformedRightBumpZoneRED;
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
+  private Region2d transformedTowerNoPassZone;
 
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
   private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 19;
   private static final double NO_PASS_ZONE_DEPTH_METERS = 3.0;
+  private static final double TOWER_NO_PASS_ZONE_DEPTH_METERS = 0.25;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -187,6 +189,24 @@ public class Field2d {
         };
 
     this.transformedNoPassZone = new Region2d(zoneCorners);
+  }
+
+  public void populateTowerNoPassZone() {
+    Translation2d[] towerEdges =
+        new Translation2d[] {
+          new Translation2d(
+              0.0, FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
+          new Translation2d(
+              FieldConstants.Tower.rightUpright.getX(),
+              FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
+          new Translation2d(
+              FieldConstants.Tower.leftUpright.getX(),
+              FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
+          new Translation2d(
+              0.0, FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
+        };
+
+    this.transformedTowerNoPassZone = new Region2d(towerEdges);
   }
 
   /**
@@ -366,7 +386,7 @@ public class Field2d {
   }
 
   public void logAllianceZonePoints() {
-    transformedAllianceZone.logPoints("aliianceZone");
+    transformedAllianceZone.logPoints("allianceZone");
   }
 
   public void logOpponentAllianceZonePoints() {
@@ -383,6 +403,7 @@ public class Field2d {
 
   public void logNoPassZonePoints() {
     transformedNoPassZone.logPoints("noPassZone");
+    transformedTowerNoPassZone.logPoints("TowerNoPassZone");
   }
 
   public void logTrenchZonePoints() {
@@ -610,6 +631,16 @@ public class Field2d {
     }
 
     return transformedNoPassZone.contains(pose);
+  }
+
+  public boolean inTowerNoPassZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedTowerNoPassZone.contains(pose);
   }
 
   public boolean inTrenchZone() {

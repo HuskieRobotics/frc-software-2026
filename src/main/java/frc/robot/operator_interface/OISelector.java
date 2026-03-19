@@ -101,7 +101,7 @@ public class OISelector {
     } else {
       noOperatorInterfaceWarning.set(true);
       nonCompetitionOperatorInterfaceWarning.set(true);
-      return new OperatorInterface() {};
+      return new OperatorDashboard();
     }
   }
 }

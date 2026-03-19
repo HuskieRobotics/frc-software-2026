@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -43,8 +44,11 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
-  private double shotVelocityMultiplier = 0.96;
+  private double shotVelocityMultiplier = 0.98;
   private double turretAngleAdjustment = 0.0;
+
+  private Timer turretOutsideSetpointTimer = new Timer();
+  private Timer turretUnJammingTimer = new Timer();
 
   /*
   Create interpolating tree map for data points
@@ -110,10 +114,18 @@ public class ShooterModes extends SubsystemBase {
 
     determineModeAndSetShooter();
 
+    if (!isTurretNotNearSetPoint()) {
+      turretOutsideSetpointTimer.restart();
+    }
+
     Logger.recordOutput("ShooterModes/Shot Multiplier", this.shotVelocityMultiplier);
     Logger.recordOutput("ShooterModes/Turret Angle Adjustment", this.turretAngleAdjustment);
     Logger.recordOutput("ShooterModes/CurrentMode", this.currentMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
+    Logger.recordOutput("ShooterModes/turret not near setpoint", isTurretNotNearSetPoint());
+    Logger.recordOutput(
+        "ShooterModes/Turret Outside Setpoint Time Elapsed", turretOutsideSetpointTimer.get());
+    Logger.recordOutput("ShooterModes/Turret Unjamming Time Elapsed", turretUnJammingTimer.get());
   }
 
   private void populateMaps() {
@@ -190,6 +202,14 @@ public class ShooterModes extends SubsystemBase {
 
   public boolean isLockedShooterEnabled() {
     return this.currentMode == ShooterMode.SHOOTER_LOCKED;
+  }
+
+  public boolean isTurretNotNearSetPoint() {
+    Angle threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING;
+    if (currentMode == ShooterMode.PASS_OTM || currentMode == ShooterMode.MANUAL_PASS) {
+      threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING;
+    }
+    return !shooter.getTurretPosition().isNear(shooter.getTurretReferencePosition(), threshold);
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
@@ -384,7 +404,7 @@ public class ShooterModes extends SubsystemBase {
 
       // if the hub is not active, put the robot in collect and hold mode to prepare for when the
       // hub becomes active
-      if (!this.hubActive) {
+      if (!this.hubActive || Field2d.getInstance().inTowerNoPassZone()) {
         this.currentMode = ShooterMode.COLLECT_AND_HOLD;
       } else {
         // if the hub is active, the robot is either shooting on the move or manually shooting based
@@ -468,6 +488,40 @@ public class ShooterModes extends SubsystemBase {
       shooterSetpoints.hoodAngle = LOCK_SHOT_HOOD_ANGLE;
       shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
       this.currentMode = ShooterMode.SHOOTER_LOCKED;
+    }
+
+    // if the turret appears to be stuck, rotate in the opposite direction to try to get it unstuck
+    if (turretOutsideSetpointTimer.hasElapsed(TURRET_OUTSIDE_SETPOINT_THRESHOLD)) {
+      // restart the unjamming timer if it isn't already running
+      if (!turretUnJammingTimer.isRunning()) {
+        turretUnJammingTimer.restart();
+      } else if (turretUnJammingTimer.hasElapsed(TURRET_UNJAM_DURATION)) {
+        // if we've been trying to unjam for long enough, reset the turret setpoint to the reference
+        // position in hopes that the jam has been cleared
+        turretUnJammingTimer.stop();
+        turretUnJammingTimer.reset();
+      } else {
+        // rotate away from the setpoint to try to get it unstuck; the direction to rotate is
+        // determined by the sign of the turret error
+        if (shooter
+            .getTurretPosition()
+            .minus(shooter.getTurretReferencePosition())
+            .gt(Degrees.of(0))) {
+          shooterSetpoints.turretAngle =
+              shooterSetpoints.turretAngle.plus(TURRET_STUCK_ROTATION_ADJUSTMENT);
+        } else {
+          shooterSetpoints.turretAngle =
+              shooterSetpoints.turretAngle.minus(TURRET_STUCK_ROTATION_ADJUSTMENT);
+        }
+
+        // ensure that we don't wrap around, which would result in the turret turning the opposite
+        // direction and not unjamming
+        if (shooterSetpoints.turretAngle.lt(TURRET_LOWER_ANGLE_LIMIT)) {
+          shooterSetpoints.turretAngle = TURRET_LOWER_ANGLE_LIMIT;
+        } else if (shooterSetpoints.turretAngle.gt(TURRET_UPPER_ANGLE_LIMIT)) {
+          shooterSetpoints.turretAngle = TURRET_UPPER_ANGLE_LIMIT;
+        }
+      }
     }
 
     if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {

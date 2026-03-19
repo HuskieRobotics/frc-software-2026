@@ -22,6 +22,7 @@ import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -31,6 +32,10 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged shooterInputs = new ShooterIOInputsAutoLogged();
 
   private boolean systemTestRunning = false;
+
+  private int fuelCount = 0;
+  private boolean previousHasFuel = false;
+  private int simulatedFuelCounter = 0;
 
   // testing mode creation of variables
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Shooter/TestingMode", 0);
@@ -114,6 +119,19 @@ public class Shooter extends SubsystemBase {
     hoodJamDetector.update(shooterInputs.hoodStatorCurrent.in(Amps));
     turretJamDetector.update(shooterInputs.turretStatorCurrent.in(Amps));
 
+    if (Constants.getMode() == Constants.Mode.SIM) {
+      simulatedFuelCounter++;
+      if (simulatedFuelCounter >= 5) { // every 1/10 second (5 cycles)
+        fuelCount++;
+        simulatedFuelCounter = 0;
+      }
+    }
+
+    if (shooterInputs.fuelDetectorHasFuel && !previousHasFuel) {
+      fuelCount++;
+    }
+    previousHasFuel = shooterInputs.fuelDetectorHasFuel;
+
     if (testingMode.get() == 1) {
       // Flywheel Lead
       if (flyWheelLeadVelocity.get() != 0) {
@@ -149,8 +167,7 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/pose",
         new Pose3d(RobotOdometry.getInstance().getEstimatedPose()).plus(shooterPose));
-
-    Logger.recordOutput(SUBSYSTEM_NAME + "/turret not near setpoint", isTurretNotNearSetPoint());
+    Logger.recordOutput(SUBSYSTEM_NAME + "/fuelCount", fuelCount);
 
     LoggedTracer.record("Shooter");
   }
@@ -309,11 +326,6 @@ public class Shooter extends SubsystemBase {
             shooterInputs.flywheelLeadReferenceVelocity, VELOCITY_TOLERANCE));
   }
 
-  public boolean isTurretNotNearSetPoint() {
-    return !shooterInputs.turretPosition.isNear(
-        shooterInputs.turretReferencePosition, TURRET_DISTANCE_TO_SETPOINT_THRESHOLD);
-  }
-
   public void setFlywheelVelocity(AngularVelocity velocity) {
     io.setFlywheelVelocity(velocity);
   }
@@ -372,14 +384,24 @@ public class Shooter extends SubsystemBase {
     return shooterInputs.turretPosition;
   }
 
+  public Angle getTurretReferencePosition() {
+    return shooterInputs.turretReferencePosition;
+  }
+
   public AngularVelocity getFlywheelLeadVelocity() {
     return shooterInputs.flywheelLeadVelocity;
   }
 
-  public boolean getFuelDetected() {
-    Logger.recordOutput(
-        "Shooter/Fuel Detected Debounced",
-        fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel));
-    return fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
+  public boolean hasFuel() {
+    return shooterInputs.fuelDetectorHasFuel;
+  }
+
+  public int getFuelCount() {
+    return fuelCount;
+  }
+
+  public void resetFuelCount() {
+    fuelCount = 0;
+    previousHasFuel = false;
   }
 }

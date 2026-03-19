@@ -207,19 +207,15 @@ public class Intake extends SubsystemBase {
   public Command getDeployAndStartCommand() {
     return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
-        Commands.waitUntil(() -> this.getPosition().gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
-        Commands.runOnce(this::startRoller, this),
-        Commands.waitUntil(() -> this.getPosition().gt(Inches.of(11.5))),
-        Commands.runOnce(() -> intakeIO.setDeployerVoltage(Volts.of(6.0))),
-        Commands.waitSeconds(0.2),
-        Commands.runOnce(() -> intakeIO.setDeployerVoltage(Volts.of(0.0))));
+        Commands.waitUntil(this::isDeployed),
+        Commands.runOnce(this::startRoller, this));
   }
 
   public Command getRetractAndStopCommand() {
     return Commands.sequence(
+        Commands.runOnce(this::stopRoller, this),
         Commands.runOnce(this::retractIntake, this),
-        Commands.waitUntil(() -> this.getPosition().lt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)),
-        Commands.runOnce(this::stopRoller, this));
+        Commands.waitUntil(this::isRetracted));
   }
 
   public Distance getPosition() {

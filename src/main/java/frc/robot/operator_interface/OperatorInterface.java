@@ -77,7 +77,7 @@ public interface OperatorInterface {
 
   // DRIVER TRIGGERS, mostly game-specific
 
-  public default Trigger getScoreFromBankButton() {
+  public default Trigger getForceSafeShootButton() {
     return new Trigger(() -> false);
   }
 
