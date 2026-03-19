@@ -41,7 +41,7 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getScoreFromBankButton() {
+  public Trigger getForceSafeShootButton() {
     return translateJoystickButtons[1];
   }
 

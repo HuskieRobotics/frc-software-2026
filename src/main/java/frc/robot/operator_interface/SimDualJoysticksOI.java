@@ -42,7 +42,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getScoreFromBankButton() {
+  public Trigger getForceSafeShootButton() {
     return translateJoystickButtons[1];
   }
 

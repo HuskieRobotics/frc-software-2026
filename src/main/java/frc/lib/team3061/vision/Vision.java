@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -46,12 +47,16 @@ public class Vision extends SubsystemBase {
   private final AprilTagVisionIOInputsAutoLogged[] aprilTagInputs;
   private final ObjDetectVisionIOInputsAutoLogged[] objDetectInputs;
 
+  private final Debouncer fmsAttachedDebouncer = new Debouncer(3.0, DebounceType.kRising);
   private final LoggedNetworkBoolean recordingRequest =
       new LoggedNetworkBoolean("/SmartDashboard/Enable Recording", false);
 
   private double[] lastTimestamps;
   private int[] cyclesWithNoResults;
   private int[] updatePoseCount;
+
+  private final double disconnectedTimeout = 0.5;
+  private final Timer[] disconnectedTimers;
   private Alert[] disconnectedAlerts;
 
   private List<Integer> camerasToConsider = new ArrayList<>();
@@ -118,6 +123,7 @@ public class Vision extends SubsystemBase {
     this.inputs = new VisionIOInputsAutoLogged[visionIOs.length];
     this.aprilTagInputs = new AprilTagVisionIOInputsAutoLogged[visionIOs.length];
     this.objDetectInputs = new ObjDetectVisionIOInputsAutoLogged[visionIOs.length];
+    this.disconnectedTimers = new Timer[visionIOs.length];
     this.disconnectedAlerts = new Alert[visionIOs.length];
     this.camerasToConsider = new ArrayList<>();
 
@@ -146,6 +152,11 @@ public class Vision extends SubsystemBase {
       robotPoses.add(new ArrayList<>());
       robotPosesAccepted.add(new ArrayList<>());
       robotPosesRejected.add(new ArrayList<>());
+    }
+
+    for (int i = 0; i < visionIOs.length; i++) {
+      disconnectedTimers[i] = new Timer();
+      disconnectedTimers[i].start();
     }
 
     this.layout = FieldConstants.defaultAprilTagType.getLayout();
@@ -204,11 +215,42 @@ public class Vision extends SubsystemBase {
     }
 
     // Update recording state
-    // boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
-    // boolean shouldRecord = recordingRequest.get();
-    // for (VisionIO io : this.visionIOs) {
-    //   io.setRecording(shouldRecord);
-    // }
+    boolean shouldRecord =
+        // Ensure that match info can be published before recording
+        fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) || recordingRequest.get();
+    for (VisionIO io : this.visionIOs) {
+      io.setRecording(shouldRecord);
+    }
+
+    // Update disconnected alerts & LEDs
+    boolean anyNTDisconnected = false;
+    for (int i = 0; i < visionIOs.length; i++) {
+      if (aprilTagInputs[i].timestamps.length > 0
+          || objDetectInputs[i].timestamps.length > 0
+          || inputs[i].poseObservations.length > 0) {
+        disconnectedTimers[i].reset();
+      }
+      boolean disconnected =
+          disconnectedTimers[i].hasElapsed(disconnectedTimeout) || !inputs[i].connected;
+      if (disconnected) {
+        disconnectedAlerts[i].setText(
+            inputs[i].connected
+                ? "camera "
+                    + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                    + " connected to NT but not publishing frames"
+                : "camera "
+                    + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                    + " disconnected from NT");
+      }
+      disconnectedAlerts[i].set(disconnected);
+      Logger.recordOutput(
+          SUBSYSTEM_NAME
+              + "/"
+              + RobotConfig.getInstance().getCameraConfigs()[i].location()
+              + "/sending frames",
+          !disconnected);
+      anyNTDisconnected = anyNTDisconnected || !inputs[i].connected;
+    }
 
     this.allRobotPoses.clear();
     this.allRobotPosesAccepted.clear();
@@ -219,8 +261,6 @@ public class Vision extends SubsystemBase {
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
       String cameraLocation = RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location();
-
-      disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;
 
       // Initialize logging values
@@ -596,9 +636,16 @@ public class Vision extends SubsystemBase {
                 .poseForRobotToCameraTransformCalibration());
 
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraTransform", robotToCameraTransform);
+        SUBSYSTEM_NAME
+            + "/"
+            + RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location()
+            + "/RobotToCameraTransform",
+        robotToCameraTransform);
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraPose",
+        SUBSYSTEM_NAME
+            + "/"
+            + RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location()
+            + "/RobotToCameraPose",
         RobotConfig.getInstance()
             .getCameraConfigs()[cameraIndex]
             .poseForRobotToCameraTransformCalibration());

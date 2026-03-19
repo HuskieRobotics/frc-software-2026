@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
@@ -18,7 +20,6 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
-import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
@@ -108,29 +109,57 @@ public class CrossSubsystemsCommandsFactory {
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
 
-    new Trigger(shooterModes::isManualShootEnabled)
-        .or(shooterModes::isLockedShooterEnabled)
-        .and(oi.getScoreFromBankButton())
-        .onTrue(
-            getScoreSafeShotCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
+    /**
+     * Behavior of the shoot buttons (manual shoot and force shoot) is as follows for each of the
+     * shooter modes. The difference between the manual shoot button and the force shoot button is
+     * that the manual shoot button waits for 10 fuel to pass through the shooter before jostling
+     * the intake while the force shoot button immediately jostles the intake.
+     *
+     * <p>MANUAL_SHOOT: the hooper starts running when either button is pressed and stops when
+     * either button is released. The jostling behavior is determined based on which button is
+     * pressed.
+     *
+     * <p>SHOOT_OTM: the hopper is running before either button is pressed and continues to run
+     * after either button is released. The buttons just impact how the intake jostles the fuel.
+     *
+     * <p>COLLECT_AND_HOLD: pressing either button has no effect
+     *
+     * <p>NEAR_TRENCH: pressing either button has no effect
+     *
+     * <p>MANUAL_PASS: the hooper starts running when either button is pressed and stops when either
+     * button is released. The jostling behavior is determined based on which button is pressed.
+     *
+     * <p>PASS_OTM: the hopper is running before either button is pressed and continues to run after
+     * either button is released. The buttons just impact how the intake jostles the fuel.
+     *
+     * <p>SHOOTER_LOCKED: the hooper starts running when either button is pressed and stops when
+     * either button is released. The jostling behavior is determined based on which button is
+     * pressed.
+     */
 
+    // normal stop and shoot command, triggered by the right trigger (rotate 1)
+    // this can be run in any mode, and will use the typical stop and shoot
+    // if we are in a shoot on the move mode, it will let the hopper keep running to feed fuel into
+    // the shooter
     oi.getManualShootButton()
-        .and(
-            () ->
-                (shooterModes.isManualShootEnabled()
-                    || shooterModes.isManualPassEnabled()
-                    || shooterModes.isLockedShooterEnabled()))
-        .onTrue(
-            getStopAndShootCommand(oi, swerveDrivetrain, shooter, hopper, intake, shooterModes));
+        .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
+        .whileTrue(
+            Commands.either(
+                getStopAndShootCommand(
+                    shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)),
+                getStopAndShootCommand(
+                    shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)),
+                shooterModes::isManualShootEnabled));
 
-    oi.getManualShootButton()
-        .onFalse(
-            Commands.parallel(
-                    SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(
-                        oi, swerveDrivetrain),
-                    Commands.runOnce(intake::getDeployAndStartCommand, intake),
-                    Commands.runOnce(hopper::stop, hopper))
-                .withName("stop shooting"));
+    // this is bound to the left trigger (translate 1)
+    // this does a typical shot but starts the intake jostle immediately instead of
+    // waiting for 10 balls to pass through
+    // this also has the option to drive to bank, but will likely be deprecated
+    oi.getForceSafeShootButton()
+        .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
+        .whileTrue(
+            getStopAndShootCommand(
+                shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -149,7 +178,8 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes) {
     return Commands.sequence(
             getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(oi, drivetrain, shooter, hopper, intake, shooterModes))
+            getStopAndShootCommand(
+                shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)))
         .withName("score safe shot");
   }
 
@@ -159,32 +189,77 @@ public class CrossSubsystemsCommandsFactory {
             oi::getTranslateX,
             oi::getTranslateY,
             oi::getRotate,
-            () -> Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY())))
-        .unless(
-            () -> !OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean())
+            () -> {
+              if (Math.hypot(oi.getTranslateX(), oi.getTranslateY()) > 0.06) {
+                return Optional.of(new Rotation2d(oi.getTranslateX(), oi.getTranslateY()));
+              } else {
+                return Optional.empty();
+              }
+            })
         .withName("Snake Drive Command");
   }
 
-  // this is called in the sequence of getScoreSafeShot or while we hold right trigger 1 in
-  // CAN_SHOOT / non SHOOT_OTM
   public static Command getStopAndShootCommand(
-      OperatorInterface oi,
-      SwerveDrivetrain drivetrain,
       Shooter shooter,
       Hopper hopper,
       Intake intake,
-      ShooterModes shooterModes) {
-    return Commands.parallel(
-            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-            Commands.repeatingSequence(
-                Commands.run(intake::jostleFuelIn, intake).withTimeout(0.4),
-                Commands.run(intake::jostleFuelOut, intake).withTimeout(0.2)),
-            Commands.either(
-                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                shooterModes::isManualPassEnabled))
-        .withName("stop and shoot or pass");
-    // add hopper kick method in parallel
+      ShooterModes shooterModes,
+      Command jostleCommand) {
+    return Commands.repeatingSequence(
+            Commands.parallel(
+                    // let the hopper continue to do its thing if we are in shoot on the move mode
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    jostleCommand,
+                    Commands.repeatingSequence(
+                        Commands.either(
+                            Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                            Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                            () ->
+                                shooterModes.isManualPassEnabled()
+                                    || shooterModes.isPassOnTheMoveEnabled())))
+                .until(shooterModes::isTurretNotNearSetPoint)
+                .andThen(Commands.runOnce(hopper::stop, hopper)))
+        .finallyDo(
+            () -> {
+              CommandScheduler.getInstance().schedule(intake.getDeployAndStartCommand());
+              if (shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled()) {
+                CommandScheduler.getInstance()
+                    .schedule(getShootWhenAimedCommand(shooterModes, shooter, hopper));
+              } else {
+                hopper.stop();
+              }
+            })
+        .withName("shoot or pass");
+  }
+
+  private static Command getJostleCommand(Intake intake, Shooter shooter) {
+    return Commands.sequence(
+            Commands.runOnce(shooter::resetFuelCount),
+            Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
+                .withTimeout(2.5),
+            getForceJostleCommand(intake))
+        .withName("Jostle");
+  }
+
+  private static Command getForceJostleCommand(Intake intake) {
+    return Commands.repeatingSequence(
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
+            Commands.deadline(
+                Commands.waitSeconds(1.0),
+                Commands.waitUntil(
+                    () ->
+                        intake
+                            .getPosition()
+                            .isNear(
+                                JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE))),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
+            Commands.waitUntil(
+                () ->
+                    intake
+                        .getPosition()
+                        .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)))
+        .withName("Force Jostle");
   }
 
   private static void registerSysIdCommands(OperatorInterface oi) {
@@ -290,19 +365,22 @@ public class CrossSubsystemsCommandsFactory {
                 () ->
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
-    unloadHopperOnTheMoveTrigger.onTrue(
-        Commands.repeatingSequence(
-                Commands.parallel(
-                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                        Commands.repeatingSequence(
-                            Commands.either(
-                                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                                Commands.run(
-                                    () -> LEDs.getInstance().requestState(States.SHOOTING)),
-                                shooterModes::isPassOnTheMoveEnabled)))
-                    .until(shooter::isTurretNotNearSetPoint)
-                    .andThen(Commands.runOnce(hopper::stop, hopper)))
-            .withName("feed fuel"));
+    unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
     unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
+  }
+
+  private static Command getShootWhenAimedCommand(
+      ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
+    return Commands.repeatingSequence(
+            Commands.parallel(
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    Commands.repeatingSequence(
+                        Commands.either(
+                            Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                            Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                            shooterModes::isPassOnTheMoveEnabled)))
+                .until(shooterModes::isTurretNotNearSetPoint)
+                .andThen(Commands.runOnce(hopper::stop, hopper)))
+        .withName("shoot when aimed");
   }
 }

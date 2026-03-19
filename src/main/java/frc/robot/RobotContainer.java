@@ -167,7 +167,7 @@ public class RobotContainer {
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       AutonomousCommandsFactory.getInstance()
-          .configureAutoCommands(swerveDrivetrain, vision, hopper, intake, shooter);
+          .configureAutoCommands(swerveDrivetrain, vision, hopper, intake, shooter, shooterModes);
     }
 
     // Alert when tuning
@@ -335,6 +335,7 @@ public class RobotContainer {
     Field2d.getInstance().populateNeutralZone();
     Field2d.getInstance().populateOpponentAllianceHighPassZone();
     Field2d.getInstance().populateNoPassZone();
+    Field2d.getInstance().populateTowerNoPassZone();
     Field2d.getInstance().logAllianceZonePoints();
     Field2d.getInstance().logOpponentAllianceZonePoints();
     Field2d.getInstance().logNeutralZonePoints();
