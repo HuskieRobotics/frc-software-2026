@@ -241,7 +241,7 @@ public class CrossSubsystemsCommandsFactory {
         .withName("Jostle");
   }
 
-  private static Command getForceJostleCommand(Intake intake) {
+  public static Command getForceJostleCommand(Intake intake) {
     return Commands.repeatingSequence(
             Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
             Commands.deadline(

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.intake.IntakeConstants.JOSTLE_INITIAL_FUEL_COUNT;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -355,12 +356,21 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(() -> hopperUnloadTimer.restart()),
         Commands.parallel(
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
-                CrossSubsystemsCommandsFactory.getJostleCommand(intake, shooter))
+                getAutoJostleCommand(intake, shooter))
             .until(
                 () ->
                     (checkForFuel && hopperUnloadTimer.get() > 5.0 && !shooter.getFuelDetected())),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
+  }
+
+  private Command getAutoJostleCommand(Intake intake, Shooter shooter) {
+    return Commands.sequence(
+            Commands.runOnce(shooter::resetFuelCount),
+            Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
+                .withTimeout(1.5),
+            CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))
+        .withName("Auto Jostle");
   }
 
   private Pose2d getTowerPose() {
