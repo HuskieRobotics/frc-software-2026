@@ -80,12 +80,25 @@
   ],
   "constraintZones": [
     {
+      "name": "slow down to pickup",
+      "minWaypointRelativePos": 0.9,
+      "maxWaypointRelativePos": 1.3,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
       "name": "slow down on the way back",
-      "minWaypointRelativePos": 2.0035906642728856,
+      "minWaypointRelativePos": 2.25,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 3.5,
-        "maxAcceleration": 6.0,
+        "maxVelocity": 2.5,
+        "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,

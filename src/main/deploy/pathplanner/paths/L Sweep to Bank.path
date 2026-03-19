@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.097279477730225,
-        "y": 7.108368369501
+        "x": 7.493680456490727,
+        "y": 7.263195435092724
       },
       "isLocked": false,
       "linkedName": "L Sweep Collect"
@@ -32,10 +32,10 @@
   "constraintZones": [
     {
       "name": "slow down on the way back",
-      "minWaypointRelativePos": 0.502692998204668,
+      "minWaypointRelativePos": 0.4,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 3.5,
+        "maxVelocity": 2.5,
         "maxAcceleration": 6.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,

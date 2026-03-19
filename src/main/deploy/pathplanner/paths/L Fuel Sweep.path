@@ -80,12 +80,12 @@
   ],
   "constraintZones": [
     {
-      "name": "slow down on the way back",
-      "minWaypointRelativePos": 2.0,
-      "maxWaypointRelativePos": 3.0,
+      "name": "slow down to pickup",
+      "minWaypointRelativePos": 0.9,
+      "maxWaypointRelativePos": 1.3,
       "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 6.0,
+        "maxVelocity": 1.5,
+        "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -93,11 +93,11 @@
       }
     },
     {
-      "name": "slow down to collect balls",
-      "minWaypointRelativePos": 0.65,
-      "maxWaypointRelativePos": 0.95,
+      "name": "slow on the way back",
+      "minWaypointRelativePos": 2.1,
+      "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 2.5,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,

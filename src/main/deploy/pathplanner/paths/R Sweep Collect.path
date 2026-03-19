@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.7536373127146785,
-        "y": 0.4105427560776922
+        "x": 8.166490727532096,
+        "y": 0.4574607703281026
       },
       "isLocked": false,
       "linkedName": "Right Bank"
@@ -20,8 +20,8 @@
         "y": 3.529965909090909
       },
       "prevControl": {
-        "x": 5.638325757575757,
-        "y": 0.6779547979797984
+        "x": 6.160998573466475,
+        "y": 0.677417974322398
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "slow to pickup",
+      "minWaypointRelativePos": 0.7994598244429437,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {

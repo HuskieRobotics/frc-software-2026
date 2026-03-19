@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.377232524964336,
-        "y": -0.09890156918687598
+        "x": 8.709914407988586,
+        "y": -0.07302425106989974
       },
       "isLocked": false,
       "linkedName": "R Sweep Collect"
@@ -20,8 +20,8 @@
         "y": 0.664
       },
       "prevControl": {
-        "x": 5.074323171190468,
-        "y": 0.6640000000000006
+        "x": 5.100028530670471,
+        "y": 0.6644793152639101
       },
       "nextControl": null,
       "isLocked": false,
@@ -40,7 +40,7 @@
       "minWaypointRelativePos": 0.8534773801485472,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 2.55,
+        "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
