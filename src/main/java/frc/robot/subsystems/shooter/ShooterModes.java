@@ -22,6 +22,7 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
 
@@ -527,6 +528,12 @@ public class ShooterModes extends SubsystemBase {
     if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
       shooterSetpoints.flywheelVelocity = PIT_TEST_FLYWHEEL_RPS;
       shooterSetpoints.hoodAngle = HOOD_MAX_PASSING_ANGLE;
+    }
+
+    // do not run the flywheels if we are racing to the middle in auto
+    if (DriverStation.isAutonomousEnabled()
+        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 3.0) {
+      shooterSetpoints.flywheelVelocity = RotationsPerSecond.of(0.0);
     }
 
     // finally, override the hood position if the robot is in a trench zone to ensure that the

@@ -359,7 +359,7 @@ public class AutonomousCommandsFactory {
                 getAutoJostleCommand(intake, shooter))
             .until(
                 () ->
-                    (checkForFuel && hopperUnloadTimer.get() > 5.0 && !shooter.getFuelDetected())),
+                    (checkForFuel && hopperUnloadTimer.get() > 3.0 && !shooter.getFuelDetected())),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake, intake));
   }
@@ -618,6 +618,7 @@ public class AutonomousCommandsFactory {
     }
 
     return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
@@ -629,6 +630,10 @@ public class AutonomousCommandsFactory {
               hopper.stop();
               intake.deployIntake();
             });
+  }
+
+  public double getCustomMatchTime() {
+    return matchTimer.get();
   }
 
   // DEPRECATED FOR NOW
