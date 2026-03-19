@@ -472,8 +472,8 @@
             "title": "Pass",
             "x": 16.0,
             "y": 16.0,
-            "width": 272.0,
-            "height": 256.0,
+            "width": 608.0,
+            "height": 272.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Pass",
@@ -483,8 +483,8 @@
           },
           {
             "title": "Lock Shooter",
-            "x": 320.0,
-            "y": 416.0,
+            "x": 640.0,
+            "y": 144.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
@@ -496,8 +496,8 @@
           },
           {
             "title": "Toggle Auto Snaps",
-            "x": 320.0,
-            "y": 288.0,
+            "x": 640.0,
+            "y": 16.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
@@ -511,7 +511,7 @@
             "title": "Shoot On The Move",
             "x": 16.0,
             "y": 288.0,
-            "width": 272.0,
+            "width": 304.0,
             "height": 256.0,
             "type": "Toggle Button",
             "properties": {
@@ -523,8 +523,8 @@
           {
             "title": "Pass On The Move",
             "x": 320.0,
-            "y": 16.0,
-            "width": 256.0,
+            "y": 288.0,
+            "width": 304.0,
             "height": 256.0,
             "type": "Toggle Button",
             "properties": {
@@ -534,39 +534,11 @@
             }
           },
           {
-            "title": "Increase Shot Velocity 1%",
-            "x": 640.0,
-            "y": 16.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/Increase Shot Velocity 1%",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "Decrease Shot Velocity 1%",
-            "x": 640.0,
-            "y": 144.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/Decrease Shot Velocity 1%",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
             "title": "Shot Multiplier",
             "x": 912.0,
             "y": 16.0,
             "width": 272.0,
-            "height": 240.0,
+            "height": 256.0,
             "type": "Large Text Display",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/ShooterModes/Shot Multiplier",
@@ -588,39 +560,11 @@
             }
           },
           {
-            "title": "Aim Turret Left 1 deg",
-            "x": 640.0,
-            "y": 288.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/Aim Turret Left 1 deg",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "Aim Turret Right 1 deg",
-            "x": 640.0,
-            "y": 416.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/Aim Turret Right 1 deg",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
             "title": "BL",
-            "x": 1200.0,
-            "y": 16.0,
+            "x": 640.0,
+            "y": 304.0,
             "width": 128.0,
-            "height": 128.0,
+            "height": 112.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Vision/BL/sending frames",
@@ -634,8 +578,8 @@
           },
           {
             "title": "BR",
-            "x": 1200.0,
-            "y": 144.0,
+            "x": 768.0,
+            "y": 304.0,
             "width": 128.0,
             "height": 112.0,
             "type": "Boolean Box",

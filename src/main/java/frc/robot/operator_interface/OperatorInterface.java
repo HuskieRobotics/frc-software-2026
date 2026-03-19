@@ -142,6 +142,23 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  // Operator Xbox Controller Triggers
+  public default Trigger getIncrementFlywheelVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDecrementFlywheelVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveTurretRightButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveTurretLeftButton() {
+    return new Trigger(() -> false);
+  }
+
   // only for at home
   public default Trigger getHubActiveAtHomeToggle() {
     return new Trigger(() -> false);

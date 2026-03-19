@@ -165,6 +165,13 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
 
+    oi.getIncrementFlywheelVelocityButton()
+        .onTrue(Commands.runOnce(shooterModes::incrementShotVelocity));
+    oi.getDecrementFlywheelVelocityButton()
+        .onTrue(Commands.runOnce(shooterModes::decrementShotVelocity));
+    oi.getMoveTurretLeftButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeLeft));
+    oi.getMoveTurretRightButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeRight));
+
     registerSysIdCommands(oi);
   }
 

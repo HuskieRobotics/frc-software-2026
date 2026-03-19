@@ -14,8 +14,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
@@ -105,8 +103,6 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
-    registerVelocityDial();
-    registerTurretDial();
   }
 
   @Override
@@ -609,16 +605,6 @@ public class ShooterModes extends SubsystemBase {
   }
 
   // increases shot velocities by 1%
-  public void registerVelocityDial() {
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Increase Shot Velocity 1%",
-        Commands.runOnce(this::incrementShotVelocity));
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Decrease Shot Velocity 1%",
-        Commands.runOnce(this::decrementShotVelocity));
-  }
-
-  // increases shot velocities by 1%
   public void incrementShotVelocity() {
     this.shotVelocityMultiplier += 0.01;
   }
@@ -628,20 +614,13 @@ public class ShooterModes extends SubsystemBase {
     this.shotVelocityMultiplier -= 0.01;
   }
 
-  public void registerTurretDial() {
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Aim Turret Left 1 deg", Commands.runOnce(this::incrementTurretAngle));
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Aim Turret Right 1 deg", Commands.runOnce(this::decrementTurretAngle));
-  }
-
   // increases turret angle by 1 deg
-  public void incrementTurretAngle() {
+  public void moveTurretOneDegreeLeft() {
     this.turretAngleAdjustment += 1.0;
   }
 
   // decreases turret angle by 1 deg
-  public void decrementTurretAngle() {
+  public void moveTurretOneDegreeRight() {
     this.turretAngleAdjustment -= 1.0;
   }
 
