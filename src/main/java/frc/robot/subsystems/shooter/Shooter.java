@@ -131,6 +131,7 @@ public class Shooter extends SubsystemBase {
       fuelCount++;
     }
     previousHasFuel = shooterInputs.fuelDetectorHasFuel;
+    fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
 
     if (testingMode.get() == 1) {
       // Flywheel Lead
@@ -393,9 +394,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean getFuelDetected() {
-    Logger.recordOutput(
-        "Shooter/Fuel Detected Debounced",
-        fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel));
     return fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
   }
 
