@@ -114,9 +114,6 @@ public class Intake extends SubsystemBase {
       }
     }
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "/Deployed", inDeployedState);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/Rollers Active", areRollersActiveState);
-
     // checkRollerJam();
 
     // update debouncer objects; this must be done every cycle
@@ -164,6 +161,11 @@ public class Intake extends SubsystemBase {
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
   }
 
+  public void startRollerInAuto() {
+    areRollersActiveState = true;
+    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY);
+  }
+
   public void stopRoller() {
     areRollersActiveState = false;
     intakeIO.setRollerVelocity(RotationsPerSecond.of(0.0));
@@ -209,6 +211,13 @@ public class Intake extends SubsystemBase {
         Commands.runOnce(this::deployIntake, this),
         Commands.waitUntil(this::isDeployed),
         Commands.runOnce(this::startRoller, this));
+  }
+
+  public Command getDeployAndStartInAutoCommand() {
+    return Commands.sequence(
+        Commands.runOnce(this::deployIntake, this),
+        Commands.waitUntil(this::isDeployed),
+        Commands.runOnce(this::startRollerInAuto, this));
   }
 
   public Command getRetractAndStopCommand() {

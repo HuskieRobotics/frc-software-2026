@@ -399,7 +399,7 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
-                intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
             // alternate between unloading hopper and running sweeps until not enough time left in
             // the auto to do so
             Commands.repeatingSequence(
@@ -421,6 +421,7 @@ public class AutonomousCommandsFactory {
             () -> {
               hopper.stop();
               intake.deployIntake();
+              intake.startRoller();
             });
   }
 
@@ -579,7 +580,7 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
-                intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
             // unload hopper for the first volley until we don't detect fuel
             getUnloadHopperCommand(hopper, intake, shooter, true),
             Commands.runOnce(hopper::stop, hopper),
@@ -619,7 +620,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
-                intake.getDeployAndStartCommand(), AutoBuilder.followPath(firstSweep)),
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
             AutoBuilder.followPath(secondSweep),
             getUnloadHopperCommand(hopper, intake, shooter, false))

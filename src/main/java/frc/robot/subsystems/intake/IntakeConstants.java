@@ -56,7 +56,10 @@ public class IntakeConstants {
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2;
   public static final boolean ROLLER_MOTOR_INVERTED = true;
+
   public static final AngularVelocity ROLLER_TARGET_VELOCITY = RotationsPerSecond.of(45.0);
+  public static final AngularVelocity ROLLER_AUTO_TARGET_VELOCITY = RotationsPerSecond.of(50.0);
+
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
