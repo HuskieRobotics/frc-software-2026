@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.leds.LEDs.States;
@@ -103,6 +104,9 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       Shooter shooter,
       ShooterModes shooterModes) {
+
+    oi.getClearAllFaults().onTrue(FaultReporter.getInstance().getClearAllFaultsCommand());
+    oi.getCheckForFaults().onTrue(FaultReporter.getInstance().getCheckForFaultsCommand());
 
     configureCrossSubsystemsTriggers(shooterModes, shooter, hopper);
 

@@ -144,4 +144,34 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   public Trigger getMoveTurretRightButton() {
     return operatorController.povRight();
   }
+
+  @Override
+  public Trigger getDrivetrainSystemTest() {
+    return operatorController.back().and(operatorController.b());
+  }
+
+  @Override
+  public Trigger getShooterSystemTest() {
+    return operatorController.back().and(operatorController.a());
+  }
+
+  @Override
+  public Trigger getIntakeSystemTest() {
+    return operatorController.back().and(operatorController.y());
+  }
+
+  @Override
+  public Trigger getHopperSystemTest() {
+    return operatorController.back().and(operatorController.x());
+  }
+
+  @Override
+  public Trigger getClearAllFaults() {
+    return operatorController.button(4).and(operatorController.button(5));
+  }
+
+  @Override
+  public Trigger getCheckForFaults() {
+    return operatorController.button(5);
+  }
 }

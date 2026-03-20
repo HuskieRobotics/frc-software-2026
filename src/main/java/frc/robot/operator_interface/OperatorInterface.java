@@ -176,4 +176,32 @@ public interface OperatorInterface {
   public default Trigger getSlowShooterForPitTest() {
     return new Trigger(() -> false);
   }
+
+  // System Tests
+
+  public default Trigger getDrivetrainSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getShooterSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHopperSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  // Faults
+
+  public default Trigger getClearAllFaults() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getCheckForFaults() {
+    return new Trigger(() -> false);
+  }
 }

@@ -96,20 +96,6 @@
         "layouts": [],
         "containers": [
           {
-            "title": "ClearAllFaults",
-            "x": 80.0,
-            "y": 48.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/SystemStatus/ClearAllFaults",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
             "title": "SysId Chooser",
             "x": 80.0,
             "y": 192.0,
@@ -150,9 +136,9 @@
           },
           {
             "title": "Slow Shooter For Pit Test",
-            "x": 400.0,
-            "y": 352.0,
-            "width": 288.0,
+            "x": 80.0,
+            "y": 48.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
@@ -170,24 +156,10 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Drivetrain",
-            "x": 576.0,
+            "title": "Drivetrain CheckRan",
+            "x": 736.0,
             "y": 16.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "CheckRan",
-            "x": 832.0,
-            "y": 16.0,
-            "width": 128.0,
+            "width": 224.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -218,24 +190,10 @@
             }
           },
           {
-            "title": "Intake",
-            "x": 16.0,
+            "title": "Intake CheckRan",
+            "x": 192.0,
             "y": 16.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/SystemStatus/Intake/SystemCheck",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "CheckRan",
-            "x": 272.0,
-            "y": 16.0,
-            "width": 128.0,
+            "width": 208.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -266,24 +224,10 @@
             }
           },
           {
-            "title": "Hopper",
-            "x": 16.0,
+            "title": "Hopper CheckRan",
+            "x": 192.0,
             "y": 160.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/SystemStatus/Hopper/SystemCheck",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "CheckRan",
-            "x": 272.0,
-            "y": 160.0,
-            "width": 128.0,
+            "width": 208.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -314,24 +258,10 @@
             }
           },
           {
-            "title": "Shooter",
-            "x": 576.0,
+            "title": "Shooter CheckRan",
+            "x": 736.0,
             "y": 160.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/SystemStatus/Shooter/SystemCheck",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "CheckRan",
-            "x": 832.0,
-            "y": 160.0,
-            "width": 128.0,
+            "width": 224.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -377,7 +307,7 @@
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
-              "topic": "/SmartDashboard/Enable Recording",
+              "topic": "/Vision/Enable Recording",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -585,6 +515,40 @@
             "type": "Boolean Box",
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Vision/BR/sending frames",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "BCL",
+            "x": 640.0,
+            "y": 432.0,
+            "width": 128.0,
+            "height": 112.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Vision/BCL/sending frames",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "BCR",
+            "x": 768.0,
+            "y": 432.0,
+            "width": 128.0,
+            "height": 112.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Vision/BCR/sending frames",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
