@@ -66,5 +66,5 @@ public class HopperConstants {
   public static final AngularVelocity KICKER_FUEL_INTO_SHOOTER_VELOCITY =
       RotationsPerSecond.of(20.0);
 
-  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY = RotationsPerSecond.of(16.0);
+  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY = RotationsPerSecond.of(12.0);
 }
