@@ -598,6 +598,7 @@ public class AutonomousCommandsFactory {
             () -> {
               hopper.stop();
               intake.deployIntake();
+              intake.startRoller();
             });
   }
 
@@ -629,6 +630,7 @@ public class AutonomousCommandsFactory {
             () -> {
               hopper.stop();
               intake.deployIntake();
+              intake.startRoller();
             });
   }
 
@@ -684,6 +686,7 @@ public class AutonomousCommandsFactory {
             () -> {
               hopper.stop();
               intake.deployIntake();
+              intake.startRoller();
             });
   }
 }
