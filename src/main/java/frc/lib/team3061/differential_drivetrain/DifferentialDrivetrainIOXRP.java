@@ -82,9 +82,9 @@ public class DifferentialDrivetrainIOXRP implements DifferentialDrivetrainIO {
     inputs.rollDeg = gyro.getAngleY();
 
     // convert from acceleration in Gs to m/s^2
-    inputs.xAccelerationGMPSPS = accelerometer.getX() * 9.81;
-    inputs.yAccelerationGMPSPS = accelerometer.getY() * 9.81;
-    inputs.zAccelerationGMPSPS = accelerometer.getZ() * 9.81;
+    inputs.xAccelerationMPSPS = accelerometer.getX() * 9.81;
+    inputs.yAccelerationMPSPS = accelerometer.getY() * 9.81;
+    inputs.zAccelerationMPSPS = accelerometer.getZ() * 9.81;
 
     this.prevLeftPositionMeters = inputs.leftPositionMeters;
     this.prevRightPositionMeters = inputs.rightPositionMeters;

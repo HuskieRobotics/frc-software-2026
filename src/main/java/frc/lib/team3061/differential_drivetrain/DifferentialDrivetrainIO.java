@@ -24,9 +24,9 @@ public interface DifferentialDrivetrainIO {
     double pitchDeg = 0.0;
     double rollDeg = 0.0;
 
-    double xAccelerationGMPSPS = 0.0;
-    double yAccelerationGMPSPS = 0.0;
-    double zAccelerationGMPSPS = 0.0;
+    double xAccelerationMPSPS = 0.0;
+    double yAccelerationMPSPS = 0.0;
+    double zAccelerationMPSPS = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
