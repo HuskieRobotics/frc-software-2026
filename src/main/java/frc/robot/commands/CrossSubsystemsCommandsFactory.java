@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -19,7 +18,6 @@ import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.Field2d;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
@@ -168,21 +166,6 @@ public class CrossSubsystemsCommandsFactory {
     registerSysIdCommands(oi);
   }
 
-  // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
-  public static Command getScoreSafeShotCommand(
-      OperatorInterface oi,
-      SwerveDrivetrain drivetrain,
-      Shooter shooter,
-      Hopper hopper,
-      Intake intake,
-      ShooterModes shooterModes) {
-    return Commands.sequence(
-            getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(
-                shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)))
-        .withName("score safe shot");
-  }
-
   public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {
     return new TeleopSwerve(
             drivetrain,
@@ -303,45 +286,10 @@ public class CrossSubsystemsCommandsFactory {
         .withName("interrupt all");
   }
 
-  private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
-    return new DriveToBank(
-            drivetrain,
-            CrossSubsystemsCommandsFactory::getTargetBankPose,
-            xController,
-            yController,
-            thetaController,
-            new Transform2d(
-                DRIVE_TO_BANK_X_TOLERANCE_METERS,
-                DRIVE_TO_BANK_Y_TOLERANCE_METERS,
-                Rotation2d.fromDegrees(DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES)),
-            true,
-            (atPose) ->
-                LEDs.getInstance()
-                    .requestState(
-                        atPose
-                            ? LEDs.States.AT_POSE
-                            : LEDs.States
-                                .AUTO_DRIVING_TO_POSE), /* will do other in parallel, probably not here though */
-            CrossSubsystemsCommandsFactory::updatePIDConstants, /* need to see this */
-            3.0)
-        .withName("drive to bank");
-  }
-
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
     return SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, drivetrain)
         .withName("Override driveToPose");
-  }
-
-  private static Pose2d getTargetPose() {
-    return new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(90.0));
-  }
-
-  private static Pose2d getTargetBankPose() {
-    // for testing
-    // return new Pose2d(FieldConstants.LinesVertical.center, FieldConstants.LinesHorizontal.center,
-    // Rotation2d.fromDegrees(90));
-    return Field2d.getInstance().getNearestBank();
   }
 
   public static void updatePIDConstants(Transform2d poseDifference) {
