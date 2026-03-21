@@ -447,16 +447,19 @@ public class AutonomousCommandsFactory {
                 getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
                 Commands.runOnce(hopper::stop, hopper),
                 // either grab another sweep (if >2.5s remaining) or just keep unloading the hopper
-                Commands.either(
-                    Commands.sequence(
-                        AutoBuilder.followPath(secondSweepCollect),
-                        // check if we have time to come back from the sweep
-                        Commands.either(
-                            AutoBuilder.followPath(secondSweepToBank),
-                            Commands.none(),
-                            () -> matchTimer.get() < 17.5)),
-                    getUnloadHopperCommand(hopper, intake, shooter, true),
-                    (() -> matchTimer.get() < 17.5))))
+                Commands.either(    
+                  Commands.sequence(
+                    AutoBuilder.followPath(secondSweepCollect),  
+                    getUnloadHopperCommand(hopper, intake, shooter, false)),
+                // Commands.sequence(
+                  //       AutoBuilder.followPath(secondSweepCollect),
+                  //       // check if we have time to come back from the sweep
+                  //       Commands.either(
+                  //           AutoBuilder.followPath(secondSweepToBank),
+                  //           Commands.none(),
+                  //           () -> matchTimer.get() < 17.5)),
+                  getUnloadHopperCommand(hopper, intake, shooter, true),
+                  (() -> matchTimer.get() < 17.5))))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -543,7 +546,7 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
     try {
       firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep"); // this path ends at the bank
-      secondSweepCollect = PathPlannerPath.fromPathFile("L Sweep Collect");
+      secondSweepCollect = PathPlannerPath.fromPathFile("L Second Collect");
       secondSweepToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
