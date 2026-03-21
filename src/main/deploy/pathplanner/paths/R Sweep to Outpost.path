@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.678544935805991,
-        "y": 3.2004564907275324
+        "x": 6.057489300998572,
+        "y": 3.6144935805991443
       },
       "prevControl": null,
       "nextControl": {
-        "x": 9.44780025288549,
-        "y": -0.40253366943327595
+        "x": 8.82674461807807,
+        "y": 0.011503420438335965
       },
       "isLocked": false,
       "linkedName": "R Sweep Collect"
@@ -52,7 +52,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -61,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 179.93568081978665
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Right Sweep and Outpost",

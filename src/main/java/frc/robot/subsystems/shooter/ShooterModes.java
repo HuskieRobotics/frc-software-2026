@@ -43,7 +43,7 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
-  private double shotVelocityMultiplier = 0.97;
+  private double shotVelocityMultiplier = 1.0;
   private double turretAngleAdjustment = 0.0;
 
   private Timer turretOutsideSetpointTimer = new Timer();
@@ -133,10 +133,13 @@ public class ShooterModes extends SubsystemBase {
     hubDistanceToVelocityMap.put(2.8702, 32.0);
     hubDistanceToVelocityMap.put(2.9972, 33.0);
     hubDistanceToVelocityMap.put(3.2512, 34.0);
+    hubDistanceToVelocityMap.put(3.68, 35.0);
     hubDistanceToVelocityMap.put(3.83, 35.0);
-    hubDistanceToVelocityMap.put(4.4196, 38.0);
-    hubDistanceToVelocityMap.put(4.72, 39.0);
-    hubDistanceToVelocityMap.put(5.38, 41.0);
+    hubDistanceToVelocityMap.put(4.4196, 37.5);
+    hubDistanceToVelocityMap.put(4.80, 38.0);
+    hubDistanceToVelocityMap.put(5.14, 39.0);
+    // hubDistanceToVelocityMap.put(5.38, 41.0);
+
     // hubDistanceToVelocityMap.put(6.22, 42.0);
 
     // Hood Angle Shooting into Hub Map
@@ -146,10 +149,12 @@ public class ShooterModes extends SubsystemBase {
     hubDistanceToHoodMap.put(2.8702, 23.0);
     hubDistanceToHoodMap.put(2.9972, 23.0);
     hubDistanceToHoodMap.put(3.2512, 25.0);
+    hubDistanceToHoodMap.put(3.68, 26.0);
     hubDistanceToHoodMap.put(3.83, 26.0);
     hubDistanceToHoodMap.put(4.4196, 27.0);
-    hubDistanceToHoodMap.put(4.72, 27.0);
-    hubDistanceToHoodMap.put(5.38, 28.0);
+    hubDistanceToHoodMap.put(4.80, 28.0);
+    hubDistanceToHoodMap.put(5.14, 29.0);
+    // hubDistanceToHoodMap.put(5.38, 28.0);
     hubDistanceToHoodMap.put(6.22, 29.0);
 
     // Velocity Passing Map

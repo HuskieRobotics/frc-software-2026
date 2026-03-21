@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.678544935805991,
-        "y": 3.2004564907275324
+        "x": 6.057489300998572,
+        "y": 3.6144935805991443
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.597572007521722,
-        "y": 0.6972523505381929
+        "x": 6.976516372714303,
+        "y": 1.1112894404098048
       },
       "isLocked": false,
       "linkedName": "R Sweep Collect"
@@ -47,7 +47,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

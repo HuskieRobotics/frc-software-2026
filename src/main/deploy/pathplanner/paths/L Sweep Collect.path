@@ -8,53 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.791269614835947,
-        "y": 7.651355206847361
+        "x": 7.040827389443653,
+        "y": 7.496091298145506
       },
       "isLocked": false,
       "linkedName": "Left Bank"
     },
     {
       "anchor": {
-        "x": 5.889,
-        "y": 4.581
+        "x": 6.031611982881596,
+        "y": 4.274365192582025
       },
       "prevControl": {
-        "x": 5.915164051355206,
-        "y": 7.327888730385164
-      },
-      "nextControl": {
-        "x": 5.886618863818783,
-        "y": 4.331011339876219
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 6.238630527817403,
-        "y": 3.8862054208273893
-      },
-      "prevControl": {
-        "x": 5.850470756062768,
-        "y": 3.937960057061342
+        "y": 7.936005706134095
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "L Sweep Collect"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": -90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "slow to pickup",
-      "minWaypointRelativePos": 1.6,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.8,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
@@ -68,7 +47,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -77,7 +56,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -1.7565323237381814
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Left Sweep",

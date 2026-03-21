@@ -544,7 +544,7 @@ public class AutonomousCommandsFactory {
     try {
       firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep"); // this path ends at the bank
       secondSweepCollect = PathPlannerPath.fromPathFile("L Sweep Collect");
-      secondSweepToBank = PathPlannerPath.fromPathFile("L Turn Around");
+      secondSweepToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -604,7 +604,7 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
 
     try {
-      firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep");
+      firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep to Outpost");
       sweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
       sweepToOutpost = PathPlannerPath.fromPathFile("R Sweep to Outpost");
       bankToOutpost = PathPlannerPath.fromPathFile("R Bank to Outpost");
@@ -621,19 +621,7 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            // unload hopper for the first volley until we don't detect fuel
-            getUnloadHopperCommand(hopper, intake, shooter, true),
-            Commands.runOnce(hopper::stop, hopper),
-            // either go for another sweep if we have time or just go straight to the outpost
-            Commands.either(
-                Commands.sequence(
-                    AutoBuilder.followPath(sweepCollect),
-                    AutoBuilder.followPath(sweepToOutpost),
-                    getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)),
-                Commands.sequence(
-                    AutoBuilder.followPath(bankToOutpost),
-                    getUnloadHopperAtOutpostCommand(hopper, intake, shooter, false)),
-                () -> matchTimer.get() < 10.0))
+            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true))
         .finallyDo(
             () -> {
               hopper.stop();

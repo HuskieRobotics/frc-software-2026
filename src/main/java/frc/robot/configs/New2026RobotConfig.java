@@ -151,7 +151,7 @@ public class New2026RobotConfig extends RobotConfig {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(-10.969),
-              Units.inchesToMeters(5.390),
+              Units.inchesToMeters(5.390 - 1.147),
               Units.inchesToMeters(11.539)),
           new Rotation3d(
               Units.degreesToRadians(180.00),
@@ -164,7 +164,7 @@ public class New2026RobotConfig extends RobotConfig {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(-10.9790),
-              Units.inchesToMeters(3.618),
+              Units.inchesToMeters(3.618 - 1.147),
               Units.inchesToMeters(11.546)),
           new Rotation3d(0, Units.degreesToRadians(-10.00), Units.degreesToRadians(200.0)));
 
