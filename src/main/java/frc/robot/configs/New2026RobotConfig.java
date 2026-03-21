@@ -150,19 +150,22 @@ public class New2026RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-11.5),
-              Units.inchesToMeters(6.1725),
-              Units.inchesToMeters(11.569)),
-          new Rotation3d(0, Units.degreesToRadians(-10.00), Units.degreesToRadians(160.0)));
+              Units.inchesToMeters(-10.969),
+              Units.inchesToMeters(5.390),
+              Units.inchesToMeters(11.539)),
+          new Rotation3d(
+              Units.degreesToRadians(180.00),
+              Units.degreesToRadians(-10.00),
+              Units.degreesToRadians(160.0)));
 
   // Back center right camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCR_CAMERA =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-11.5),
-              Units.inchesToMeters(4.0415),
-              Units.inchesToMeters(11.569)),
+              Units.inchesToMeters(-10.9790),
+              Units.inchesToMeters(3.618),
+              Units.inchesToMeters(11.546)),
           new Rotation3d(0, Units.degreesToRadians(-10.00), Units.degreesToRadians(200.0)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
