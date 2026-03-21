@@ -461,14 +461,10 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     this.thetaFilter.calculate(rotationalVelocityRadiansPerSecond);
 
     // log velocity after filter
+    Logger.recordOutput(SUBSYSTEM_NAME + "/filteredXVelocity", this.xFilter.lastValue());
+    Logger.recordOutput(SUBSYSTEM_NAME + "/filteredYVelocity", this.yFilter.lastValue());
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredXVelocity", this.xFilter.lastValue(), MetersPerSecond);
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredYVelocity", this.yFilter.lastValue(), MetersPerSecond);
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredRotationalVelocity",
-        this.thetaFilter.lastValue(),
-        RadiansPerSecond);
+        SUBSYSTEM_NAME + "/filteredRotationalVelocity", this.thetaFilter.lastValue());
 
     if (accelerationLimiting) {
       xVelocityMPS = this.xFilter.lastValue();

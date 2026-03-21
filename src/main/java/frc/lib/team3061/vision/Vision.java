@@ -258,6 +258,8 @@ public class Vision extends SubsystemBase {
     this.allRejectedTagPoses.clear();
     this.allDetectedObjectPoses.clear();
 
+    Matrix<N3, N1> stdDev = null;
+
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
       String cameraLocation = RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location();
       this.cyclesWithNoResults[cameraIndex] += 1;
@@ -315,7 +317,6 @@ public class Vision extends SubsystemBase {
                       || observation.type() == PoseObservationType.MULTI_TAG
                       || DriverStation.isDisabled());
 
-          Matrix<N3, N1> stdDev = null;
           if (acceptPoseForPoseReset) {
             stdDev = getStandardDeviations(cameraIndex, observation);
             // if the most-recent "best pose" is too old, capture a new one regardless of its
@@ -359,12 +360,6 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput(
                 SUBSYSTEM_NAME + "/" + cameraLocation + "/UpdatePoseCount",
                 this.updatePoseCount[cameraIndex]);
-            Logger.recordOutput(
-                SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevX", stdDev.get(0, 0));
-            Logger.recordOutput(
-                SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevY", stdDev.get(1, 0));
-            Logger.recordOutput(
-                SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevT", stdDev.get(2, 0));
           } else {
             robotPosesRejected.get(cameraIndex).add(estimatedRobotPose3d);
             final int finalCameraIndex = cameraIndex;
@@ -419,6 +414,9 @@ public class Vision extends SubsystemBase {
 
       if (ENABLE_EXTRA_LOGGING) {
         // Log data for this camera
+        Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevX", stdDev.get(0, 0));
+        Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevY", stdDev.get(1, 0));
+        Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevT", stdDev.get(2, 0));
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
             Timer.getTimestamp() - this.lastTimestamps[cameraIndex]);
