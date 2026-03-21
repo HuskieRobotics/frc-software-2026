@@ -19,7 +19,6 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
-import frc.robot.Constants.*;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
