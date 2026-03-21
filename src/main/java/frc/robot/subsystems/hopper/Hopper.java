@@ -84,8 +84,6 @@ public class Hopper extends SubsystemBase {
 
     SysIdRoutineChooser.getInstance().addOption("Kicker Current", kickerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Spindexer Current", spindexerSysIdRoutine);
-
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getHopperSystemCheckCommand());
   }
 
   @Override
@@ -125,7 +123,7 @@ public class Hopper extends SubsystemBase {
         Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)));
   }
 
-  private Command getHopperSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
         .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(Commands.runOnce(this::stop, this));

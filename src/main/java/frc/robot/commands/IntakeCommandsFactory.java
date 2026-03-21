@@ -4,8 +4,10 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 
 public class IntakeCommandsFactory {
 
@@ -31,5 +33,11 @@ public class IntakeCommandsFactory {
                     Commands.runOnce(intake::startRoller, intake),
                     intake::areRollersActive)
                 .withName("start-stop intake rollers"));
+
+    FaultReporter.getInstance()
+        .registerSystemCheck(
+            IntakeConstants.SUBSYSTEM_NAME,
+            intake.getSystemCheckCommand(),
+            oi.getIntakeSystemTest());
   }
 }
