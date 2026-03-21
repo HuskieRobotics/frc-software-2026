@@ -1,8 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class ShooterCommandsFactory {
 
@@ -18,5 +20,11 @@ public class ShooterCommandsFactory {
                     Commands.runOnce(shooter::stopHood, shooter),
                     Commands.runOnce(shooter::zeroHood, shooter))
                 .withName("zero hood"));
+
+    FaultReporter.getInstance()
+        .registerSystemCheck(
+            ShooterConstants.SUBSYSTEM_NAME,
+            shooter.getShooterSystemCheckCommand(),
+            oi.getShooterSystemTest());
   }
 }

@@ -105,8 +105,6 @@ public class Shooter extends SubsystemBase {
     SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Current", flywheelIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Hood Voltage", hoodIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Turret Voltage", turretIdRoutine);
-
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getShooterSystemCheckCommand());
   }
 
   @Override

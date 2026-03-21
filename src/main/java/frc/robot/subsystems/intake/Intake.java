@@ -87,9 +87,6 @@ public class Intake extends SubsystemBase {
 
     SysIdRoutineChooser.getInstance().addOption("Roller Current", rollerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Deployer Voltage", deployerSysIdRoutine);
-
-    // Register System Check
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
 
   @Override
@@ -261,7 +258,7 @@ public class Intake extends SubsystemBase {
     return areRollersActiveState;
   }
 
-  private Command getSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake, this),
             Commands.waitSeconds(2.0)
