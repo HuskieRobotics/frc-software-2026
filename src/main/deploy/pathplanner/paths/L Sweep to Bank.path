@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.889124999999999,
-        "y": 4.581261363636363
+        "x": 6.238630527817403,
+        "y": 3.8862054208273893
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.493680456490727,
-        "y": 7.263195435092724
+        "x": 7.84318598430813,
+        "y": 6.56813949228375
       },
       "isLocked": false,
       "linkedName": "L Sweep Collect"
@@ -62,7 +62,7 @@
   "folder": "Left Sweep",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -1.7565323237381814
   },
   "useDefaultConstraints": true
 }

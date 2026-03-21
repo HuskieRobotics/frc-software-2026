@@ -43,7 +43,7 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
-  private double shotVelocityMultiplier = 0.98;
+  private double shotVelocityMultiplier = 0.97;
   private double turretAngleAdjustment = 0.0;
 
   private Timer turretOutsideSetpointTimer = new Timer();
@@ -661,6 +661,7 @@ public class ShooterModes extends SubsystemBase {
     double deltaX = targetLandingPosition.getX() - robotPose.getX();
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
     double distance = Math.hypot(deltaY, deltaX);
+    Logger.recordOutput("/ShooterModes/DistanceToHub", distance);
 
     double idealShotVelocity = velocityMap.get(distance);
 

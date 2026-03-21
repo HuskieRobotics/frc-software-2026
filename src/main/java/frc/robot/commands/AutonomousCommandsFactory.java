@@ -444,7 +444,7 @@ public class AutonomousCommandsFactory {
             // the auto to do so
             Commands.repeatingSequence(
                 // unload hopper until fuel not detected
-                getUnloadHopperCommand(hopper, intake, shooter, true),
+                getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
                 Commands.runOnce(hopper::stop, hopper),
                 // either grab another sweep (if >2.5s remaining) or just keep unloading the hopper
                 Commands.either(
@@ -544,7 +544,7 @@ public class AutonomousCommandsFactory {
     try {
       firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep"); // this path ends at the bank
       secondSweepCollect = PathPlannerPath.fromPathFile("L Sweep Collect");
-      secondSweepToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
+      secondSweepToBank = PathPlannerPath.fromPathFile("L Turn Around");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");

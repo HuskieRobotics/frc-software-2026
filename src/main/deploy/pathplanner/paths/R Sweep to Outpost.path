@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.94065909090909,
-        "y": 3.529965909090909
+        "x": 6.678544935805991,
+        "y": 3.2004564907275324
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.709914407988586,
-        "y": -0.07302425106989974
+        "x": 9.44780025288549,
+        "y": -0.40253366943327595
       },
       "isLocked": false,
       "linkedName": "R Sweep Collect"
@@ -61,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.31531568210377
+    "rotation": 179.93568081978665
   },
   "reversed": false,
   "folder": "Right Sweep and Outpost",
