@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.889124999999999,
-        "y": 4.581261363636363
+        "x": 6.031611982881596,
+        "y": 4.274365192582025
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.493680456490727,
-        "y": 7.263195435092724
+        "x": 7.636167439372324,
+        "y": 6.956299264038386
       },
       "isLocked": false,
       "linkedName": "L Sweep Collect"
@@ -47,7 +47,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

@@ -55,7 +55,7 @@ public class Shooter extends SubsystemBase {
   private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
 
-  private final Debouncer fuelDetectedDebouncer = new Debouncer(1.5, DebounceType.kFalling);
+  private final Debouncer fuelDetectedDebouncer = new Debouncer(0.75, DebounceType.kFalling);
 
   private CurrentSpikeDetector hoodJamDetector =
       new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);

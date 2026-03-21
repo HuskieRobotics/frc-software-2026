@@ -93,8 +93,10 @@ public class CrossSubsystemsCommandsFactory {
       Shooter shooter,
       ShooterModes shooterModes) {
 
-    oi.getClearAllFaults().onTrue(FaultReporter.getInstance().getClearAllFaultsCommand());
-    oi.getCheckForFaults().onTrue(FaultReporter.getInstance().getCheckForFaultsCommand());
+    oi.getClearAllFaults()
+        .onTrue(FaultReporter.getInstance().getClearAllFaultsCommand().ignoringDisable(true));
+    oi.getCheckForFaults()
+        .onTrue(FaultReporter.getInstance().getCheckForFaultsCommand().ignoringDisable(true));
 
     configureCrossSubsystemsTriggers(shooterModes, shooter, hopper);
 
@@ -220,7 +222,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
-                .withTimeout(2.5),
+                .withTimeout(2.0), // was 2.5
             getForceJostleCommand(intake))
         .withName("Jostle");
   }

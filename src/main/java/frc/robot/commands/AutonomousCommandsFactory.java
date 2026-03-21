@@ -323,7 +323,7 @@ public class AutonomousCommandsFactory {
             // the auto to do so
             Commands.repeatingSequence(
                 // unload hopper until fuel not detected
-                getUnloadHopperCommand(hopper, intake, shooter, true),
+                getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
                 Commands.runOnce(hopper::stop, hopper),
                 // either grab another sweep (if >2.5s remaining) or just keep unloading the hopper
                 Commands.either(
@@ -483,7 +483,7 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
 
     try {
-      firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep");
+      firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep to Outpost");
       sweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
       sweepToOutpost = PathPlannerPath.fromPathFile("R Sweep to Outpost");
       bankToOutpost = PathPlannerPath.fromPathFile("R Bank to Outpost");
@@ -500,19 +500,7 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            // unload hopper for the first volley until we don't detect fuel
-            getUnloadHopperCommand(hopper, intake, shooter, true),
-            Commands.runOnce(hopper::stop, hopper),
-            // either go for another sweep if we have time or just go straight to the outpost
-            Commands.either(
-                Commands.sequence(
-                    AutoBuilder.followPath(sweepCollect),
-                    AutoBuilder.followPath(sweepToOutpost),
-                    getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)),
-                Commands.sequence(
-                    AutoBuilder.followPath(bankToOutpost),
-                    getUnloadHopperAtOutpostCommand(hopper, intake, shooter, false)),
-                () -> matchTimer.get() < 10.0))
+            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true))
         .finallyDo(
             () -> {
               hopper.stop();

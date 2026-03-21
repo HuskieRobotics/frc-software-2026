@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.050042796005705,
-        "y": 7.5996005706134095
+        "x": 7.040827389443653,
+        "y": 7.496091298145506
       },
       "isLocked": false,
       "linkedName": "Left Bank"
     },
     {
       "anchor": {
-        "x": 5.889124999999999,
-        "y": 4.581261363636363
+        "x": 6.031611982881596,
+        "y": 4.274365192582025
       },
       "prevControl": {
-        "x": 6.1351212553495005,
-        "y": 7.120870185449359
+        "x": 6.238630527817403,
+        "y": 7.936005706134095
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "slow to pickup",
-      "minWaypointRelativePos": 0.8048615800135028,
+      "minWaypointRelativePos": 0.8,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
@@ -47,7 +47,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
