@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
-
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -226,7 +224,7 @@ public class Field2d {
             FieldConstants.LinesVertical.allianceZone
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             FieldConstants.fieldWidth
-                - RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                - RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2.0,
             Rotation2d.fromDegrees(-90));
     Logger.recordOutput("Field2d/blueLeftBank", banks[0]);
 
@@ -235,7 +233,7 @@ public class Field2d {
         new Pose2d(
             FieldConstants.LinesVertical.allianceZone
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
-            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+            RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2.0,
             Rotation2d.fromDegrees(90));
     Logger.recordOutput("Field2d/blueRightBank", banks[1]);
 
@@ -481,7 +479,7 @@ public class Field2d {
         pathConstants,
         null,
         new GoalEndState(
-            RobotConfig.getInstance().getMoveToPathFinalVelocity(), end.getRotation()));
+            RobotConfig.getInstance().getMoveToPathFinalVelocityMPS(), end.getRotation()));
   }
 
   /**

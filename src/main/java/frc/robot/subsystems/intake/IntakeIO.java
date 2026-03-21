@@ -1,12 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
@@ -14,39 +7,38 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     // rollers
-    Voltage rollerVoltage = Volts.of(0);
-    AngularVelocity rollerVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity rollerReferenceVelocity = RotationsPerSecond.of(0.0);
-    Current rollerStatorCurrent = Amps.of(0);
-    Current rollerSupplyCurrent = Amps.of(0);
-    Temperature rollerTempCelsius = Celsius.of(0);
-    Angle rollerClosedLoopError = Rotations.of(0);
-    Angle rollerClosedLoopReference = Rotations.of(0);
-
+    double rollerVoltage = 0.0;
+    double rollerVelocityRPS = 0.0;
+    double rollerReferenceVelocityRPS = 0.0;
+    double rollerStatorCurrent = 0.0;
+    double rollerSupplyCurrent = 0.0;
+    double rollerTempCelsius = 0.0;
+    double rollerClosedLoopErrorRPS = 0.0;
+    double rollerClosedLoopReferenceRPS = 0.0;
     boolean rollerConnected = false;
 
     // deployer
     boolean deployerConnected = false;
-    Current deployerStatorCurrent = Amps.of(0);
-    Current deployerSupplyCurrent = Amps.of(0);
-    Voltage deployerVoltage = Volts.of(0);
-    Temperature deployerTempCelsius = Celsius.of(0);
-    Angle deployerReferencePosition = Rotations.of(0);
-    Angle deployerAngularPosition = Rotations.of(0);
+    double deployerStatorCurrent = 0.0;
+    double deployerSupplyCurrent = 0.0;
+    double deployerVoltage = 0.0;
+    double deployerTempCelsius = 0.0;
+    double deployerReferencePositionRot = 0.0;
+    double deployerAngularPositionRot = 0.0;
 
-    Angle deployerClosedLoopError = Rotations.of(0);
-    Angle deployerClosedLoopReference = Rotations.of(0);
+    double deployerClosedLoopErrorRot = 0.0;
+    double deployerClosedLoopReferenceRot = 0.0;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}
 
-  public default void setRollerVelocity(AngularVelocity velocity) {}
+  public default void setRollerVelocity(double velocityRPS) {}
 
-  public default void setRollerCurrent(Current amps) {}
+  public default void setRollerCurrent(double amps) {}
 
-  public default void setDeployerPosition(Angle position) {}
+  public default void setDeployerPosition(double positionRot) {}
 
-  public default void setDeployerVoltage(Voltage volts) {}
+  public default void setDeployerVoltage(double volts) {}
 
-  public default void setDeployerCurrent(Current amps) {}
+  public default void setDeployerCurrent(double amps) {}
 }

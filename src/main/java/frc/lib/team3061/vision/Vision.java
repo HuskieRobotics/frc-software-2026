@@ -55,7 +55,7 @@ public class Vision extends SubsystemBase {
   private int[] cyclesWithNoResults;
   private int[] updatePoseCount;
 
-  private final double disconnectedTimeout = 0.5;
+  private static final double DISCONNECTED_TIMEOUT_SECONDS = 0.5;
   private final Timer[] disconnectedTimers;
   private Alert[] disconnectedAlerts;
 
@@ -69,7 +69,6 @@ public class Vision extends SubsystemBase {
       new Alert("Northstar co-processor thermal pressure is critical!", AlertType.kError);
 
   private boolean isEnabled = true;
-  private boolean isVisionUpdating = false;
   private final Debouncer isVisionUpdatingDebounce =
       new Debouncer(0.1, Debouncer.DebounceType.kFalling);
 
@@ -127,12 +126,12 @@ public class Vision extends SubsystemBase {
     this.disconnectedAlerts = new Alert[visionIOs.length];
     this.camerasToConsider = new ArrayList<>();
 
-    tagPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    rejectedTagPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    cameraPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    robotPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    robotPosesAccepted = new ArrayList<List<Pose3d>>(visionIOs.length);
-    robotPosesRejected = new ArrayList<List<Pose3d>>(visionIOs.length);
+    tagPoses = new ArrayList<>(visionIOs.length);
+    rejectedTagPoses = new ArrayList<>(visionIOs.length);
+    cameraPoses = new ArrayList<>(visionIOs.length);
+    robotPoses = new ArrayList<>(visionIOs.length);
+    robotPosesAccepted = new ArrayList<>(visionIOs.length);
+    robotPosesRejected = new ArrayList<>(visionIOs.length);
 
     for (int i = 0; i < visionIOs.length; i++) {
       this.inputs[i] = new VisionIOInputsAutoLogged();
@@ -174,7 +173,7 @@ public class Vision extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    isVisionUpdating = false;
+    boolean isVisionUpdating = false;
     boolean northstarThermalHigh = false;
     boolean northstarThermalCritical = false;
     northstarThermalAlertWarning.set(false);
@@ -231,7 +230,7 @@ public class Vision extends SubsystemBase {
         disconnectedTimers[i].reset();
       }
       boolean disconnected =
-          disconnectedTimers[i].hasElapsed(disconnectedTimeout) || !inputs[i].connected;
+          disconnectedTimers[i].hasElapsed(DISCONNECTED_TIMEOUT_SECONDS) || !inputs[i].connected;
       if (disconnected) {
         disconnectedAlerts[i].setText(
             inputs[i].connected
@@ -339,10 +338,7 @@ public class Vision extends SubsystemBase {
                   lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
                 }
                 Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
-                tagPose.ifPresent(
-                    (e) -> {
-                      tagPoses.get(finalCameraIndex).add(e);
-                    });
+                tagPose.ifPresent(e -> tagPoses.get(finalCameraIndex).add(e));
               }
             }
             robotPosesAccepted.get(cameraIndex).add(estimatedRobotPose3d);
@@ -375,10 +371,7 @@ public class Vision extends SubsystemBase {
             for (int tagID = 1; tagID < FieldConstants.aprilTagCount; tagID++) {
               if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
                 Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
-                tagPose.ifPresent(
-                    (e) -> {
-                      rejectedTagPoses.get(finalCameraIndex).add(e);
-                    });
+                tagPose.ifPresent(e -> rejectedTagPoses.get(finalCameraIndex).add(e));
               }
             }
             if (ENABLE_POSE_PERSISTENCE_LOGGING) {

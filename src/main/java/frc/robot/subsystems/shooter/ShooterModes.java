@@ -10,13 +10,12 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.leds.LEDs;
-import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
@@ -39,12 +38,11 @@ public class ShooterModes extends SubsystemBase {
   private static final double END_OF_SHIFT_WARNING_SECONDS =
       5.0; // time before the end of the shift to flash the LE#Ds
 
-  private final SwerveDrivetrain drivetrain;
   private final Shooter shooter;
 
   private boolean hubActive;
   private double shotVelocityMultiplier = 0.98;
-  private double turretAngleAdjustment = 0.0;
+  private double turretAngleAdjustmentDeg = 0.0;
 
   private Timer turretOutsideSetpointTimer = new Timer();
   private Timer turretUnJammingTimer = new Timer();
@@ -68,7 +66,8 @@ public class ShooterModes extends SubsystemBase {
   private final LoggedTunableNumber testingFlywheelVelocity =
       new LoggedTunableNumber("ShooterModes/Testing/FlywheelVelocityRPS", 0.0);
   private final LoggedTunableNumber testingHoodAngle =
-      new LoggedTunableNumber("ShooterModes/Testing/HoodAngleDegrees", HOOD_MIN_ANGLE.in(Degrees));
+      new LoggedTunableNumber(
+          "ShooterModes/Testing/HoodAngleDegrees", Units.rotationsToDegrees(HOOD_MIN_ANGLE_ROT));
   private final LoggedTunableNumber testingTurretAngle =
       new LoggedTunableNumber("ShooterModes/Testing/TurretAngleDegrees", 0.0);
 
@@ -84,21 +83,21 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private class ShooterSetpoints {
-    public AngularVelocity flywheelVelocity;
-    public Angle hoodAngle;
-    public Angle turretAngle;
+    double flywheelVelocityRPS;
+    double hoodAngleRot;
+    double turretAngleRot;
 
-    public ShooterSetpoints(AngularVelocity flywheelVelocity, Angle hoodAngle, Angle turretAngle) {
-      this.flywheelVelocity = flywheelVelocity;
-      this.hoodAngle = hoodAngle;
-      this.turretAngle = turretAngle;
+    public ShooterSetpoints(
+        double flywheelVelocityRPS, double hoodAngleRot, double turretAngleRot) {
+      this.flywheelVelocityRPS = flywheelVelocityRPS;
+      this.hoodAngleRot = hoodAngleRot;
+      this.turretAngleRot = turretAngleRot;
     }
   }
 
   private ShooterMode currentMode = ShooterMode.COLLECT_AND_HOLD;
 
-  public ShooterModes(SwerveDrivetrain drivetrain, Shooter shooter) {
-    this.drivetrain = drivetrain;
+  public ShooterModes(Shooter shooter) {
     this.shooter = shooter;
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
@@ -116,7 +115,8 @@ public class ShooterModes extends SubsystemBase {
     }
 
     Logger.recordOutput("ShooterModes/Shot Multiplier", this.shotVelocityMultiplier);
-    Logger.recordOutput("ShooterModes/Turret Angle Adjustment", this.turretAngleAdjustment);
+    Logger.recordOutput(
+        "ShooterModes/Turret Angle Adjustment Degrees", this.turretAngleAdjustmentDeg);
     Logger.recordOutput("ShooterModes/CurrentMode", this.currentMode);
     Logger.recordOutput("ShooterModes/HubActive", this.hubActive);
     Logger.recordOutput("ShooterModes/turret not near setpoint", isTurretNotNearSetPoint());
@@ -202,11 +202,12 @@ public class ShooterModes extends SubsystemBase {
   }
 
   public boolean isTurretNotNearSetPoint() {
-    Angle threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING;
+    double threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING_ROT;
     if (currentMode == ShooterMode.PASS_OTM || currentMode == ShooterMode.MANUAL_PASS) {
-      threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING;
+      threshold = TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING_ROT;
     }
-    return !shooter.getTurretPosition().isNear(shooter.getTurretReferencePosition(), threshold);
+    return !MathUtils.isNear(
+        shooter.getTurretPositionRot(), shooter.getTurretReferencePositionRot(), threshold);
   }
 
   // based on match time (which should be equivalent to the timer of this command as it is enabled)
@@ -374,9 +375,9 @@ public class ShooterModes extends SubsystemBase {
     // conditions except for the toggle
     if (testingEnable.get() == 1) {
       this.currentMode = ShooterMode.TESTING;
-      shooter.setFlywheelVelocity(RotationsPerSecond.of(testingFlywheelVelocity.get()));
-      shooter.setHoodPosition(Degrees.of(testingHoodAngle.get()));
-      shooter.setTurretPosition(Degrees.of(testingTurretAngle.get()));
+      shooter.setFlywheelVelocity(testingFlywheelVelocity.get());
+      shooter.setHoodPosition(Units.degreesToRotations(testingHoodAngle.get()));
+      shooter.setTurretPosition(Units.degreesToRotations(testingTurretAngle.get()));
       return;
     }
 
@@ -443,8 +444,8 @@ public class ShooterModes extends SubsystemBase {
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
         // to be the high pass setpoints
         if (Field2d.getInstance().inOpponentAllianceHighPassZone()) {
-          shooterSetpoints.flywheelVelocity = FLYWHEEL_PASS_OVER_NET_VELOCITY;
-          shooterSetpoints.hoodAngle = HOOD_LOWER_ANGLE_LIMIT;
+          shooterSetpoints.flywheelVelocityRPS = FLYWHEEL_PASS_OVER_NET_VELOCITY_RPS;
+          shooterSetpoints.hoodAngleRot = HOOD_LOWER_ANGLE_LIMIT_ROT;
         }
         // check if the robot is in the no pass zone and switch to collect and hold mode if so to
         // prevent shooting
@@ -475,15 +476,15 @@ public class ShooterModes extends SubsystemBase {
     // prepare for the money shot
     if (this.currentMode == ShooterMode.COLLECT_AND_HOLD
         && OISelector.getOperatorInterface().getLockTurretForBankToggle().getAsBoolean()) {
-      shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
+      shooterSetpoints.turretAngleRot = LOCK_SHOT_TURRET_ANGLE_ROT;
     }
 
     // if the lock shooter manual override is on, override the setpoints to be the bank shot
     // setpoints
     if (OISelector.getOperatorInterface().getLockShooterToggle().getAsBoolean()) {
-      shooterSetpoints.flywheelVelocity = LOCK_SHOT_FLYWHEEL_RPS;
-      shooterSetpoints.hoodAngle = LOCK_SHOT_HOOD_ANGLE;
-      shooterSetpoints.turretAngle = LOCK_SHOT_TURRET_ANGLE;
+      shooterSetpoints.flywheelVelocityRPS = LOCK_SHOT_FLYWHEEL_RPS;
+      shooterSetpoints.hoodAngleRot = LOCK_SHOT_HOOD_ANGLE_ROT;
+      shooterSetpoints.turretAngleRot = LOCK_SHOT_TURRET_ANGLE_ROT;
       this.currentMode = ShooterMode.SHOOTER_LOCKED;
     }
 
@@ -500,108 +501,99 @@ public class ShooterModes extends SubsystemBase {
       } else {
         // rotate away from the setpoint to try to get it unstuck; the direction to rotate is
         // determined by the sign of the turret error
-        if (shooter
-            .getTurretPosition()
-            .minus(shooter.getTurretReferencePosition())
-            .gt(Degrees.of(0))) {
-          shooterSetpoints.turretAngle =
-              shooterSetpoints.turretAngle.plus(TURRET_STUCK_ROTATION_ADJUSTMENT);
+        if ((shooter.getTurretPositionRot() - shooter.getTurretReferencePositionRot()) > 0.0) {
+          shooterSetpoints.turretAngleRot =
+              shooterSetpoints.turretAngleRot + TURRET_STUCK_ROTATION_ADJUSTMENT_ROT;
         } else {
-          shooterSetpoints.turretAngle =
-              shooterSetpoints.turretAngle.minus(TURRET_STUCK_ROTATION_ADJUSTMENT);
+          shooterSetpoints.turretAngleRot =
+              shooterSetpoints.turretAngleRot - TURRET_STUCK_ROTATION_ADJUSTMENT_ROT;
         }
 
         // ensure that we don't wrap around, which would result in the turret turning the opposite
         // direction and not unjamming
-        if (shooterSetpoints.turretAngle.lt(TURRET_LOWER_ANGLE_LIMIT)) {
-          shooterSetpoints.turretAngle = TURRET_LOWER_ANGLE_LIMIT;
-        } else if (shooterSetpoints.turretAngle.gt(TURRET_UPPER_ANGLE_LIMIT)) {
-          shooterSetpoints.turretAngle = TURRET_UPPER_ANGLE_LIMIT;
+        if (shooterSetpoints.turretAngleRot < TURRET_LOWER_ANGLE_LIMIT_ROT) {
+          shooterSetpoints.turretAngleRot = TURRET_LOWER_ANGLE_LIMIT_ROT;
+        } else if (shooterSetpoints.turretAngleRot > TURRET_UPPER_ANGLE_LIMIT_ROT) {
+          shooterSetpoints.turretAngleRot = TURRET_UPPER_ANGLE_LIMIT_ROT;
         }
       }
     }
 
     if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
-      shooterSetpoints.flywheelVelocity = PIT_TEST_FLYWHEEL_RPS;
-      shooterSetpoints.hoodAngle = HOOD_MAX_PASSING_ANGLE;
+      shooterSetpoints.flywheelVelocityRPS = PIT_TEST_FLYWHEEL_RPS;
+      shooterSetpoints.hoodAngleRot = HOOD_MAX_PASSING_ANGLE_ROT;
     }
 
     // do not run the flywheels if we are racing to the middle in auto
     if (DriverStation.isAutonomousEnabled()
         && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 3.0) {
-      shooterSetpoints.flywheelVelocity = RotationsPerSecond.of(0.0);
+      shooterSetpoints.flywheelVelocityRPS = 0.0;
     }
 
     // finally, override the hood position if the robot is in a trench zone to ensure that the
     // shooter doesn't get decapitated
     if (Field2d.getInstance().inTrenchZone()
-        && shooterSetpoints.hoodAngle.gt(HOOD_NEAR_TRENCH_ANGLE_LIMIT)) {
+        && shooterSetpoints.hoodAngleRot > HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT) {
       this.currentMode = ShooterMode.NEAR_TRENCH;
-      shooterSetpoints.hoodAngle = HOOD_NEAR_TRENCH_ANGLE_LIMIT;
+      shooterSetpoints.hoodAngleRot = HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT;
       LEDs.getInstance().requestState(LEDs.States.IN_TRENCH_ZONE);
     }
 
-    shooter.setFlywheelVelocity(shooterSetpoints.flywheelVelocity);
-    shooter.setHoodPosition(shooterSetpoints.hoodAngle);
-    shooter.setTurretPosition(shooterSetpoints.turretAngle);
+    shooter.setFlywheelVelocity(shooterSetpoints.flywheelVelocityRPS);
+    shooter.setHoodPosition(shooterSetpoints.hoodAngleRot);
+    shooter.setTurretPosition(shooterSetpoints.turretAngleRot);
 
     Logger.recordOutput(
         "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
     Logger.recordOutput(
-        "ShooterModes/FlywheelVelocitySetpointRPS", shooterSetpoints.flywheelVelocity);
-    Logger.recordOutput("ShooterModes/HoodAngleSetpointDegrees", shooterSetpoints.hoodAngle);
-    Logger.recordOutput("ShooterModes/TurretAngleSetpointDegrees", shooterSetpoints.turretAngle);
+        "ShooterModes/FlywheelVelocitySetpointRPS", shooterSetpoints.flywheelVelocityRPS);
+    Logger.recordOutput("ShooterModes/HoodAngleSetpointDegrees", shooterSetpoints.hoodAngleRot);
+    Logger.recordOutput("ShooterModes/TurretAngleSetpointDegrees", shooterSetpoints.turretAngleRot);
   }
 
   private ShooterSetpoints calculateShootOnTheMove(ShooterSetpoints staticSetpoints) {
     double v =
-        staticSetpoints.flywheelVelocity.in(RotationsPerSecond)
+        staticSetpoints.flywheelVelocityRPS
             * FLYWHEEL_VELOCITY_SCALE_FACTOR
             * Math.PI
             * Units.inchesToMeters(3);
-    Angle theta = staticSetpoints.hoodAngle;
+    double theta = Units.rotationsToRadians(staticSetpoints.hoodAngleRot);
 
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
-    Angle phi =
-        Radians.of(
-            new Rotation2d(staticSetpoints.turretAngle).plus(robotPose.getRotation()).getRadians());
+    double phi =
+        new Rotation2d(staticSetpoints.turretAngleRot).plus(robotPose.getRotation()).getRadians();
 
     ChassisSpeeds fieldRelativeSpeeds = getShooterFieldRelativeVelocity();
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
     double robotVy = fieldRelativeSpeeds.vyMetersPerSecond;
 
-    double newFlywheelVelocity =
+    double newFlywheelVelocityRPS =
         (Math.sqrt(
-                Math.pow(v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx, 2)
-                    + Math.pow(
-                        v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy, 2)
-                    + Math.pow(v * Math.cos(theta.in(Radians)), 2)))
+                Math.pow(v * Math.sin(theta) * Math.cos(phi) - robotVx, 2)
+                    + Math.pow(v * Math.sin(theta) * Math.sin(phi) - robotVy, 2)
+                    + Math.pow(v * Math.cos(theta), 2)))
             / (Math.PI * FLYWHEEL_VELOCITY_SCALE_FACTOR * Units.inchesToMeters(3));
 
     double newHoodAngle =
         (180.0 / Math.PI)
             * Math.atan2(
                 Math.sqrt(
-                    Math.pow(
-                            v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx,
-                            2)
-                        + Math.pow(
-                            v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy,
-                            2)),
-                v * Math.cos(theta.in(Radians)));
+                    Math.pow(v * Math.sin(theta) * Math.cos(phi) - robotVx, 2)
+                        + Math.pow(v * Math.sin(theta) * Math.sin(phi) - robotVy, 2)),
+                v * Math.cos(theta));
 
     double newTurretAngle =
         new Rotation2d(
                 Math.atan2(
-                    (v * Math.sin(theta.in(Radians)) * Math.sin(phi.in(Radians)) - robotVy),
-                    (v * Math.sin(theta.in(Radians)) * Math.cos(phi.in(Radians)) - robotVx)))
+                    (v * Math.sin(theta) * Math.sin(phi) - robotVy),
+                    (v * Math.sin(theta) * Math.cos(phi) - robotVx)))
             .minus(robotPose.getRotation())
             .getDegrees();
 
     return new ShooterSetpoints(
-        RotationsPerSecond.of(newFlywheelVelocity),
-        Degrees.of(newHoodAngle),
-        Degrees.of(newTurretAngle));
+        newFlywheelVelocityRPS,
+        Units.degreesToRotations(newHoodAngle),
+        Units.degreesToRotations(newTurretAngle));
   }
 
   // increases shot velocities by 1%
@@ -616,12 +608,12 @@ public class ShooterModes extends SubsystemBase {
 
   // increases turret angle by 1 deg
   public void moveTurretOneDegreeLeft() {
-    this.turretAngleAdjustment += 1.0;
+    this.turretAngleAdjustmentDeg += 1.0;
   }
 
   // decreases turret angle by 1 deg
   public void moveTurretOneDegreeRight() {
-    this.turretAngleAdjustment -= 1.0;
+    this.turretAngleAdjustmentDeg -= 1.0;
   }
 
   private double idealVelocityFromFunction(double distance) {
@@ -662,23 +654,23 @@ public class ShooterModes extends SubsystemBase {
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
     double distance = Math.hypot(deltaY, deltaX);
 
-    double idealShotVelocity = velocityMap.get(distance);
+    double idealShotVelocityRPS = velocityMap.get(distance);
 
-    Angle fieldRelativeTurretAngle = Radians.of(Math.atan2(deltaY, deltaX));
+    double fieldRelativeTurretAngleRad = Math.atan2(deltaY, deltaX);
     Rotation2d robotRelativeTurretAngleRadians =
-        new Rotation2d(fieldRelativeTurretAngle).minus(robotPose.getRotation());
-    Angle robotRelativeTurretAngle = Degrees.of(robotRelativeTurretAngleRadians.getDegrees());
+        new Rotation2d(fieldRelativeTurretAngleRad).minus(robotPose.getRotation());
+    double robotRelativeTurretAngleRot = robotRelativeTurretAngleRadians.getRotations();
 
-    Angle idealHoodAngle = Degrees.of(hoodMap.get(distance));
+    double idealHoodAngleRot = Units.degreesToRotations(hoodMap.get(distance));
 
     // if we are shooting into the hub, apply the shot velocity multiplier (don't apply for passes)
     if (isShootingHub) {
-      idealShotVelocity *= this.shotVelocityMultiplier;
-      robotRelativeTurretAngle =
-          robotRelativeTurretAngle.plus(Degrees.of(this.turretAngleAdjustment));
+      idealShotVelocityRPS *= this.shotVelocityMultiplier;
+      robotRelativeTurretAngleRot =
+          robotRelativeTurretAngleRot + Units.degreesToRotations(this.turretAngleAdjustmentDeg);
     }
 
     return new ShooterSetpoints(
-        RotationsPerSecond.of(idealShotVelocity), idealHoodAngle, robotRelativeTurretAngle);
+        idealShotVelocityRPS, idealHoodAngleRot, robotRelativeTurretAngleRot);
   }
 }

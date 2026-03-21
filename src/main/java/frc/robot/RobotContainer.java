@@ -154,7 +154,7 @@ public class RobotContainer {
       visualization = new RobotVisualization(intake);
     }
 
-    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+    shooterModes = new ShooterModes(shooter);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -163,11 +163,11 @@ public class RobotContainer {
 
     // register autonomous commands
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
-      AutonomousCommandsFactory.getInstance().configureAutoCommands(differentialDrivetrain, vision);
+      AutonomousCommandsFactory.getInstance().configureAutoCommands(differentialDrivetrain);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       AutonomousCommandsFactory.getInstance()
-          .configureAutoCommands(swerveDrivetrain, vision, hopper, intake, shooter, shooterModes);
+          .configureAutoCommands(swerveDrivetrain, hopper, intake, shooter);
     }
 
     // Alert when tuning

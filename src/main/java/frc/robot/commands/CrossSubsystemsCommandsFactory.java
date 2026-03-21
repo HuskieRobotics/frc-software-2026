@@ -1,11 +1,9 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +15,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
@@ -55,18 +54,11 @@ public class CrossSubsystemsCommandsFactory {
   private static final LoggedTunableNumber driveToPoseMaxVelocity =
       new LoggedTunableNumber(
           "DriveToBank/DriveToPoseMaxVelocity",
-          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond));
+          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocityMPS());
   private static final LoggedTunableNumber driveToPoseMaxAcceleration =
       new LoggedTunableNumber(
           "DriveToBank/DriveToPoseMaxAcceleration",
-          RobotConfig.getInstance()
-              .getDriveToPoseDriveMaxAcceleration()
-              .in(MetersPerSecondPerSecond));
-
-  private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
-  private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
-      0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
-  private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
+          RobotConfig.getInstance().getDriveToPoseDriveMaxAccelerationMPSPS());
 
   public static final ProfiledPIDController xController =
       new ProfiledPIDController(
@@ -88,10 +80,8 @@ public class CrossSubsystemsCommandsFactory {
           thetaKi.get(),
           thetaKd.get(),
           new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity().in(RadiansPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseTurnMaxAcceleration()
-                  .in(RadiansPerSecondPerSecond)));
+              RobotConfig.getInstance().getDriveToPoseTurnMaxVelocityRPS(),
+              RobotConfig.getInstance().getDriveToPoseTurnMaxAccelerationRPSPS()));
 
   private CrossSubsystemsCommandsFactory() {}
 
@@ -202,7 +192,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.repeatingSequence(
             Commands.parallel(
                     // let the hopper continue to do its thing if we are in shoot on the move mode
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                     jostleCommand,
                     Commands.repeatingSequence(
                         Commands.either(
@@ -242,35 +232,34 @@ public class CrossSubsystemsCommandsFactory {
   //   retract intake back to 3.5 inches
   public static Command getForceJostleCommand(Intake intake) {
     return Commands.sequence(
-            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_FIRST_RETRACT_POSITION)),
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_FIRST_RETRACT_POSITION_METERS)),
             Commands.deadline(
                 Commands.waitSeconds(0.75),
                 Commands.waitUntil(
                     () ->
-                        intake
-                            .getPosition()
-                            .isNear(
-                                JOSTLE_FIRST_RETRACT_POSITION,
-                                DEPLOYER_LINEAR_POSITION_TOLERANCE))),
+                        MathUtils.isNear(
+                            intake.getPositionMeters(),
+                            JOSTLE_FIRST_RETRACT_POSITION_METERS,
+                            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS))),
             Commands.repeatingSequence(
                 Commands.waitSeconds(0.5),
-                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
+                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION_METERS)),
                 Commands.waitUntil(
                     () ->
-                        intake
-                            .getPosition()
-                            .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)),
+                        MathUtils.isNear(
+                            intake.getPositionMeters(),
+                            JOSTLE_EXTENDED_POSITION_METERS,
+                            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS)),
                 Commands.runOnce(
-                    () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION)),
+                    () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS)),
                 Commands.deadline(
                     Commands.waitSeconds(0.75),
                     Commands.waitUntil(
                         () ->
-                            intake
-                                .getPosition()
-                                .isNear(
-                                    JOSTLE_SUBSEQUENT_RETRACT_POSITION,
-                                    DEPLOYER_LINEAR_POSITION_TOLERANCE)))))
+                            MathUtils.isNear(
+                                intake.getPositionMeters(),
+                                JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS,
+                                DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS)))))
         .withName("Force Jostle");
   }
 
@@ -303,38 +292,6 @@ public class CrossSubsystemsCommandsFactory {
         .withName("Override driveToPose");
   }
 
-  public static void updatePIDConstants(Transform2d poseDifference) {
-    // Update from tunable numbers
-    LoggedTunableNumber.ifChanged(
-        xController.hashCode(),
-        pid -> {
-          xController.setPID(pid[0], pid[1], pid[2]);
-          yController.setPID(pid[0], pid[1], pid[2]);
-        },
-        driveXKp,
-        driveKi,
-        driveXKd);
-
-    LoggedTunableNumber.ifChanged(
-        yController.hashCode(),
-        pid -> {
-          xController.setPID(pid[0], pid[1], pid[2]);
-          yController.setPID(pid[0], pid[1], pid[2]);
-        },
-        driveYKp,
-        driveKi,
-        driveYKd);
-
-    LoggedTunableNumber.ifChanged(
-        thetaController.hashCode(),
-        pid -> {
-          thetaController.setPID(pid[0], pid[1], pid[2]);
-        },
-        thetaKp,
-        thetaKi,
-        thetaKd);
-  }
-
   private static void configureCrossSubsystemsTriggers(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
     Trigger unloadHopperOnTheMoveTrigger =
@@ -350,7 +307,7 @@ public class CrossSubsystemsCommandsFactory {
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                     Commands.repeatingSequence(
                         Commands.either(
                             Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),

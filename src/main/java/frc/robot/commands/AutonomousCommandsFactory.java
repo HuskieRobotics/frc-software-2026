@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.JOSTLE_INITIAL_FUEL_COUNT;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -8,23 +7,17 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
-import frc.lib.team3061.vision.Vision;
-import frc.lib.team6328.util.FieldConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterModes;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -63,12 +56,7 @@ public class AutonomousCommandsFactory {
   }
 
   public void configureAutoCommands(
-      SwerveDrivetrain drivetrain,
-      Vision vision,
-      Hopper hopper,
-      Intake intake,
-      Shooter shooter,
-      ShooterModes shooterModes) {
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
@@ -160,7 +148,7 @@ public class AutonomousCommandsFactory {
         this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
   }
 
-  public void configureAutoCommands(DifferentialDrivetrain drivetrain, Vision vision) {
+  public void configureAutoCommands(DifferentialDrivetrain drivetrain) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
@@ -199,92 +187,28 @@ public class AutonomousCommandsFactory {
         Commands.repeatingSequence(
             Commands.deadline(
                 Commands.waitSeconds(1.0),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(2.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(2.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(1.0),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(-0.5),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(-0.5, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(1.0),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(1.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(0.5),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(3.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(3.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(1.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(-1.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(0.5),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(-3.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(-1.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(0.0),
-                            false,
-                            false),
-                    drivetrain))));
+                Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain))));
   }
 
   private Command getSwerveRotationTuningCommand(SwerveDrivetrain drivetrain) {
@@ -293,48 +217,16 @@ public class AutonomousCommandsFactory {
         Commands.repeatingSequence(
             Commands.deadline(
                 Commands.waitSeconds(0.5),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(0.1),
-                            MetersPerSecond.of(0.1),
-                            RadiansPerSecond.of(0.0),
-                            true,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(0.1, 0.1, 0.0, true, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(0.5),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(-0.1),
-                            MetersPerSecond.of(0.1),
-                            RadiansPerSecond.of(0.0),
-                            true,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(-0.1, 0.1, 0.0, true, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(0.5),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(-0.1),
-                            MetersPerSecond.of(-0.1),
-                            RadiansPerSecond.of(0.0),
-                            true,
-                            false),
-                    drivetrain)),
+                Commands.run(() -> drivetrain.drive(-0.1, -0.1, 0.0, true, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(0.5),
-                Commands.run(
-                    () ->
-                        drivetrain.drive(
-                            MetersPerSecond.of(0.1),
-                            MetersPerSecond.of(-0.1),
-                            RadiansPerSecond.of(0.0),
-                            true,
-                            false),
-                    drivetrain))));
+                Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
   }
 
   private Command getDriveWheelRadiusCharacterizationCommand(SwerveDrivetrain drivetrain) {
@@ -355,7 +247,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(() -> hopperUnloadTimer.restart()),
         Commands.parallel(
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 getAutoJostleCommand(intake, shooter))
             .until(
                 () ->
@@ -369,7 +261,7 @@ public class AutonomousCommandsFactory {
 
     return Commands.sequence(
         Commands.parallel(
-            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
             getOutpostJostleSequence(intake, shooter, fullHopperAtOutpost)));
   }
 
@@ -411,19 +303,6 @@ public class AutonomousCommandsFactory {
             // wait 2s to allow for fuel entry can flash LEDs here as well
             Commands.waitSeconds(2.0), getAutoJostleCommand(intake, shooter)),
         () -> fullHopper);
-  }
-
-  private Pose2d getTowerPose() {
-    double xOffset =
-        RobotConfig.getInstance().getRobotWidthWithBumpers().in(Meters) / 2.0
-            + Units.inchesToMeters(2.0);
-    double yOffset = 0.0; // 6 inch buffer from the edge of the robot to the tower
-
-    // temp solution for tower pose
-    return new Pose2d(
-        FieldConstants.Tower.rightUpright.getX() + xOffset,
-        FieldConstants.Tower.rightUpright.getY() + yOffset,
-        Rotation2d.fromDegrees(-90));
   }
 
   private Command getNeutralZoneSweepAuto(
@@ -676,57 +555,5 @@ public class AutonomousCommandsFactory {
 
   public double getCustomMatchTime() {
     return matchTimer.get();
-  }
-
-  // DEPRECATED FOR NOW
-  private Command leftNeutralZoneAndDepot(
-      SwerveDrivetrain drivetrain,
-      Hopper hopper,
-      Intake intake,
-      Shooter shooter,
-      ShooterModes shooterModes) { // add shooter and intake later
-    PathPlannerPath driveToNeutralZoneAndBack;
-    PathPlannerPath driveToDepot;
-    PathPlannerPath intakeFromDepot;
-    PathPlannerPath leaveDepot;
-    final Pose2d startingPose;
-    try {
-      driveToNeutralZoneAndBack = PathPlannerPath.fromPathFile("L Fuel Sweep");
-      driveToDepot = PathPlannerPath.fromPathFile("Left Bank to Depot");
-      intakeFromDepot = PathPlannerPath.fromPathFile("Intake Depot");
-      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
-      startingPose = driveToNeutralZoneAndBack.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    // consider not shooting at the bank and going straight to the depot
-    return Commands.sequence(
-            Commands.runOnce(
-                () -> {
-                  Pose2d pose = startingPose;
-                  if (drivetrain.shouldFlipAutoPath()) {
-                    pose = FlippingUtil.flipFieldPose(startingPose);
-                  }
-                  drivetrain.resetPose(pose);
-                }),
-            Commands.parallel(
-                intake.getDeployAndStartCommand(),
-                AutoBuilder.followPath(driveToNeutralZoneAndBack)),
-            getUnloadHopperCommand(hopper, intake, shooter, true),
-            Commands.runOnce(hopper::stop, hopper),
-            AutoBuilder.followPath(driveToDepot),
-            AutoBuilder.followPath(intakeFromDepot),
-            AutoBuilder.followPath(leaveDepot),
-            getUnloadHopperCommand(hopper, intake, shooter, true))
-        .finallyDo(
-            () -> {
-              hopper.stop();
-              intake.deployIntake();
-              intake.startRoller();
-            });
   }
 }
