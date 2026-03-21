@@ -176,9 +176,9 @@ public class New2026RobotConfig extends RobotConfig {
           .get()
           .transformBy(
               new Transform3d(
-                  Units.inchesToMeters(15.125),
+                  Units.inchesToMeters(48.0),
                   Units.inchesToMeters(0.0),
-                  -Units.inchesToMeters(9.625),
+                  -Units.inchesToMeters(21.75),
                   new Rotation3d()));
 
   private static final Pose3d ROBOT_TO_TAG_13_LEFT_CAMERA =
@@ -189,8 +189,8 @@ public class New2026RobotConfig extends RobotConfig {
           .transformBy(
               new Transform3d(
                   Units.inchesToMeters(15.125),
-                  Units.inchesToMeters(18.125),
-                  -Units.inchesToMeters(9.625),
+                  Units.inchesToMeters(51.0),
+                  -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
   private static final Pose3d ROBOT_TO_TAG_13_RIGHT_CAMERA =
@@ -201,7 +201,7 @@ public class New2026RobotConfig extends RobotConfig {
           .transformBy(
               new Transform3d(
                   Units.inchesToMeters(15.125),
-                  -Units.inchesToMeters(18.125),
+                  -Units.inchesToMeters(51.0),
                   -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
