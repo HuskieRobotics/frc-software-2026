@@ -364,6 +364,19 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(intake::deployIntake, intake));
   }
 
+  private Command getUnloadHopperAtOutpostCommand(
+      Hopper hopper, Intake intake, Shooter shooter, boolean fullHopperAtOutpost) {
+
+    return Commands.sequence(
+        Commands.parallel(
+            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+            getOutpostJostleSequence(intake, shooter, fullHopperAtOutpost)));
+  }
+
+  // if empty at outpost:
+  // fill up and normal
+  // if full at outpost:
+  // shoot for x seconds and then start jostling (LEDs to request fuel!?)
   private Command getAutoJostleCommand(Intake intake, Shooter shooter) {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
@@ -371,6 +384,33 @@ public class AutonomousCommandsFactory {
                 .withTimeout(1.5),
             CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))
         .withName("Auto Jostle");
+  }
+
+  // if hopper is full:
+  // in parallel, shoot, and:
+  // sequence: jostle for 4 seconds
+  //           deploy intake
+  //           wait 1 second
+  //           another jostle command
+
+  // if hopper is "empty":
+  // in parallel, shoot, and:
+  // sequence: wait 2 seconds for balls to enter
+  //           jostle
+
+  // can add LED triggers as well if time allows
+  private Command getOutpostJostleSequence(Intake intake, Shooter shooter, boolean fullHopper) {
+    return Commands.either(
+        Commands.sequence(
+            getAutoJostleCommand(intake, shooter).withTimeout(4.0),
+            // redeploy intake and allow for more fuel entry. can flash leds here too
+            Commands.runOnce(intake::deployIntake),
+            Commands.waitSeconds(1.0),
+            getAutoJostleCommand(intake, shooter)),
+        Commands.sequence(
+            // wait 2s to allow for fuel entry can flash LEDs here as well
+            Commands.waitSeconds(2.0), getAutoJostleCommand(intake, shooter)),
+        () -> fullHopper);
   }
 
   private Pose2d getTowerPose() {
@@ -589,10 +629,10 @@ public class AutonomousCommandsFactory {
                 Commands.sequence(
                     AutoBuilder.followPath(sweepCollect),
                     AutoBuilder.followPath(sweepToOutpost),
-                    getUnloadHopperCommand(hopper, intake, shooter, false)),
+                    getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)),
                 Commands.sequence(
                     AutoBuilder.followPath(bankToOutpost),
-                    getUnloadHopperCommand(hopper, intake, shooter, false)),
+                    getUnloadHopperAtOutpostCommand(hopper, intake, shooter, false)),
                 () -> matchTimer.get() < 10.0))
         .finallyDo(
             () -> {
