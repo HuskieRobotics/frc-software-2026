@@ -33,9 +33,12 @@ public class IntakeCommandsFactory {
 
     oi.getReverseIntakeRollersButton()
         .and(intake::isDeployed)
-        .onTrue(Commands.runOnce(intake::reverseRoller, intake));
+        .onTrue(Commands.runOnce(intake::reverseRoller, intake).withName("reverse intake rollers"));
 
-    oi.getReverseIntakeRollersButton().onFalse(Commands.runOnce(intake::startRoller, intake));
+    oi.getReverseIntakeRollersButton()
+        .onFalse(Commands.runOnce(intake::startRoller, intake).withName("start intake rollers"));
+
+    intake.setDefaultCommand(intake.getDefaultCommand());
 
     FaultReporter.getInstance()
         .registerSystemCheck(
