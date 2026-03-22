@@ -38,8 +38,14 @@ public class ShooterModes extends SubsystemBase {
   private static final double END_OF_SHIFT_WARNING_SECONDS =
       5.0; // time before the end of the shift to flash the LE#Ds
 
+  private static final double TIME_RESET_THRESHOLD_SECONDS = 3.0;
+  public static final double AUTO_DURATION_SECONDS = 20.0;
+  public static final double TELEOP_DURATION_SECONDS = 140.0;
+
   private final Shooter shooter;
 
+  private Timer shiftTimer = new Timer();
+  private double shiftTimerOffset = 0.0;
   private boolean hubActive;
   private double shotVelocityMultiplier = 1.0;
   private double turretAngleAdjustmentDeg = 0.0;
@@ -104,6 +110,12 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
+  }
+
+  /** Starts the timer at the beginning of teleop. */
+  public void initialize() {
+    shiftTimerOffset = 0;
+    shiftTimer.restart();
   }
 
   @Override
@@ -247,6 +259,23 @@ public class ShooterModes extends SubsystemBase {
 
     double timeRemaining = DriverStation.getMatchTime();
     String gameData = DriverStation.getGameSpecificMessage();
+
+    double timerValue = shiftTimer.get();
+    double currentTime = timerValue - shiftTimerOffset;
+    double fieldTeleopTime = TELEOP_DURATION_SECONDS - DriverStation.getMatchTime();
+
+    if (DriverStation.isAutonomousEnabled()) {
+      timeRemaining = AUTO_DURATION_SECONDS - currentTime;
+    } else if (DriverStation.isEnabled()) {
+      // Adjust the current offset if the time difference above the theshold
+      if (Math.abs(fieldTeleopTime - currentTime) >= TIME_RESET_THRESHOLD_SECONDS
+          && fieldTeleopTime <= 135
+          && DriverStation.isFMSAttached()) {
+        shiftTimerOffset += currentTime - fieldTeleopTime;
+        currentTime = timerValue - shiftTimerOffset;
+      }
+      timeRemaining = TELEOP_DURATION_SECONDS - currentTime;
+    }
 
     // Auto (20 s) - always safe to shoot and don't need to stop early
     if (timeRemaining < 20) {

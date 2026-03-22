@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -165,6 +166,12 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(Commands.runOnce(shooterModes::decrementShotVelocity));
     oi.getMoveTurretLeftButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeLeft));
     oi.getMoveTurretRightButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeRight));
+
+    // Reset hub shift timer when enabling
+    RobotModeTriggers.teleop().onTrue(Commands.runOnce(shooterModes::initialize));
+    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(shooterModes::initialize));
+    RobotModeTriggers.disabled()
+        .onTrue(Commands.runOnce(shooterModes::initialize).ignoringDisable(true));
 
     registerSysIdCommands(oi);
   }
