@@ -59,7 +59,7 @@ public class Intake extends SubsystemBase {
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.2);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.2);
   private final Debouncer rollerAtSetPointDebouncer = new Debouncer(0.1);
-  private final Debouncer rollerStalledDebouncer = new Debouncer(1.0);
+  private final Debouncer rollerStalledDebouncer = new Debouncer(0.5);
   private boolean rollerStalled = false;
 
   private final SysIdRoutine rollerSysIdRoutine =
@@ -132,7 +132,7 @@ public class Intake extends SubsystemBase {
             DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS));
     rollerStalled =
         rollerStalledDebouncer.calculate(
-            DriverStation.isTeleopEnabled()
+            DriverStation.isEnabled()
                 && inputs.rollerReferenceVelocityRPS != 0.0
                 && Math.abs(inputs.rollerVelocityRPS) < ROLLER_STALL_VELOCITY_THRESHOLD_RPS);
 
