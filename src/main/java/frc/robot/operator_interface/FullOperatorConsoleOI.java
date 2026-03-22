@@ -172,7 +172,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   @Override
   public Trigger getClearAllFaults() {
-    return operatorController.start();
+    return operatorController.leftBumper().and(operatorController.rightBumper());
   }
 
   @Override
