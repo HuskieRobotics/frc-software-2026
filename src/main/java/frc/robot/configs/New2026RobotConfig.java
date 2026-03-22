@@ -111,10 +111,12 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 52;
+  private static final int LED_COUNT = 26;
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40708542";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
+  private static final String BCL_CAMERA_SERIAL_NUMBER = "40777404";
+  private static final String BCR_CAMERA_SERIAL_NUMBER = "40777399";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 15;
@@ -143,6 +145,29 @@ public class New2026RobotConfig extends RobotConfig {
               Units.inchesToMeters(7.434)),
           new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
 
+  // Back center left camera
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_BCL_CAMERA =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(-10.969),
+              Units.inchesToMeters(5.390 - 1.147),
+              Units.inchesToMeters(11.539)),
+          new Rotation3d(
+              Units.degreesToRadians(180.00),
+              Units.degreesToRadians(-10.00),
+              Units.degreesToRadians(160.0)));
+
+  // Back center right camera
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_BCR_CAMERA =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(-10.9790),
+              Units.inchesToMeters(3.618 - 1.147),
+              Units.inchesToMeters(11.546)),
+          new Rotation3d(0, Units.degreesToRadians(-10.00), Units.degreesToRadians(200.0)));
+
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
       FieldConstants.defaultAprilTagType
@@ -151,9 +176,9 @@ public class New2026RobotConfig extends RobotConfig {
           .get()
           .transformBy(
               new Transform3d(
-                  Units.inchesToMeters(15.125),
+                  Units.inchesToMeters(48.0),
                   Units.inchesToMeters(0.0),
-                  -Units.inchesToMeters(9.625),
+                  -Units.inchesToMeters(21.75),
                   new Rotation3d()));
 
   private static final Pose3d ROBOT_TO_TAG_13_LEFT_CAMERA =
@@ -164,8 +189,8 @@ public class New2026RobotConfig extends RobotConfig {
           .transformBy(
               new Transform3d(
                   Units.inchesToMeters(15.125),
-                  Units.inchesToMeters(18.125),
-                  -Units.inchesToMeters(9.625),
+                  Units.inchesToMeters(51.0),
+                  -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(90))));
 
   private static final Pose3d ROBOT_TO_TAG_13_RIGHT_CAMERA =
@@ -176,7 +201,7 @@ public class New2026RobotConfig extends RobotConfig {
           .transformBy(
               new Transform3d(
                   Units.inchesToMeters(15.125),
-                  -Units.inchesToMeters(18.125),
+                  -Units.inchesToMeters(51.0),
                   -Units.inchesToMeters(21.75),
                   new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
@@ -200,6 +225,30 @@ public class New2026RobotConfig extends RobotConfig {
           .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_LEFT_CAMERA)
           .id(BL_CAMERA_SERIAL_NUMBER)
           .location("BL")
+          .width(1800)
+          .height(1200)
+          .exposure(MONO_EXPOSURE)
+          .gain(MONO_GAIN)
+          .denoise(MONO_DENOISE)
+          .stdDevFactor(1.0)
+          .build(),
+      CameraConfig.builder()
+          .robotToCameraTransform(ROBOT_TO_BCL_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
+          .id(BCL_CAMERA_SERIAL_NUMBER)
+          .location("BCL")
+          .width(1800)
+          .height(1200)
+          .exposure(MONO_EXPOSURE)
+          .gain(MONO_GAIN)
+          .denoise(MONO_DENOISE)
+          .stdDevFactor(1.0)
+          .build(),
+      CameraConfig.builder()
+          .robotToCameraTransform(ROBOT_TO_BCR_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
+          .id(BCR_CAMERA_SERIAL_NUMBER)
+          .location("BCR")
           .width(1800)
           .height(1200)
           .exposure(MONO_EXPOSURE)

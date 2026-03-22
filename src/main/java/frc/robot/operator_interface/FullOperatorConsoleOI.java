@@ -21,32 +21,23 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   private final CommandXboxController operatorController;
 
-  private final CommandJoystick operatorPanel;
-  private final Trigger[] operatorPanelButtons;
-
-  public FullOperatorConsoleOI(
-      int translatePort, int rotatePort, int operatorControllerPort, int operatorPanelPort) {
+  public FullOperatorConsoleOI(int translatePort, int rotatePort, int operatorControllerPort) {
     translateJoystick = new CommandJoystick(translatePort);
     rotateJoystick = new CommandJoystick(rotatePort);
     operatorController = new CommandXboxController(operatorControllerPort);
-    operatorPanel = new CommandJoystick(operatorPanelPort);
 
     // buttons use 1-based indexing such that the index matches the button number; leave index 0 set
     // to null
     this.translateJoystickButtons = new Trigger[13];
     this.rotateJoystickButtons = new Trigger[13];
-    this.operatorPanelButtons = new Trigger[13];
 
     for (int i = 1; i < translateJoystickButtons.length; i++) {
       translateJoystickButtons[i] = translateJoystick.button(i);
       rotateJoystickButtons[i] = rotateJoystick.button(i);
     }
-    for (int i = 1; i < operatorPanelButtons.length; i++) {
-      operatorPanelButtons[i] = operatorPanel.button(i);
-    }
   }
 
-  // Translate Joystick
+  // Translation Joystick
   @Override
   public double getTranslateX() {
     return -translateJoystick.getY();
@@ -58,13 +49,33 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getLock180Button() {
+  public Trigger getForceSafeShootButton() {
+    return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getSnakeDriveButton() {
+    return translateJoystickButtons[4];
+  }
+
+  @Override
+  public Trigger getDeployRetractIntakeButton() {
+    return translateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getForceDeployIntakeButton() {
     return translateJoystickButtons[2];
   }
 
   @Override
+  public Trigger getInterruptAll() {
+    return translateJoystickButtons[5];
+  }
+
+  @Override
   public Trigger getResetGyroButton() {
-    return translateJoystickButtons[4];
+    return translateJoystickButtons[8];
   }
 
   @Override
@@ -72,15 +83,34 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
     return translateJoystickButtons[9];
   }
 
-  // Rotate Joystick
+  @Override
+  public Trigger getZeroHoodButton() {
+    return translateJoystickButtons[10];
+  }
 
+  // Rotation Joystick
   @Override
   public double getRotate() {
     return -rotateJoystick.getX();
   }
 
   @Override
-  public Trigger getXStanceButton() {
+  public Trigger getManualShootButton() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getStartStopIntakeRollersButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getUnjamHopperButton() {
+    return rotateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
 
@@ -89,36 +119,64 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
     return rotateJoystickButtons[5];
   }
 
-  // Operator Controller
   @Override
-  public Trigger getInterruptAll() {
-    return operatorController.start();
+  public Trigger getCurrentPoseButton() {
+    return rotateJoystickButtons[6];
   }
 
   @Override
-  public Trigger getSysIdDynamicForward() {
+  public Trigger getReverseIntakeRollersButton() {
+    return rotateJoystickButtons[7];
+  }
+
+  // Operator Controller
+  @Override
+  public Trigger getIncrementFlywheelVelocityButton() {
+    return operatorController.povUp();
+  }
+
+  @Override
+  public Trigger getDecrementFlywheelVelocityButton() {
+    return operatorController.povDown();
+  }
+
+  @Override
+  public Trigger getMoveTurretLeftButton() {
+    return operatorController.povLeft();
+  }
+
+  @Override
+  public Trigger getMoveTurretRightButton() {
+    return operatorController.povRight();
+  }
+
+  @Override
+  public Trigger getDrivetrainSystemTest() {
+    return operatorController.back().and(operatorController.b());
+  }
+
+  @Override
+  public Trigger getShooterSystemTest() {
+    return operatorController.back().and(operatorController.a());
+  }
+
+  @Override
+  public Trigger getIntakeSystemTest() {
     return operatorController.back().and(operatorController.y());
   }
 
   @Override
-  public Trigger getSysIdDynamicReverse() {
+  public Trigger getHopperSystemTest() {
     return operatorController.back().and(operatorController.x());
   }
 
   @Override
-  public Trigger getSysIdQuasistaticForward() {
-    return operatorController.start().and(operatorController.y());
+  public Trigger getClearAllFaults() {
+    return operatorController.start();
   }
 
   @Override
-  public Trigger getSysIdQuasistaticReverse() {
-    return operatorController.start().and(operatorController.x());
-  }
-
-  // Operator Panel
-
-  @Override
-  public Trigger getVisionIsEnabledTrigger() {
-    return operatorPanelButtons[10];
+  public Trigger getCheckForFaults() {
+    return operatorController.rightBumper();
   }
 }

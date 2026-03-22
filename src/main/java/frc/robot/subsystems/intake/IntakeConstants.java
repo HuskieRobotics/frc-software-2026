@@ -56,7 +56,10 @@ public class IntakeConstants {
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2;
   public static final boolean ROLLER_MOTOR_INVERTED = true;
-  public static final AngularVelocity ROLLER_TARGET_VELOCITY = RotationsPerSecond.of(35.0);
+
+  public static final AngularVelocity ROLLER_TARGET_VELOCITY = RotationsPerSecond.of(40.0);
+  public static final AngularVelocity ROLLER_AUTO_TARGET_VELOCITY = RotationsPerSecond.of(50.0);
+
   public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
   public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
@@ -69,7 +72,11 @@ public class IntakeConstants {
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
 
   public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
-  public static final Distance JOSTLE_RETRACTED_POSITION = Inches.of(5.0);
+
+  public static final Distance JOSTLE_FIRST_RETRACT_POSITION = Inches.of(5.0);
+  public static final Distance JOSTLE_SUBSEQUENT_RETRACT_POSITION =
+      Inches.of(3.5); // possibly change to 4
+
   public static final Distance JOSTLE_EXTENDED_POSITION = Inches.of(11.0);
   public static final int JOSTLE_INITIAL_FUEL_COUNT = 10;
 }

@@ -14,14 +14,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,8 +43,10 @@ public class ShooterModes extends SubsystemBase {
   private final Shooter shooter;
 
   private boolean hubActive;
-  private double shotVelocityMultiplier = 0.98;
+  private double shotVelocityMultiplier = 1.0;
   private double turretAngleAdjustment = 0.0;
+
+  private boolean shootOnTheMoveInAuto = false;
 
   private Timer turretOutsideSetpointTimer = new Timer();
   private Timer turretUnJammingTimer = new Timer();
@@ -104,8 +105,6 @@ public class ShooterModes extends SubsystemBase {
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
-    registerVelocityDial();
-    registerTurretDial();
   }
 
   @Override
@@ -136,10 +135,13 @@ public class ShooterModes extends SubsystemBase {
     hubDistanceToVelocityMap.put(2.8702, 32.0);
     hubDistanceToVelocityMap.put(2.9972, 33.0);
     hubDistanceToVelocityMap.put(3.2512, 34.0);
+    hubDistanceToVelocityMap.put(3.68, 35.0);
     hubDistanceToVelocityMap.put(3.83, 35.0);
-    hubDistanceToVelocityMap.put(4.4196, 38.0);
-    hubDistanceToVelocityMap.put(4.72, 39.0);
-    hubDistanceToVelocityMap.put(5.38, 41.0);
+    hubDistanceToVelocityMap.put(4.4196, 37.5);
+    hubDistanceToVelocityMap.put(4.80, 38.0);
+    hubDistanceToVelocityMap.put(5.14, 39.0);
+    // hubDistanceToVelocityMap.put(5.38, 41.0);
+
     // hubDistanceToVelocityMap.put(6.22, 42.0);
 
     // Hood Angle Shooting into Hub Map
@@ -149,10 +151,12 @@ public class ShooterModes extends SubsystemBase {
     hubDistanceToHoodMap.put(2.8702, 23.0);
     hubDistanceToHoodMap.put(2.9972, 23.0);
     hubDistanceToHoodMap.put(3.2512, 25.0);
+    hubDistanceToHoodMap.put(3.68, 26.0);
     hubDistanceToHoodMap.put(3.83, 26.0);
     hubDistanceToHoodMap.put(4.4196, 27.0);
-    hubDistanceToHoodMap.put(4.72, 27.0);
-    hubDistanceToHoodMap.put(5.38, 28.0);
+    hubDistanceToHoodMap.put(4.80, 28.0);
+    hubDistanceToHoodMap.put(5.14, 29.0);
+    // hubDistanceToHoodMap.put(5.38, 28.0);
     hubDistanceToHoodMap.put(6.22, 29.0);
 
     // Velocity Passing Map
@@ -174,6 +178,14 @@ public class ShooterModes extends SubsystemBase {
     passDistanceToHoodMap.put(11.05, 42.0);
     passDistanceToHoodMap.put(13.0, 46.0);
     passDistanceToHoodMap.put(14.0, 49.0);
+  }
+
+  public void enableShootOnTheMoveInAuto() {
+    this.shootOnTheMoveInAuto = true;
+  }
+
+  public void disableShootOnTheMoveInAuto() {
+    this.shootOnTheMoveInAuto = false;
   }
 
   public boolean isShootOnTheMoveEnabled() {
@@ -409,7 +421,8 @@ public class ShooterModes extends SubsystemBase {
       } else {
         // if the hub is active, the robot is either shooting on the move or manually shooting based
         // on the shoot on the move toggle
-        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
+            || (DriverStation.isAutonomousEnabled() && this.shootOnTheMoveInAuto)) {
           this.currentMode = ShooterMode.SHOOT_OTM;
 
           // update the setpoints based on the robots velocity for shoot on the move
@@ -529,6 +542,12 @@ public class ShooterModes extends SubsystemBase {
       shooterSetpoints.hoodAngle = HOOD_MAX_PASSING_ANGLE;
     }
 
+    // do not run the flywheels if we are racing to the middle in auto
+    if (DriverStation.isAutonomousEnabled()
+        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 3.0) {
+      shooterSetpoints.flywheelVelocity = RotationsPerSecond.of(0.0);
+    }
+
     // finally, override the hood position if the robot is in a trench zone to ensure that the
     // shooter doesn't get decapitated
     if (Field2d.getInstance().inTrenchZone()
@@ -602,16 +621,6 @@ public class ShooterModes extends SubsystemBase {
   }
 
   // increases shot velocities by 1%
-  public void registerVelocityDial() {
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Increase Shot Velocity 1%",
-        Commands.runOnce(this::incrementShotVelocity));
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Decrease Shot Velocity 1%",
-        Commands.runOnce(this::decrementShotVelocity));
-  }
-
-  // increases shot velocities by 1%
   public void incrementShotVelocity() {
     this.shotVelocityMultiplier += 0.01;
   }
@@ -621,20 +630,13 @@ public class ShooterModes extends SubsystemBase {
     this.shotVelocityMultiplier -= 0.01;
   }
 
-  public void registerTurretDial() {
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Aim Turret Left 1 deg", Commands.runOnce(this::incrementTurretAngle));
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Aim Turret Right 1 deg", Commands.runOnce(this::decrementTurretAngle));
-  }
-
   // increases turret angle by 1 deg
-  public void incrementTurretAngle() {
+  public void moveTurretOneDegreeLeft() {
     this.turretAngleAdjustment += 1.0;
   }
 
   // decreases turret angle by 1 deg
-  public void decrementTurretAngle() {
+  public void moveTurretOneDegreeRight() {
     this.turretAngleAdjustment -= 1.0;
   }
 
@@ -675,6 +677,7 @@ public class ShooterModes extends SubsystemBase {
     double deltaX = targetLandingPosition.getX() - robotPose.getX();
     double deltaY = targetLandingPosition.getY() - robotPose.getY();
     double distance = Math.hypot(deltaY, deltaX);
+    Logger.recordOutput("/ShooterModes/DistanceToHub", distance);
 
     double idealShotVelocity = velocityMap.get(distance);
 

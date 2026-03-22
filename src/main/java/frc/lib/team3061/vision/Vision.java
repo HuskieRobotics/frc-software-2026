@@ -49,7 +49,7 @@ public class Vision extends SubsystemBase {
 
   private final Debouncer fmsAttachedDebouncer = new Debouncer(3.0, DebounceType.kRising);
   private final LoggedNetworkBoolean recordingRequest =
-      new LoggedNetworkBoolean("/SmartDashboard/Enable Recording", false);
+      new LoggedNetworkBoolean("/Vision/Enable Recording", false);
 
   private double[] lastTimestamps;
   private int[] cyclesWithNoResults;

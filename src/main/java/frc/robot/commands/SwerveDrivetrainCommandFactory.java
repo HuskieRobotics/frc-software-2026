@@ -5,8 +5,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrainConstants;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.FieldConstants;
 import frc.robot.Field2d;
@@ -121,6 +123,12 @@ public class SwerveDrivetrainCommandFactory {
     //           return drivetrain.isTilted();
     //         })
     //     .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
+
+    FaultReporter.getInstance()
+        .registerSystemCheck(
+            SwerveDrivetrainConstants.SUBSYSTEM_NAME,
+            swerveDrivetrain.getSystemCheckCommand(),
+            oi.getDrivetrainSystemTest());
   }
 
   public static Command getDefaultTeleopSwerveCommand(

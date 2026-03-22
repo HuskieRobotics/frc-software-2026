@@ -68,6 +68,7 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED(LEDs::updateToDisabledPattern),
     HOPPER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)),
     INTAKE_JAMMED((leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
+    OUTPOST_FLASH_AUTO((leds, section) -> leds.strobe(section, Color.kGold, STROBE_FAST_DURATION)),
     AUTO((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 127, 0)),
     DISTRACTION_DURING_TELEOP(
         (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
@@ -82,7 +83,7 @@ public abstract class LEDs extends SubsystemBase {
     AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
-    DEFAULT((leds, section) -> leds.solid(section, Color.kBlack));
+    DEFAULT(LEDs::updateToDisabledPattern);
 
     public final BiConsumer<LEDs, Section> setter;
 
@@ -108,7 +109,7 @@ public abstract class LEDs extends SubsystemBase {
    * before updating the LEDs.
    */
   protected static final boolean MIRROR_LEDS = true;
-  protected static final int ACTUAL_LENGTH = 52; // RobotConfig.getInstance().getLEDCount();
+  protected static final int ACTUAL_LENGTH = 26; // RobotConfig.getInstance().getLEDCount();
   protected static final int LENGTH = MIRROR_LEDS ? ACTUAL_LENGTH / 2 : ACTUAL_LENGTH;
   private static final int STATIC_LENGTH = LENGTH / 2;
   private static final int STATIC_SECTION_LENGTH = STATIC_LENGTH / 3;

@@ -5,6 +5,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -55,6 +56,8 @@ public class Shooter extends SubsystemBase {
   private final Debouncer turretAtSetpointDebouncer = new Debouncer(0.1);
   private final Debouncer flywheelAtSetpointDebouncer = new Debouncer(0.1);
 
+  private final Debouncer fuelDetectedDebouncer = new Debouncer(0.75, DebounceType.kFalling);
+
   private CurrentSpikeDetector hoodJamDetector =
       new CurrentSpikeDetector(HOOD_CURRENT_THRESHOLD_AMPS, HOOD_CURRENT_TIME_THRESHOLD_SECONDS);
 
@@ -102,8 +105,6 @@ public class Shooter extends SubsystemBase {
     SysIdRoutineChooser.getInstance().addOption("Flywheel Lead Current", flywheelIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Hood Voltage", hoodIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Turret Voltage", turretIdRoutine);
-
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getShooterSystemCheckCommand());
   }
 
   @Override
@@ -128,6 +129,7 @@ public class Shooter extends SubsystemBase {
       fuelCount++;
     }
     previousHasFuel = shooterInputs.fuelDetectorHasFuel;
+    fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
 
     if (testingMode.get() == 1) {
       // Flywheel Lead
@@ -387,6 +389,10 @@ public class Shooter extends SubsystemBase {
 
   public AngularVelocity getFlywheelLeadVelocity() {
     return shooterInputs.flywheelLeadVelocity;
+  }
+
+  public boolean getFuelDetected() {
+    return fuelDetectedDebouncer.calculate(shooterInputs.fuelDetectorHasFuel);
   }
 
   public boolean hasFuel() {

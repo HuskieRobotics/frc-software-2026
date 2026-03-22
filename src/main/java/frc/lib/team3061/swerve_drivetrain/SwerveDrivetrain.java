@@ -259,9 +259,6 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
     this.autoThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    FaultReporter faultReporter = FaultReporter.getInstance();
-    faultReporter.registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
-
     AutoBuilder.configure(
         this::getPose, // Robot pose supplier
         this::resetPose, // Method to reset odometry (will be called if your auto has a starting
@@ -956,7 +953,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     this.io.applySysIdCharacterization(mode, value);
   }
 
-  private Command getSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::disableFieldRelative, this),
             getSwerveCheckCommand(SwerveCheckTypes.LEFT),

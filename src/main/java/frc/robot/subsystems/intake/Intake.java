@@ -87,9 +87,6 @@ public class Intake extends SubsystemBase {
 
     SysIdRoutineChooser.getInstance().addOption("Roller Current", rollerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Deployer Voltage", deployerSysIdRoutine);
-
-    // Register System Check
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
 
   @Override
@@ -113,9 +110,6 @@ public class Intake extends SubsystemBase {
         intakeIO.setRollerCurrent(Amps.of(rollerCurrent.get()));
       }
     }
-
-    Logger.recordOutput(SUBSYSTEM_NAME + "/Deployed", inDeployedState);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/Rollers Active", areRollersActiveState);
 
     // checkRollerJam();
 
@@ -162,6 +156,15 @@ public class Intake extends SubsystemBase {
   public void startRoller() {
     areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
+  }
+
+  public void reverseRoller() {
+    intakeIO.setRollerVelocity(ROLLER_TARGET_VELOCITY.unaryMinus().div(2));
+  }
+
+  public void startRollerInAuto() {
+    areRollersActiveState = true;
+    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY);
   }
 
   public void stopRoller() {
@@ -211,6 +214,13 @@ public class Intake extends SubsystemBase {
         Commands.runOnce(this::startRoller, this));
   }
 
+  public Command getDeployAndStartInAutoCommand() {
+    return Commands.sequence(
+        Commands.runOnce(this::deployIntake, this),
+        Commands.waitUntil(this::isDeployed),
+        Commands.runOnce(this::startRollerInAuto, this));
+  }
+
   public Command getRetractAndStopCommand() {
     return Commands.sequence(
         Commands.runOnce(this::stopRoller, this),
@@ -252,7 +262,7 @@ public class Intake extends SubsystemBase {
     return areRollersActiveState;
   }
 
-  private Command getSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake, this),
             Commands.waitSeconds(2.0)

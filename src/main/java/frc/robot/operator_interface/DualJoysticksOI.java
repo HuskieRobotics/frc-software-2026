@@ -115,4 +115,9 @@ public class DualJoysticksOI extends OperatorDashboard {
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
   }
+
+  @Override
+  public Trigger getReverseIntakeRollersButton() {
+    return rotateJoystickButtons[7];
+  }
 }

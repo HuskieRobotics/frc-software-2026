@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.66118666820838,
-        "y": 7.651938426706437
+        "x": 7.040827389443653,
+        "y": 7.496091298145506
       },
       "isLocked": false,
       "linkedName": "Left Bank"
     },
     {
       "anchor": {
-        "x": 5.871488888888889,
-        "y": 4.710211111111112
+        "x": 6.031611982881596,
+        "y": 4.274365192582025
       },
       "prevControl": {
-        "x": 5.700166666666666,
-        "y": 7.280044444444444
+        "x": 6.238630527817403,
+        "y": 7.936005706134095
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,12 +29,26 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "slow to pickup",
+      "minWaypointRelativePos": 0.8,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -45,7 +59,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left Sweep (and mirrored)",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
