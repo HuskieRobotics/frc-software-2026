@@ -277,6 +277,8 @@ public class ShooterModes extends SubsystemBase {
       timeRemaining = TELEOP_DURATION_SECONDS - currentTime;
     }
 
+    Logger.recordOutput("ShooterModes/Time Remaining", timeRemaining);
+
     // Auto (20 s) - always safe to shoot and don't need to stop early
     if (timeRemaining < 20) {
       return true;
