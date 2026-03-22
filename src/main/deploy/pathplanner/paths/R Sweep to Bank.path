@@ -59,7 +59,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Right Sweep",
+  "folder": "[UNUSED] Right Sweep",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

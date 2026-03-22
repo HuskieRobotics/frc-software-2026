@@ -3,9 +3,9 @@
   "robotLength": 0.76835,
   "holonomicMode": true,
   "pathFolders": [
-    "Left Sweep",
     "Fuel Eradication",
-    "Right Sweep",
+    "Left Sweep (and mirrored)",
+    "[UNUSED] Right Sweep",
     "Right Sweep and Outpost",
     "Safe Sweeps",
     "Tuning",
