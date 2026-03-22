@@ -247,10 +247,14 @@ public class Intake extends SubsystemBase {
   @Override
   public Command getDefaultCommand() {
     return Commands.repeatingSequence(
-        Commands.runOnce(this::startRoller, this),
-        Commands.waitUntil(this::isRollerStalled),
-        Commands.runOnce(this::reverseRoller, this),
-        Commands.waitSeconds(1.0));
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(this::startRoller, this),
+                Commands.waitUntil(this::isRollerStalled),
+                Commands.runOnce(this::reverseRoller, this),
+                Commands.waitSeconds(1.0)),
+            Commands.none(),
+            this::isDeployed));
   }
 
   public double getPositionMeters() {
