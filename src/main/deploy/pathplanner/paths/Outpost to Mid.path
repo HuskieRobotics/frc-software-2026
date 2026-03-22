@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.5844365192582024,
+        "x": 0.7,
         "y": 0.664
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2851502732240434,
+        "x": 1.400713753965841,
         "y": 0.8480874316939877
       },
       "isLocked": false,
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.6925592777657728
+    "rotation": 0.6925592777657729
   },
   "reversed": false,
   "folder": "Right Sweep and Outpost",

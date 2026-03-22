@@ -106,13 +106,13 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   @Override
   public Trigger getUnjamHopperButton() {
-    return rotateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
+
+  // @Override
+  // public Trigger getOverrideDriveToPoseButton() {
+  //   return rotateJoystickButtons[4];
+  // }
 
   @Override
   public Trigger getResetPoseToVisionButton() {
@@ -126,7 +126,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   @Override
   public Trigger getReverseIntakeRollersButton() {
-    return rotateJoystickButtons[7];
+    return rotateJoystickButtons[3];
   }
 
   // Operator Controller

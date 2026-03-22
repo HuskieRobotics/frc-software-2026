@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static frc.robot.subsystems.intake.IntakeConstants.JOSTLE_INITIAL_FUEL_COUNT;
+import static frc.robot.subsystems.intake.IntakeConstants.JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -463,7 +464,8 @@ public class AutonomousCommandsFactory {
             getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)
                 .until(() -> (matchTimer.get() > 17.5)),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.runOnce(intake::retractIntake),
+            Commands.runOnce(
+                () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS)),
             AutoBuilder.followPath(outpostToMid))
         .finallyDo(
             () -> {

@@ -535,36 +535,39 @@ public class ShooterModes extends SubsystemBase {
       this.currentMode = ShooterMode.SHOOTER_LOCKED;
     }
 
-    // if the turret appears to be stuck, rotate in the opposite direction to try to get it unstuck
-    if (turretOutsideSetpointTimer.hasElapsed(TURRET_OUTSIDE_SETPOINT_THRESHOLD)) {
-      // restart the unjamming timer if it isn't already running
-      if (!turretUnJammingTimer.isRunning()) {
-        turretUnJammingTimer.restart();
-      } else if (turretUnJammingTimer.hasElapsed(TURRET_UNJAM_DURATION)) {
-        // if we've been trying to unjam for long enough, reset the turret setpoint to the reference
-        // position in hopes that the jam has been cleared
-        turretUnJammingTimer.stop();
-        turretUnJammingTimer.reset();
-      } else {
-        // rotate away from the setpoint to try to get it unstuck; the direction to rotate is
-        // determined by the sign of the turret error
-        if ((shooter.getTurretPositionRot() - shooter.getTurretReferencePositionRot()) > 0.0) {
-          shooterSetpoints.turretAngleRot =
-              shooterSetpoints.turretAngleRot + TURRET_STUCK_ROTATION_ADJUSTMENT_ROT;
-        } else {
-          shooterSetpoints.turretAngleRot =
-              shooterSetpoints.turretAngleRot - TURRET_STUCK_ROTATION_ADJUSTMENT_ROT;
-        }
+    // // if the turret appears to be stuck, rotate in the opposite direction to try to get it
+    // unstuck
+    // if (turretOutsideSetpointTimer.hasElapsed(TURRET_OUTSIDE_SETPOINT_THRESHOLD)) {
+    //   // restart the unjamming timer if it isn't already running
+    //   if (!turretUnJammingTimer.isRunning()) {
+    //     turretUnJammingTimer.restart();
+    //   } else if (turretUnJammingTimer.hasElapsed(TURRET_UNJAM_DURATION)) {
+    //     // if we've been trying to unjam for long enough, reset the turret setpoint to the
+    // reference
+    //     // position in hopes that the jam has been cleared
+    //     turretUnJammingTimer.stop();
+    //     turretUnJammingTimer.reset();
+    //   } else {
+    //     // rotate away from the setpoint to try to get it unstuck; the direction to rotate is
+    //     // determined by the sign of the turret error
+    //     if ((shooter.getTurretPositionRot() - shooter.getTurretReferencePositionRot()) > 0.0) {
+    //       shooterSetpoints.turretAngleRot =
+    //           shooterSetpoints.turretAngleRot + TURRET_STUCK_ROTATION_ADJUSTMENT_ROT;
+    //     } else {
+    //       shooterSetpoints.turretAngleRot =
+    //           shooterSetpoints.turretAngleRot - TURRET_STUCK_ROTATION_ADJUSTMENT_ROT;
+    //     }
 
-        // ensure that we don't wrap around, which would result in the turret turning the opposite
-        // direction and not unjamming
-        if (shooterSetpoints.turretAngleRot < TURRET_LOWER_ANGLE_LIMIT_ROT) {
-          shooterSetpoints.turretAngleRot = TURRET_LOWER_ANGLE_LIMIT_ROT;
-        } else if (shooterSetpoints.turretAngleRot > TURRET_UPPER_ANGLE_LIMIT_ROT) {
-          shooterSetpoints.turretAngleRot = TURRET_UPPER_ANGLE_LIMIT_ROT;
-        }
-      }
-    }
+    //     // ensure that we don't wrap around, which would result in the turret turning the
+    // opposite
+    //     // direction and not unjamming
+    //     if (shooterSetpoints.turretAngleRot < TURRET_LOWER_ANGLE_LIMIT_ROT) {
+    //       shooterSetpoints.turretAngleRot = TURRET_LOWER_ANGLE_LIMIT_ROT;
+    //     } else if (shooterSetpoints.turretAngleRot > TURRET_UPPER_ANGLE_LIMIT_ROT) {
+    //       shooterSetpoints.turretAngleRot = TURRET_UPPER_ANGLE_LIMIT_ROT;
+    //     }
+    //   }
+    // }
 
     if (OISelector.getOperatorInterface().getSlowShooterForPitTest().getAsBoolean()) {
       shooterSetpoints.flywheelVelocityRPS = PIT_TEST_FLYWHEEL_RPS;
@@ -608,7 +611,9 @@ public class ShooterModes extends SubsystemBase {
 
     Pose2d robotPose = RobotOdometry.getInstance().getEstimatedPose();
     double phi =
-        new Rotation2d(staticSetpoints.turretAngleRot).plus(robotPose.getRotation()).getRadians();
+        new Rotation2d(Units.rotationsToRadians(staticSetpoints.turretAngleRot))
+            .plus(robotPose.getRotation())
+            .getRadians();
 
     ChassisSpeeds fieldRelativeSpeeds = getShooterFieldRelativeVelocity();
     double robotVx = fieldRelativeSpeeds.vxMetersPerSecond;
