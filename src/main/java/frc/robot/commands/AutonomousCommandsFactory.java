@@ -19,6 +19,7 @@ import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterModes;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -57,7 +58,11 @@ public class AutonomousCommandsFactory {
   }
 
   public void configureAutoCommands(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
