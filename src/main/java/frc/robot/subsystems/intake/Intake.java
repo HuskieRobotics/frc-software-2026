@@ -158,6 +158,10 @@ public class Intake extends SubsystemBase {
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
   }
 
+  public void reverseRoller() {
+    intakeIO.setRollerVelocity(ROLLER_TARGET_VELOCITY.unaryMinus().div(2));
+  }
+
   public void startRollerInAuto() {
     areRollersActiveState = true;
     intakeIO.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY);
