@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
@@ -65,7 +66,7 @@ public class AutonomousCommandsFactory {
 
     autoChooser.addOption(
         "Right Sweep and Outpost",
-        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter));
+        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption("Left Sweep", leftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
@@ -297,7 +298,10 @@ public class AutonomousCommandsFactory {
             getAutoJostleCommand(intake, shooter).withTimeout(4.0),
             // redeploy intake and allow for more fuel entry. can flash leds here too
             Commands.runOnce(intake::deployIntake),
-            Commands.waitSeconds(1.0),
+            Commands.deadline(
+                Commands.waitSeconds(1.0),
+                Commands.run(
+                    () -> LEDs.getInstance().requestState(LEDs.States.OUTPOST_FLASH_AUTO))),
             getAutoJostleCommand(intake, shooter)),
         Commands.sequence(
             // wait 2s to allow for fuel entry can flash LEDs here as well
@@ -312,30 +316,17 @@ public class AutonomousCommandsFactory {
       Shooter shooter,
       Pose2d startingPose,
       PathPlannerPath firstSweep,
-      PathPlannerPath secondSweepCollect,
-      PathPlannerPath secondSweepToBank) {
+      PathPlannerPath secondSweep) {
+
     return Commands.sequence(
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            // alternate between unloading hopper and running sweeps until not enough time left in
-            // the auto to do so
-            Commands.repeatingSequence(
-                // unload hopper until fuel not detected
-                getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
-                Commands.runOnce(hopper::stop, hopper),
-                // either grab another sweep (if >2.5s remaining) or just keep unloading the hopper
-                Commands.either(
-                    Commands.sequence(
-                        AutoBuilder.followPath(secondSweepCollect),
-                        // check if we have time to come back from the sweep
-                        Commands.either(
-                            AutoBuilder.followPath(secondSweepToBank),
-                            Commands.none(),
-                            () -> matchTimer.get() < 17.5)),
-                    getUnloadHopperCommand(hopper, intake, shooter, true),
-                    (() -> matchTimer.get() < 17.5))))
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            Commands.runOnce(hopper::stop, hopper),
+            AutoBuilder.followPath(secondSweep),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -357,73 +348,12 @@ public class AutonomousCommandsFactory {
 
   private Command rightNeutralZoneSweep(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath firstFuelSweep;
-    PathPlannerPath secondSweepCollect;
-    PathPlannerPath secondSweepToBank;
-    final Pose2d startingPose;
-    try {
-      firstFuelSweep = PathPlannerPath.fromPathFile("R Fuel Sweep");
-      secondSweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
-      secondSweepToBank = PathPlannerPath.fromPathFile("R Sweep to Bank");
-      startingPose = firstFuelSweep.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-      return Commands.none();
-    }
-
-    return getNeutralZoneSweepAuto(
-        drivetrain,
-        hopper,
-        intake,
-        shooter,
-        startingPose,
-        firstFuelSweep,
-        secondSweepCollect,
-        secondSweepToBank);
-  }
-
-  private Command safeRightNeutralZoneSweep(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath safeFirstFuelSweep;
-    PathPlannerPath secondSweepCollect;
-    PathPlannerPath sweepCollectToBank;
-    final Pose2d startingPose;
-    try {
-      safeFirstFuelSweep = PathPlannerPath.fromPathFile("Safe R Fuel Sweep");
-      secondSweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
-      sweepCollectToBank = PathPlannerPath.fromPathFile("R Sweep to Bank");
-      startingPose = safeFirstFuelSweep.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-    return getNeutralZoneSweepAuto(
-        drivetrain,
-        hopper,
-        intake,
-        shooter,
-        startingPose,
-        safeFirstFuelSweep,
-        secondSweepCollect,
-        sweepCollectToBank);
-  }
-
-  private Command leftNeutralZoneSweep(
-      SwerveDrivetrain drivetrain,
-      Hopper hopper,
-      Intake intake,
-      Shooter shooter) { // add shooter and intake later
     PathPlannerPath firstSweep;
-    PathPlannerPath secondSweepCollect;
-    PathPlannerPath secondSweepToBank;
+    PathPlannerPath secondSweep;
     final Pose2d startingPose;
     try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep"); // this path ends at the bank
-      secondSweepCollect = PathPlannerPath.fromPathFile("L Sweep Collect");
-      secondSweepToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Second Collect").mirrorPath();
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -432,14 +362,48 @@ public class AutonomousCommandsFactory {
     }
 
     return getNeutralZoneSweepAuto(
-        drivetrain,
-        hopper,
-        intake,
-        shooter,
-        startingPose,
-        firstSweep,
-        secondSweepCollect,
-        secondSweepToBank);
+        drivetrain, hopper, intake, shooter, startingPose, firstSweep, secondSweep);
+  }
+
+  private Command safeRightNeutralZoneSweep(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath safeFirstSweep;
+    PathPlannerPath secondSweep;
+    final Pose2d startingPose;
+    try {
+      safeFirstSweep = PathPlannerPath.fromPathFile("Safe L Fuel Sweep").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Second Collect").mirrorPath();
+      startingPose = safeFirstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.none();
+    }
+    return getNeutralZoneSweepAuto(
+        drivetrain, hopper, intake, shooter, startingPose, safeFirstSweep, secondSweep);
+  }
+
+  private Command leftNeutralZoneSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter) { // add shooter and intake later
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L Second Collect");
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getNeutralZoneSweepAuto(
+        drivetrain, hopper, intake, shooter, startingPose, firstSweep, secondSweep);
   }
 
   private Command safeLeftNeutralZoneSweep(
@@ -448,14 +412,11 @@ public class AutonomousCommandsFactory {
       Intake intake,
       Shooter shooter) { // add shooter and intake later
     PathPlannerPath safeFirstFuelSweep;
-    PathPlannerPath secondSweepCollect;
-    PathPlannerPath secondSweepToBank;
+    PathPlannerPath secondSweep;
     final Pose2d startingPose;
     try {
-      safeFirstFuelSweep =
-          PathPlannerPath.fromPathFile("Safe L Fuel Sweep"); // this path ends at the bank
-      secondSweepCollect = PathPlannerPath.fromPathFile("L Sweep Collect");
-      secondSweepToBank = PathPlannerPath.fromPathFile("L Sweep to Bank");
+      safeFirstFuelSweep = PathPlannerPath.fromPathFile("Safe L Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L Second Collect");
       startingPose = safeFirstFuelSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -464,29 +425,22 @@ public class AutonomousCommandsFactory {
     }
 
     return getNeutralZoneSweepAuto(
-        drivetrain,
-        hopper,
-        intake,
-        shooter,
-        startingPose,
-        safeFirstFuelSweep,
-        secondSweepCollect,
-        secondSweepToBank);
+        drivetrain, hopper, intake, shooter, startingPose, safeFirstFuelSweep, secondSweep);
   }
 
   private Command rightNeutralZoneSweepAndOutpost(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
     PathPlannerPath firstSweep;
-    PathPlannerPath sweepCollect;
-    PathPlannerPath sweepToOutpost;
-    PathPlannerPath bankToOutpost;
+    PathPlannerPath outpostToMid;
     final Pose2d startingPose;
 
     try {
       firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep to Outpost");
-      sweepCollect = PathPlannerPath.fromPathFile("R Sweep Collect");
-      sweepToOutpost = PathPlannerPath.fromPathFile("R Sweep to Outpost");
-      bankToOutpost = PathPlannerPath.fromPathFile("R Bank to Outpost");
+      outpostToMid = PathPlannerPath.fromPathFile("Outpost to Mid");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -500,12 +454,17 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true))
+            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)
+                .until(() -> (matchTimer.get() > 17.5)),
+            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+            Commands.runOnce(intake::retractIntake),
+            AutoBuilder.followPath(outpostToMid))
         .finallyDo(
             () -> {
               hopper.stop();
               intake.deployIntake();
               intake.startRoller();
+              shooterModes.disableShootOnTheMoveInAuto();
             });
   }
 

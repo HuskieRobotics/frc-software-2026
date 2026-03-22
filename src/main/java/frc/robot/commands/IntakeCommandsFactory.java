@@ -31,6 +31,12 @@ public class IntakeCommandsFactory {
                     intake::areRollersActive)
                 .withName("start-stop intake rollers"));
 
+    oi.getReverseIntakeRollersButton()
+        .and(intake::isDeployed)
+        .onTrue(Commands.runOnce(intake::reverseRoller, intake));
+
+    oi.getReverseIntakeRollersButton().onFalse(Commands.runOnce(intake::startRoller, intake));
+
     FaultReporter.getInstance()
         .registerSystemCheck(
             IntakeConstants.SUBSYSTEM_NAME,

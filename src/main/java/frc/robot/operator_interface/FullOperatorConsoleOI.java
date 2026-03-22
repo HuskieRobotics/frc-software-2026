@@ -124,6 +124,11 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
     return rotateJoystickButtons[6];
   }
 
+  @Override
+  public Trigger getReverseIntakeRollersButton() {
+    return rotateJoystickButtons[7];
+  }
+
   // Operator Controller
   @Override
   public Trigger getIncrementFlywheelVelocityButton() {
@@ -167,11 +172,11 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   @Override
   public Trigger getClearAllFaults() {
-    return operatorController.button(4).and(operatorController.button(5));
+    return operatorController.start();
   }
 
   @Override
   public Trigger getCheckForFaults() {
-    return operatorController.button(5);
+    return operatorController.rightBumper();
   }
 }

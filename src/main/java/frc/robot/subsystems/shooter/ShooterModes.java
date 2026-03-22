@@ -44,6 +44,8 @@ public class ShooterModes extends SubsystemBase {
   private double shotVelocityMultiplier = 1.0;
   private double turretAngleAdjustmentDeg = 0.0;
 
+  private boolean shootOnTheMoveInAuto = false;
+
   private Timer turretOutsideSetpointTimer = new Timer();
   private Timer turretUnJammingTimer = new Timer();
 
@@ -176,6 +178,14 @@ public class ShooterModes extends SubsystemBase {
     passDistanceToHoodMap.put(11.05, 42.0);
     passDistanceToHoodMap.put(13.0, 46.0);
     passDistanceToHoodMap.put(14.0, 49.0);
+  }
+
+  public void enableShootOnTheMoveInAuto() {
+    this.shootOnTheMoveInAuto = true;
+  }
+
+  public void disableShootOnTheMoveInAuto() {
+    this.shootOnTheMoveInAuto = false;
   }
 
   public boolean isShootOnTheMoveEnabled() {
@@ -412,7 +422,8 @@ public class ShooterModes extends SubsystemBase {
       } else {
         // if the hub is active, the robot is either shooting on the move or manually shooting based
         // on the shoot on the move toggle
-        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
+        if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()
+            || (DriverStation.isAutonomousEnabled() && this.shootOnTheMoveInAuto)) {
           this.currentMode = ShooterMode.SHOOT_OTM;
 
           // update the setpoints based on the robots velocity for shoot on the move
