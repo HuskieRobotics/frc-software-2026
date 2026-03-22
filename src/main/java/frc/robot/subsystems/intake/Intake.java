@@ -9,13 +9,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
-import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
@@ -114,8 +112,6 @@ public class Intake extends SubsystemBase {
       }
     }
 
-    // checkRollerJam();
-
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
         MathUtils.isNear(
@@ -151,22 +147,6 @@ public class Intake extends SubsystemBase {
   public void setLinearPosition(double linearPositionMeters) {
     double angularPositionRot = linearPositionMeters / DEPLOYER_CIRCUMFERENCE_METERS;
     intakeIO.setDeployerPosition(angularPositionRot);
-  }
-
-  private void checkRollerJam() {
-    if (rollerJamDetector.update(Math.abs(inputs.rollerStatorCurrent))) {
-      CommandScheduler.getInstance()
-          .schedule(
-              Commands.sequence(
-                      Commands.runOnce(this::outTakeRoller, this),
-                      Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED))
-                          .withTimeout(ROLLER_UNJAM_DURATION_SECONDS),
-                      Commands.runOnce(this::startRoller, this))
-                  .withName("Stop Intake Jammed"));
-      rollerJamAlert.set(true);
-    } else {
-      rollerJamAlert.set(false);
-    }
   }
 
   public void startRoller() {

@@ -114,10 +114,11 @@ public class Hopper extends SubsystemBase {
   }
 
   public Command getUnjamCommand() {
-    return Commands.sequence(
-        Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
-        Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this),
-        Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)));
+    return Commands.parallel(
+        Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)),
+        Commands.sequence(
+            Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
+            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this)));
   }
 
   public Command getSystemCheckCommand() {
@@ -212,11 +213,13 @@ public class Hopper extends SubsystemBase {
   public Command getFeedFuelIntoShooterCommand(DoubleSupplier kickerVelocitySupplier) {
     return Commands.repeatingSequence(
         Commands.either(
-            Commands.sequence(
-                    Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
-                    Commands.runOnce(
-                        () -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this),
-                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)))
+            Commands.parallel(
+                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)),
+                    Commands.sequence(
+                        Commands.runOnce(
+                            () -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
+                        Commands.runOnce(
+                            () -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this)))
                 .withTimeout(KICKER_UNJAM_WAIT_TIME),
             Commands.sequence(
                 Commands.runOnce(

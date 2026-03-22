@@ -224,7 +224,8 @@ public class CrossSubsystemsCommandsFactory {
       Command jostleCommand) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    // let the hopper continue to do its thing if we are in shoot on the move mode
+                    // let the hopper continue to do its thing if we are in shoot on the move
+                    // mode
                     hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                     jostleCommand,
                     Commands.repeatingSequence(
@@ -234,12 +235,12 @@ public class CrossSubsystemsCommandsFactory {
                             () ->
                                 shooterModes.isManualPassEnabled()
                                     || shooterModes.isPassOnTheMoveEnabled())))
-                .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(
-                    Commands.sequence(
-                        Commands.runOnce(hopper::stop, hopper),
-                        Commands.runOnce(
-                            () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))))
+                .until(shooterModes::isTurretNotNearSetPoint),
+            Commands.parallel(
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.run(
+                        () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
+                .until(() -> !shooterModes.isTurretNotNearSetPoint()))
         .withName("shoot or pass");
   }
 
@@ -341,12 +342,12 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                             Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
                             shooterModes::isPassOnTheMoveEnabled)))
-                .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(
-                    Commands.sequence(
-                        Commands.runOnce(hopper::stop, hopper),
-                        Commands.runOnce(
-                            () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))))
+                .until(shooterModes::isTurretNotNearSetPoint),
+            Commands.parallel(
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.run(
+                        () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
+                .until(() -> !shooterModes.isTurretNotNearSetPoint()))
         .withName("shoot when aimed");
   }
 }
