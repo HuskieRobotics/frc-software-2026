@@ -68,6 +68,7 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED(LEDs::updateToDisabledPattern),
     HOPPER_JAMMED((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_SLOW_DURATION)),
     INTAKE_JAMMED((leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
+    OUTPOST_FLASH_AUTO((leds, section) -> leds.strobe(section, Color.kGold, STROBE_FAST_DURATION)),
     AUTO((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 127, 0)),
     DISTRACTION_DURING_TELEOP(
         (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
