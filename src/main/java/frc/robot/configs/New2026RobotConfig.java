@@ -4,6 +4,7 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -122,44 +123,29 @@ public class New2026RobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-8.969),
-              Units.inchesToMeters(-11.729),
-              Units.inchesToMeters(7.434)),
-          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
+          new Translation3d(-0.226, -0.311, 0.184),
+          new Rotation3d(new Quaternion(-0.686, 0.160, 0.156, 0.692)));
 
   // Back left camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-8.969),
-              Units.inchesToMeters(11.729),
-              Units.inchesToMeters(7.434)),
-          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
+          new Translation3d(-0.114, -0.151, 0.156),
+          new Rotation3d(new Quaternion(-0.685, -0.151, 0.156, -0.695)));
 
   // Back center left camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-10.969),
-              Units.inchesToMeters(5.390 - 1.147),
-              Units.inchesToMeters(11.539)),
-          new Rotation3d(
-              Units.degreesToRadians(180.00),
-              Units.degreesToRadians(-10.00),
-              Units.degreesToRadians(160.0)));
+          new Translation3d(-0.293, 0.122, 0.291),
+          new Rotation3d(new Quaternion(0.095, -0.176, -0.979, -0.025)));
 
   // Back center right camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCR_CAMERA =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-10.9790),
-              Units.inchesToMeters(3.618 - 1.147),
-              Units.inchesToMeters(11.546)),
-          new Rotation3d(0, Units.degreesToRadians(-10.00), Units.degreesToRadians(200.0)));
+          new Translation3d(-0.309, 0.053, 0.271),
+          new Rotation3d(new Quaternion(0.166, -0.104, -0.01, -0.981)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
