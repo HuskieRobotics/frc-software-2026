@@ -105,6 +105,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getReverseIntakeRollersButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getInterruptAll() {
     return new Trigger(() -> false);
   }
