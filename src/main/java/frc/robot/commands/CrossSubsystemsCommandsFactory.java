@@ -204,7 +204,11 @@ public class CrossSubsystemsCommandsFactory {
                                 shooterModes.isManualPassEnabled()
                                     || shooterModes.isPassOnTheMoveEnabled())))
                 .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(Commands.runOnce(hopper::stop, hopper)))
+                .andThen(
+                    Commands.sequence(
+                        Commands.runOnce(hopper::stop, hopper),
+                        Commands.runOnce(
+                            () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))))
         .finallyDo(
             () -> {
               CommandScheduler.getInstance().schedule(intake.getDeployAndStartCommand());
@@ -316,7 +320,11 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
                             shooterModes::isPassOnTheMoveEnabled)))
                 .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(Commands.runOnce(hopper::stop, hopper)))
+                .andThen(
+                    Commands.sequence(
+                        Commands.runOnce(hopper::stop, hopper),
+                        Commands.runOnce(
+                            () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))))
         .withName("shoot when aimed");
   }
 }
