@@ -36,7 +36,7 @@ public class IntakeCommandsFactory {
 
     oi.getReverseIntakeRollersButton()
         .and(intake::isDeployed)
-        .whileTrue(Commands.runOnce(intake::reverseRoller, intake));
+        .onTrue(Commands.runOnce(intake::reverseRoller, intake));
 
     oi.getReverseIntakeRollersButton().onFalse(Commands.runOnce(intake::startRoller, intake));
 
