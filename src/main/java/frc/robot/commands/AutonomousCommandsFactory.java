@@ -578,6 +578,7 @@ public class AutonomousCommandsFactory {
             getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)
                 .until(() -> (matchTimer.get() > 17.5)),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+            Commands.runOnce(intake::retractIntake),
             AutoBuilder.followPath(outpostToMid))
         .finallyDo(
             () -> {
