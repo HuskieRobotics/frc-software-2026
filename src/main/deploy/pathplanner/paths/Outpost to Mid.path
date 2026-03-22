@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7,
+        "x": 0.59,
         "y": 0.664
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.400713753965841,
-        "y": 0.8480874316939877
+        "x": 1.4383880171184018,
+        "y": 0.6903566333808839
       },
       "isLocked": false,
       "linkedName": "Outpost"
     },
     {
       "anchor": {
-        "x": 4.795546448087432,
+        "x": 6.549158345221112,
         "y": 0.664
       },
       "prevControl": {
-        "x": 3.6813251366120214,
+        "x": 5.434937033745702,
         "y": 0.6444125683060109
       },
       "nextControl": null,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.85,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.6925592777657729
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Right Sweep and Outpost",

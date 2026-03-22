@@ -59,7 +59,7 @@ public class Intake extends SubsystemBase {
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.2);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.2);
   private final Debouncer rollerAtSetPointDebouncer = new Debouncer(0.1);
-  private final Debouncer rollerStalledDebouncer = new Debouncer(0.5);
+  private final Debouncer rollerStalledDebouncer = new Debouncer(1.0);
   private boolean rollerStalled = false;
 
   private final SysIdRoutine rollerSysIdRoutine =
@@ -252,7 +252,8 @@ public class Intake extends SubsystemBase {
                 Commands.runOnce(this::startRoller, this),
                 Commands.waitUntil(this::isRollerStalled),
                 Commands.runOnce(this::reverseRoller, this),
-                Commands.waitSeconds(1.0)),
+                // FIXME: add leds here
+                Commands.waitSeconds(0.5)),
             Commands.none(),
             this::isDeployed));
   }

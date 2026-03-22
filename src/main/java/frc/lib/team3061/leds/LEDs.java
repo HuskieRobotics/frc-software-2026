@@ -81,7 +81,7 @@ public abstract class LEDs extends SubsystemBase {
         (leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
     READY_TO_SHOOT((leds, section) -> leds.solid(section, Color.kGreen)),
     SHOOTING((leds, section) -> leds.pulse(section, PULSE_DURATION, 0, 0, 255)),
-    PASSING((leds, section) -> leds.rainbow(section, RAINBOW_CYCLE_LENGTH, RAINBOW_DURATION)),
+    PASSING((leds, section) -> leds.pulse(section, PULSE_DURATION, 0, 255, 0)),
     AUTO_DRIVING_TO_POSE((leds, section) -> leds.pulse(section, PULSE_DURATION, 255, 30, 0)),
     AT_POSE((leds, section) -> leds.solid(section, Color.kGreen)),
     UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
