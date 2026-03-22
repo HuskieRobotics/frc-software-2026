@@ -330,6 +330,7 @@ public class AutonomousCommandsFactory {
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
             Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
             AutoBuilder.followPath(secondSweep),
             getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
@@ -495,6 +496,7 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            Commands.runOnce(intake::deployIntake),
             AutoBuilder.followPath(secondSweep),
             getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
