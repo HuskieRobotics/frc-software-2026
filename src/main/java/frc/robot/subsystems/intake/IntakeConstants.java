@@ -69,6 +69,8 @@ public class IntakeConstants {
   public static final double ROLLER_JAMMED_TIME_THRESHOLD_SECONDS = 0.2;
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
 
+  public static final double ROLLER_STALL_VELOCITY_THRESHOLD_RPS = 5.0;
+
   public static final double DEPLOYER_JOSTLE_FUEL_CURRENT = -20.0;
 
   public static final double JOSTLE_FIRST_RETRACT_POSITION_METERS = Units.inchesToMeters(5.0);

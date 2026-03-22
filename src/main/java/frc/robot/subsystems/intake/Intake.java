@@ -7,6 +7,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -58,6 +59,8 @@ public class Intake extends SubsystemBase {
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.2);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.2);
   private final Debouncer rollerAtSetPointDebouncer = new Debouncer(0.1);
+  private final Debouncer rollerStalledDebouncer = new Debouncer(1.0);
+  private boolean rollerStalled = false;
 
   private final SysIdRoutine rollerSysIdRoutine =
       new SysIdRoutine(
@@ -127,12 +130,22 @@ public class Intake extends SubsystemBase {
             this.deployerLinearPositionMeters,
             RETRACTED_LINEAR_POSITION_METERS,
             DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS));
+    rollerStalled =
+        rollerStalledDebouncer.calculate(
+            DriverStation.isTeleopEnabled()
+                && inputs.rollerReferenceVelocityRPS != 0.0
+                && Math.abs(inputs.rollerVelocityRPS) < ROLLER_STALL_VELOCITY_THRESHOLD_RPS);
 
     this.deployerLinearPositionMeters =
         DEPLOYER_CIRCUMFERENCE_METERS * inputs.deployerAngularPositionRot;
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPositionMeters);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/RollerStalled", rollerStalled);
     LoggedTracer.record("Intake");
+  }
+
+  public boolean isRollerStalled() {
+    return rollerStalled;
   }
 
   public void setLinearPosition(double linearPositionMeters) {
@@ -229,6 +242,15 @@ public class Intake extends SubsystemBase {
         Commands.runOnce(this::stopRoller, this),
         Commands.runOnce(this::retractIntake, this),
         Commands.waitUntil(this::isRetracted));
+  }
+
+  @Override
+  public Command getDefaultCommand() {
+    return Commands.repeatingSequence(
+        Commands.runOnce(this::startRoller, this),
+        Commands.waitUntil(this::isRollerStalled),
+        Commands.runOnce(this::reverseRoller, this),
+        Commands.waitSeconds(1.0));
   }
 
   public double getPositionMeters() {
