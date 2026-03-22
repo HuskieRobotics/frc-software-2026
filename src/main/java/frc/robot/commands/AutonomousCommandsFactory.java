@@ -78,7 +78,7 @@ public class AutonomousCommandsFactory {
 
     autoChooser.addOption(
         "Right Sweep and Outpost",
-        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter));
+        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption("Left Sweep", leftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
 
@@ -550,12 +550,18 @@ public class AutonomousCommandsFactory {
   }
 
   private Command rightNeutralZoneSweepAndOutpost(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
     PathPlannerPath firstSweep;
+    PathPlannerPath outpostToMid;
     final Pose2d startingPose;
 
     try {
       firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep to Outpost");
+      outpostToMid = PathPlannerPath.fromPathFile("Outpost to Mid");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -569,12 +575,16 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true))
+            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)
+                .until(() -> (matchTimer.get() > 17.5)),
+            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+            AutoBuilder.followPath(outpostToMid))
         .finallyDo(
             () -> {
               hopper.stop();
               intake.deployIntake();
               intake.startRoller();
+              shooterModes.disableShootOnTheMoveInAuto();
             });
   }
 

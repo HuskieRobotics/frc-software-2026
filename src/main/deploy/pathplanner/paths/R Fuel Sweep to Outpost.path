@@ -115,6 +115,19 @@
     {
       "name": "slow down on the way back",
       "minWaypointRelativePos": 2.5,
+      "maxWaypointRelativePos": 3.7,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow down to the outpost",
+      "minWaypointRelativePos": 3.7,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 2.5,
@@ -141,7 +154,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "[UNUSED] Right Sweep",
+  "folder": "Right Sweep and Outpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
