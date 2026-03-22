@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -140,11 +139,24 @@ public class CrossSubsystemsCommandsFactory {
         .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
         .whileTrue(
             Commands.either(
-                getStopAndShootCommand(
-                    shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)),
-                getStopAndShootCommand(
-                    shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)),
-                shooterModes::isManualShootEnabled));
+                    getStopAndShootCommand(
+                        shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)),
+                    getStopAndShootCommand(
+                        shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)),
+                    shooterModes::isManualShootEnabled)
+                .withName("manual shoot or pass"));
+
+    oi.getManualShootButton()
+        .onFalse(
+            Commands.sequence(
+                    intake.getDeployAndStartCommand(),
+                    Commands.either(
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))
+                .withName("resume on the move or stop hopper after shoot"));
 
     // this is bound to the left trigger (translate 1)
     // this does a typical shot but starts the intake jostle immediately instead of
@@ -155,6 +167,18 @@ public class CrossSubsystemsCommandsFactory {
         .whileTrue(
             getStopAndShootCommand(
                 shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)));
+
+    oi.getForceSafeShootButton()
+        .onFalse(
+            Commands.sequence(
+                    intake.getDeployAndStartCommand(),
+                    Commands.either(
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))
+                .withName("resume on the move or stop hopper after force shoot"));
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
@@ -216,16 +240,6 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.runOnce(hopper::stop, hopper),
                         Commands.runOnce(
                             () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))))
-        .finallyDo(
-            () -> {
-              CommandScheduler.getInstance().schedule(intake.getDeployAndStartCommand());
-              if (shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled()) {
-                CommandScheduler.getInstance()
-                    .schedule(getShootWhenAimedCommand(shooterModes, shooter, hopper));
-              } else {
-                hopper.stop();
-              }
-            })
         .withName("shoot or pass");
   }
 
@@ -313,7 +327,8 @@ public class CrossSubsystemsCommandsFactory {
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
-    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
+    unloadHopperOnTheMoveTrigger.onFalse(
+        Commands.runOnce(hopper::stop, hopper).withName("stop hopper"));
   }
 
   private static Command getShootWhenAimedCommand(

@@ -12,7 +12,8 @@ public class HopperCommandsFactory {
 
   public static void registerCommands(OperatorInterface oi, Hopper hopper) {
     oi.getUnjamHopperButton().whileTrue(hopper.getUnjamCommand().withName("unjam hopper"));
-    oi.getUnjamHopperButton().onFalse(Commands.runOnce(hopper::stop, hopper));
+    oi.getUnjamHopperButton()
+        .onFalse(Commands.runOnce(hopper::stop, hopper).withName("stop hopper"));
 
     FaultReporter.getInstance()
         .registerSystemCheck(

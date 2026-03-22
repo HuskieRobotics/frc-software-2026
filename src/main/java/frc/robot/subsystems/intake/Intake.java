@@ -225,9 +225,10 @@ public class Intake extends SubsystemBase {
 
   public Command getDeployAndStartCommand() {
     return Commands.sequence(
-        Commands.runOnce(this::deployIntake, this),
-        Commands.waitUntil(this::isDeployed),
-        Commands.runOnce(this::startRoller, this));
+            Commands.runOnce(this::deployIntake, this),
+            Commands.waitUntil(this::isDeployed),
+            Commands.runOnce(this::startRoller, this))
+        .withName("Deploy and Start Intake");
   }
 
   public Command getDeployAndStartInAutoCommand() {
@@ -247,15 +248,16 @@ public class Intake extends SubsystemBase {
   @Override
   public Command getDefaultCommand() {
     return Commands.repeatingSequence(
-        Commands.either(
-            Commands.sequence(
-                Commands.runOnce(this::startRoller, this),
-                Commands.waitUntil(this::isRollerStalled),
-                Commands.runOnce(this::reverseRoller, this),
-                // FIXME: add leds here
-                Commands.waitSeconds(0.5)),
-            Commands.none(),
-            this::isDeployed));
+            Commands.either(
+                Commands.sequence(
+                    Commands.runOnce(this::startRoller, this),
+                    Commands.waitUntil(this::isRollerStalled),
+                    Commands.runOnce(this::reverseRoller, this),
+                    // FIXME: add leds here
+                    Commands.waitSeconds(0.5)),
+                Commands.none(),
+                this::isDeployed))
+        .withName("Intake Default Command");
   }
 
   public double getPositionMeters() {
