@@ -405,9 +405,11 @@ public class AutonomousCommandsFactory {
         Commands.sequence(
             getAutoJostleCommand(intake, shooter).withTimeout(4.0),
             // redeploy intake and allow for more fuel entry. can flash leds here too
-            Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.OUTPOST_FLASH_AUTO)),
             Commands.runOnce(intake::deployIntake),
-            Commands.waitSeconds(1.0),
+            Commands.deadline(
+                Commands.waitSeconds(1.0),
+                Commands.run(
+                    () -> LEDs.getInstance().requestState(LEDs.States.OUTPOST_FLASH_AUTO))),
             getAutoJostleCommand(intake, shooter)),
         Commands.sequence(
             // wait 2s to allow for fuel entry can flash LEDs here as well
