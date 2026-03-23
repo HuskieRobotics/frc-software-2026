@@ -46,8 +46,8 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getSnakeDriveButton() {
-    return translateJoystickButtons[4];
+  public Trigger getForceDeployIntakeButton() {
+    return translateJoystickButtons[2];
   }
 
   @Override
@@ -56,8 +56,8 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getForceDeployIntakeButton() {
-    return translateJoystickButtons[2];
+  public Trigger getSnakeDriveButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
@@ -100,11 +100,6 @@ public class DualJoysticksOI extends OperatorDashboard {
   public Trigger getUnjamHopperButton() {
     return rotateJoystickButtons[4];
   }
-
-  // @Override
-  // public Trigger getOverrideDriveToPoseButton() {
-  //   return rotateJoystickButtons[4];
-  // }
 
   @Override
   public Trigger getResetPoseToVisionButton() {

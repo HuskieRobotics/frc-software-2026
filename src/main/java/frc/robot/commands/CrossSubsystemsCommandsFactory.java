@@ -182,8 +182,6 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
-    oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
-
     oi.getIncrementFlywheelVelocityButton()
         .onTrue(Commands.runOnce(shooterModes::incrementShotVelocity));
     oi.getDecrementFlywheelVelocityButton()

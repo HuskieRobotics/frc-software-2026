@@ -38,8 +38,6 @@ public class IntakeCommandsFactory {
     oi.getReverseIntakeRollersButton()
         .onFalse(Commands.runOnce(intake::startRoller, intake).withName("start intake rollers"));
 
-    intake.setDefaultCommand(intake.getDefaultCommand());
-
     FaultReporter.getInstance()
         .registerSystemCheck(
             IntakeConstants.SUBSYSTEM_NAME,
