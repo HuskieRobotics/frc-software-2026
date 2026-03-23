@@ -246,8 +246,9 @@ public class ShooterModes extends SubsystemBase {
   // (i.e. ‘R’ = red, ‘B’ = blue). This alliance’s goal will be active in Shifts 2 and 4.
 
   public boolean isSafeToShootInHub() {
-    if (!DriverStation.isFMSAttached()) {
-      return OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
+    if (!DriverStation.isFMSAttached()
+        && OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean()) {
+      return true;
     }
 
     // The value will count down the time remaining in the current period (auto or teleop).

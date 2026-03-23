@@ -33,7 +33,7 @@ public class OperatorDashboard implements OperatorInterface {
   //     new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
 
   public final LoggedTunableBoolean hubActiveAtHomeToggle =
-      new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", true, true);
+      new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", false, true);
 
   public final LoggedTunableBoolean lockShooterToggle =
       new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, true);
