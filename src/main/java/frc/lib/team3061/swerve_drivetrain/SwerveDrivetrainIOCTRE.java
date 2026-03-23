@@ -801,7 +801,7 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   private double getAverageDriveCurrent(SwerveDrivetrainIOInputsCollection inputs) {
     double totalCurrent = 0.0;
     for (SwerveIOInputs swerveInputs : inputs.swerve) {
-      totalCurrent += Math.abs(swerveInputs.driveStatorCurrent);
+      totalCurrent += Math.abs(swerveInputs.driveSupplyCurrent);
     }
     return totalCurrent / inputs.swerve.length;
   }
