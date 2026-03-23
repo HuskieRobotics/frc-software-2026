@@ -239,6 +239,6 @@ public class Hopper extends SubsystemBase {
 
   public void stop() {
     io.setSpindexerVelocity(0.0);
-    io.setKickerVelocity(0.0);
+    io.setKickerCurrent(0.0);
   }
 }

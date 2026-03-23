@@ -92,14 +92,12 @@ public class ShooterConstants {
   public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
 
   public static final double VELOCITY_TOLERANCE_RPS = 1.0;
-  public static final double HOOD_TOLERANCE_ANGLE_ROT =
-      Units.degreesToRotations(0.25); // x`FIXME: update when tuning
-  public static final double TURRET_TOLERANCE_ANGLE_ROT =
-      Units.degreesToRotations(0.25); // FIXME: update when tuning
+  public static final double HOOD_TOLERANCE_ANGLE_ROT = Units.degreesToRotations(0.5);
+  public static final double TURRET_TOLERANCE_ANGLE_ROT = Units.degreesToRotations(6.0);
   public static final double TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING_ROT =
-      Units.degreesToRotations(5.0); // FIXME: update when tuning
+      Units.degreesToRotations(15.0);
   public static final double TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING_ROT =
-      Units.degreesToRotations(10.0); // FIXME: update when tuning
+      Units.degreesToRotations(15.0);
 
   // Hood and turret position setpoints
   public static final double HOOD_SETPOINT_1_DEGREES = 22.0;

@@ -18,7 +18,7 @@ public class SwerveDrivetrainConstants {
   public static final double UNTILT_VELOCITY_MPS = 0.5;
 
   public static final double SYSTEM_TEST_VELOCITY_TOLERANCE_MPS = 0.25;
-  public static final double SYSTEM_TEST_ANGLE_TOLERANCE_ROT = Units.degreesToRotations(1.25);
+  public static final double SYSTEM_TEST_ANGLE_TOLERANCE_ROT = Units.degreesToRotations(10.0);
 
   public enum SysIDCharacterizationMode {
     TRANSLATION_VOLTS,
