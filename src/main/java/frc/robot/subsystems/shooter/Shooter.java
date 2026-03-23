@@ -179,11 +179,12 @@ public class Shooter extends SubsystemBase {
             Commands.runOnce(() -> this.systemTestRunning = true),
             getTestVelocityCommand(),
             getTestPositionCommand())
-        .until(
-            () ->
-                !FaultReporter.getInstance()
-                    .getFaults(SUBSYSTEM_NAME)
-                    .isEmpty()) // .until() stops the sequence of commands, if it is triggered true,
+        // .until(
+        //     () ->
+        //         !FaultReporter.getInstance()
+        //             .getFaults(SUBSYSTEM_NAME)
+        //             .isEmpty()) // .until() stops the sequence of commands, if it is triggered
+        // true,
         // so if isEmpty returns false, that gets negated by the ! and
         // becomes true.
         // Then the .until() would stop the rest of the commands from running, because a fault has

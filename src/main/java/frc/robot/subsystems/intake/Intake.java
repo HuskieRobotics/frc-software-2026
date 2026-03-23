@@ -320,7 +320,7 @@ public class Intake extends SubsystemBase {
                                     + " rotations");
                       }
                     }))
-        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+        // .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(
             Commands.sequence(
                 Commands.runOnce(this::stopRoller, this),

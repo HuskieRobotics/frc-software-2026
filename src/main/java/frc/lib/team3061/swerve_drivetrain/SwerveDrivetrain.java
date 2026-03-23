@@ -938,7 +938,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
             getSwerveCheckCommand(SwerveCheckTypes.BACKWARD),
             getSwerveCheckCommand(SwerveCheckTypes.CLOCKWISE),
             getSwerveCheckCommand(SwerveCheckTypes.COUNTERCLOCKWISE))
-        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+        // .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> this.drive(0.0, 0.0, 0.0, true, false), this));
   }
 

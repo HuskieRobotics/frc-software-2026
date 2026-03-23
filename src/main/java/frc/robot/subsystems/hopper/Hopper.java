@@ -123,7 +123,7 @@ public class Hopper extends SubsystemBase {
 
   public Command getSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
-        .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
+        // .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(Commands.runOnce(this::stop, this));
   }
 
