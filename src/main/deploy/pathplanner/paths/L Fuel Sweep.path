@@ -70,11 +70,11 @@
       "rotationDegrees": -119.99999999999999
     },
     {
-      "waypointRelativePos": 2.1,
-      "rotationDegrees": 100.0
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 110.0
     },
     {
-      "waypointRelativePos": 2.55,
+      "waypointRelativePos": 2.64,
       "rotationDegrees": -90.0
     }
   ],

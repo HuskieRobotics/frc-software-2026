@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.571312410841653,
-        "y": 7.767803138373752
+        "x": 7.848139534883719,
+        "y": 7.904758497316637
       },
       "isLocked": false,
       "linkedName": "Left Bank"
@@ -20,40 +20,40 @@
         "y": 4.442567760342368
       },
       "prevControl": {
-        "x": 5.928102710413695,
-        "y": 7.263195435092725
+        "x": 5.91731663685152,
+        "y": 6.525599284436494
       },
       "nextControl": {
-        "x": 6.006334102469287,
-        "y": 2.9995845680628825
+        "x": 6.023169091024382,
+        "y": 2.99999172955613
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.713637660485022,
-        "y": 4.973052781740371
+        "x": 7.4425044722719145,
+        "y": 4.8706082289803225
       },
       "prevControl": {
-        "x": 7.6892816689743935,
-        "y": 3.9379231425386343
+        "x": 7.418148480761286,
+        "y": 3.8354785897785857
       },
       "nextControl": {
-        "x": 7.791269614835947,
-        "y": 8.272410841654779
+        "x": 7.52013642662284,
+        "y": 8.16996628889473
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.017,
-        "y": 7.487
+        "x": 3.8729159212880147,
+        "y": 7.466672629695886
       },
       "prevControl": {
-        "x": 7.312539229671895,
-        "y": 7.35376604850214
+        "x": 7.669660107334527,
+        "y": 7.401771019677997
       },
       "nextControl": null,
       "isLocked": false,
@@ -66,8 +66,8 @@
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 1.6,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.65,
+      "rotationDegrees": 25.0
     },
     {
       "waypointRelativePos": 2.1,
@@ -75,6 +75,10 @@
     },
     {
       "waypointRelativePos": 2.4,
+      "rotationDegrees": 165.0
+    },
+    {
+      "waypointRelativePos": 2.6,
       "rotationDegrees": 180.0
     }
   ],
