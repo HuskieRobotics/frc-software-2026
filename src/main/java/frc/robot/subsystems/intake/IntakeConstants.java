@@ -1,8 +1,6 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.units.measure.*;
+import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
 
@@ -25,22 +23,22 @@ public class IntakeConstants {
   // Mechanical properties for simulation
   public static final double DEPLOYER_LENGTH_METERS = 0.3;
   public static final double DEPLOYER_MASS_KG = 0.15;
-  public static final Angle DEPLOYER_MIN_ANGLE = Rotations.of(0);
-  public static final Angle DEPLOYER_MAX_ANGLE = Rotations.of(23.3);
+  public static final double DEPLOYER_MIN_ANGLE_ROT = 0.0;
+  public static final double DEPLOYER_MAX_ANGLE_ROT = 23.3;
 
-  public static final Distance DEPLOYER_CIRCUMFERENCE = Inches.of(1.0).times(Math.PI);
+  public static final double DEPLOYER_CIRCUMFERENCE_METERS = Units.inchesToMeters(Math.PI);
 
-  public static final Angle DEPLOYED_ANGULAR_POSITION = Rotations.of(3.6606); // 11.5 inches
-  public static final Distance DEPLOYED_LINEAR_POSITION =
-      Meters.of(DEPLOYED_ANGULAR_POSITION.in(Rotations) * DEPLOYER_CIRCUMFERENCE.in(Meters));
+  public static final double DEPLOYED_ANGULAR_POSITION_ROT = 3.6606; // 11.5 inches
+  public static final double DEPLOYED_LINEAR_POSITION_METERS =
+      DEPLOYED_ANGULAR_POSITION_ROT * DEPLOYER_CIRCUMFERENCE_METERS;
 
-  public static final Angle RETRACTED_ANGULAR_POSITION = Rotations.of(0.0);
-  public static final Distance RETRACTED_LINEAR_POSITION = Inches.of(0.1);
+  public static final double RETRACTED_ANGULAR_POSITION_ROT = 0.0;
+  public static final double RETRACTED_LINEAR_POSITION_METERS = Units.inchesToMeters(0.1);
 
-  public static final Distance DEPLOYER_LINEAR_POSITION_TOLERANCE = Inches.of(0.25);
-  public static final Angle DEPLOYER_ANGULAR_POSITION_TOLERANCE =
-      Rotations.of(DEPLOYER_LINEAR_POSITION_TOLERANCE.div(DEPLOYER_CIRCUMFERENCE).magnitude());
-  public static final Distance DEPLOYER_HOPPER_INTERFERENCE_LIMIT = Inches.of(3.0);
+  public static final double DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS = Units.inchesToMeters(0.5);
+  public static final double DEPLOYER_ANGULAR_POSITION_TOLERANCE_ROT =
+      DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS / DEPLOYER_CIRCUMFERENCE_METERS;
+  public static final double DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS = Units.inchesToMeters(3.0);
 
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
@@ -56,9 +54,12 @@ public class IntakeConstants {
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2;
   public static final boolean ROLLER_MOTOR_INVERTED = true;
-  public static final AngularVelocity ROLLER_TARGET_VELOCITY = RotationsPerSecond.of(35.0);
-  public static final AngularVelocity ROLLER_EJECT_VELOCITY = RotationsPerSecond.of(-40.0);
-  public static final AngularVelocity ROLLER_VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
+
+  public static final double ROLLER_TARGET_VELOCITY_RPS = 40.0;
+  public static final double ROLLER_AUTO_TARGET_VELOCITY_RPS = 50.0;
+
+  public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
+  public static final double ROLLER_VELOCITY_TOLERANCE_RPS = 3.0;
 
   public static final double ROLLER_PEAK_CURRENT_LIMIT = 50.0;
 
@@ -68,8 +69,14 @@ public class IntakeConstants {
   public static final double ROLLER_JAMMED_TIME_THRESHOLD_SECONDS = 0.2;
   public static final double ROLLER_UNJAM_DURATION_SECONDS = 2.0;
 
-  public static final Current DEPLOYER_JOSTLE_FUEL_CURRENT = Amps.of(-20.0);
-  public static final Distance JOSTLE_RETRACTED_POSITION = Inches.of(5.0);
-  public static final Distance JOSTLE_EXTENDED_POSITION = Inches.of(11.0);
+  public static final double ROLLER_STALL_VELOCITY_THRESHOLD_RPS = 5.0;
+
+  public static final double DEPLOYER_JOSTLE_FUEL_CURRENT = -20.0;
+
+  public static final double JOSTLE_FIRST_RETRACT_POSITION_METERS = Units.inchesToMeters(5.0);
+  public static final double JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS =
+      Units.inchesToMeters(3.5); // possibly change to 4
+
+  public static final double JOSTLE_EXTENDED_POSITION_METERS = Units.inchesToMeters(11.0);
   public static final int JOSTLE_INITIAL_FUEL_COUNT = 10;
 }

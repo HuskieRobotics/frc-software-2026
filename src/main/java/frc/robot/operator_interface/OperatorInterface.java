@@ -97,11 +97,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getOverrideDriveToPoseButton() {
+  public default Trigger getCurrentPoseButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getCurrentPoseButton() {
+  public default Trigger getReverseIntakeRollersButton() {
     return new Trigger(() -> false);
   }
 
@@ -142,6 +142,23 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  // Operator Xbox Controller Triggers
+  public default Trigger getIncrementFlywheelVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDecrementFlywheelVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveTurretRightButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveTurretLeftButton() {
+    return new Trigger(() -> false);
+  }
+
   // only for at home
   public default Trigger getHubActiveAtHomeToggle() {
     return new Trigger(() -> false);
@@ -157,6 +174,34 @@ public interface OperatorInterface {
   }
 
   public default Trigger getSlowShooterForPitTest() {
+    return new Trigger(() -> false);
+  }
+
+  // System Tests
+
+  public default Trigger getDrivetrainSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getShooterSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHopperSystemTest() {
+    return new Trigger(() -> false);
+  }
+
+  // Faults
+
+  public default Trigger getClearAllFaults() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getCheckForFaults() {
     return new Trigger(() -> false);
   }
 }

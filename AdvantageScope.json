@@ -1,13 +1,13 @@
 {
   "hubs": [
     {
-      "x": 214,
-      "y": 33,
+      "x": 669,
+      "y": 116,
       "width": 1260,
       "height": 949,
       "state": {
         "sidebar": {
-          "width": 271,
+          "width": 381,
           "expanded": [
             "/NetworkInputs/SmartDashboard",
             "/RealOutputs/DriveToPose/pose difference (target frame)",
@@ -23,13 +23,9 @@
             "/RealOutputs/SystemStatus/Intake",
             "/RealOutputs/SystemStatus/Hopper",
             "/RealOutputs/SystemStatus/Shooter",
-            "/RealOutputs/ShooterModes",
-            "/RealOutputs/LEDS",
             "/ReplayOutputs",
-            "/ReplayOutputs/Vision",
             "/Vision/BL/PoseObservations/1",
             "/Vision/BL/PoseObservations/0",
-            "/RealOutputs/Vision/BR",
             "/Vision/BR/PoseObservations/1",
             "/Vision/BR/PoseObservations/0",
             "/Drivetrain/SwerveReferenceStates",
@@ -46,25 +42,56 @@
             "/Drivetrain/SwerveMeasuredStates/2",
             "/Drivetrain/SwerveMeasuredStates/1",
             "/Drivetrain/SwerveMeasuredStates/0",
-            "/RealOutputs/Shooter",
             "/NetworkInputs/Tuning",
             "/NetworkInputs/Tuning/operatorDashboard",
             "/Drivetrain/FR",
-            "/RealOutputs/Vision",
             "/RealOutputs",
-            "/SystemStats",
             "/SystemStats/NTClients",
             "/SystemStats/NTClients/northstar_BR@2",
             "/SystemStats/NTClients/northstar_BR@1",
             "/SystemStats/NTClients/northstar_BL@2",
             "/SystemStats/NTClients/northstar_BL@1",
             "/SystemStats/NTClients/Elastic@3",
+            "/RealOutputs/Vision/BL",
+            "/SystemStats/NTClients/Elastic@2",
+            "/SystemStats/NTClients/Elastic@1",
+            "/SystemStats/NTClients/northstar_BL@4",
+            "/SystemStats/NTClients/northstar_BL@3",
+            "/SystemStats/NTClients/northstar_BR@3",
+            "/Vision/BR/ObjDetect/Frames",
+            "/Vision/BR/AprilTags",
+            "/Vision/BR/AprilTags/Frames",
+            "/Vision/BL/AprilTags",
+            "/Vision/BL/AprilTags/Frames",
+            "/DriverStation/Joystick0",
+            "/DriverStation/Joystick0/AxisValues",
+            "/ReplayOutputs/ShooterModes",
+            "/Phoenix6",
+            "/Phoenix6/TalonFX-26",
+            "/Phoenix6/TalonFX-26/PIDPosition",
+            "/RealOutputs/Vision/BR",
+            "/RealOutputs/LEDS",
+            "/RealOutputs/Shooter",
+            "/RealOutputs/Vision",
+            "/SystemStats",
+            "/SystemStats/NTClients/northstar_BR@4",
+            "/Tuning",
+            "/NetworkInputs/Vision",
+            "/RealOutputs/Vision/BCR",
+            "/RealOutputs/Vision/BCL",
             "/Vision",
-            "/RealOutputs/Vision/BL"
+            "/Vision/BCL",
+            "/Vision/BCR",
+            "/Vision/BCR/AprilTags",
+            "/Vision/BCL/AprilTags",
+            "/Vision/BCR/AprilTags/Frames",
+            "/Vision/BCL/AprilTags/Frames",
+            "/RealOutputs/Logger",
+            "/DriverStation"
           ]
         },
         "tabs": {
-          "selected": 5,
+          "selected": 30,
           "tabs": [
             {
               "type": 0,
@@ -192,6 +219,71 @@
               "controlsHeight": 200
             },
             {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/AverageDriveCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/QueuedCycles",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/SystemStats/BrownedOut",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Enabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "xru7fxfr6h56fo4lezba5nf6v5k62aqp",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
               "type": 3,
               "title": "3D Field",
               "controller": {
@@ -258,11 +350,52 @@
                     "type": "ghost",
                     "logKey": "/RealOutputs/Vision/RobotPosesRejected",
                     "logType": "Pose3d[]",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "model": "3061 Robot (2026)",
                       "color": "#ff0000"
                     }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/BL/RobotToCameraPose",
+                    "logType": "Pose3d",
+                    "visible": false,
+                    "options": {
+                      "model": "3061 Robot (2026)",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/BR/RobotToCameraPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "3061 Robot (2026)",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/BCL/CameraAxes",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/BL/CameraAxes",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/BCR/CameraAxes",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
                   }
                 ],
                 "game": "FRC:2026 Field"
@@ -272,14 +405,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -5.304316322176504,
-                  3.9380673139049938,
-                  5.681344669470703
+                  -9.022033572900723,
+                  1.55452978035449,
+                  4.9961711975627745
                 ],
                 "cameraTarget": [
-                  -5.32671004842005,
-                  -0.5343841964873316,
-                  -0.242002004463668
+                  1.2905767150251262,
+                  -3.9204952832411477,
+                  1.7199370247090926
                 ]
               },
               "controlsHeight": 200
@@ -672,7 +805,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/KickerStatorCurrent",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -697,9 +830,17 @@
                       "color": "#5f4528",
                       "size": "normal"
                     }
-                  }
-                ],
-                "rightSources": [
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Hopper/KickerSupplyCurrent",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
                   {
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerStatorCurrent",
@@ -709,7 +850,9 @@
                       "color": "#af2437",
                       "size": "normal"
                     }
-                  },
+                  }
+                ],
+                "rightSources": [
                   {
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerVelocity",
@@ -727,6 +870,36 @@
                     "visible": false,
                     "options": {
                       "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/DriverStation/Joystick0/AxisValues/0",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/DriverStation/Joystick0/AxisValues/1",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Hopper/SpindexerSupplyCurrent",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#80588e",
                       "size": "normal"
                     }
                   }
@@ -752,27 +925,18 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "/RealOutputs/CommandsAll/stop and shoot or pass",
-                    "logType": "Boolean",
+                    "logKey": "/RealOutputs/LEDS/state",
+                    "logType": "String",
                     "visible": true,
                     "options": {
                       "color": "#858584"
-                    }
-                  },
-                  {
-                    "type": "stripes",
-                    "logKey": "/RealOutputs/CommandsAll/auto unjam hopper",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#3b875a"
                     }
                   }
                 ],
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "autoTarget": null,
+                  "autoTarget": "rotations/second",
                   "preset": null
                 },
                 "rightUnitConversion": {
@@ -784,7 +948,7 @@
               },
               "controllerUUID": "g296nmx8bcobhabnvqnk3x7u11kr1dlp",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 314
             },
             {
               "type": 1,
@@ -795,7 +959,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/FlywheelLeadVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
@@ -815,9 +979,39 @@
                     "type": "stepped",
                     "logKey": "/Shooter/FlywheelLeadReferenceVelocity",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Shooter/TurretSupplyCurrent",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#5f4528",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Shooter/HoodSupplyCurrent",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Shooter/FlywheelLeadSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
                       "size": "normal"
                     }
                   }
@@ -827,7 +1021,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/HoodPosition",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e5b31b",
                       "size": "normal"
@@ -837,7 +1031,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/TurretPosition",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#af2437",
                       "size": "normal"
@@ -867,7 +1061,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/HoodReferencePosition",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#80588e",
                       "size": "normal"
@@ -877,7 +1071,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/TurretReferencePosition",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -947,6 +1141,33 @@
                     "options": {
                       "color": "#c0b487"
                     }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Shooter/FuelDetectorHasFuel",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Autonomous",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Enabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
+                    }
                   }
                 ],
                 "leftLockedRange": null,
@@ -956,8 +1177,13 @@
                   "preset": null
                 },
                 "rightUnitConversion": {
-                  "autoTarget": "degrees",
-                  "preset": null
+                  "autoTarget": null,
+                  "preset": {
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
+                  }
                 },
                 "leftFilter": 0,
                 "rightFilter": 0
@@ -1026,6 +1252,162 @@
                 "stepSize": 0.1
               },
               "controllerUUID": "hk2ojewbd5mjt2ukpc9d50vzrsg9qp87",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 6,
+              "title": "Supply Currents",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "independent",
+                    "logKey": "/Hopper/KickerSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Hopper/SpindexerSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Intake/DeployerSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Intake/RollerSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Shooter/FlywheelLeadSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Shooter/HoodSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Shooter/TurretSupplyCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
+                    }
+                  }
+                ],
+                "timeRange": "visible",
+                "rangeMin": 0,
+                "rangeMax": 70,
+                "stepSize": 2
+              },
+              "controllerUUID": "fheh048lu8u06ua8204kmxb0m5wan939",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 6,
+              "title": "Stator Currents",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "independent",
+                    "logKey": "/Hopper/KickerStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Hopper/SpindexerStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Intake/DeployerStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Intake/RollerStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Shooter/FlywheelLeadStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Shooter/HoodStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Shooter/TurretStatorCurrent",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
+                    }
+                  }
+                ],
+                "timeRange": "visible",
+                "rangeMin": 0,
+                "rangeMax": 70,
+                "stepSize": 2
+              },
+              "controllerUUID": "0y3fhp2bqu8o5jhu5wv4ag95kwlx8feg",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -1276,6 +1658,16 @@
                       "color": "#858584",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/SystemStats/EpochTimeMicros",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "discreteSources": [
@@ -1331,6 +1723,24 @@
                     "visible": true,
                     "options": {
                       "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/BL/sending frames",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/BR/sending frames",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
                     }
                   }
                 ],
@@ -2432,7 +2842,7 @@
                     "type": "stepped",
                     "logKey": "/RealOutputs/LoggedRobot/GCTimeMS",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#e5b31b",
                       "size": "normal"
@@ -2466,6 +2876,151 @@
               "controllerUUID": "u69kfycg0v4fjtrz8inyi2r31kotyqon",
               "renderer": null,
               "controlsHeight": 373
+            },
+            {
+              "type": 1,
+              "title": "Logger",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/AlertLogMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/AutoLogMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/ConduitCaptureMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/ConduitSaveMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/ConsoleMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/DashboardInputsMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/DriverStationMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/EntryUpdateMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/RadioLogMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Logger/QueuedCycles",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#5f4528",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Enabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/DriverStation/Autonomous",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "slh7yxycrfcnml2ok80omegy3ecintuw",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 1,

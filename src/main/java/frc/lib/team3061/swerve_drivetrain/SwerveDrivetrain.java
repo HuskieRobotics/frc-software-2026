@@ -27,10 +27,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,6 +43,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrainConstants.SysIDCharacterizationMode;
 import frc.lib.team3061.util.CustomPoseEstimator;
+import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SwerveRobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
@@ -105,20 +104,12 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
   private static final double BREAK_MODE_DELAY_SEC = 10.0;
 
   private SlewRateLimiter xFilter =
-      new SlewRateLimiter(
-          RobotConfig.getInstance()
-              .getRobotMaxAccelerationWhenLimited()
-              .in(MetersPerSecondPerSecond));
+      new SlewRateLimiter(RobotConfig.getInstance().getRobotMaxAccelerationWhenLimitedMPSPS());
   private SlewRateLimiter yFilter =
-      new SlewRateLimiter(
-          RobotConfig.getInstance()
-              .getRobotMaxAccelerationWhenLimited()
-              .in(MetersPerSecondPerSecond));
+      new SlewRateLimiter(RobotConfig.getInstance().getRobotMaxAccelerationWhenLimitedMPSPS());
   private SlewRateLimiter thetaFilter =
       new SlewRateLimiter(
-          RobotConfig.getInstance()
-              .getRobotMaxAngularAccelerationWhenLimited()
-              .in(RadiansPerSecondPerSecond));
+          RobotConfig.getInstance().getRobotMaxAngularAccelerationWhenLimitedRPSPS());
 
   private boolean accelerationLimiting = false;
   private boolean driveToPoseCanceled = false;
@@ -259,9 +250,6 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
     this.autoThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    FaultReporter faultReporter = FaultReporter.getInstance();
-    faultReporter.registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
-
     AutoBuilder.configure(
         this::getPose, // Robot pose supplier
         this::resetPose, // Method to reset odometry (will be called if your auto has a starting
@@ -346,7 +334,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     Pose2d zeroedPose = new Pose2d(pose.getX(), pose.getY(), new Rotation2d());
 
     this.odometry.resetPose(
-        Rotation2d.fromRadians(this.inputs.drivetrain.rawHeading.in(Radians)),
+        Rotation2d.fromRadians(Units.degreesToRadians(this.inputs.drivetrain.rawHeadingDeg)),
         this.modulePositions,
         zeroedPose);
   }
@@ -367,8 +355,8 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    *
    * @return the raw heading of the drivetrain as reported by the gyro in degrees
    */
-  public Angle getYaw() {
-    return this.inputs.drivetrain.rawHeading;
+  public double getYawDeg() {
+    return this.inputs.drivetrain.rawHeadingDeg;
   }
 
   /**
@@ -409,9 +397,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    */
   public void resetPose(Pose2d pose) {
     this.odometry.resetPose(
-        Rotation2d.fromRadians(this.inputs.drivetrain.rawHeading.in(Radians)),
-        this.modulePositions,
-        pose);
+        Rotation2d.fromDegrees(this.inputs.drivetrain.rawHeadingDeg), this.modulePositions, pose);
   }
 
   /**
@@ -447,16 +433,16 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    * <p>If the drive mode is X, the robot will ignore the specified velocities and turn the swerve
    * modules into the x-stance orientation.
    *
-   * @param xVelocity the desired velocity in the x direction (m/s)
-   * @param yVelocity the desired velocity in the y direction (m/s)
-   * @param rotationalVelocity the desired rotational velocity (rad/s)
+   * @param xVelocityMPS the desired velocity in the x direction (m/s)
+   * @param yVelocityMPS the desired velocity in the y direction (m/s)
+   * @param rotationalVelocityRadiansPerSecond the desired rotational velocity (rad/s)
    * @param isOpenLoop true for open-loop control; false for closed-loop control
    * @param isFieldRelative true to for field-relative motion; false, for robot-relative
    */
   public void drive(
-      LinearVelocity xVelocity,
-      LinearVelocity yVelocity,
-      AngularVelocity rotationalVelocity,
+      double xVelocityMPS,
+      double yVelocityMPS,
+      double rotationalVelocityRadiansPerSecond,
       boolean isOpenLoop,
       boolean isFieldRelative) {
 
@@ -464,54 +450,48 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
 
     // log velocity before and after filter
-    Logger.recordOutput(SUBSYSTEM_NAME + "/requestedXVelocity", xVelocity);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/requestedYVelocity", yVelocity);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/requestedRotationalVelocity", rotationalVelocity);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/requestedXVelocity", xVelocityMPS);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/requestedYVelocity", yVelocityMPS);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/requestedRotationalVelocity", rotationalVelocityRadiansPerSecond);
 
     // always calculate whenever we are driving so that we maintain a history of recent values
-    this.xFilter.calculate(xVelocity.in(MetersPerSecond));
-    this.yFilter.calculate(yVelocity.in(MetersPerSecond));
-    this.thetaFilter.calculate(rotationalVelocity.in(RadiansPerSecond));
+    this.xFilter.calculate(xVelocityMPS);
+    this.yFilter.calculate(yVelocityMPS);
+    this.thetaFilter.calculate(rotationalVelocityRadiansPerSecond);
 
     // log velocity after filter
+    Logger.recordOutput(SUBSYSTEM_NAME + "/filteredXVelocity", this.xFilter.lastValue());
+    Logger.recordOutput(SUBSYSTEM_NAME + "/filteredYVelocity", this.yFilter.lastValue());
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredXVelocity", this.xFilter.lastValue(), MetersPerSecond);
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredYVelocity", this.yFilter.lastValue(), MetersPerSecond);
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredRotationalVelocity",
-        this.thetaFilter.lastValue(),
-        RadiansPerSecond);
+        SUBSYSTEM_NAME + "/filteredRotationalVelocity", this.thetaFilter.lastValue());
 
     if (accelerationLimiting) {
-      xVelocity = MetersPerSecond.of(this.xFilter.lastValue());
-      yVelocity = MetersPerSecond.of(this.yFilter.lastValue());
-      rotationalVelocity = RadiansPerSecond.of(this.thetaFilter.lastValue());
+      xVelocityMPS = this.xFilter.lastValue();
+      yVelocityMPS = this.yFilter.lastValue();
+      rotationalVelocityRadiansPerSecond = this.thetaFilter.lastValue();
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
     // slow-mode multiplier
     if (isTranslationSlowMode) {
-      xVelocity = xVelocity.times(slowModeMultiplier);
-      yVelocity = yVelocity.times(slowModeMultiplier);
+      xVelocityMPS = xVelocityMPS * slowModeMultiplier;
+      yVelocityMPS = yVelocityMPS * slowModeMultiplier;
     }
 
     if (Constants.DEMO_MODE) {
-      LinearVelocity velocity =
-          MetersPerSecond.of(
-              Math.sqrt(
-                  Math.pow(xVelocity.in(MetersPerSecond), 2)
-                      + Math.pow(yVelocity.in(MetersPerSecond), 2)));
-      if (velocity.gt(DEMO_MODE_MAX_VELOCITY)) {
-        double scale = DEMO_MODE_MAX_VELOCITY.div(velocity).magnitude();
-        xVelocity = xVelocity.times(scale);
-        yVelocity = yVelocity.times(scale);
+      double velocity = Math.sqrt(Math.pow(xVelocityMPS, 2) + Math.pow(yVelocityMPS, 2));
+
+      if (velocity > DEMO_MODE_MAX_VELOCITY_MPS) {
+        double scale = DEMO_MODE_MAX_VELOCITY_MPS / velocity;
+        xVelocityMPS = xVelocityMPS * scale;
+        yVelocityMPS = yVelocityMPS * scale;
       }
     }
 
     // if rotation is in slow mode, multiply the rotational velocity by the slow-mode multiplier
     if (isRotationSlowMode) {
-      rotationalVelocity = rotationalVelocity.times(slowModeMultiplier);
+      rotationalVelocityRadiansPerSecond = rotationalVelocityRadiansPerSecond * slowModeMultiplier;
     }
 
     if (isFieldRelative) {
@@ -520,12 +500,14 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
       // alliance, is in the negative x direction. Similarly, "left" from a field-relative
       // perspective when on the red alliance is in the negative y direction.
       if (Field2d.getInstance().getAlliance() != Alliance.Blue) {
-        xVelocity = xVelocity.unaryMinus();
-        yVelocity = yVelocity.unaryMinus();
+        xVelocityMPS = xVelocityMPS * -1;
+        yVelocityMPS = yVelocityMPS * -1;
       }
-      this.io.driveFieldRelative(xVelocity, yVelocity, rotationalVelocity, isOpenLoop);
+      this.io.driveFieldRelative(
+          xVelocityMPS, yVelocityMPS, rotationalVelocityRadiansPerSecond, isOpenLoop);
     } else {
-      this.io.driveRobotRelative(xVelocity, yVelocity, rotationalVelocity, isOpenLoop);
+      this.io.driveRobotRelative(
+          xVelocityMPS, yVelocityMPS, rotationalVelocityRadiansPerSecond, isOpenLoop);
     }
   }
 
@@ -540,21 +522,18 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    * <p>If the translation slow mode feature is enabled, the corresponding velocities will be scaled
    * to enable finer control.
    *
-   * @param xVelocity the desired velocity in the x direction (m/s)
-   * @param yVelocity the desired velocity in the y direction (m/s)
+   * @param xVelocityMPS the desired velocity in the x direction (m/s)
+   * @param yVelocityMPS the desired velocity in the y direction (m/s)
    * @param targetDirection the desired direction of the robot's orientation. Zero degrees is
    *     aligned to the positive x axis and increases in the CCW direction.
    * @param isOpenLoop true for open-loop control; false for closed-loop control
    */
   public void driveFacingAngle(
-      LinearVelocity xVelocity,
-      LinearVelocity yVelocity,
-      Rotation2d targetDirection,
-      boolean isOpenLoop) {
+      double xVelocityMPS, double yVelocityMPS, Rotation2d targetDirection, boolean isOpenLoop) {
 
     // always calculate whenever we are driving so that we maintain a history of recent values
-    this.xFilter.calculate(xVelocity.in(MetersPerSecond));
-    this.yFilter.calculate(yVelocity.in(MetersPerSecond));
+    this.xFilter.calculate(xVelocityMPS);
+    this.yFilter.calculate(yVelocityMPS);
     this.thetaFilter.calculate(0.0);
 
     // get the slow-mode multiplier from the config
@@ -563,28 +542,24 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
     // slow-mode multiplier
     if (isTranslationSlowMode) {
-      xVelocity = xVelocity.times(slowModeMultiplier);
-      yVelocity = yVelocity.times(slowModeMultiplier);
+      xVelocityMPS = xVelocityMPS * slowModeMultiplier;
+      yVelocityMPS = yVelocityMPS * slowModeMultiplier;
     }
 
     if (Constants.DEMO_MODE) {
-      LinearVelocity velocity =
-          MetersPerSecond.of(
-              Math.sqrt(
-                  Math.pow(xVelocity.in(MetersPerSecond), 2)
-                      + Math.pow(yVelocity.in(MetersPerSecond), 2)));
-      if (velocity.gt(DEMO_MODE_MAX_VELOCITY)) {
-        double scale = DEMO_MODE_MAX_VELOCITY.div(velocity).magnitude();
-        xVelocity = xVelocity.times(scale);
-        yVelocity = yVelocity.times(scale);
+      double velocity = Math.sqrt(Math.pow(xVelocityMPS, 2) + Math.pow(yVelocityMPS, 2));
+      if (velocity > DEMO_MODE_MAX_VELOCITY_MPS) {
+        double scale = DEMO_MODE_MAX_VELOCITY_MPS / velocity;
+        xVelocityMPS = xVelocityMPS * scale;
+        yVelocityMPS = yVelocityMPS * scale;
       }
     }
 
     if (Field2d.getInstance().getAlliance() != Alliance.Blue) {
-      xVelocity = xVelocity.unaryMinus();
-      yVelocity = yVelocity.unaryMinus();
+      xVelocityMPS = xVelocityMPS * -1;
+      yVelocityMPS = yVelocityMPS * -1;
     }
-    this.io.driveFieldRelativeFacingAngle(xVelocity, yVelocity, targetDirection, isOpenLoop);
+    this.io.driveFieldRelativeFacingAngle(xVelocityMPS, yVelocityMPS, targetDirection, isOpenLoop);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/DriveFacingAngle/targetDirection", targetDirection);
   }
@@ -594,8 +569,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    * after this method is invoked.
    */
   public void stop() {
-    this.io.driveRobotRelative(
-        MetersPerSecond.of(0.0), MetersPerSecond.of(0.0), RadiansPerSecond.of(0.0), false);
+    this.io.driveRobotRelative(0.0, 0.0, 0.0, false);
   }
 
   /**
@@ -782,7 +756,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    *
    * @return the average current of the swerve module drive motors in amps
    */
-  public Current getAverageDriveCurrent() {
+  public double getAverageDriveCurrent() {
     return this.inputs.drivetrain.averageDriveCurrent;
   }
 
@@ -796,7 +770,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     for (int i = 0; i < inputs.swerve.length; i++) {
       positions[i] =
           inputs.drivetrain.swerveModulePositions[i].distanceMeters
-              / (RobotConfig.getInstance().getWheelRadius().in(Meters));
+              / (RobotConfig.getInstance().getWheelRadiusMeters());
     }
     return positions;
   }
@@ -869,8 +843,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
     } else if (!DriverStation.isEnabled()) {
       boolean stillMoving = false;
-      double velocityLimit =
-          RobotConfig.getInstance().getRobotMaxCoastVelocity().in(MetersPerSecond);
+      double velocityLimit = RobotConfig.getInstance().getRobotMaxCoastVelocityMPS();
       if (Math.abs(this.inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond) > velocityLimit
           || Math.abs(this.inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond)
               > velocityLimit) {
@@ -956,7 +929,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     this.io.applySysIdCharacterization(mode, value);
   }
 
-  private Command getSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::disableFieldRelative, this),
             getSwerveCheckCommand(SwerveCheckTypes.LEFT),
@@ -966,16 +939,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
             getSwerveCheckCommand(SwerveCheckTypes.CLOCKWISE),
             getSwerveCheckCommand(SwerveCheckTypes.COUNTERCLOCKWISE))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(
-            Commands.runOnce(
-                () ->
-                    this.drive(
-                        MetersPerSecond.of(0.0),
-                        MetersPerSecond.of(0.0),
-                        RadiansPerSecond.of(0.0),
-                        true,
-                        false),
-                this));
+        .andThen(Commands.runOnce(() -> this.drive(0.0, 0.0, 0.0, true, false), this));
   }
 
   public void setDriveToPoseCanceled(boolean canceled) {
@@ -988,10 +952,10 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
   public boolean isTilted() {
     boolean isTilted =
-        this.inputs.drivetrain.roll.gt(TILT_THRESHOLD)
-            || this.inputs.drivetrain.roll.lt(TILT_THRESHOLD.unaryMinus())
-            || this.inputs.drivetrain.pitch.gt(TILT_THRESHOLD)
-            || this.inputs.drivetrain.pitch.lt(TILT_THRESHOLD.unaryMinus());
+        this.inputs.drivetrain.rollDeg > TILT_THRESHOLD_DEG
+            || this.inputs.drivetrain.rollDeg < -TILT_THRESHOLD_DEG
+            || this.inputs.drivetrain.pitchDeg > TILT_THRESHOLD_DEG
+            || this.inputs.drivetrain.pitchDeg < -TILT_THRESHOLD_DEG;
     if (isTilted) {
       LEDs.getInstance().requestState(LEDs.States.UNTILTING_ROBOT);
     }
@@ -1000,18 +964,18 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
   }
 
   public void untilt() {
-    double rollRad = this.inputs.drivetrain.roll.in(Radians);
-    double pitchRad = this.inputs.drivetrain.pitch.in(Radians);
+    double rollRad = Units.degreesToRadians(this.inputs.drivetrain.rollDeg);
+    double pitchRad = Units.degreesToRadians(this.inputs.drivetrain.pitchDeg);
 
     double gravityX =
         (9.8 * Math.cos(pitchRad) * Math.cos(rollRad) * Math.sin(pitchRad) * Math.cos(pitchRad));
     double gravityY = (-9.8 * Math.cos(pitchRad) * Math.cos(rollRad) * Math.sin(rollRad));
 
     double heading = Math.atan2(gravityY, gravityX);
-    LinearVelocity xVelocity = UNTILT_VELOCITY.times(Math.cos(heading));
-    LinearVelocity yVelocity = UNTILT_VELOCITY.times(Math.sin(heading));
+    double xVelocity = UNTILT_VELOCITY_MPS * (Math.cos(heading));
+    double yVelocity = UNTILT_VELOCITY_MPS * (Math.sin(heading));
 
-    this.drive(xVelocity, yVelocity, RadiansPerSecond.of(0.0), false, false);
+    this.drive(xVelocity, yVelocity, 0.0, false, false);
   }
 
   // method to convert swerve module number to location
@@ -1035,206 +999,202 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    * of the specified values.
    *
    * @param swerveModuleNumber the swerve module number to check
-   * @param angleTarget the target angle of the swerve module
-   * @param angleTolerance the tolerance of the angle
-   * @param velocityTarget the target velocity of the swerve module
-   * @param velocityTolerance the tolerance of the velocity
+   * @param angleTargetRot the target angle of the swerve module
+   * @param angleToleranceRot the tolerance of the angle
+   * @param velocityTargetMPS the target velocity of the swerve module
+   * @param velocityToleranceMPS the tolerance of the velocity
    */
   private void checkSwerveModule(
       int swerveModuleNumber,
-      Angle angleTarget,
-      Angle angleTolerance,
-      LinearVelocity velocityTarget,
-      LinearVelocity velocityTolerance) {
+      double angleTargetRot,
+      double angleToleranceRot,
+      double velocityTargetMPS,
+      double velocityToleranceMPS) {
 
     boolean isOffset = false;
 
     // Check to see if the direction is rotated properly
     // steerAbsolutePositionDeg is a value that is between (-180, 180]
-    if (this.inputs.swerve[swerveModuleNumber].steerAbsolutePosition.isNear(
-        angleTarget.minus(Degrees.of(180)), angleTolerance)) {
+    if (MathUtils.isNear(
+        this.inputs.swerve[swerveModuleNumber].steerAbsolutePositionRot,
+        angleTargetRot - 0.5,
+        angleToleranceRot)) {
       isOffset = true;
-    } else if (this.inputs.swerve[swerveModuleNumber].steerAbsolutePosition.isNear(
-        angleTarget.plus(Degrees.of(180)), angleTolerance)) {
+    } else if (MathUtils.isNear(
+        this.inputs.swerve[swerveModuleNumber].steerAbsolutePositionRot,
+        angleTargetRot + 0.5,
+        angleToleranceRot)) {
       isOffset = true;
     }
     // if not, add fault
-    else if (!this.inputs.swerve[swerveModuleNumber].steerAbsolutePosition.isNear(
-        angleTarget, angleTolerance)) {
+    else if (!MathUtils.isNear(
+        this.inputs.swerve[swerveModuleNumber].steerAbsolutePositionRot,
+        angleTargetRot,
+        angleToleranceRot)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "[System Check] Swerve module "
                   + getSwerveLocation(swerveModuleNumber)
                   + " not rotating in the threshold as expected. Should be: "
-                  + angleTarget
+                  + angleTargetRot
                   + " is: "
-                  + inputs.swerve[swerveModuleNumber].steerAbsolutePosition);
+                  + inputs.swerve[swerveModuleNumber].steerAbsolutePositionRot);
     }
 
     // Checks the velocity of the swerve module depending on if there is an offset
-    LinearVelocity velocityMeasured =
-        MetersPerSecond.of(
-            inputs.drivetrain.swerveMeasuredStates[swerveModuleNumber].speedMetersPerSecond);
+    double velocityMeasuredMPS =
+        inputs.drivetrain.swerveMeasuredStates[swerveModuleNumber].speedMetersPerSecond;
     if (!isOffset) {
-      if (!velocityMeasured.isNear(velocityTarget, velocityTolerance)) {
+      if (!MathUtils.isNear(velocityMeasuredMPS, velocityTargetMPS, velocityToleranceMPS)) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
                 "[System Check] Swerve module "
                     + getSwerveLocation(swerveModuleNumber)
                     + " not moving as fast as expected. Should be: "
-                    + velocityTarget
+                    + velocityTargetMPS
                     + " is: "
-                    + velocityMeasured);
+                    + velocityMeasuredMPS);
       }
     } else { // if there is an offset, check the velocity in the opposite direction
-      if (!velocityMeasured.isNear(velocityTarget.unaryMinus(), velocityTolerance)) {
+      if (!MathUtils.isNear(velocityMeasuredMPS, -velocityTargetMPS, velocityToleranceMPS)) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
                 "[System Check] Swerve module "
                     + getSwerveLocation(swerveModuleNumber)
                     + " not moving as fast as expected. REVERSED Should be: "
-                    + velocityTarget
+                    + velocityTargetMPS
                     + " is: "
-                    + velocityMeasured);
+                    + velocityMeasuredMPS);
       }
     }
   }
 
   private Command getSwerveCheckCommand(SwerveCheckTypes type) {
 
-    LinearVelocity xVelocity;
-    LinearVelocity yVelocity;
-    AngularVelocity rotationalVelocity;
+    double xVelocityMPS;
+    double yVelocityMPS;
+    double rotationalVelocityRadiansPerSecond;
 
-    Angle angleTarget;
-    LinearVelocity velocityTarget;
+    double angleTargetRot;
+    double velocityTargetMPS;
 
     switch (type) {
       case LEFT:
-        xVelocity = MetersPerSecond.of(0.0);
-        yVelocity = MetersPerSecond.of(1.0);
-        rotationalVelocity = RadiansPerSecond.of(0.0);
-        velocityTarget = MetersPerSecond.of(1.0);
-        angleTarget = Degrees.of(90.0);
+        xVelocityMPS = 0.0;
+        yVelocityMPS = 1.0;
+        rotationalVelocityRadiansPerSecond = 0.0;
+        velocityTargetMPS = 1.0;
+        angleTargetRot = Units.degreesToRotations(90.0);
         break;
       case RIGHT:
-        xVelocity = MetersPerSecond.of(0.0);
-        yVelocity = MetersPerSecond.of(-1.0);
-        rotationalVelocity = RadiansPerSecond.of(0.0);
-        velocityTarget = MetersPerSecond.of(-1.0);
-        angleTarget = Degrees.of(90.0);
+        xVelocityMPS = 0.0;
+        yVelocityMPS = -1.0;
+        rotationalVelocityRadiansPerSecond = 0.0;
+        velocityTargetMPS = -1.0;
+        angleTargetRot = Units.degreesToRotations(90.0);
         break;
       case FORWARD:
-        xVelocity = MetersPerSecond.of(1.0);
-        yVelocity = MetersPerSecond.of(0.0);
-        rotationalVelocity = RadiansPerSecond.of(0.0);
-        velocityTarget = MetersPerSecond.of(1.0);
-        angleTarget = Degrees.of(0.0);
+        xVelocityMPS = 1.0;
+        yVelocityMPS = 0.0;
+        rotationalVelocityRadiansPerSecond = 0.0;
+        velocityTargetMPS = 1.0;
+        angleTargetRot = Units.degreesToRotations(0.0);
         break;
       case BACKWARD:
-        xVelocity = MetersPerSecond.of(-1.0);
-        yVelocity = MetersPerSecond.of(0.0);
-        rotationalVelocity = RadiansPerSecond.of(0.0);
-        velocityTarget = MetersPerSecond.of(-1.0);
-        angleTarget = Degrees.of(0.0);
+        xVelocityMPS = -1.0;
+        yVelocityMPS = 0.0;
+        rotationalVelocityRadiansPerSecond = 0.0;
+        velocityTargetMPS = -1.0;
+        angleTargetRot = Units.degreesToRotations(0.0);
         break;
       case CLOCKWISE:
         return Commands.parallel(
-                Commands.run(
-                    () ->
-                        this.drive(
-                            MetersPerSecond.of(0.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(-Math.PI),
-                            false,
-                            false),
-                    this),
+                Commands.run(() -> this.drive(0.0, 0.0, -Math.PI, false, false), this),
                 Commands.waitSeconds(1)
                     .andThen(
                         Commands.runOnce(
                             () -> {
                               checkSwerveModule(
                                   0,
-                                  Degrees.of(135.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(-0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(135.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  -0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                               checkSwerveModule(
                                   1,
-                                  Degrees.of(45.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(-0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(45.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  -0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                               checkSwerveModule(
                                   2,
-                                  Degrees.of(45.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(45.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                               checkSwerveModule(
                                   3,
-                                  Degrees.of(135.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(135.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                             })))
             .withTimeout(1);
       case COUNTERCLOCKWISE:
         return Commands.parallel(
-                Commands.run(
-                    () ->
-                        this.drive(
-                            MetersPerSecond.of(0.0),
-                            MetersPerSecond.of(0.0),
-                            RadiansPerSecond.of(Math.PI),
-                            false,
-                            false),
-                    this),
+                Commands.run(() -> this.drive(0.0, 0.0, Math.PI, false, false), this),
                 Commands.waitSeconds(1)
                     .andThen(
                         Commands.runOnce(
                             () -> {
                               checkSwerveModule(
                                   0,
-                                  Degrees.of(135.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(135.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                               checkSwerveModule(
                                   1,
-                                  Degrees.of(45.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(45.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                               checkSwerveModule(
                                   2,
-                                  Degrees.of(45.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(-0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(45.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  -0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                               checkSwerveModule(
                                   3,
-                                  Degrees.of(135.0),
-                                  SYSTEM_TEST_ANGLE_TOLERANCE,
-                                  MetersPerSecond.of(-0.38 * Math.PI),
-                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                  Units.degreesToRotations(135.0),
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                  -0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                             })))
             .withTimeout(1);
       default:
-        xVelocity = MetersPerSecond.of(0.0);
-        yVelocity = MetersPerSecond.of(0.0);
-        rotationalVelocity = RadiansPerSecond.of(0.0);
-        velocityTarget = MetersPerSecond.of(0.0);
-        angleTarget = Degrees.of(0.0);
+        xVelocityMPS = 0.0;
+        yVelocityMPS = 0.0;
+        rotationalVelocityRadiansPerSecond = 0.0;
+        velocityTargetMPS = 0.0;
+        angleTargetRot = Units.degreesToRotations(0.0);
         break;
     }
 
     return Commands.parallel(
             Commands.run(
-                () -> this.drive(xVelocity, yVelocity, rotationalVelocity, false, false), this),
+                () ->
+                    this.drive(
+                        xVelocityMPS,
+                        yVelocityMPS,
+                        rotationalVelocityRadiansPerSecond,
+                        false,
+                        false),
+                this),
             Commands.waitSeconds(1)
                 .andThen(
                     Commands.runOnce(
@@ -1242,10 +1202,10 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
                           for (int i = 0; i < this.inputs.swerve.length; i++) {
                             checkSwerveModule(
                                 i,
-                                angleTarget,
-                                SYSTEM_TEST_ANGLE_TOLERANCE,
-                                velocityTarget,
-                                SYSTEM_TEST_VELOCITY_TOLERANCE);
+                                angleTargetRot,
+                                SYSTEM_TEST_ANGLE_TOLERANCE_ROT,
+                                velocityTargetMPS,
+                                SYSTEM_TEST_VELOCITY_TOLERANCE_MPS);
                           }
                         })))
         .withTimeout(2);

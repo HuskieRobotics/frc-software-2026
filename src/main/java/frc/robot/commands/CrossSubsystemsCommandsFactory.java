@@ -1,25 +1,23 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.Field2d;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
@@ -56,18 +54,11 @@ public class CrossSubsystemsCommandsFactory {
   private static final LoggedTunableNumber driveToPoseMaxVelocity =
       new LoggedTunableNumber(
           "DriveToBank/DriveToPoseMaxVelocity",
-          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond));
+          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocityMPS());
   private static final LoggedTunableNumber driveToPoseMaxAcceleration =
       new LoggedTunableNumber(
           "DriveToBank/DriveToPoseMaxAcceleration",
-          RobotConfig.getInstance()
-              .getDriveToPoseDriveMaxAcceleration()
-              .in(MetersPerSecondPerSecond));
-
-  private static final double DRIVE_TO_BANK_X_TOLERANCE_METERS = 0.05;
-  private static final double DRIVE_TO_BANK_Y_TOLERANCE_METERS =
-      0.25; // high robot-relative y tolerance as it doesn't really matter where on the wall we are
-  private static final double DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES = 5.0;
+          RobotConfig.getInstance().getDriveToPoseDriveMaxAccelerationMPSPS());
 
   public static final ProfiledPIDController xController =
       new ProfiledPIDController(
@@ -89,10 +80,8 @@ public class CrossSubsystemsCommandsFactory {
           thetaKi.get(),
           thetaKd.get(),
           new TrapezoidProfile.Constraints(
-              RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity().in(RadiansPerSecond),
-              RobotConfig.getInstance()
-                  .getDriveToPoseTurnMaxAcceleration()
-                  .in(RadiansPerSecondPerSecond)));
+              RobotConfig.getInstance().getDriveToPoseTurnMaxVelocityRPS(),
+              RobotConfig.getInstance().getDriveToPoseTurnMaxAccelerationRPSPS()));
 
   private CrossSubsystemsCommandsFactory() {}
 
@@ -103,6 +92,11 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       Shooter shooter,
       ShooterModes shooterModes) {
+
+    oi.getClearAllFaults()
+        .onTrue(FaultReporter.getInstance().getClearAllFaultsCommand().ignoringDisable(true));
+    oi.getCheckForFaults()
+        .onTrue(FaultReporter.getInstance().getCheckForFaultsCommand().ignoringDisable(true));
 
     configureCrossSubsystemsTriggers(shooterModes, shooter, hopper);
 
@@ -145,11 +139,24 @@ public class CrossSubsystemsCommandsFactory {
         .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
         .whileTrue(
             Commands.either(
-                getStopAndShootCommand(
-                    shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)),
-                getStopAndShootCommand(
-                    shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)),
-                shooterModes::isManualShootEnabled));
+                    getStopAndShootCommand(
+                        shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)),
+                    getStopAndShootCommand(
+                        shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)),
+                    shooterModes::isManualShootEnabled)
+                .withName("manual shoot or pass"));
+
+    oi.getManualShootButton()
+        .onFalse(
+            Commands.sequence(
+                    intake.getDeployAndStartCommand(),
+                    Commands.either(
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))
+                .withName("resume on the move or stop hopper after shoot"));
 
     // this is bound to the left trigger (translate 1)
     // this does a typical shot but starts the intake jostle immediately instead of
@@ -161,26 +168,34 @@ public class CrossSubsystemsCommandsFactory {
             getStopAndShootCommand(
                 shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)));
 
+    oi.getForceSafeShootButton()
+        .onFalse(
+            Commands.sequence(
+                    intake.getDeployAndStartCommand(),
+                    Commands.either(
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
+                        Commands.runOnce(hopper::stop, hopper),
+                        () ->
+                            shooterModes.isShootOnTheMoveEnabled()
+                                || shooterModes.isPassOnTheMoveEnabled()))
+                .withName("resume on the move or stop hopper after force shoot"));
+
     oi.getSnakeDriveButton().toggleOnTrue(getSnakeDriveCommand(oi, swerveDrivetrain));
 
-    oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(swerveDrivetrain, oi));
+    oi.getIncrementFlywheelVelocityButton()
+        .onTrue(Commands.runOnce(shooterModes::incrementShotVelocity));
+    oi.getDecrementFlywheelVelocityButton()
+        .onTrue(Commands.runOnce(shooterModes::decrementShotVelocity));
+    oi.getMoveTurretLeftButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeLeft));
+    oi.getMoveTurretRightButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeRight));
+
+    // Reset hub shift timer when enabling
+    RobotModeTriggers.teleop().onTrue(Commands.runOnce(shooterModes::initialize));
+    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(shooterModes::initialize));
+    RobotModeTriggers.disabled()
+        .onTrue(Commands.runOnce(shooterModes::initialize).ignoringDisable(true));
 
     registerSysIdCommands(oi);
-  }
-
-  // this will get called if we are in CAN_SHOOT mode AND the aim button is pressed
-  public static Command getScoreSafeShotCommand(
-      OperatorInterface oi,
-      SwerveDrivetrain drivetrain,
-      Shooter shooter,
-      Hopper hopper,
-      Intake intake,
-      ShooterModes shooterModes) {
-    return Commands.sequence(
-            getDriveToBankCommand(drivetrain),
-            getStopAndShootCommand(
-                shooter, hopper, intake, shooterModes, getJostleCommand(intake, shooter)))
-        .withName("score safe shot");
   }
 
   public static Command getSnakeDriveCommand(OperatorInterface oi, SwerveDrivetrain drivetrain) {
@@ -207,8 +222,9 @@ public class CrossSubsystemsCommandsFactory {
       Command jostleCommand) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    // let the hopper continue to do its thing if we are in shoot on the move mode
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    // let the hopper continue to do its thing if we are in shoot on the move
+                    // mode
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                     jostleCommand,
                     Commands.repeatingSequence(
                         Commands.either(
@@ -217,48 +233,59 @@ public class CrossSubsystemsCommandsFactory {
                             () ->
                                 shooterModes.isManualPassEnabled()
                                     || shooterModes.isPassOnTheMoveEnabled())))
-                .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(Commands.runOnce(hopper::stop, hopper)))
-        .finallyDo(
-            () -> {
-              CommandScheduler.getInstance().schedule(intake.getDeployAndStartCommand());
-              if (shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled()) {
-                CommandScheduler.getInstance()
-                    .schedule(getShootWhenAimedCommand(shooterModes, shooter, hopper));
-              } else {
-                hopper.stop();
-              }
-            })
+                .until(shooterModes::isTurretNotNearSetPoint),
+            Commands.parallel(
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.run(
+                        () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
+                .until(() -> !shooterModes.isTurretNotNearSetPoint()))
         .withName("shoot or pass");
   }
 
-  private static Command getJostleCommand(Intake intake, Shooter shooter) {
+  public static Command getJostleCommand(Intake intake, Shooter shooter) {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
-                .withTimeout(2.5),
+                .withTimeout(2.0), // was 2.5
             getForceJostleCommand(intake))
         .withName("Jostle");
   }
 
-  private static Command getForceJostleCommand(Intake intake) {
-    return Commands.repeatingSequence(
-            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_RETRACTED_POSITION)),
+  // starts the sequence by bringing the intake in to 5 inches
+  // waits until we are there, then starts repeating sequence:
+  //   wait 0.5s
+  //   extend intake out to 11 inches
+  //   retract intake back to 3.5 inches
+  public static Command getForceJostleCommand(Intake intake) {
+    return Commands.sequence(
+            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_FIRST_RETRACT_POSITION_METERS)),
             Commands.deadline(
-                Commands.waitSeconds(1.0),
+                Commands.waitSeconds(0.75),
                 Commands.waitUntil(
                     () ->
-                        intake
-                            .getPosition()
-                            .isNear(
-                                JOSTLE_RETRACTED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE))),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION)),
-            Commands.waitUntil(
-                () ->
-                    intake
-                        .getPosition()
-                        .isNear(JOSTLE_EXTENDED_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE)))
+                        MathUtils.isNear(
+                            intake.getPositionMeters(),
+                            JOSTLE_FIRST_RETRACT_POSITION_METERS,
+                            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS))),
+            Commands.repeatingSequence(
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION_METERS)),
+                Commands.waitUntil(
+                    () ->
+                        MathUtils.isNear(
+                            intake.getPositionMeters(),
+                            JOSTLE_EXTENDED_POSITION_METERS,
+                            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS)),
+                Commands.runOnce(
+                    () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.75),
+                    Commands.waitUntil(
+                        () ->
+                            MathUtils.isNear(
+                                intake.getPositionMeters(),
+                                JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS,
+                                DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS)))))
         .withName("Force Jostle");
   }
 
@@ -285,77 +312,10 @@ public class CrossSubsystemsCommandsFactory {
         .withName("interrupt all");
   }
 
-  private static Command getDriveToBankCommand(SwerveDrivetrain drivetrain) {
-    return new DriveToBank(
-            drivetrain,
-            CrossSubsystemsCommandsFactory::getTargetBankPose,
-            xController,
-            yController,
-            thetaController,
-            new Transform2d(
-                DRIVE_TO_BANK_X_TOLERANCE_METERS,
-                DRIVE_TO_BANK_Y_TOLERANCE_METERS,
-                Rotation2d.fromDegrees(DRIVE_TO_BANK_THETA_TOLERANCE_DEGREES)),
-            true,
-            (atPose) ->
-                LEDs.getInstance()
-                    .requestState(
-                        atPose
-                            ? LEDs.States.AT_POSE
-                            : LEDs.States
-                                .AUTO_DRIVING_TO_POSE), /* will do other in parallel, probably not here though */
-            CrossSubsystemsCommandsFactory::updatePIDConstants, /* need to see this */
-            3.0)
-        .withName("drive to bank");
-  }
-
   private static Command getDriveToPoseOverrideCommand(
       SwerveDrivetrain drivetrain, OperatorInterface oi) {
     return SwerveDrivetrainCommandFactory.getDefaultTeleopSwerveCommand(oi, drivetrain)
         .withName("Override driveToPose");
-  }
-
-  private static Pose2d getTargetPose() {
-    return new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(90.0));
-  }
-
-  private static Pose2d getTargetBankPose() {
-    // for testing
-    // return new Pose2d(FieldConstants.LinesVertical.center, FieldConstants.LinesHorizontal.center,
-    // Rotation2d.fromDegrees(90));
-    return Field2d.getInstance().getNearestBank();
-  }
-
-  public static void updatePIDConstants(Transform2d poseDifference) {
-    // Update from tunable numbers
-    LoggedTunableNumber.ifChanged(
-        xController.hashCode(),
-        pid -> {
-          xController.setPID(pid[0], pid[1], pid[2]);
-          yController.setPID(pid[0], pid[1], pid[2]);
-        },
-        driveXKp,
-        driveKi,
-        driveXKd);
-
-    LoggedTunableNumber.ifChanged(
-        yController.hashCode(),
-        pid -> {
-          xController.setPID(pid[0], pid[1], pid[2]);
-          yController.setPID(pid[0], pid[1], pid[2]);
-        },
-        driveYKp,
-        driveKi,
-        driveYKd);
-
-    LoggedTunableNumber.ifChanged(
-        thetaController.hashCode(),
-        pid -> {
-          thetaController.setPID(pid[0], pid[1], pid[2]);
-        },
-        thetaKp,
-        thetaKi,
-        thetaKd);
   }
 
   private static void configureCrossSubsystemsTriggers(
@@ -366,21 +326,26 @@ public class CrossSubsystemsCommandsFactory {
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
     unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
-    unloadHopperOnTheMoveTrigger.onFalse(Commands.runOnce(hopper::stop, hopper));
+    unloadHopperOnTheMoveTrigger.onFalse(
+        Commands.runOnce(hopper::stop, hopper).withName("stop hopper"));
   }
 
   private static Command getShootWhenAimedCommand(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
     return Commands.repeatingSequence(
             Commands.parallel(
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocity),
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                     Commands.repeatingSequence(
                         Commands.either(
                             Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
                             Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
                             shooterModes::isPassOnTheMoveEnabled)))
-                .until(shooterModes::isTurretNotNearSetPoint)
-                .andThen(Commands.runOnce(hopper::stop, hopper)))
+                .until(shooterModes::isTurretNotNearSetPoint),
+            Commands.parallel(
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.run(
+                        () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
+                .until(() -> !shooterModes.isTurretNotNearSetPoint()))
         .withName("shoot when aimed");
   }
 }

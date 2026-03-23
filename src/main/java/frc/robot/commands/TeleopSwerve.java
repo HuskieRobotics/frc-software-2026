@@ -1,10 +1,6 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
@@ -37,9 +33,9 @@ public class TeleopSwerve extends Command {
 
   private static final double DEADBAND = 0.1;
 
-  private final LinearVelocity maxVelocity = RobotConfig.getInstance().getRobotMaxVelocity();
-  private final AngularVelocity maxAngularVelocity =
-      RobotConfig.getInstance().getRobotMaxAngularVelocity();
+  private final double maxVelocityRPS = RobotConfig.getInstance().getRobotMaxVelocityMPS();
+  private final double maxAngularVelocityRPS =
+      RobotConfig.getInstance().getRobotMaxAngularVelocityRPS();
   private final LoggedTunableNumber joystickPower =
       new LoggedTunableNumber("TeleopSwerve/joystickPower", 2.0);
 
@@ -107,25 +103,25 @@ public class TeleopSwerve extends Command {
     double xPercentage = modifyAxis(translationXSupplier.getAsDouble(), joystickPower.get());
     double yPercentage = modifyAxis(translationYSupplier.getAsDouble(), joystickPower.get());
 
-    LinearVelocity xVelocity = maxVelocity.times(xPercentage);
-    LinearVelocity yVelocity = maxVelocity.times(yPercentage);
-    AngularVelocity rotationalVelocity = RadiansPerSecond.of(0.0);
+    double xVelocityMPS = maxVelocityRPS * xPercentage;
+    double yVelocityMPS = maxVelocityRPS * yPercentage;
+    double rotationalVelocityRPS = 0.0;
 
     Optional<Rotation2d> potentialAngle = this.angleSupplier.get();
     if (!potentialAngle.isPresent()) {
       double rotationPercentage = modifyAxis(rotationSupplier.getAsDouble(), joystickPower.get());
-      rotationalVelocity = maxAngularVelocity.times(rotationPercentage);
+      rotationalVelocityRPS = maxAngularVelocityRPS * rotationPercentage;
     }
 
-    Logger.recordOutput("TeleopSwerve/xVelocity", xVelocity);
-    Logger.recordOutput("TeleopSwerve/yVelocity", yVelocity);
-    Logger.recordOutput("TeleopSwerve/rotationalVelocity", rotationalVelocity);
+    Logger.recordOutput("TeleopSwerve/xVelocity", xVelocityMPS);
+    Logger.recordOutput("TeleopSwerve/yVelocity", yVelocityMPS);
+    Logger.recordOutput("TeleopSwerve/rotationalVelocity", rotationalVelocityRPS);
 
     if (potentialAngle.isPresent()) {
-      drivetrain.driveFacingAngle(xVelocity, yVelocity, potentialAngle.get(), true);
+      drivetrain.driveFacingAngle(xVelocityMPS, yVelocityMPS, potentialAngle.get(), true);
     } else {
       drivetrain.drive(
-          xVelocity, yVelocity, rotationalVelocity, true, drivetrain.getFieldRelative());
+          xVelocityMPS, yVelocityMPS, rotationalVelocityRPS, true, drivetrain.getFieldRelative());
     }
   }
 

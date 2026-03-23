@@ -1,9 +1,5 @@
 package frc.robot.subsystems.hopper;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import edu.wpi.first.units.measure.AngularVelocity;
-
 public class HopperConstants {
 
   public static final String SUBSYSTEM_NAME = "Hopper";
@@ -14,7 +10,7 @@ public class HopperConstants {
   public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 60;
   public static final double KICKER_MOTOR_PEAK_CURRENT_LIMIT = 60;
 
-  public static final double SPINDEXER_GEAR_RATIO = 6.0;
+  public static final double SPINDEXER_GEAR_RATIO = 8.0;
   public static final double KICKER_GEAR_RATIO = 1.0;
 
   public static final boolean SPINDEXER_MOTOR_INVERTED = true;
@@ -23,13 +19,13 @@ public class HopperConstants {
   public static final double SPINDEXER_KP = 80.0;
   public static final double SPINDEXER_KI = 0.0;
   public static final double SPINDEXER_KD = 0.0;
-  public static final double SPINDEXER_KV = 0.17;
+  public static final double SPINDEXER_KV = 0.16;
   public static final double SPINDEXER_KA = 0.0;
-  public static final double SPINDEXER_KS = 5.8;
+  public static final double SPINDEXER_KS = 3.9;
 
   public static final double SPINDEXER_MOI = 0.05;
 
-  public static final AngularVelocity SPINDEXER_VELOCITY_TOLERANCE = RotationsPerSecond.of(0.4);
+  public static final double SPINDEXER_VELOCITY_TOLERANCE_RPS = 0.4;
 
   public static final double KICKER_KP = 11.0;
   public static final double KICKER_KI = 0.0;
@@ -40,7 +36,7 @@ public class HopperConstants {
 
   public static final double KICKER_MOI = 0.01;
 
-  public static final AngularVelocity KICKER_VELOCITY_TOLERANCE = RotationsPerSecond.of(2.0);
+  public static final double KICKER_VELOCITY_TOLERANCE_RPS = 2.0;
 
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS =
       SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT - 1.0;
@@ -49,22 +45,18 @@ public class HopperConstants {
       KICKER_MOTOR_PEAK_CURRENT_LIMIT - 1.0;
   public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 0.5;
 
-  public static final AngularVelocity SPINDEXER_UNJAM_VELOCITY =
-      RotationsPerSecond.of(
-          -12); // <-- Should be negative (rotations per second) // FIXME: Update value
-  public static final AngularVelocity KICKER_UNJAM_VELOCITY =
-      RotationsPerSecond.of(
-          -60.0); // <-- Should be negative (rotations per second) // FIXME: Update value
+  public static final double SPINDEXER_UNJAM_VELOCITY_RPS =
+      -12; // <-- Should be negative (rotations per second) // FIXME: Update value
+  public static final double KICKER_UNJAM_VELOCITY_RPS =
+      -60.0; // <-- Should be negative (rotations per second) // FIXME: Update value
 
-  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_1_RPS = RotationsPerSecond.of(25.0);
-  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_2_RPS = RotationsPerSecond.of(36.0);
-  public static final AngularVelocity KICKER_VELOCITY_SETPOINT_3_RPS = RotationsPerSecond.of(60.0);
+  public static final double KICKER_VELOCITY_SETPOINT_1_RPS = 25.0;
+  public static final double KICKER_VELOCITY_SETPOINT_2_RPS = 36.0;
+  public static final double KICKER_VELOCITY_SETPOINT_3_RPS = 60.0;
 
   public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0;
   public static final double KICKER_UNJAM_WAIT_TIME = 1.0;
 
-  public static final AngularVelocity KICKER_FUEL_INTO_SHOOTER_VELOCITY =
-      RotationsPerSecond.of(20.0);
-
-  public static final AngularVelocity SPIN_FUEL_INTO_KICKER_VELOCITY = RotationsPerSecond.of(16.0);
+  public static final double KICKER_FUEL_INTO_SHOOTER_VELOCITY_RPS = 20.0;
+  public static final double SPIN_FUEL_INTO_KICKER_VELOCITY_RPS = 12.0;
 }

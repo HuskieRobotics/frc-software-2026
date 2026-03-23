@@ -1,7 +1,5 @@
 package frc.robot.visualizations;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
@@ -46,8 +44,7 @@ public class RobotVisualization {
 
   private void init2dVisualization() {
     intakeVisualization2D =
-        new LoggedMechanism2d(
-            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters), 3.0);
+        new LoggedMechanism2d(RobotConfig.getInstance().getRobotLengthWithBumpersMeters(), 3.0);
 
     // LEDs
     LoggedMechanismRoot2d ledDisplayRoot =
@@ -65,8 +62,7 @@ public class RobotVisualization {
             "intake", kIntakeDepth, 0.0, 80.0, new Color8Bit(Color.kWhite));
     intakeRoot.append(this.intakeBox);
     climberVisualization2D =
-        new LoggedMechanism2d(
-            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters), 3.0);
+        new LoggedMechanism2d(RobotConfig.getInstance().getRobotLengthWithBumpersMeters(), 3.0);
 
     // Climber
     LoggedMechanismRoot2d climberRoot =

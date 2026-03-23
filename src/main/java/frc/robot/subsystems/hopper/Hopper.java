@@ -5,7 +5,6 @@ import static frc.robot.subsystems.hopper.HopperConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,12 +14,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
-import frc.robot.Constants.*;
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
@@ -64,9 +63,7 @@ public class Hopper extends SubsystemBase {
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysIdTranslationCurrent_State", state.toString())),
           new SysIdRoutine.Mechanism(
-              output -> io.setKickerCurrent(Amps.of(output.in(Volts))),
-              null,
-              this)); // treat volts as amps
+              output -> io.setKickerCurrent(output.in(Volts)), null, this)); // treat volts as amps
 
   private final SysIdRoutine spindexerSysIdRoutine =
       new SysIdRoutine(
@@ -76,7 +73,7 @@ public class Hopper extends SubsystemBase {
               Seconds.of(5), // override default timeout (10 s)
               state -> SignalLogger.writeString("SysIdRotationCurrent_State", state.toString())),
           new SysIdRoutine.Mechanism(
-              output -> io.setSpindexerCurrent(Amps.of(output.in(Volts))),
+              output -> io.setSpindexerCurrent(output.in(Volts)),
               null,
               this)); // treat volts as amps
 
@@ -85,8 +82,6 @@ public class Hopper extends SubsystemBase {
 
     SysIdRoutineChooser.getInstance().addOption("Kicker Current", kickerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Spindexer Current", spindexerSysIdRoutine);
-
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getHopperSystemCheckCommand());
   }
 
   @Override
@@ -97,36 +92,36 @@ public class Hopper extends SubsystemBase {
 
     if (testingMode.get() == 1) {
       if (spindexerVelocityRPS.get() != 0) {
-        io.setSpindexerVelocity(RotationsPerSecond.of(spindexerVelocityRPS.get()));
+        io.setSpindexerVelocity(spindexerVelocityRPS.get());
       } else if (spindexerCurrent.get() != 0) {
-        io.setSpindexerCurrent(Amps.of(spindexerCurrent.get()));
+        io.setSpindexerCurrent(spindexerCurrent.get());
       }
 
       if (kickerVelocityRPS.get() != 0) {
-        io.setKickerVelocity(RotationsPerSecond.of(kickerVelocityRPS.get()));
+        io.setKickerVelocity(kickerVelocityRPS.get());
       } else if (kickerCurrent.get() != 0) {
-        io.setKickerCurrent(Amps.of(kickerCurrent.get()));
+        io.setKickerCurrent(kickerCurrent.get());
       }
     }
 
     if (Constants.getMode() != Constants.Mode.SIM) {
-      kickerJammedAlert.set(
-          kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent.in(Amps))));
+      kickerJammedAlert.set(kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent)));
       spindexerJammedAlert.set(
-          spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent.in(Amps))));
+          spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent)));
     }
 
     LoggedTracer.record(SUBSYSTEM_NAME);
   }
 
   public Command getUnjamCommand() {
-    return Commands.sequence(
-        Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY), this),
-        Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY), this),
-        Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)));
+    return Commands.parallel(
+        Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)),
+        Commands.sequence(
+            Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
+            Commands.runOnce(() -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this)));
   }
 
-  private Command getHopperSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
         .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(Commands.runOnce(this::stop, this));
@@ -135,9 +130,10 @@ public class Hopper extends SubsystemBase {
   public Command getTestVelocityCommand() {
     return Commands.sequence(
         // check if spindexer velocity is at setpoint 1
-        Commands.runOnce(() -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY), this),
+        Commands.runOnce(() -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
         Commands.waitSeconds(1),
-        Commands.runOnce(() -> this.checkSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY), this),
+        Commands.runOnce(
+            () -> this.checkSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
 
         // check if kicker velocity is at setpoint 1
         Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS), this),
@@ -155,82 +151,94 @@ public class Hopper extends SubsystemBase {
         Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS), this));
   }
 
-  public void checkSpindexerVelocity(AngularVelocity spindexerTargetVelocity) {
-    if (!inputs.spindexerVelocity.isNear(spindexerTargetVelocity, SPINDEXER_VELOCITY_TOLERANCE)) {
+  public void checkSpindexerVelocity(double spindexerTargetVelocityRPS) {
+    if (!MathUtils.isNear(
+        inputs.spindexerVelocityRPS,
+        spindexerTargetVelocityRPS,
+        SPINDEXER_VELOCITY_TOLERANCE_RPS)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "Spindexer is out of tolerance, should be "
-                  + spindexerTargetVelocity.in(RotationsPerSecond)
+                  + spindexerTargetVelocityRPS
                   + " RPS but is "
-                  + inputs.spindexerVelocity.in(RotationsPerSecond)
+                  + inputs.spindexerVelocityRPS
                   + " RPS");
     }
   }
 
-  public void checkKickerVelocity(AngularVelocity kickerTargetVelocity) {
-    if (!inputs.kickerVelocity.isNear(kickerTargetVelocity, KICKER_VELOCITY_TOLERANCE)) {
+  public void checkKickerVelocity(double kickerTargetVelocityRPS) {
+    if (!MathUtils.isNear(
+        inputs.kickerVelocityRPS, kickerTargetVelocityRPS, KICKER_VELOCITY_TOLERANCE_RPS)) {
       FaultReporter.getInstance()
           .addFault(
               SUBSYSTEM_NAME,
               "Kicker is out of tolerance, should be "
-                  + kickerTargetVelocity.in(RotationsPerSecond)
+                  + kickerTargetVelocityRPS
                   + " RPS but is "
-                  + inputs.kickerVelocity.in(RotationsPerSecond)
+                  + inputs.kickerVelocityRPS
                   + " RPS");
     }
   }
 
   public boolean isSpindexerAtVelocity() {
     return spindexerAtSetpointDebouncer.calculate(
-        inputs.spindexerVelocity.isNear(
-            inputs.spindexerReferenceVelocity, SPINDEXER_VELOCITY_TOLERANCE));
+        MathUtils.isNear(
+            inputs.spindexerVelocityRPS,
+            inputs.spindexerReferenceVelocityRPS,
+            SPINDEXER_VELOCITY_TOLERANCE_RPS));
   }
 
   public boolean isKickerAtVelocity() {
     return kickerAtSetpointDebouncer.calculate(
-        inputs.kickerVelocity.isNear(inputs.kickerReferenceVelocity, KICKER_VELOCITY_TOLERANCE));
+        MathUtils.isNear(
+            inputs.kickerVelocityRPS,
+            inputs.kickerReferenceVelocityRPS,
+            KICKER_VELOCITY_TOLERANCE_RPS));
   }
 
-  private void setKickerVelocity(AngularVelocity velocity) {
-    io.setKickerVelocity(velocity);
+  private void setKickerVelocity(double velocityRPS) {
+    io.setKickerVelocity(velocityRPS);
   }
 
-  private void setSpindexerVelocity(AngularVelocity velocity) {
-    io.setSpindexerVelocity(velocity);
+  private void setSpindexerVelocity(double velocityRPS) {
+    io.setSpindexerVelocity(velocityRPS);
   }
 
   public Command getFeedFuelIntoShooterCommand() {
-    return this.getFeedFuelIntoShooterCommand(() -> KICKER_FUEL_INTO_SHOOTER_VELOCITY);
+    return this.getFeedFuelIntoShooterCommand(() -> KICKER_FUEL_INTO_SHOOTER_VELOCITY_RPS);
   }
 
   // this command runs until interrupted
-  public Command getFeedFuelIntoShooterCommand(Supplier<AngularVelocity> kickerVelocitySupplier) {
+  public Command getFeedFuelIntoShooterCommand(DoubleSupplier kickerVelocitySupplier) {
     return Commands.repeatingSequence(
         Commands.either(
-            Commands.sequence(
-                    Commands.runOnce(() -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY), this),
-                    Commands.runOnce(
-                        () -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY), this),
-                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)))
+            Commands.parallel(
+                    Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.HOPPER_JAMMED)),
+                    Commands.sequence(
+                        Commands.runOnce(
+                            () -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
+                        Commands.runOnce(
+                            () -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this)))
                 .withTimeout(KICKER_UNJAM_WAIT_TIME),
             Commands.sequence(
                 Commands.runOnce(
-                    () -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY), this),
-                Commands.runOnce(() -> io.setKickerVelocity(kickerVelocitySupplier.get()), this)),
+                    () -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
+                Commands.runOnce(
+                    () -> io.setKickerVelocity(kickerVelocitySupplier.getAsDouble()), this)),
             () -> (kickerSpikeDetector.getAsBoolean() || spindexerSpikeDetector.getAsBoolean())));
   }
 
-  public AngularVelocity getKickerVelocityRPS() {
-    return inputs.kickerVelocity;
+  public double getKickerVelocityRPS() {
+    return inputs.kickerVelocityRPS;
   }
 
-  public AngularVelocity getSpindexerVelocityRPS() {
-    return inputs.spindexerVelocity;
+  public double getSpindexerVelocityRPS() {
+    return inputs.spindexerVelocityRPS;
   }
 
   public void stop() {
-    io.setSpindexerVelocity(RotationsPerSecond.of(0.0));
-    io.setKickerVelocity(RotationsPerSecond.of(0.0));
+    io.setSpindexerVelocity(0.0);
+    io.setKickerVelocity(0.0);
   }
 }

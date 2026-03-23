@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -90,8 +89,8 @@ public class IntakeIOTalonFX implements IntakeIO {
   private StatusSignal<Current> deployerSupplyCurrentSS;
   private StatusSignal<Temperature> deployerTempSS;
 
-  private AngularVelocity rollerReferenceVelocity = RotationsPerSecond.of(0.0);
-  private Angle deployerReferencePosition = Rotations.of(0);
+  private double rollerReferenceVelocityRPS = 0.0;
+  private double deployerReferencePositionRot = 0.0;
 
   private Debouncer connectedRollerDebouncer = new Debouncer(0.5);
   private Debouncer connectedDeployerDebouncer = new Debouncer(0.5);
@@ -141,9 +140,9 @@ public class IntakeIOTalonFX implements IntakeIO {
             DEPLOYER_GEAR_RATIO,
             DEPLOYER_MASS_KG,
             Units.inchesToMeters(0.5),
-            RETRACTED_LINEAR_POSITION.in(Meters),
-            DEPLOYED_LINEAR_POSITION.in(Meters),
-            RETRACTED_LINEAR_POSITION.in(Meters),
+            RETRACTED_LINEAR_POSITION_METERS,
+            DEPLOYED_LINEAR_POSITION_METERS,
+            RETRACTED_LINEAR_POSITION_METERS,
             SUBSYSTEM_NAME);
   }
 
@@ -176,31 +175,28 @@ public class IntakeIOTalonFX implements IntakeIO {
                 deployerPositionSS));
 
     // Update Roller Inputs
-    inputs.rollerVelocity = rollerVelocitySS.getValue();
-    inputs.rollerStatorCurrent = rollerStatorCurrentSS.getValue();
-    inputs.rollerSupplyCurrent = rollerSupplyCurrentSS.getValue();
-    inputs.rollerTempCelsius = rollerTempSS.getValue();
-    inputs.rollerVoltage = rollerVoltageSS.getValue();
-    inputs.rollerReferenceVelocity = this.rollerReferenceVelocity;
+    inputs.rollerVelocityRPS = rollerVelocitySS.getValueAsDouble();
+    inputs.rollerStatorCurrent = rollerStatorCurrentSS.getValueAsDouble();
+    inputs.rollerSupplyCurrent = rollerSupplyCurrentSS.getValueAsDouble();
+    inputs.rollerTempCelsius = rollerTempSS.getValueAsDouble();
+    inputs.rollerVoltage = rollerVoltageSS.getValueAsDouble();
+    inputs.rollerReferenceVelocityRPS = this.rollerReferenceVelocityRPS;
 
     // Update Deployer Inputs
-    inputs.deployerVoltage = deployerVoltageSS.getValue();
-    inputs.deployerStatorCurrent = deployerStatorCurrentSS.getValue();
-    inputs.deployerSupplyCurrent = deployerSupplyCurrentSS.getValue();
-    inputs.deployerTempCelsius = deployerTempSS.getValue();
-    inputs.deployerAngularPosition = deployerPositionSS.getValue();
-    inputs.deployerReferencePosition = this.deployerReferencePosition;
+    inputs.deployerVoltage = deployerVoltageSS.getValueAsDouble();
+    inputs.deployerStatorCurrent = deployerStatorCurrentSS.getValueAsDouble();
+    inputs.deployerSupplyCurrent = deployerSupplyCurrentSS.getValueAsDouble();
+    inputs.deployerTempCelsius = deployerTempSS.getValueAsDouble();
+    inputs.deployerAngularPositionRot = deployerPositionSS.getValueAsDouble();
+    inputs.deployerReferencePositionRot = this.deployerReferencePositionRot;
 
     if (Constants.TUNING_MODE) {
-      inputs.rollerClosedLoopError =
-          Rotations.of(rollerMotor.getClosedLoopError().getValueAsDouble());
-      inputs.rollerClosedLoopReference =
-          Rotations.of(rollerMotor.getClosedLoopReference().getValueAsDouble());
+      inputs.rollerClosedLoopErrorRPS = rollerMotor.getClosedLoopError().getValueAsDouble();
+      inputs.rollerClosedLoopReferenceRPS = rollerMotor.getClosedLoopReference().getValueAsDouble();
 
-      inputs.deployerClosedLoopError =
-          Rotations.of(deployerMotor.getClosedLoopError().getValueAsDouble());
-      inputs.deployerClosedLoopReference =
-          Rotations.of(deployerMotor.getClosedLoopReference().getValueAsDouble());
+      inputs.deployerClosedLoopErrorRot = deployerMotor.getClosedLoopError().getValueAsDouble();
+      inputs.deployerClosedLoopReferenceRot =
+          deployerMotor.getClosedLoopReference().getValueAsDouble();
     }
 
     LoggedTunableNumber.ifChanged(
@@ -244,29 +240,29 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setRollerVelocity(AngularVelocity velocity) {
-    this.rollerMotor.setControl(rollerVelocityRequest.withVelocity(velocity));
-    this.rollerReferenceVelocity = velocity.copy();
+  public void setRollerVelocity(double velocityRPS) {
+    this.rollerMotor.setControl(rollerVelocityRequest.withVelocity(velocityRPS));
+    this.rollerReferenceVelocityRPS = velocityRPS;
   }
 
   @Override
-  public void setRollerCurrent(Current amps) {
+  public void setRollerCurrent(double amps) {
     this.rollerMotor.setControl(rollerCurrentRequest.withOutput(amps));
   }
 
   @Override
-  public void setDeployerVoltage(Voltage voltage) {
+  public void setDeployerVoltage(double voltage) {
     this.deployerMotor.setControl(deployerVoltageRequest.withOutput(voltage));
   }
 
   @Override
-  public void setDeployerPosition(Angle angularPosition) {
-    deployerMotor.setControl(deployerPositionRequest.withPosition(angularPosition.in(Rotations)));
-    this.deployerReferencePosition = angularPosition;
+  public void setDeployerPosition(double angularPositionRot) {
+    deployerMotor.setControl(deployerPositionRequest.withPosition(angularPositionRot));
+    this.deployerReferencePositionRot = angularPositionRot;
   }
 
   @Override
-  public void setDeployerCurrent(Current amps) {
+  public void setDeployerCurrent(double amps) {
     this.deployerMotor.setControl(deployerCurrentRequest.withOutput(amps));
   }
 
@@ -286,9 +282,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     SoftwareLimitSwitchConfigs deployerLimitSwitches = config.SoftwareLimitSwitch;
 
     deployerLimitSwitches.ForwardSoftLimitEnable = true;
-    deployerLimitSwitches.ForwardSoftLimitThreshold = DEPLOYER_MAX_ANGLE.in(Rotations);
+    deployerLimitSwitches.ForwardSoftLimitThreshold = DEPLOYER_MAX_ANGLE_ROT;
     deployerLimitSwitches.ReverseSoftLimitEnable = true;
-    deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE.in(Rotations);
+    deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE_ROT;
 
     config.Feedback.SensorToMechanismRatio = DEPLOYER_GEAR_RATIO;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;

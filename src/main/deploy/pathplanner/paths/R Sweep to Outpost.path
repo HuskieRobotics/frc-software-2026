@@ -3,45 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.37546362339515,
-        "y": 7.431398002853067
+        "x": 6.057489300998572,
+        "y": 3.6144935805991443
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.351355206847359,
-        "y": 7.4702139800285305
+        "x": 8.82674461807807,
+        "y": 0.011503420438335965
       },
       "isLocked": false,
-      "linkedName": "90 degree start left"
+      "linkedName": "R Sweep Collect"
     },
     {
       "anchor": {
-        "x": 7.95947218259629,
-        "y": 5.878758915834522
+        "x": 0.59,
+        "y": 0.664
       },
       "prevControl": {
-        "x": 5.358801711840228,
-        "y": 5.4647218259629105
+        "x": 5.105592011412269,
+        "y": 0.6644793152639101
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left NZ Grab"
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
-      "name": "Slow to collect",
-      "minWaypointRelativePos": 0.6022957461174854,
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.8534773801485472,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
-        "maxAcceleration": 6.0,
+        "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -52,8 +52,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -61,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "[NON BLUFF] Safe NZ + Depot",
+  "folder": "Right Sweep and Outpost",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

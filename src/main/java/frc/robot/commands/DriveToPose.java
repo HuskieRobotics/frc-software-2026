@@ -192,9 +192,9 @@ public class DriveToPose extends Command {
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
     drivetrain.drive(
-        MetersPerSecond.of(allianceMultiplier * fieldRelativeVelocities.getX()),
-        MetersPerSecond.of(allianceMultiplier * fieldRelativeVelocities.getY()),
-        RadiansPerSecond.of(thetaVelocity),
+        allianceMultiplier * fieldRelativeVelocities.getX(),
+        allianceMultiplier * fieldRelativeVelocities.getY(),
+        thetaVelocity,
         true,
         true);
 

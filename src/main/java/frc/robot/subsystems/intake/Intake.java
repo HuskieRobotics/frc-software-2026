@@ -5,18 +5,16 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team254.CurrentSpikeDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
-import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -26,7 +24,7 @@ public class Intake extends SubsystemBase {
 
   private IntakeIO intakeIO;
 
-  private Distance deployerLinearPosition = Meters.of(0);
+  private double deployerLinearPositionMeters = 0.0;
   private boolean inDeployedState = false;
   private boolean areRollersActiveState = false;
 
@@ -54,11 +52,13 @@ public class Intake extends SubsystemBase {
   private final LoggedTunableNumber deployerVoltage =
       new LoggedTunableNumber("Intake/DeployerVoltage", 0.0);
   private final LoggedTunableNumber deployerJostleFuelCurrent =
-      new LoggedTunableNumber("Intake/DeployerCurrent", DEPLOYER_JOSTLE_FUEL_CURRENT.in(Amps));
+      new LoggedTunableNumber("Intake/DeployerCurrent", DEPLOYER_JOSTLE_FUEL_CURRENT);
 
   private final Debouncer deployerDeployedDebouncer = new Debouncer(0.2);
   private final Debouncer deployerRetractedDebouncer = new Debouncer(0.2);
   private final Debouncer rollerAtSetPointDebouncer = new Debouncer(0.1);
+  private final Debouncer rollerStalledDebouncer = new Debouncer(1.0);
+  private boolean rollerStalled = false;
 
   private final SysIdRoutine rollerSysIdRoutine =
       new SysIdRoutine(
@@ -69,7 +69,7 @@ public class Intake extends SubsystemBase {
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
-              output -> intakeIO.setRollerCurrent(Amps.of(output.in(Volts))),
+              output -> intakeIO.setRollerCurrent(output.in(Volts)),
               null,
               this)); // treat volts as amps
 
@@ -80,16 +80,14 @@ public class Intake extends SubsystemBase {
               Volts.of(2.0), // override default step voltage (7 V)
               null, // Use default timeout (10 s)
               state -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(output -> intakeIO.setDeployerVoltage(output), null, this));
+          new SysIdRoutine.Mechanism(
+              output -> intakeIO.setDeployerVoltage(output.in(Volts)), null, this));
 
   public Intake(IntakeIO io) {
     this.intakeIO = io;
 
     SysIdRoutineChooser.getInstance().addOption("Roller Current", rollerSysIdRoutine);
     SysIdRoutineChooser.getInstance().addOption("Deployer Voltage", deployerSysIdRoutine);
-
-    // Register System Check
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
 
   @Override
@@ -100,115 +98,124 @@ public class Intake extends SubsystemBase {
     if (testingMode.get() == 1) {
 
       if (deployerVoltage.get() != 0) {
-        intakeIO.setDeployerVoltage(Volts.of(deployerVoltage.get()));
+        intakeIO.setDeployerVoltage(deployerVoltage.get());
       } else if (deployerPositionRotations.get() != 0) {
-        intakeIO.setDeployerPosition(Rotations.of(deployerPositionRotations.get()));
+        intakeIO.setDeployerPosition(deployerPositionRotations.get());
       } else if (deployerPositionLinearInches.get() != 0) {
-        setLinearPosition(Inches.of(deployerPositionLinearInches.get()));
+        setLinearPosition(Units.inchesToMeters(deployerPositionLinearInches.get()));
       }
 
       if (rollerVelocityRPS.get() != 0) {
-        intakeIO.setRollerVelocity(RotationsPerSecond.of(rollerVelocityRPS.get()));
+        intakeIO.setRollerVelocity(rollerVelocityRPS.get());
       } else if (rollerCurrent.get() != 0) {
-        intakeIO.setRollerCurrent(Amps.of(rollerCurrent.get()));
+        intakeIO.setRollerCurrent(rollerCurrent.get());
       }
     }
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "/Deployed", inDeployedState);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/Rollers Active", areRollersActiveState);
-
-    // checkRollerJam();
-
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
-        inputs.rollerVelocity.isNear(ROLLER_TARGET_VELOCITY, ROLLER_VELOCITY_TOLERANCE));
+        MathUtils.isNear(
+            inputs.rollerVelocityRPS, ROLLER_TARGET_VELOCITY_RPS, ROLLER_VELOCITY_TOLERANCE_RPS));
     deployerDeployedDebouncer.calculate(
-        this.deployerLinearPosition.isNear(
-            DEPLOYED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+        MathUtils.isNear(
+            this.deployerLinearPositionMeters,
+            DEPLOYED_LINEAR_POSITION_METERS,
+            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS));
     deployerRetractedDebouncer.calculate(
-        this.deployerLinearPosition.isNear(
-            RETRACTED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+        MathUtils.isNear(
+            this.deployerLinearPositionMeters,
+            RETRACTED_LINEAR_POSITION_METERS,
+            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS));
+    rollerStalled =
+        rollerStalledDebouncer.calculate(
+            DriverStation.isEnabled()
+                && inputs.rollerReferenceVelocityRPS != 0.0
+                && Math.abs(inputs.rollerVelocityRPS) < ROLLER_STALL_VELOCITY_THRESHOLD_RPS);
 
-    this.deployerLinearPosition =
-        DEPLOYER_CIRCUMFERENCE.times(inputs.deployerAngularPosition.in(Rotations));
+    this.deployerLinearPositionMeters =
+        DEPLOYER_CIRCUMFERENCE_METERS * inputs.deployerAngularPositionRot;
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPosition);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPositionMeters);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/RollerStalled", rollerStalled);
     LoggedTracer.record("Intake");
   }
 
-  public void setLinearPosition(Distance linearPosition) {
-
-    Angle angularPosition = Rotations.of(linearPosition.div(DEPLOYER_CIRCUMFERENCE).magnitude());
-
-    intakeIO.setDeployerPosition(angularPosition);
+  public boolean isRollerStalled() {
+    return rollerStalled;
   }
 
-  private void checkRollerJam() {
-    if (rollerJamDetector.update(Math.abs(inputs.rollerStatorCurrent.in(Amps)))) {
-      CommandScheduler.getInstance()
-          .schedule(
-              Commands.sequence(
-                      Commands.runOnce(this::outTakeRoller, this),
-                      Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.INTAKE_JAMMED))
-                          .withTimeout(ROLLER_UNJAM_DURATION_SECONDS),
-                      Commands.runOnce(this::startRoller, this))
-                  .withName("Stop Intake Jammed"));
-      rollerJamAlert.set(true);
-    } else {
-      rollerJamAlert.set(false);
-    }
+  public void setLinearPosition(double linearPositionMeters) {
+    double angularPositionRot = linearPositionMeters / DEPLOYER_CIRCUMFERENCE_METERS;
+    intakeIO.setDeployerPosition(angularPositionRot);
   }
 
   public void startRoller() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY);
+    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY_RPS);
+  }
+
+  public void reverseRoller() {
+    intakeIO.setRollerVelocity(ROLLER_TARGET_VELOCITY_RPS / -2.0);
+  }
+
+  public void startRollerInAuto() {
+    areRollersActiveState = true;
+    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
   }
 
   public void stopRoller() {
     areRollersActiveState = false;
-    intakeIO.setRollerVelocity(RotationsPerSecond.of(0.0));
+    intakeIO.setRollerVelocity(0.0);
   }
 
   public void outTakeRoller() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_EJECT_VELOCITY);
+    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_EJECT_VELOCITY_RPS);
   }
 
   public void deployIntake() {
     inDeployedState = true;
-    setLinearPosition(DEPLOYED_LINEAR_POSITION);
+    setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS);
   }
 
   public void retractIntake() {
     inDeployedState = false;
-    setLinearPosition(RETRACTED_LINEAR_POSITION);
+    setLinearPosition(RETRACTED_LINEAR_POSITION_METERS);
   }
 
   public void jostleFuelIn() {
     inDeployedState = false;
-    if (this.deployerLinearPosition.gt(DEPLOYER_HOPPER_INTERFERENCE_LIMIT)) {
+    if (this.deployerLinearPositionMeters > DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS) {
       // only jostle if we're far enough away from the hopper to not cause interference
-      intakeIO.setDeployerCurrent(Amps.of(deployerJostleFuelCurrent.get()));
+      intakeIO.setDeployerCurrent(deployerJostleFuelCurrent.get());
     } else {
-      intakeIO.setDeployerCurrent(Amps.of(0.0));
+      intakeIO.setDeployerCurrent(0.0);
     }
   }
 
   public void jostleFuelOut() {
     inDeployedState = false;
-    if (this.deployerLinearPosition.lt(DEPLOYED_LINEAR_POSITION)) {
+    if (this.deployerLinearPositionMeters < DEPLOYED_LINEAR_POSITION_METERS) {
       // only jostle if we're far enough away from the hopper to not cause interference
-      intakeIO.setDeployerCurrent(Amps.of(-deployerJostleFuelCurrent.get()));
+      intakeIO.setDeployerCurrent(-deployerJostleFuelCurrent.get());
     } else {
-      intakeIO.setDeployerCurrent(Amps.of(0.0));
+      intakeIO.setDeployerCurrent(0.0);
     }
   }
 
   public Command getDeployAndStartCommand() {
     return Commands.sequence(
+            Commands.runOnce(this::deployIntake, this),
+            Commands.waitUntil(this::isDeployed),
+            Commands.runOnce(this::startRoller, this))
+        .withName("Deploy and Start Intake");
+  }
+
+  public Command getDeployAndStartInAutoCommand() {
+    return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
         Commands.waitUntil(this::isDeployed),
-        Commands.runOnce(this::startRoller, this));
+        Commands.runOnce(this::startRollerInAuto, this));
   }
 
   public Command getRetractAndStopCommand() {
@@ -218,30 +225,24 @@ public class Intake extends SubsystemBase {
         Commands.waitUntil(this::isRetracted));
   }
 
-  public Distance getPosition() {
-    return this.deployerLinearPosition;
-  }
-
-  public boolean isRollerAtSetpoint(AngularVelocity velocity) {
-    return rollerAtSetPointDebouncer.calculate(
-        inputs.rollerVelocity.isNear(velocity, IntakeConstants.ROLLER_VELOCITY_TOLERANCE));
-  }
-
-  public boolean isDeployerAtSetpoint(Distance linearDistance) {
-    return deployerDeployedDebouncer.calculate(
-        this.deployerLinearPosition.isNear(linearDistance, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+  public double getPositionMeters() {
+    return this.deployerLinearPositionMeters;
   }
 
   public boolean isDeployed() {
     return deployerDeployedDebouncer.calculate(
-        this.deployerLinearPosition.isNear(
-            DEPLOYED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+        MathUtils.isNear(
+            this.deployerLinearPositionMeters,
+            DEPLOYED_LINEAR_POSITION_METERS,
+            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS));
   }
 
   public boolean isRetracted() {
     return deployerRetractedDebouncer.calculate(
-        this.deployerLinearPosition.isNear(
-            RETRACTED_LINEAR_POSITION, DEPLOYER_LINEAR_POSITION_TOLERANCE));
+        MathUtils.isNear(
+            this.deployerLinearPositionMeters,
+            RETRACTED_LINEAR_POSITION_METERS,
+            DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS));
   }
 
   public boolean inDeployedState() {
@@ -252,19 +253,21 @@ public class Intake extends SubsystemBase {
     return areRollersActiveState;
   }
 
-  private Command getSystemCheckCommand() {
+  public Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake, this),
             Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
-                      if (!inputs.deployerAngularPosition.isNear(
-                          DEPLOYED_ANGULAR_POSITION, DEPLOYER_ANGULAR_POSITION_TOLERANCE)) {
+                      if (!MathUtils.isNear(
+                          inputs.deployerAngularPositionRot,
+                          DEPLOYED_ANGULAR_POSITION_ROT,
+                          DEPLOYER_ANGULAR_POSITION_TOLERANCE_ROT)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
                                 "Deployer failed to reach deployed position in System Check; was: "
-                                    + inputs.deployerAngularPosition.in(Rotations)
+                                    + inputs.deployerAngularPositionRot
                                     + " rotations");
                       }
                     }),
@@ -272,13 +275,15 @@ public class Intake extends SubsystemBase {
             Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
-                      if (!inputs.rollerVelocity.isNear(
-                          ROLLER_TARGET_VELOCITY, ROLLER_VELOCITY_TOLERANCE)) {
+                      if (!MathUtils.isNear(
+                          inputs.rollerVelocityRPS,
+                          ROLLER_TARGET_VELOCITY_RPS,
+                          ROLLER_VELOCITY_TOLERANCE_RPS)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
                                 "Roller failed to reach target velocity in System Check; was: "
-                                    + inputs.rollerVelocity.in(RotationsPerSecond)
+                                    + inputs.rollerVelocityRPS
                                     + " RPS");
                       }
                     }),
@@ -286,13 +291,15 @@ public class Intake extends SubsystemBase {
             Commands.waitSeconds(0.5)
                 .andThen(
                     () -> {
-                      if (!inputs.rollerVelocity.isNear(
-                          ROLLER_EJECT_VELOCITY, ROLLER_VELOCITY_TOLERANCE)) {
+                      if (!MathUtils.isNear(
+                          inputs.rollerVelocityRPS,
+                          ROLLER_EJECT_VELOCITY_RPS,
+                          ROLLER_VELOCITY_TOLERANCE_RPS)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
                                 "Roller failed to reach eject velocity in System Check; was: "
-                                    + inputs.rollerVelocity.in(RotationsPerSecond)
+                                    + inputs.rollerVelocityRPS
                                     + " RPS");
                       }
                     }),
@@ -301,13 +308,15 @@ public class Intake extends SubsystemBase {
             Commands.waitSeconds(2.0)
                 .andThen(
                     () -> {
-                      if (!inputs.deployerAngularPosition.isNear(
-                          RETRACTED_ANGULAR_POSITION, DEPLOYER_ANGULAR_POSITION_TOLERANCE)) {
+                      if (!MathUtils.isNear(
+                          inputs.deployerAngularPositionRot,
+                          RETRACTED_ANGULAR_POSITION_ROT,
+                          DEPLOYER_ANGULAR_POSITION_TOLERANCE_ROT)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
                                 "Deployer failed to reach retracted position in System Check; was: "
-                                    + inputs.deployerAngularPosition.in(Rotations)
+                                    + inputs.deployerAngularPositionRot
                                     + " rotations");
                       }
                     }))

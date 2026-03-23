@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.861411111111112,
-        "y": 3.379944444444444
+        "x": 6.057489300998572,
+        "y": 3.6144935805991443
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.2774465049928665,
-        "y": 0.9361911554921551
+        "x": 6.976516372714303,
+        "y": 1.1112894404098048
       },
       "isLocked": false,
       "linkedName": "R Sweep Collect"
@@ -29,12 +29,26 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "slow down on the way back",
+      "minWaypointRelativePos": 0.4,
+      "maxWaypointRelativePos": 1,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 6.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -45,7 +59,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "[UNUSED] Right Sweep",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
