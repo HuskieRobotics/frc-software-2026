@@ -75,7 +75,7 @@ public abstract class LEDs extends SubsystemBase {
     DISTRACTION_DURING_TELEOP(
         (leds, section) -> leds.strobe(section, Color.kWhite, STROBE_SLOW_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
-    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kRed, STROBE_FAST_DURATION)),
+    END_OF_PERIOD((leds, section) -> leds.strobe(section, Color.kOrange, STROBE_FAST_DURATION)),
     IN_TRENCH_ZONE((leds, section) -> leds.solid(section, Color.kRed)),
     REVERSE_ROLLERS((leds, section) -> leds.strobe(section, Color.kPurple, STROBE_FAST_DURATION)),
     DRIVE_TO_POSE_CANCELED(
