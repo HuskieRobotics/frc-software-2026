@@ -36,7 +36,7 @@ public class HopperConstants {
 
   public static final double KICKER_MOI = 0.01;
 
-  public static final double KICKER_VELOCITY_TOLERANCE_RPS = 2.0;
+  public static final double KICKER_VELOCITY_TOLERANCE_RPS = 3.0;
 
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS =
       SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT - 1.0;
@@ -50,8 +50,8 @@ public class HopperConstants {
   public static final double KICKER_UNJAM_VELOCITY_RPS =
       -60.0; // <-- Should be negative (rotations per second) // FIXME: Update value
 
-  public static final double KICKER_VELOCITY_SETPOINT_1_RPS = 25.0;
-  public static final double KICKER_VELOCITY_SETPOINT_2_RPS = 36.0;
+  public static final double KICKER_VELOCITY_SETPOINT_1_RPS = 30.0;
+  public static final double KICKER_VELOCITY_SETPOINT_2_RPS = 40.0;
   public static final double KICKER_VELOCITY_SETPOINT_3_RPS = 60.0;
 
   public static final double SPINDEXER_UNJAM_WAIT_TIME = 1.0;

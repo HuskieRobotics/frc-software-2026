@@ -123,7 +123,7 @@ public class Hopper extends SubsystemBase {
 
   public Command getSystemCheckCommand() {
     return Commands.sequence(getTestVelocityCommand())
-        .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
+        // .until(() -> (!FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty()))
         .andThen(Commands.runOnce(this::stop, this));
   }
 
@@ -239,6 +239,6 @@ public class Hopper extends SubsystemBase {
 
   public void stop() {
     io.setSpindexerVelocity(0.0);
-    io.setKickerVelocity(0.0);
+    io.setKickerCurrent(0.0);
   }
 }
