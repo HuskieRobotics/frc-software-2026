@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.leds.LEDs;
 import frc.robot.operator_interface.OperatorInterface;
@@ -44,8 +43,6 @@ public class IntakeCommandsFactory {
 
     oi.getReverseIntakeRollersButton()
         .onFalse(Commands.runOnce(intake::startRoller, intake).withName("start intake rollers"));
-
-    RobotModeTriggers.autonomous().onTrue(intake.getWatchForStallCommand());
 
     FaultReporter.getInstance()
         .registerSystemCheck(

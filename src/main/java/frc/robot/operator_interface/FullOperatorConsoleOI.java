@@ -120,10 +120,11 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   // Operator Controller
-  @Override
+   @Override
   public Trigger getReverseIntakeRollersButton() {
     return operatorController.a();
   }
+
 
   @Override
   public Trigger getIncrementFlywheelVelocityButton() {
