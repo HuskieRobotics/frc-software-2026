@@ -225,6 +225,20 @@ public class Intake extends SubsystemBase {
         Commands.waitUntil(this::isRetracted));
   }
 
+  public Command getWatchForStallCommand() {
+    return Commands.repeatingSequence(
+            Commands.either(
+                Commands.sequence(
+                    Commands.runOnce(this::startRoller, this),
+                    Commands.waitUntil(this::isRollerStalled),
+                    Commands.runOnce(this::reverseRoller, this),
+                    // FIXME: add leds here
+                    Commands.waitSeconds(0.2)),
+                Commands.none(),
+                this::isDeployed))
+        .withName("Intake Watch for Stall");
+  }
+
   public double getPositionMeters() {
     return this.deployerLinearPositionMeters;
   }
