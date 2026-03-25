@@ -214,7 +214,7 @@ public class Intake extends SubsystemBase {
   public Command getDeployAndStartInAutoCommand() {
     return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
-        Commands.waitUntil(this::isDeployed),
+        Commands.waitSeconds(0.5),
         Commands.runOnce(this::startRollerInAuto, this));
   }
 
