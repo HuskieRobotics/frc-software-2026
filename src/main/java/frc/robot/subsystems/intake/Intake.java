@@ -155,7 +155,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void reverseRoller() {
-    intakeIO.setRollerVelocity(ROLLER_TARGET_VELOCITY_RPS / -2.0);
+    intakeIO.setRollerVelocity(-ROLLER_TARGET_VELOCITY_RPS);
   }
 
   public void startRollerInAuto() {
