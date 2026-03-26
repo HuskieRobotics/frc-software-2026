@@ -137,15 +137,15 @@ public class SavannaRobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.293, 0.122, 0.291),
-          new Rotation3d(new Quaternion(0.095, -0.176, -0.979, -0.025)));
+          new Translation3d(-0.296, 0.119, 0.303),
+          new Rotation3d(new Quaternion(0.086, -0.176, -0.981, -0.019)));
 
   // Back center right camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCR_CAMERA =
       new Transform3d(
-          new Translation3d(-0.309, 0.053, 0.271),
-          new Rotation3d(new Quaternion(0.166, -0.104, -0.01, -0.981)));
+          new Translation3d(-0.296, 0.054, 0.304),
+          new Rotation3d(new Quaternion(0.162, -0.084, -0.012, -0.983)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
