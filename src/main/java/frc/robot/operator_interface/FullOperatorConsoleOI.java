@@ -152,7 +152,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   @Override
   public Trigger getShooterSystemTest() {
-    return operatorController.back().and(operatorController.a());
+    return operatorController.back().and(operatorController.start());
   }
 
   @Override
