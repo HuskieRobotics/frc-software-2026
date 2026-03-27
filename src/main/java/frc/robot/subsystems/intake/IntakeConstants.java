@@ -61,7 +61,9 @@ public class IntakeConstants {
   public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
   public static final double ROLLER_VELOCITY_TOLERANCE_RPS = 3.0;
 
-  public static final double ROLLER_PEAK_CURRENT_LIMIT = 60.0;
+  public static final double ROLLER_PEAK_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_CONTINUOUS_CURRENT_LIMIT = 60.0;
+  public static final double ROLLER_PEAK_CURRENT_DURATION = 0.1;
 
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 

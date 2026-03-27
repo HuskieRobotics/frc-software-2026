@@ -305,8 +305,12 @@ public class IntakeIOTalonFX implements IntakeIO {
   private void configRollerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.TorqueCurrent.PeakForwardTorqueCurrent = ROLLER_PEAK_CURRENT_LIMIT;
-    config.TorqueCurrent.PeakReverseTorqueCurrent = -ROLLER_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit = ROLLER_CONTINUOUS_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerTime = ROLLER_PEAK_CURRENT_DURATION;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.Feedback.SensorToMechanismRatio = ROLLER_GEAR_RATIO;
     config.MotorOutput.Inverted =
