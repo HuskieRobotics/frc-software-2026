@@ -17,7 +17,7 @@ public class NorthstarTestPlatformConfig extends RobotConfig {
   private static final String BR_CAMERA_SERIAL_NUMBER = "40708542";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
   private static final String BCL_CAMERA_SERIAL_NUMBER = "40777404";
-  private static final String BCR_CAMERA_SERIAL_NUMBER = "40777399";
+  private static final String BCR_CAMERA_SERIAL_NUMBER = "40708569";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 15;
