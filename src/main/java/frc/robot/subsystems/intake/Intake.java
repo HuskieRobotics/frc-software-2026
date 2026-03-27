@@ -63,9 +63,9 @@ public class Intake extends SubsystemBase {
   private final SysIdRoutine rollerSysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
-              Volts.of(10), // will actually be a step to 10 A
-              Seconds.of(5), // override default timeout (10 s)
+              Volts.of(1).per(Second), // will actually be a ramp rate of 5 A/s
+              Volts.of(7), // will actually be a step to 10 A
+              Seconds.of(10), // override default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
