@@ -94,7 +94,7 @@
     },
     {
       "name": "slow on the way back",
-      "minWaypointRelativePos": 1.8,
+      "minWaypointRelativePos": 1.6,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 2.75,
