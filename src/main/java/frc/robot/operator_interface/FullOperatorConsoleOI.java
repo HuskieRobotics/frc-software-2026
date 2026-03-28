@@ -130,6 +130,16 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
     return operatorController.povUp();
   }
 
+  @Override 
+  public Trigger getIncrementRollerVelocityButton(){
+    return operatorController.rightBumper();
+  }
+
+  @Override
+  public Trigger getDecrementRollerVelocityButton(){
+    return operatorController.leftBumper();
+  }
+
   @Override
   public Trigger getDecrementFlywheelVelocityButton() {
     return operatorController.povDown();

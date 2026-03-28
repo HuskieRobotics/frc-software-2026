@@ -28,6 +28,8 @@ public class Intake extends SubsystemBase {
   private boolean inDeployedState = false;
   private boolean areRollersActiveState = false;
 
+  private double rollerVelocityAdjustment = ROLLER_TARGET_VELOCITY_RPS;
+
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private final CurrentSpikeDetector rollerJamDetector =
@@ -151,7 +153,7 @@ public class Intake extends SubsystemBase {
 
   public void startRoller() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY_RPS);
+    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
   }
 
   public void reverseRoller() {
@@ -183,6 +185,15 @@ public class Intake extends SubsystemBase {
     setLinearPosition(RETRACTED_LINEAR_POSITION_METERS);
   }
 
+  public void incrementRollerVelocityByOne(){
+    rollerVelocityAdjustment+=1;
+    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
+  }
+
+  public void decrementRollerVelocityByOne(){
+    rollerVelocityAdjustment-=1;
+    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
+  }
   public void jostleFuelIn() {
     inDeployedState = false;
     if (this.deployerLinearPositionMeters > DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS) {

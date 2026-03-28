@@ -151,6 +151,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getIncrementRollerVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDecrementRollerVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getMoveTurretRightButton() {
     return new Trigger(() -> false);
   }
