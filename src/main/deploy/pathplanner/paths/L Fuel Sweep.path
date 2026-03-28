@@ -36,12 +36,12 @@
         "y": 5.218887303851641
       },
       "prevControl": {
-        "x": 7.3236558889438585,
-        "y": 4.184858228656409
+        "x": 7.028984390831227,
+        "y": 4.243792528278935
       },
       "nextControl": {
-        "x": 7.5066191155492135,
-        "y": 7.716048502139801
+        "x": 8.282938659058486,
+        "y": 7.754864479315264
       },
       "isLocked": false,
       "linkedName": null
@@ -74,7 +74,7 @@
       "rotationDegrees": 110.0
     },
     {
-      "waypointRelativePos": 2.64,
+      "waypointRelativePos": 2.5,
       "rotationDegrees": -90.0
     }
   ],
@@ -94,10 +94,10 @@
     },
     {
       "name": "slow on the way back",
-      "minWaypointRelativePos": 1.6,
+      "minWaypointRelativePos": 1.5,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
