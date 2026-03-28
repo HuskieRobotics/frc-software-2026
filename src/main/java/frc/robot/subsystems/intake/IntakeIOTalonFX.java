@@ -38,7 +38,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private TalonFX deployerMotor;
 
   // Control requests
-  private VelocityVoltage rollerVelocityRequest = new VelocityVoltage(0);
+  private VelocityVoltage rollerVelocityRequest = new VelocityVoltage(0).withEnableFOC(false);
   private TorqueCurrentFOC rollerCurrentRequest = new TorqueCurrentFOC(0);
 
   private PositionVoltage deployerPositionRequest = new PositionVoltage(0);
