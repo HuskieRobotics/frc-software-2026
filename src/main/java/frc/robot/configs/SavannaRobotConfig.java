@@ -130,8 +130,8 @@ public class SavannaRobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.235, 0.301, 0.210),
-          new Rotation3d(new Quaternion(-0.687, -0.150, 0.148, -0.695)));
+          new Translation3d(-0.246, 0.312, 0.202),
+          new Rotation3d(new Quaternion(-0.699, -0.149, 0.152, -0.685)));
 
   // Back center left camera
   // x, y, z, pitch, yaw
