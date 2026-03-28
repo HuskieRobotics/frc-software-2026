@@ -330,10 +330,10 @@ public class AutonomousCommandsFactory {
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, false))
-            // Commands.runOnce(hopper::stop, hopper),
-            // Commands.runOnce(intake::deployIntake),
-            // AutoBuilder.followPath(secondSweep),
-            // getUnloadHopperCommand(hopper, intake, shooter, false))
+        // Commands.runOnce(hopper::stop, hopper),
+        // Commands.runOnce(intake::deployIntake),
+        // AutoBuilder.followPath(secondSweep),
+        // getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
             () -> {
               hopper.stop();
