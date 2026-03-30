@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2,
-        "y": 6.0
+        "x": 1.3,
+        "y": 5.95
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.9499297451379198,
-        "y": 6.0046060700404995
+        "x": 1.04992974513792,
+        "y": 5.9546060700405
       },
       "isLocked": false,
       "linkedName": "Depot"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 0.5,
-        "y": 6.0
+        "y": 5.95
       },
       "prevControl": {
         "x": 0.7487896541808384,
-        "y": 6.0245704695229625
+        "y": 5.974570469522963
       },
       "nextControl": null,
       "isLocked": false,
@@ -59,7 +59,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "[Unused] Depot Paths",
+  "folder": "Outpost and Depot",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
