@@ -44,6 +44,12 @@ public class IntakeCommandsFactory {
     oi.getReverseIntakeRollersButton()
         .onFalse(Commands.runOnce(intake::startRoller, intake).withName("start intake rollers"));
 
+    oi.getIncrementRollerVelocityButton()
+        .onTrue(Commands.runOnce(intake::incrementRollerVelocityByOne));
+
+    oi.getDecrementRollerVelocityButton()
+        .onTrue(Commands.runOnce(intake::decrementRollerVelocityByOne));
+
     FaultReporter.getInstance()
         .registerSystemCheck(
             IntakeConstants.SUBSYSTEM_NAME,

@@ -43,11 +43,11 @@ public class IntakeConstants {
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
 
-  public static final double ROLLER_KP = 2.675;
+  public static final double ROLLER_KP = 0.4; // 2.675
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 5.8;
-  public static final double ROLLER_KV = 0.0963;
+  public static final double ROLLER_KS = 0.4; // 5.8
+  public static final double ROLLER_KV = 0.195;
   public static final double ROLLER_KA = 0;
 
   // this is the gear ratio for the wheels; the roller, which is mechanically linked to the wheel
@@ -61,7 +61,9 @@ public class IntakeConstants {
   public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
   public static final double ROLLER_VELOCITY_TOLERANCE_RPS = 3.0;
 
-  public static final double ROLLER_PEAK_CURRENT_LIMIT = 50.0;
+  public static final double ROLLER_PEAK_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_CONTINUOUS_CURRENT_LIMIT = 60.0;
+  public static final double ROLLER_PEAK_CURRENT_DURATION = 0.1;
 
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 

@@ -47,7 +47,7 @@ public class ShooterModes extends SubsystemBase {
   private Timer shiftTimer = new Timer();
   private double shiftTimerOffset = 0.0;
   private boolean hubActive;
-  private double shotVelocityMultiplier = 1.0;
+  private double shotVelocityMultiplier = 0.98;
   private double turretAngleAdjustmentDeg = 0.0;
 
   private boolean shootOnTheMoveInAuto = false;
@@ -268,7 +268,7 @@ public class ShooterModes extends SubsystemBase {
     if (DriverStation.isAutonomousEnabled()) {
       timeRemaining = AUTO_DURATION_SECONDS - currentTime;
     } else if (DriverStation.isEnabled()) {
-      // Adjust the current offset if the time difference above the theshold
+      // Adjust the current offset if the time difference above the threshold
       if (Math.abs(fieldTeleopTime - currentTime) >= TIME_RESET_THRESHOLD_SECONDS
           && fieldTeleopTime <= 135
           && DriverStation.isFMSAttached()) {

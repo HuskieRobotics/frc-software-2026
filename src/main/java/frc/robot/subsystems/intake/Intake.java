@@ -28,6 +28,8 @@ public class Intake extends SubsystemBase {
   private boolean inDeployedState = false;
   private boolean areRollersActiveState = false;
 
+  private double rollerVelocityAdjustment = ROLLER_TARGET_VELOCITY_RPS;
+
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private final CurrentSpikeDetector rollerJamDetector =
@@ -63,9 +65,9 @@ public class Intake extends SubsystemBase {
   private final SysIdRoutine rollerSysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              Volts.of(5).per(Second), // will actually be a ramp rate of 5 A/s
-              Volts.of(10), // will actually be a step to 10 A
-              Seconds.of(5), // override default timeout (10 s)
+              Volts.of(1).per(Second), // will actually be a ramp rate of 5 A/s
+              Volts.of(7), // will actually be a step to 10 A
+              Seconds.of(10), // override default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
@@ -151,11 +153,11 @@ public class Intake extends SubsystemBase {
 
   public void startRoller() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_TARGET_VELOCITY_RPS);
+    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
   }
 
   public void reverseRoller() {
-    intakeIO.setRollerVelocity(ROLLER_TARGET_VELOCITY_RPS / -2.0);
+    intakeIO.setRollerVelocity(-ROLLER_TARGET_VELOCITY_RPS);
   }
 
   public void startRollerInAuto() {
@@ -181,6 +183,16 @@ public class Intake extends SubsystemBase {
   public void retractIntake() {
     inDeployedState = false;
     setLinearPosition(RETRACTED_LINEAR_POSITION_METERS);
+  }
+
+  public void incrementRollerVelocityByOne() {
+    rollerVelocityAdjustment += 1;
+    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
+  }
+
+  public void decrementRollerVelocityByOne() {
+    rollerVelocityAdjustment -= 1;
+    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
   }
 
   public void jostleFuelIn() {
@@ -214,7 +226,7 @@ public class Intake extends SubsystemBase {
   public Command getDeployAndStartInAutoCommand() {
     return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
-        Commands.waitUntil(this::isDeployed),
+        Commands.waitSeconds(0.5),
         Commands.runOnce(this::startRollerInAuto, this));
   }
 

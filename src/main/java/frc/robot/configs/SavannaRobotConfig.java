@@ -109,8 +109,8 @@ public class SavannaRobotConfig extends RobotConfig {
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40708542";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
-  private static final String BCL_CAMERA_SERIAL_NUMBER = "40777404";
-  private static final String BCR_CAMERA_SERIAL_NUMBER = "40777399";
+  private static final String BCL_CAMERA_SERIAL_NUMBER = "40708569";
+  private static final String BCR_CAMERA_SERIAL_NUMBER = "40777404";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 15;
@@ -130,22 +130,22 @@ public class SavannaRobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.235, 0.301, 0.210),
-          new Rotation3d(new Quaternion(-0.687, -0.150, 0.148, -0.695)));
+          new Translation3d(-0.246, 0.312, 0.202),
+          new Rotation3d(new Quaternion(-0.699, -0.149, 0.152, -0.685)));
 
   // Back center left camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.293, 0.122, 0.291),
-          new Rotation3d(new Quaternion(0.095, -0.176, -0.979, -0.025)));
+          new Translation3d(-0.296, 0.119, 0.303),
+          new Rotation3d(new Quaternion(0.086, -0.176, -0.981, -0.019)));
 
   // Back center right camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCR_CAMERA =
       new Transform3d(
-          new Translation3d(-0.309, 0.053, 0.271),
-          new Rotation3d(new Quaternion(0.166, -0.104, -0.01, -0.981)));
+          new Translation3d(-0.299, 0.065, 0.292),
+          new Rotation3d(new Quaternion(0.176, -0.087, -0.008, -0.980)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =

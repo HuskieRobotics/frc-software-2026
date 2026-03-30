@@ -120,15 +120,24 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   // Operator Controller
-   @Override
+  @Override
   public Trigger getReverseIntakeRollersButton() {
     return operatorController.a();
   }
 
-
   @Override
   public Trigger getIncrementFlywheelVelocityButton() {
     return operatorController.povUp();
+  }
+
+  @Override
+  public Trigger getIncrementRollerVelocityButton() {
+    return operatorController.rightTrigger();
+  }
+
+  @Override
+  public Trigger getDecrementRollerVelocityButton() {
+    return operatorController.leftTrigger();
   }
 
   @Override
@@ -153,7 +162,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   @Override
   public Trigger getShooterSystemTest() {
-    return operatorController.back().and(operatorController.a());
+    return operatorController.back().and(operatorController.start());
   }
 
   @Override

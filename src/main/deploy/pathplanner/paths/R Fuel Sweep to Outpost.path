@@ -16,15 +16,15 @@
     },
     {
       "anchor": {
-        "x": 8.61429418742586,
+        "x": 8.4,
         "y": 3.351791221826809
       },
       "prevControl": {
-        "x": 9.30509272467903,
+        "x": 9.09079853725317,
         "y": 0.289258202567761
       },
       "nextControl": {
-        "x": 8.32232902535312,
+        "x": 8.10803483792726,
         "y": 4.646167079767273
       },
       "isLocked": false,
@@ -64,11 +64,11 @@
     },
     {
       "anchor": {
-        "x": 0.59,
+        "x": 0.7,
         "y": 0.664
       },
       "prevControl": {
-        "x": 3.9152353780313836,
+        "x": 4.0252353780313825,
         "y": 0.5092154065620549
       },
       "nextControl": null,
@@ -101,10 +101,10 @@
   "constraintZones": [
     {
       "name": "slow down to pickup",
-      "minWaypointRelativePos": 0.65,
+      "minWaypointRelativePos": 0.64,
       "maxWaypointRelativePos": 1.2,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.6,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -114,10 +114,10 @@
     },
     {
       "name": "slow down on the way back",
-      "minWaypointRelativePos": 2.5,
-      "maxWaypointRelativePos": 3.7,
+      "minWaypointRelativePos": 1.8,
+      "maxWaypointRelativePos": 3.8,
       "constraints": {
-        "maxVelocity": 3.0,
+        "maxVelocity": 2.75,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -127,10 +127,10 @@
     },
     {
       "name": "slow down to the outpost",
-      "minWaypointRelativePos": 3.7,
+      "minWaypointRelativePos": 3.8,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 1.5,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,

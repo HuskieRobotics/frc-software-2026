@@ -214,12 +214,12 @@ public class Vision extends SubsystemBase {
     }
 
     // Update recording state
-    boolean shouldRecord =
-        // Ensure that match info can be published before recording
-        fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) || recordingRequest.get();
-    for (VisionIO io : this.visionIOs) {
-      io.setRecording(shouldRecord);
-    }
+    // boolean shouldRecord =
+    //     // Ensure that match info can be published before recording
+    //     fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) || recordingRequest.get();
+    // for (VisionIO io : this.visionIOs) {
+    //   io.setRecording(shouldRecord);
+    // }
 
     // Update disconnected alerts & LEDs
     boolean anyNTDisconnected = false;
@@ -414,9 +414,11 @@ public class Vision extends SubsystemBase {
 
       if (ENABLE_EXTRA_LOGGING) {
         // Log data for this camera
-        Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevX", stdDev.get(0, 0));
-        Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevY", stdDev.get(1, 0));
-        Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevT", stdDev.get(2, 0));
+        if (stdDev != null) {
+          Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevX", stdDev.get(0, 0));
+          Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevY", stdDev.get(1, 0));
+          Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevT", stdDev.get(2, 0));
+        }
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
             Timer.getTimestamp() - this.lastTimestamps[cameraIndex]);
