@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0169044222539223,
-        "y": 7.586661911554922
+        "x": 2.632170454545454,
+        "y": 5.539795454545454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.149659336986366,
-        "y": 7.912876473072675
+        "x": 2.178670454545454,
+        "y": 5.776852272727273
       },
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "Near Bump Turned Around"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 5.95
       },
       "prevControl": {
-        "x": 3.3861000000000008,
-        "y": 5.909688888888889
+        "x": 1.9209999999999998,
+        "y": 5.879920454545454
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,10 +45,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "[Unused] Depot Paths",
+  "folder": "Support Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 133.53119928561424
   },
   "useDefaultConstraints": true
 }

@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.414279600570612,
-        "y": 7.586661911554922
+        "x": 3.5700909090909088,
+        "y": 7.590852272727272
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.280545454545454,
-        "y": 7.652693181818183
+        "x": 7.239318181818181,
+        "y": 7.889749999999999
       },
       "isLocked": false,
-      "linkedName": "Left Starting Point"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -130,7 +130,7 @@
     "rotation": 133.53119928561424
   },
   "reversed": false,
-  "folder": "Trench-Bump Double Sweeps",
+  "folder": "Support Sweeps",
   "idealStartingState": {
     "velocity": 0.5,
     "rotation": -90.0
