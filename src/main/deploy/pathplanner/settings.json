@@ -3,14 +3,15 @@
   "robotLength": 0.76835,
   "holonomicMode": true,
   "pathFolders": [
-    "[UNUSED] Fuel Eradication",
     "Left Sweep (and mirrored)",
-    "New Sweeps",
+    "Trench-Bump Double Sweeps",
     "Right Sweep and Outpost",
-    "[UNUSED] Safe Sweeps",
+    "Trench Double Sweeps",
     "Tuning",
     "XRP",
+    "[UNUSED] Fuel Eradication",
     "[UNUSED] Right Sweep",
+    "[UNUSED] Safe Sweeps",
     "[Unused] Depot Paths"
   ],
   "autoFolders": [

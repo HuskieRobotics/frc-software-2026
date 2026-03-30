@@ -48,48 +48,32 @@
     },
     {
       "anchor": {
-        "x": 7.610363636363637,
-        "y": 5.405806818181818
+        "x": 6.476613636363636,
+        "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 7.752209417883189,
-        "y": 4.380152705655826
+        "x": 7.180653065529539,
+        "y": 5.539795454545454
       },
       "nextControl": {
-        "x": 7.342386363636364,
-        "y": 7.343488636363636
+        "x": 5.755136363636364,
+        "y": 5.539795454545454
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.816738636363636,
-        "y": 7.4465568181818185
+        "x": 2.632170454545454,
+        "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 7.610363636363636,
-        "y": 7.409519906626896
-      },
-      "nextControl": {
-        "x": 6.0813778928217745,
-        "y": 7.4808746519440135
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.210984308131241,
-        "y": 7.41845934379458
-      },
-      "prevControl": {
-        "x": 5.814980749044816,
-        "y": 7.41845934379458
+        "x": 5.236166895459029,
+        "y": 5.539795454545454
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Bank 90 degrees"
+      "linkedName": "L Near Bump"
     }
   ],
   "rotationTargets": [
@@ -103,11 +87,7 @@
     },
     {
       "waypointRelativePos": 3.0,
-      "rotationDegrees": 103.73626830562263
-    },
-    {
-      "waypointRelativePos": 4.0,
-      "rotationDegrees": 180.0
+      "rotationDegrees": -135.0
     }
   ],
   "constraintZones": [
@@ -126,8 +106,8 @@
     },
     {
       "name": "slow down on the way back",
-      "minWaypointRelativePos": 3.0,
-      "maxWaypointRelativePos": 5.0,
+      "minWaypointRelativePos": 2.5,
+      "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
@@ -138,14 +118,14 @@
       }
     },
     {
-      "name": "slower turn",
-      "minWaypointRelativePos": 2.0,
-      "maxWaypointRelativePos": 3.0,
+      "name": "slow over bump",
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
-        "maxAngularVelocity": 270.0,
-        "maxAngularAcceleration": 360.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -163,10 +143,10 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 180.0
+    "rotation": -137.20259816176568
   },
   "reversed": false,
-  "folder": "Trench Double Sweeps",
+  "folder": "Trench-Bump Double Sweeps",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
