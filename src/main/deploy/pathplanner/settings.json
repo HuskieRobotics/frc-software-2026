@@ -3,13 +3,14 @@
   "robotLength": 0.76835,
   "holonomicMode": true,
   "pathFolders": [
-    "Fuel Eradication",
+    "[UNUSED] Fuel Eradication",
     "Left Sweep (and mirrored)",
-    "[UNUSED] Right Sweep",
+    "New Sweeps",
     "Right Sweep and Outpost",
-    "Safe Sweeps",
+    "[UNUSED] Safe Sweeps",
     "Tuning",
     "XRP",
+    "[UNUSED] Right Sweep",
     "[Unused] Depot Paths"
   ],
   "autoFolders": [
@@ -40,5 +41,7 @@
   "brModuleY": -0.314325,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.4895,\"y\":0.0},\"size\":{\"width\":0.933,\"length\":0.21082},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
 }

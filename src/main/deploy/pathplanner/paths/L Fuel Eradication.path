@@ -128,7 +128,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Fuel Eradication",
+  "folder": "[UNUSED] Fuel Eradication",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
