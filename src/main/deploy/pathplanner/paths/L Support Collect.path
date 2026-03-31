@@ -52,12 +52,28 @@
         "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 6.428914640591966,
-        "y": 5.491119247032037
+        "x": 3.402379248658318,
+        "y": 5.097763864042934
+      },
+      "nextControl": {
+        "x": 2.17351056788823,
+        "y": 5.803025582204954
+      },
+      "isLocked": false,
+      "linkedName": "Near Bump Turned Around"
+    },
+    {
+      "anchor": {
+        "x": 1.3,
+        "y": 5.95
+      },
+      "prevControl": {
+        "x": 1.8122898032200352,
+        "y": 5.9577101967799635
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Near Bump Turned Around"
+      "linkedName": "Depot"
     }
   ],
   "rotationTargets": [
@@ -70,7 +86,11 @@
       "rotationDegrees": 89.0
     },
     {
-      "waypointRelativePos": 2.4,
+      "waypointRelativePos": 2.25,
+      "rotationDegrees": 135.0
+    },
+    {
+      "waypointRelativePos": 2.8,
       "rotationDegrees": 135.0
     }
   ],
@@ -90,7 +110,7 @@
     },
     {
       "name": "slow otw back",
-      "minWaypointRelativePos": 2.3,
+      "minWaypointRelativePos": 2.25,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 2.0,
@@ -104,7 +124,7 @@
     {
       "name": "slow to turn",
       "minWaypointRelativePos": 1.3,
-      "maxWaypointRelativePos": 2.3,
+      "maxWaypointRelativePos": 2.25,
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
@@ -126,8 +146,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 133.53119928561424
+    "velocity": 0.0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Support Sweeps",

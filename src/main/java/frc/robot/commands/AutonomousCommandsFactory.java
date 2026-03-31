@@ -96,6 +96,9 @@ public class AutonomousCommandsFactory {
         "Right Sweep and Outpost",
         rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
 
+    autoChooser.addOption(
+        "Left Support Sweep", leftSupportSweep(drivetrain, hopper, intake, shooter, shooterModes));
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -508,6 +511,41 @@ public class AutonomousCommandsFactory {
         firstSweep,
         slowToTrench,
         secondSweep);
+  }
+
+  private Command leftSupportSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath firstSweepToDepot;
+    PathPlannerPath intakeDepot;
+    PathPlannerPath leaveDepot;
+    final Pose2d startingPose;
+    try {
+      firstSweepToDepot = PathPlannerPath.fromPathFile("L Support Collect");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = firstSweepToDepot.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+        // shoot preloads
+        getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
+        Commands.runOnce(hopper::stop, hopper),
+        Commands.runOnce(intake::deployIntake),
+        AutoBuilder.followPath(firstSweepToDepot),
+        getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(4.0),
+        Commands.runOnce(hopper::stop, hopper),
+        Commands.runOnce(intake::deployIntake),
+        AutoBuilder.followPath(intakeDepot),
+        AutoBuilder.followPath(leaveDepot),
+        getUnloadHopperCommand(hopper, intake, shooter, false));
   }
 
   private Command rightNeutralZoneSweepAndOutpost(
