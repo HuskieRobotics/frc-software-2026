@@ -67,22 +67,35 @@ public class AutonomousCommandsFactory {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
+    // Worlds autos:
+    /*
+     * Left Trench Sweep: either turn or no-turn depending on chosen paths from testing
+     * Left Trench-Bump Sweep: comes back over the bump both sweeps
+     * Right Trench Sweep: either turn or no-turn depending on chosen paths from testing
+     * Right Trench-Bump Sweep: comes back over the bump both sweeps
+     * Left Support Sweep: starts behind, shoots preloads, sweeps, comes back over bump, goes depot
+     * Right Sweep and Outpost
+     * Outpost and Depot
+     */
+
     autoChooser.addOption(
-        "Right Sweep", rightNeutralZoneSweep(drivetrain, hopper, intake, shooter));
+        "Left Trench Sweep", leftTrenchDoubleSweep(drivetrain, hopper, intake, shooter));
+
+    autoChooser.addOption(
+        "Left Trench-Bump Sweep",
+        leftTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
+
+    autoChooser.addOption(
+        "Right Trench Sweep", rightTrenchDoubleSweep(drivetrain, hopper, intake, shooter));
+
+    autoChooser.addOption(
+        "Right Trench-Bump Sweep",
+        rightTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
         "Right Sweep and Outpost",
         rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
 
-    autoChooser.addOption("Left Sweep", leftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
-
-    autoChooser.addOption("Fuel Eradication", fuelEradication(drivetrain, hopper, intake, shooter));
-
-    autoChooser.addOption(
-        "Safe Right Sweep", safeRightNeutralZoneSweep(drivetrain, hopper, intake, shooter));
-
-    autoChooser.addOption(
-        "Safe Left Sweep", safeLeftNeutralZoneSweep(drivetrain, hopper, intake, shooter));
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -103,56 +116,57 @@ public class AutonomousCommandsFactory {
             drivetrain);
     autoChooser.addOption("Start Point", startPoint);
 
-    /************ Distance Test ************
-     *
-     * used for empirically determining the wheel radius
-     *
-     */
-    autoChooser.addOption(
-        "Distance Test Slow", createTuningAutoPath("DistanceTestSlow", true, drivetrain));
-    autoChooser.addOption(
-        "Distance Test Med", createTuningAutoPath("DistanceTestMed", true, drivetrain));
-    autoChooser.addOption(
-        "Distance Test Fast", createTuningAutoPath("DistanceTestFast", true, drivetrain));
+    // /************ Distance Test ************
+    //  *
+    //  * used for empirically determining the wheel radius
+    //  *
+    //  */
+    // autoChooser.addOption(
+    //     "Distance Test Slow", createTuningAutoPath("DistanceTestSlow", true, drivetrain));
+    // autoChooser.addOption(
+    //     "Distance Test Med", createTuningAutoPath("DistanceTestMed", true, drivetrain));
+    // autoChooser.addOption(
+    //     "Distance Test Fast", createTuningAutoPath("DistanceTestFast", true, drivetrain));
 
-    /************ Auto Tuning ************
-     *
-     * useful for tuning the autonomous PID controllers
-     *
-     */
-    autoChooser.addOption(
-        "Rotation Test Slow", createTuningAutoPath("RotationTestSlow", false, drivetrain));
-    autoChooser.addOption(
-        "Rotation Test Fast", createTuningAutoPath("RotationTestFast", false, drivetrain));
+    // /************ Auto Tuning ************
+    //  *
+    //  * useful for tuning the autonomous PID controllers
+    //  *
+    //  */
+    // autoChooser.addOption(
+    //     "Rotation Test Slow", createTuningAutoPath("RotationTestSlow", false, drivetrain));
+    // autoChooser.addOption(
+    //     "Rotation Test Fast", createTuningAutoPath("RotationTestFast", false, drivetrain));
 
-    autoChooser.addOption(
-        "Oval Test Slow", createTuningAutoPath("OvalTestSlow", false, drivetrain));
-    autoChooser.addOption(
-        "Oval Test Fast", createTuningAutoPath("OvalTestFast", false, drivetrain));
+    // autoChooser.addOption(
+    //     "Oval Test Slow", createTuningAutoPath("OvalTestSlow", false, drivetrain));
+    // autoChooser.addOption(
+    //     "Oval Test Fast", createTuningAutoPath("OvalTestFast", false, drivetrain));
 
-    /************ Drive Velocity Tuning ************
-     *
-     * useful for tuning the drive velocity PID controller
-     *
-     */
-    autoChooser.addOption("Drive Velocity Tuning", this.getDriveVelocityTuningCommand(drivetrain));
+    // /************ Drive Velocity Tuning ************
+    //  *
+    //  * useful for tuning the drive velocity PID controller
+    //  *
+    //  */
+    // autoChooser.addOption("Drive Velocity Tuning",
+    // this.getDriveVelocityTuningCommand(drivetrain));
 
-    /************ Swerve Rotation Tuning ************
-     *
-     * useful for tuning the swerve module rotation PID controller
-     *
-     */
-    autoChooser.addOption(
-        "Swerve Rotation Tuning", this.getSwerveRotationTuningCommand(drivetrain));
+    // /************ Swerve Rotation Tuning ************
+    //  *
+    //  * useful for tuning the swerve module rotation PID controller
+    //  *
+    //  */
+    // autoChooser.addOption(
+    //     "Swerve Rotation Tuning", this.getSwerveRotationTuningCommand(drivetrain));
 
-    /************ Drive Wheel Radius Characterization ************
-     *
-     * useful for characterizing the drive wheel Radius
-     *
-     */
-    autoChooser.addOption( // start by driving slowing in a circle to align wheels
-        "Drive Wheel Radius Characterization",
-        this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
+    // /************ Drive Wheel Radius Characterization ************
+    //  *
+    //  * useful for characterizing the drive wheel Radius
+    //  *
+    //  */
+    // autoChooser.addOption( // start by driving slowing in a circle to align wheels
+    //     "Drive Wheel Radius Characterization",
+    //     this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain) {
@@ -315,7 +329,7 @@ public class AutonomousCommandsFactory {
         () -> fullHopper);
   }
 
-  private Command getNeutralZoneSweepAuto(
+  private Command getTrenchDoubleSweepAuto(
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
@@ -329,11 +343,45 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
+            AutoBuilder.followPath(secondSweep),
             getUnloadHopperCommand(hopper, intake, shooter, false))
-        // Commands.runOnce(hopper::stop, hopper),
-        // Commands.runOnce(intake::deployIntake),
-        // AutoBuilder.followPath(secondSweep),
-        // getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command getTrenchBumpDoubleSweepAuto(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes,
+      Pose2d startingPose,
+      PathPlannerPath firstSweep,
+      PathPlannerPath slowToTrench,
+      PathPlannerPath secondSweep) {
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
+            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+            Commands.deadline(
+                AutoBuilder.followPath(slowToTrench),
+                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+                getAutoJostleCommand(intake, shooter)),
+            Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
+            Commands.runOnce(hopper::stop, hopper), // could be unnecessary
+            Commands.runOnce(intake::deployIntake),
+            AutoBuilder.followPath(secondSweep),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -353,45 +401,7 @@ public class AutonomousCommandsFactory {
         });
   }
 
-  private Command rightNeutralZoneSweep(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath firstSweep;
-    PathPlannerPath secondSweep;
-    final Pose2d startingPose;
-    try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep").mirrorPath();
-      secondSweep = PathPlannerPath.fromPathFile("L Second Collect").mirrorPath();
-      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-      return Commands.none();
-    }
-
-    return getNeutralZoneSweepAuto(
-        drivetrain, hopper, intake, shooter, startingPose, firstSweep, secondSweep);
-  }
-
-  private Command safeRightNeutralZoneSweep(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath safeFirstSweep;
-    PathPlannerPath secondSweep;
-    final Pose2d startingPose;
-    try {
-      safeFirstSweep = PathPlannerPath.fromPathFile("Safe L Fuel Sweep").mirrorPath();
-      secondSweep = PathPlannerPath.fromPathFile("L Second Collect").mirrorPath();
-      startingPose = safeFirstSweep.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-    return getNeutralZoneSweepAuto(
-        drivetrain, hopper, intake, shooter, startingPose, safeFirstSweep, secondSweep);
-  }
-
-  private Command leftNeutralZoneSweep(
+  private Command leftTrenchDoubleSweep(
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
@@ -400,8 +410,9 @@ public class AutonomousCommandsFactory {
     PathPlannerPath secondSweep;
     final Pose2d startingPose;
     try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep");
-      secondSweep = PathPlannerPath.fromPathFile("L Second Collect");
+      // exchange with turn vs. no-turn for testing
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -409,30 +420,94 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
-    return getNeutralZoneSweepAuto(
+    return getTrenchDoubleSweepAuto(
         drivetrain, hopper, intake, shooter, startingPose, firstSweep, secondSweep);
   }
 
-  private Command safeLeftNeutralZoneSweep(
-      SwerveDrivetrain drivetrain,
-      Hopper hopper,
-      Intake intake,
-      Shooter shooter) { // add shooter and intake later
-    PathPlannerPath safeFirstFuelSweep;
+  private Command rightTrenchDoubleSweep(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath firstSweep;
     PathPlannerPath secondSweep;
     final Pose2d startingPose;
     try {
-      safeFirstFuelSweep = PathPlannerPath.fromPathFile("Safe L Fuel Sweep");
-      secondSweep = PathPlannerPath.fromPathFile("L Second Collect");
-      startingPose = safeFirstFuelSweep.getStartingHolonomicPose().orElseThrow();
+      // exchange with turn vs. no-turn for testing
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect").mirrorPath();
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
       return Commands.none();
     }
 
-    return getNeutralZoneSweepAuto(
-        drivetrain, hopper, intake, shooter, startingPose, safeFirstFuelSweep, secondSweep);
+    return getTrenchDoubleSweepAuto(
+        drivetrain, hopper, intake, shooter, startingPose, firstSweep, secondSweep);
+  }
+
+  private Command leftTrenchBumpDoubleSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    PathPlannerPath slowToTrench;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump");
+      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
+      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect");
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getTrenchBumpDoubleSweepAuto(
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes,
+        startingPose,
+        firstSweep,
+        slowToTrench,
+        secondSweep);
+  }
+
+  private Command rightTrenchBumpDoubleSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    PathPlannerPath slowToTrench;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump").mirrorPath();
+      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect").mirrorPath();
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getTrenchBumpDoubleSweepAuto(
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes,
+        startingPose,
+        firstSweep,
+        slowToTrench,
+        secondSweep);
   }
 
   private Command rightNeutralZoneSweepAndOutpost(
@@ -473,39 +548,6 @@ public class AutonomousCommandsFactory {
               intake.deployIntake();
               intake.startRoller();
               shooterModes.disableShootOnTheMoveInAuto();
-            });
-  }
-
-  private Command fuelEradication(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
-    PathPlannerPath firstSweep;
-    PathPlannerPath secondSweep;
-    final Pose2d startingPose;
-    try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Eradication");
-      secondSweep = PathPlannerPath.fromPathFile("Return and Push to L");
-      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    return Commands.sequence(
-            Commands.runOnce(matchTimer::restart),
-            setStartingPoseForAuto(startingPose, drivetrain),
-            Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(secondSweep),
-            getUnloadHopperCommand(hopper, intake, shooter, false))
-        .finallyDo(
-            () -> {
-              hopper.stop();
-              intake.deployIntake();
-              intake.startRoller();
             });
   }
 
