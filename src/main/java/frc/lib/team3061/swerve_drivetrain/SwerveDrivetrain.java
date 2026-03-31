@@ -447,7 +447,10 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
       boolean isFieldRelative) {
 
     // get the slow-mode multiplier from the config
-    double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
+    double slowModeMultiplier =
+        (Field2d.getInstance().inIntakeCornerZone())
+            ? RobotConfig.getInstance().getRobotSlowModeMultiplier() / 2.0
+            : RobotConfig.getInstance().getRobotSlowModeMultiplier();
 
     // log velocity before and after filter
     Logger.recordOutput(SUBSYSTEM_NAME + "/requestedXVelocity", xVelocityMPS);
@@ -537,7 +540,10 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     this.thetaFilter.calculate(0.0);
 
     // get the slow-mode multiplier from the config
-    double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
+    double slowModeMultiplier =
+        (Field2d.getInstance().inIntakeCornerZone())
+            ? RobotConfig.getInstance().getRobotSlowModeMultiplier() / 2.0
+            : RobotConfig.getInstance().getRobotSlowModeMultiplier();
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
     // slow-mode multiplier
