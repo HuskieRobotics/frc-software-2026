@@ -714,13 +714,11 @@ public class Field2d {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
     if (getAlliance() == Alliance.Red) {
-      pose = FlippingUtil.flipFieldPose(pose);
+      return transformedIntakeCornerZoneLeftRED.contains(pose)
+          || transformedIntakeCornerZoneRightRED.contains(pose);
     }
-
     return transformedIntakeCornerZoneLeftBLUE.contains(pose)
-        || transformedIntakeCornerZoneRightBLUE.contains(pose)
-        || transformedIntakeCornerZoneLeftRED.contains(pose)
-        || transformedIntakeCornerZoneRightRED.contains(pose);
+        || transformedIntakeCornerZoneRightBLUE.contains(pose);
   }
 
   public Pose2d getNearestBank() {
