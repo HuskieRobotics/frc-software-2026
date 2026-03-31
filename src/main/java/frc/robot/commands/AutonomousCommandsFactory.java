@@ -99,6 +99,9 @@ public class AutonomousCommandsFactory {
     autoChooser.addOption(
         "Left Support Sweep", leftSupportSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
+    autoChooser.addOption(
+        "Outpost and Depot", outpostAndDepot(drivetrain, hopper, intake, shooter, shooterModes));
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -535,12 +538,66 @@ public class AutonomousCommandsFactory {
     }
 
     return Commands.sequence(
-        // shoot preloads
-        getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
-        Commands.runOnce(hopper::stop, hopper),
-        Commands.runOnce(intake::deployIntake),
-        AutoBuilder.followPath(firstSweepToDepot),
-        getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(4.0),
+            // shoot preloads
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            intake.getDeployAndStartInAutoCommand(),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
+            AutoBuilder.followPath(firstSweepToDepot),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(4.0),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
+            AutoBuilder.followPath(intakeDepot),
+            AutoBuilder.followPath(leaveDepot),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command outpostAndDepot(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath midToOutpost;
+    PathPlannerPath outpostToDepot;
+    PathPlannerPath intakeDepot;
+    PathPlannerPath leaveDepot;
+    final Pose2d startingPose;
+
+    try {
+      midToOutpost = PathPlannerPath.fromPathFile("Mid to Outpost");
+      outpostToDepot = PathPlannerPath.fromPathFile("Outpost to Depot");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = midToOutpost.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+        Commands.runOnce(matchTimer::restart),
+        setStartingPoseForAuto(startingPose, drivetrain),
+        Commands.parallel(
+            intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(midToOutpost)),
+        Commands.deadline(
+            Commands.waitSeconds(2.0),
+            Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.OUTPOST_FLASH_AUTO))),
+        Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+        Commands.deadline(
+            AutoBuilder.followPath(outpostToDepot),
+            hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+            getAutoJostleCommand(intake, shooter)),
+        Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake),
         AutoBuilder.followPath(intakeDepot),
