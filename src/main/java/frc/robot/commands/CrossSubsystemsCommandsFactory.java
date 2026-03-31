@@ -98,7 +98,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getCheckForFaults()
         .onTrue(FaultReporter.getInstance().getCheckForFaultsCommand().ignoringDisable(true));
 
-    configureCrossSubsystemsTriggers(shooterModes, shooter, hopper);
+    configureCrossSubsystemsTriggers(shooterModes, shooter, hopper, swerveDrivetrain);
 
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
@@ -151,7 +151,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                     intake.getDeployAndStartCommand(),
                     Commands.either(
-                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain),
                         Commands.runOnce(hopper::stop, hopper),
                         () ->
                             shooterModes.isShootOnTheMoveEnabled()
@@ -173,7 +173,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                     intake.getDeployAndStartCommand(),
                     Commands.either(
-                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain),
                         Commands.runOnce(hopper::stop, hopper),
                         () ->
                             shooterModes.isShootOnTheMoveEnabled()
@@ -319,33 +319,56 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static void configureCrossSubsystemsTriggers(
-      ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
+      ShooterModes shooterModes,
+      Shooter shooter,
+      Hopper hopper,
+      SwerveDrivetrain swerveDrivetrain) {
+
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
                 () ->
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
-    unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
+
+    unloadHopperOnTheMoveTrigger.onTrue(
+        getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain));
     unloadHopperOnTheMoveTrigger.onFalse(
-        Commands.runOnce(hopper::stop, hopper).withName("stop hopper"));
+        Commands.sequence(
+                Commands.runOnce(hopper::stop, hopper),
+                Commands.runOnce(swerveDrivetrain::disableAccelerationLimiting),
+                Commands.runOnce(swerveDrivetrain::disableTranslationSlowMode),
+                Commands.runOnce(swerveDrivetrain::disableRotationSlowMode))
+            .withName("stop hopper and disable drive to pose on the move"));
   }
 
   private static Command getShootWhenAimedCommand(
-      ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
-    return Commands.repeatingSequence(
-            Commands.parallel(
-                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                    Commands.repeatingSequence(
-                        Commands.either(
-                            Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                            Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
-                            shooterModes::isPassOnTheMoveEnabled)))
-                .until(shooterModes::isTurretNotNearSetPoint),
-            Commands.parallel(
-                    Commands.runOnce(hopper::stop, hopper),
-                    Commands.run(
-                        () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
-                .until(() -> !shooterModes.isTurretNotNearSetPoint()))
+      ShooterModes shooterModes,
+      Shooter shooter,
+      Hopper hopper,
+      SwerveDrivetrain swerveDrivetrain) {
+    return Commands.sequence(
+            Commands.either(
+                Commands.sequence(
+                    Commands.runOnce(swerveDrivetrain::enableAccelerationLimiting),
+                    Commands.runOnce(swerveDrivetrain::enableTranslationSlowMode),
+                    Commands.runOnce(swerveDrivetrain::enableRotationSlowMode)),
+                Commands.none(),
+                shooterModes::isShootOnTheMoveEnabled),
+            Commands.repeatingSequence(
+                Commands.parallel(
+                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+                        Commands.repeatingSequence(
+                            Commands.either(
+                                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                                Commands.run(
+                                    () -> LEDs.getInstance().requestState(States.SHOOTING)),
+                                shooterModes::isPassOnTheMoveEnabled)))
+                    .until(shooterModes::isTurretNotNearSetPoint),
+                Commands.parallel(
+                        Commands.runOnce(hopper::stop, hopper),
+                        Commands.run(
+                            () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
+                    .until(() -> !shooterModes.isTurretNotNearSetPoint())))
         .withName("shoot when aimed");
   }
 }

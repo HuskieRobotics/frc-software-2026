@@ -60,22 +60,22 @@ public class SwerveDrivetrainCommandFactory {
                 .withName("toggle field relative"));
 
     // slow-mode toggle
-    oi.getTranslationSlowModeButton()
-        .onTrue(
-            Commands.runOnce(swerveDrivetrain::enableTranslationSlowMode, swerveDrivetrain)
-                .withName("enable translation slow mode"));
-    oi.getTranslationSlowModeButton()
-        .onFalse(
-            Commands.runOnce(swerveDrivetrain::disableTranslationSlowMode, swerveDrivetrain)
-                .withName("disable translation slow mode"));
-    oi.getRotationSlowModeButton()
-        .onTrue(
-            Commands.runOnce(swerveDrivetrain::enableRotationSlowMode, swerveDrivetrain)
-                .withName("enable rotation slow mode"));
-    oi.getRotationSlowModeButton()
-        .onFalse(
-            Commands.runOnce(swerveDrivetrain::disableRotationSlowMode, swerveDrivetrain)
-                .withName("disable rotation slow mode"));
+    // oi.getTranslationSlowModeButton()
+    //     .onTrue(
+    //         Commands.runOnce(swerveDrivetrain::enableTranslationSlowMode, swerveDrivetrain)
+    //             .withName("enable translation slow mode"));
+    // oi.getTranslationSlowModeButton()
+    //     .onFalse(
+    //         Commands.runOnce(swerveDrivetrain::disableTranslationSlowMode, swerveDrivetrain)
+    //             .withName("disable translation slow mode"));
+    // oi.getRotationSlowModeButton()
+    //     .onTrue(
+    //         Commands.runOnce(swerveDrivetrain::enableRotationSlowMode, swerveDrivetrain)
+    //             .withName("enable rotation slow mode"));
+    // oi.getRotationSlowModeButton()
+    //     .onFalse(
+    //         Commands.runOnce(swerveDrivetrain::disableRotationSlowMode, swerveDrivetrain)
+    //             .withName("disable rotation slow mode"));
 
     // reset gyro to 0 degrees
     oi.getResetGyroButton()

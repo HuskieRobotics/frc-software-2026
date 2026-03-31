@@ -74,7 +74,8 @@ public class SavannaRobotConfig extends RobotConfig {
 
   private static final double MAX_VELOCITY_MPS = 4.936;
   private static final double MAX_COAST_VELOCITY_MPS = 0.05;
-  private static final double SLOW_MODE_MULTIPLIER = 0.75;
+  private static final double SLOW_MODE_MULTIPLIER =
+      0.5; // FIXME: tune this for slow mode when ShooterOnTheMove is enabled
 
   private static final String CAN_BUS_NAME = "canbus1";
   private static final CANBus CAN_BUS = new CANBus(CAN_BUS_NAME);
