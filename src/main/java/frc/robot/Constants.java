@@ -31,7 +31,6 @@ public final class Constants {
   public static final boolean ENABLE_EXTRA_LOGGING = false;
 
   private static final RobotType ROBOT = RobotType.ROBOT_COMPETITION;
-
   private static final Alert invalidRobotAlert =
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.kError);
 

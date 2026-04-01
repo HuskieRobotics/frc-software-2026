@@ -335,9 +335,13 @@ public class CrossSubsystemsCommandsFactory {
     unloadHopperOnTheMoveTrigger.onFalse(
         Commands.sequence(
                 Commands.runOnce(hopper::stop, hopper),
-                Commands.runOnce(swerveDrivetrain::disableAccelerationLimiting),
-                Commands.runOnce(swerveDrivetrain::disableTranslationSlowMode),
-                Commands.runOnce(swerveDrivetrain::disableRotationSlowMode))
+                Commands.runOnce(
+                    () -> {
+                      swerveDrivetrain.disableAccelerationLimiting();
+                      swerveDrivetrain.disableTranslationSlowMode();
+                      swerveDrivetrain.disableRotationSlowMode();
+                    }),
+                Commands.runOnce(swerveDrivetrain::resetSlowModeMultiplier))
             .withName("stop hopper and disable drive to pose on the move"));
   }
 
@@ -348,10 +352,12 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain swerveDrivetrain) {
     return Commands.sequence(
             Commands.either(
-                Commands.sequence(
-                    Commands.runOnce(swerveDrivetrain::enableAccelerationLimiting),
-                    Commands.runOnce(swerveDrivetrain::enableTranslationSlowMode),
-                    Commands.runOnce(swerveDrivetrain::enableRotationSlowMode)),
+                Commands.runOnce(
+                    () -> {
+                      swerveDrivetrain.enableAccelerationLimiting();
+                      swerveDrivetrain.enableTranslationSlowMode();
+                      swerveDrivetrain.enableRotationSlowMode();
+                    }),
                 Commands.none(),
                 shooterModes::isShootOnTheMoveEnabled),
             Commands.repeatingSequence(

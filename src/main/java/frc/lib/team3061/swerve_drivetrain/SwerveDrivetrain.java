@@ -97,6 +97,8 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
   private boolean isFieldRelative = true;
   private boolean isTranslationSlowMode = false;
   private boolean isRotationSlowMode = false;
+  private boolean isSuperSlowMode = false;
+  private double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
 
   // set to true upon construction to trigger disabling break mode shortly after the code starts
   private boolean brakeMode = true;
@@ -446,12 +448,6 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
       boolean isOpenLoop,
       boolean isFieldRelative) {
 
-    // get the slow-mode multiplier from the config
-    double slowModeMultiplier =
-        (Field2d.getInstance().inIntakeCornerZone())
-            ? RobotConfig.getInstance().getRobotSlowModeMultiplier() / 2.0
-            : RobotConfig.getInstance().getRobotSlowModeMultiplier();
-
     // log velocity before and after filter
     Logger.recordOutput(SUBSYSTEM_NAME + "/requestedXVelocity", xVelocityMPS);
     Logger.recordOutput(SUBSYSTEM_NAME + "/requestedYVelocity", yVelocityMPS);
@@ -469,7 +465,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/filteredRotationalVelocity", this.thetaFilter.lastValue());
 
-    if (accelerationLimiting) {
+    if (accelerationLimiting || isSuperSlowMode) {
       xVelocityMPS = this.xFilter.lastValue();
       yVelocityMPS = this.yFilter.lastValue();
       rotationalVelocityRadiansPerSecond = this.thetaFilter.lastValue();
@@ -477,7 +473,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
     // slow-mode multiplier
-    if (isTranslationSlowMode) {
+    if (isTranslationSlowMode || isSuperSlowMode) {
       xVelocityMPS = xVelocityMPS * slowModeMultiplier;
       yVelocityMPS = yVelocityMPS * slowModeMultiplier;
     }
@@ -493,7 +489,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     }
 
     // if rotation is in slow mode, multiply the rotational velocity by the slow-mode multiplier
-    if (isRotationSlowMode) {
+    if (isRotationSlowMode || isSuperSlowMode) {
       rotationalVelocityRadiansPerSecond = rotationalVelocityRadiansPerSecond * slowModeMultiplier;
     }
 
@@ -539,15 +535,9 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     this.yFilter.calculate(yVelocityMPS);
     this.thetaFilter.calculate(0.0);
 
-    // get the slow-mode multiplier from the config
-    double slowModeMultiplier =
-        (Field2d.getInstance().inIntakeCornerZone())
-            ? RobotConfig.getInstance().getRobotSlowModeMultiplier() / 2.0
-            : RobotConfig.getInstance().getRobotSlowModeMultiplier();
-
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
     // slow-mode multiplier
-    if (isTranslationSlowMode) {
+    if (isTranslationSlowMode || isSuperSlowMode) {
       xVelocityMPS = xVelocityMPS * slowModeMultiplier;
       yVelocityMPS = yVelocityMPS * slowModeMultiplier;
     }
@@ -739,6 +729,29 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    */
   public void disableRotationSlowMode() {
     this.isRotationSlowMode = false;
+  }
+
+  public void enableSuperSlowMode() {
+    this.isSuperSlowMode = true;
+  }
+
+  public void disableSuperSlowMode() {
+    this.isSuperSlowMode = false;
+  }
+
+  /**
+   * Sets the slow mode multiplier. This multiplier is used to scale down the robot's velocities
+   * when slow mode is enabled.
+   *
+   * @param multiplier the slow mode multiplier to set
+   */
+  public void setSlowModeMultiplier(double multiplier) {
+    this.slowModeMultiplier = multiplier;
+  }
+
+  /** Resets the slow mode multiplier to the default value specified in RobotConfig. */
+  public void resetSlowModeMultiplier() {
+    this.slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
   }
 
   /**
