@@ -17,12 +17,20 @@ public interface IntakeIO {
     double rollerClosedLoopReferenceRPS = 0.0;
     boolean rollerConnected = false;
 
-    // deployer
-    boolean deployerConnected = false;
-    double deployerStatorCurrent = 0.0;
-    double deployerSupplyCurrent = 0.0;
-    double deployerVoltage = 0.0;
-    double deployerTempCelsius = 0.0;
+    // deployer lead
+    boolean deployerConnectedLead = false;
+    double deployerStatorCurrentLead = 0.0;
+    double deployerSupplyCurrentLead = 0.0;
+    double deployerVoltageLead = 0.0;
+    double deployerTempCelsiusLead = 0.0;
+
+    // deployer follower
+    boolean deployerConnectedFollower = false;
+    double deployerStatorCurrentFollower = 0.0;
+    double deployerSupplyCurrentFollower = 0.0;
+    double deployerVoltageFollower = 0.0;
+    double deployerTempCelsiusFollower = 0.0;
+
     double deployerReferencePositionRot = 0.0;
     double deployerAngularPositionRot = 0.0;
 

@@ -7,7 +7,8 @@ public class IntakeConstants {
   public static final String SUBSYSTEM_NAME = "Intake";
 
   public static final int ROLLER_MOTOR_ID = 42;
-  public static final int DEPLOYER_MOTOR_ID = 33;
+  public static final int DEPLOYER_LEAD_MOTOR_ID = 33;
+  public static final int DEPLOYER_FOLLOWER_MOTOR_ID = 34; // FIXME: confirm real ID
 
   public static final double DEPLOYER_KP = 23.0;
   public static final double DEPLOYER_KI = 0;

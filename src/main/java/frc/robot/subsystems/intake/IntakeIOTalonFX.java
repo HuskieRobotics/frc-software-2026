@@ -7,12 +7,14 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
@@ -35,7 +37,8 @@ import frc.robot.Constants;
 public class IntakeIOTalonFX implements IntakeIO {
 
   private TalonFX rollerMotor;
-  private TalonFX deployerMotor;
+  private TalonFX deployerMotorLead;
+  private TalonFX deployerMotorFollower;
 
   // Control requests
   private VelocityVoltage rollerVelocityRequest = new VelocityVoltage(0).withEnableFOC(false);
@@ -50,6 +53,8 @@ public class IntakeIOTalonFX implements IntakeIO {
       new Alert("Failed to apply configuration for Intake Roller.", AlertType.kError);
   private final Alert deployerConfigAlert =
       new Alert("Failed to apply configuration for Intake Deployer.", AlertType.kError);
+  private final Alert followerConfigAlert =
+      new Alert("Failed to apply configuration for Intake Deployer Follower.", AlertType.kError);
 
   // Tunables
   private final LoggedTunableNumber rollerKp =
@@ -83,21 +88,29 @@ public class IntakeIOTalonFX implements IntakeIO {
   private StatusSignal<Current> rollerSupplyCurrentSS;
   private StatusSignal<Temperature> rollerTempSS;
 
-  private StatusSignal<Voltage> deployerVoltageSS;
-  private StatusSignal<Angle> deployerPositionSS;
-  private StatusSignal<Current> deployerStatorCurrentSS;
-  private StatusSignal<Current> deployerSupplyCurrentSS;
-  private StatusSignal<Temperature> deployerTempSS;
+  private StatusSignal<Voltage> deployerLeadVoltageSS;
+  private StatusSignal<Angle> deployerLeadPositionSS;
+  private StatusSignal<Current> deployerLeadStatorCurrentSS;
+  private StatusSignal<Current> deployerLeadSupplyCurrentSS;
+  private StatusSignal<Temperature> deployerLeadTempSS;
+
+  private StatusSignal<Voltage> deployerFollowerVoltageSS;
+  private StatusSignal<Current> deployerFollowerStatorCurrentSS;
+  private StatusSignal<Current> deployerFollowerSupplyCurrentSS;
+  private StatusSignal<Temperature> deployerFollowerTempSS;
 
   private double rollerReferenceVelocityRPS = 0.0;
   private double deployerReferencePositionRot = 0.0;
 
   private Debouncer connectedRollerDebouncer = new Debouncer(0.5);
   private Debouncer connectedDeployerDebouncer = new Debouncer(0.5);
+  private Debouncer connectedDeployerFollowerDebouncer = new Debouncer(0.5);
 
   public IntakeIOTalonFX() {
     rollerMotor = new TalonFX(ROLLER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    deployerMotor = new TalonFX(DEPLOYER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    deployerMotorLead = new TalonFX(DEPLOYER_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    deployerMotorFollower =
+        new TalonFX(DEPLOYER_FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
     // Initialize Signals
     rollerVoltageSS = rollerMotor.getMotorVoltage();
@@ -106,11 +119,16 @@ public class IntakeIOTalonFX implements IntakeIO {
     rollerSupplyCurrentSS = rollerMotor.getSupplyCurrent();
     rollerTempSS = rollerMotor.getDeviceTemp();
 
-    deployerVoltageSS = deployerMotor.getMotorVoltage();
-    deployerPositionSS = deployerMotor.getPosition();
-    deployerStatorCurrentSS = deployerMotor.getStatorCurrent();
-    deployerSupplyCurrentSS = deployerMotor.getSupplyCurrent();
-    deployerTempSS = deployerMotor.getDeviceTemp();
+    deployerLeadVoltageSS = deployerMotorLead.getMotorVoltage();
+    deployerLeadPositionSS = deployerMotorLead.getPosition();
+    deployerLeadStatorCurrentSS = deployerMotorLead.getStatorCurrent();
+    deployerLeadSupplyCurrentSS = deployerMotorLead.getSupplyCurrent();
+    deployerLeadTempSS = deployerMotorLead.getDeviceTemp();
+
+    deployerFollowerVoltageSS = deployerMotorFollower.getMotorVoltage();
+    deployerFollowerStatorCurrentSS = deployerMotorFollower.getStatorCurrent();
+    deployerFollowerSupplyCurrentSS = deployerMotorFollower.getSupplyCurrent();
+    deployerFollowerTempSS = deployerMotorFollower.getDeviceTemp();
 
     // Register with Phoenix6Util for optimized refreshing
     Phoenix6Util.registerSignals(
@@ -120,14 +138,25 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerStatorCurrentSS,
         rollerSupplyCurrentSS,
         rollerTempSS,
-        deployerVoltageSS,
-        deployerPositionSS,
-        deployerStatorCurrentSS,
-        deployerSupplyCurrentSS,
-        deployerTempSS);
+        deployerLeadVoltageSS,
+        deployerLeadPositionSS,
+        deployerLeadStatorCurrentSS,
+        deployerLeadSupplyCurrentSS,
+        deployerLeadTempSS,
+        deployerFollowerVoltageSS,
+        deployerFollowerStatorCurrentSS,
+        deployerFollowerSupplyCurrentSS,
+        deployerFollowerTempSS);
 
-    configDeployerMotor(deployerMotor);
+    configDeployerMotorLead(deployerMotorLead);
+    configDeployerMotorFollower(deployerMotorFollower);
     configRollerMotor(rollerMotor);
+
+    deployerMotorFollower.setControl(
+        new Follower(
+            deployerMotorLead.getDeviceID(),
+            MotorAlignmentValue
+                .Opposed)); // FIXME: not sure what design is mechanically for motor alignment
 
     // Initialize Simulation
     this.rollerSim =
@@ -135,7 +164,7 @@ public class IntakeIOTalonFX implements IntakeIO {
             rollerMotor, ROLLER_MOTOR_INVERTED, ROLLER_KV, ROLLER_KA + 0.001, ROLLER_GEAR_RATIO);
     this.deployerSim =
         new ElevatorSystemSim(
-            deployerMotor,
+            deployerMotorLead,
             DEPLOYER_MOTOR_INVERTED,
             DEPLOYER_GEAR_RATIO,
             DEPLOYER_MASS_KG,
@@ -165,14 +194,22 @@ public class IntakeIOTalonFX implements IntakeIO {
                 rollerStatorCurrentSS,
                 rollerTempSS,
                 rollerSupplyCurrentSS));
-    inputs.deployerConnected =
+    inputs.deployerConnectedLead =
         connectedDeployerDebouncer.calculate(
             BaseStatusSignal.isAllGood(
-                deployerVoltageSS,
-                deployerStatorCurrentSS,
-                deployerSupplyCurrentSS,
-                deployerTempSS,
-                deployerPositionSS));
+                deployerLeadVoltageSS,
+                deployerLeadStatorCurrentSS,
+                deployerLeadSupplyCurrentSS,
+                deployerLeadTempSS,
+                deployerLeadPositionSS));
+
+    inputs.deployerConnectedFollower =
+        connectedDeployerFollowerDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                deployerFollowerVoltageSS,
+                deployerFollowerStatorCurrentSS,
+                deployerFollowerSupplyCurrentSS,
+                deployerFollowerTempSS));
 
     // Update Roller Inputs
     inputs.rollerVelocityRPS = rollerVelocitySS.getValueAsDouble();
@@ -183,32 +220,37 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollerReferenceVelocityRPS = this.rollerReferenceVelocityRPS;
 
     // Update Deployer Inputs
-    inputs.deployerVoltage = deployerVoltageSS.getValueAsDouble();
-    inputs.deployerStatorCurrent = deployerStatorCurrentSS.getValueAsDouble();
-    inputs.deployerSupplyCurrent = deployerSupplyCurrentSS.getValueAsDouble();
-    inputs.deployerTempCelsius = deployerTempSS.getValueAsDouble();
-    inputs.deployerAngularPositionRot = deployerPositionSS.getValueAsDouble();
+    inputs.deployerVoltageLead = deployerLeadVoltageSS.getValueAsDouble();
+    inputs.deployerStatorCurrentLead = deployerLeadStatorCurrentSS.getValueAsDouble();
+    inputs.deployerSupplyCurrentLead = deployerLeadSupplyCurrentSS.getValueAsDouble();
+    inputs.deployerTempCelsiusLead = deployerLeadTempSS.getValueAsDouble();
+    inputs.deployerAngularPositionRot = deployerLeadPositionSS.getValueAsDouble();
     inputs.deployerReferencePositionRot = this.deployerReferencePositionRot;
+
+    inputs.deployerVoltageFollower = deployerFollowerVoltageSS.getValueAsDouble();
+    inputs.deployerStatorCurrentFollower = deployerFollowerStatorCurrentSS.getValueAsDouble();
+    inputs.deployerSupplyCurrentFollower = deployerFollowerSupplyCurrentSS.getValueAsDouble();
+    inputs.deployerTempCelsiusFollower = deployerFollowerTempSS.getValueAsDouble();
 
     if (Constants.TUNING_MODE) {
       inputs.rollerClosedLoopErrorRPS = rollerMotor.getClosedLoopError().getValueAsDouble();
       inputs.rollerClosedLoopReferenceRPS = rollerMotor.getClosedLoopReference().getValueAsDouble();
 
-      inputs.deployerClosedLoopErrorRot = deployerMotor.getClosedLoopError().getValueAsDouble();
+      inputs.deployerClosedLoopErrorRot = deployerMotorLead.getClosedLoopError().getValueAsDouble();
       inputs.deployerClosedLoopReferenceRot =
-          deployerMotor.getClosedLoopReference().getValueAsDouble();
+          deployerMotorLead.getClosedLoopReference().getValueAsDouble();
     }
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
         pid -> {
           Slot0Configs config = new Slot0Configs();
-          this.deployerMotor.getConfigurator().refresh(config);
+          this.deployerMotorLead.getConfigurator().refresh(config);
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
           config.kS = pid[3];
-          this.deployerMotor.getConfigurator().apply(config);
+          this.deployerMotorLead.getConfigurator().apply(config);
         },
         deployerKp,
         deployerKi,
@@ -252,21 +294,21 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setDeployerVoltage(double voltage) {
-    this.deployerMotor.setControl(deployerVoltageRequest.withOutput(voltage));
+    this.deployerMotorLead.setControl(deployerVoltageRequest.withOutput(voltage));
   }
 
   @Override
   public void setDeployerPosition(double angularPositionRot) {
-    deployerMotor.setControl(deployerPositionRequest.withPosition(angularPositionRot));
+    deployerMotorLead.setControl(deployerPositionRequest.withPosition(angularPositionRot));
     this.deployerReferencePositionRot = angularPositionRot;
   }
 
   @Override
   public void setDeployerCurrent(double amps) {
-    this.deployerMotor.setControl(deployerCurrentRequest.withOutput(amps));
+    this.deployerMotorLead.setControl(deployerCurrentRequest.withOutput(amps));
   }
 
-  private void configDeployerMotor(TalonFX motor) {
+  private void configDeployerMotorLead(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_SUPPLY_CURRENT_LIMIT;
@@ -300,6 +342,28 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, deployerConfigAlert);
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Deployer Motor", motor);
+  }
+
+  private void configDeployerMotorFollower(TalonFX motor) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = DEPLOYER_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    SoftwareLimitSwitchConfigs deployerLimitSwitches = config.SoftwareLimitSwitch;
+
+    deployerLimitSwitches.ForwardSoftLimitEnable = true;
+    deployerLimitSwitches.ForwardSoftLimitThreshold = DEPLOYER_MAX_ANGLE_ROT;
+    deployerLimitSwitches.ReverseSoftLimitEnable = true;
+    deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE_ROT;
+
+    Phoenix6Util.applyAndCheckConfiguration(deployerMotorFollower, config, followerConfigAlert);
+
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Deployer Motor Follower", motor);
   }
 
   private void configRollerMotor(TalonFX motor) {
