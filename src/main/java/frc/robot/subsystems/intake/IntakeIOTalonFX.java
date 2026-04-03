@@ -30,31 +30,31 @@ import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
-import frc.lib.team3061.sim.VelocitySystemSim;
+import frc.lib.team3061.sim.FlywheelSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
-  private TalonFX rollerMotor;
-  private TalonFX deployerMotorLead;
-  private TalonFX deployerMotorFollower;
+  private TalonFX rollerMotorLead;
+  private TalonFX rollerMotorFollower;
+  private TalonFX deployerMotor;
 
   // Control requests
-  private VelocityVoltage rollerVelocityRequest = new VelocityVoltage(0).withEnableFOC(false);
-  private TorqueCurrentFOC rollerCurrentRequest = new TorqueCurrentFOC(0);
+  private VelocityVoltage rollerLeadVelocityRequest = new VelocityVoltage(0).withEnableFOC(false);
+  private TorqueCurrentFOC rollerLeadCurrentRequest = new TorqueCurrentFOC(0);
 
   private PositionVoltage deployerPositionRequest = new PositionVoltage(0);
   private VoltageOut deployerVoltageRequest = new VoltageOut(0);
   private TorqueCurrentFOC deployerCurrentRequest = new TorqueCurrentFOC(0);
 
   // Alerts
-  private final Alert rollerConfigAlert =
-      new Alert("Failed to apply configuration for Intake Roller.", AlertType.kError);
+  private final Alert rollerLeadConfigAlert =
+      new Alert("Failed to apply configuration for Intake Roller Lead.", AlertType.kError);
   private final Alert deployerConfigAlert =
       new Alert("Failed to apply configuration for Intake Deployer.", AlertType.kError);
   private final Alert followerConfigAlert =
-      new Alert("Failed to apply configuration for Intake Deployer Follower.", AlertType.kError);
+      new Alert("Failed to apply configuration for Intake Roller Follower.", AlertType.kError);
 
   // Tunables
   private final LoggedTunableNumber rollerKp =
@@ -79,92 +79,100 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final LoggedTunableNumber deployerKs =
       new LoggedTunableNumber("Intake/Deployer/kS", DEPLOYER_KS);
 
-  private VelocitySystemSim rollerSim;
+  private FlywheelSystemSim rollerSim;
   private ElevatorSystemSim deployerSim;
 
-  private StatusSignal<Voltage> rollerVoltageSS;
-  private StatusSignal<AngularVelocity> rollerVelocitySS;
-  private StatusSignal<Current> rollerStatorCurrentSS;
-  private StatusSignal<Current> rollerSupplyCurrentSS;
-  private StatusSignal<Temperature> rollerTempSS;
+  private StatusSignal<Voltage> rollerLeadVoltageSS;
+  private StatusSignal<AngularVelocity> rollerLeadVelocitySS;
+  private StatusSignal<Current> rollerLeadStatorCurrentSS;
+  private StatusSignal<Current> rollerLeadSupplyCurrentSS;
+  private StatusSignal<Temperature> rollerLeadTempSS;
 
-  private StatusSignal<Voltage> deployerLeadVoltageSS;
-  private StatusSignal<Angle> deployerLeadPositionSS;
-  private StatusSignal<Current> deployerLeadStatorCurrentSS;
-  private StatusSignal<Current> deployerLeadSupplyCurrentSS;
-  private StatusSignal<Temperature> deployerLeadTempSS;
+  private StatusSignal<Voltage> deployerVoltageSS;
+  private StatusSignal<Angle> deployerPositionSS;
+  private StatusSignal<Current> deployerStatorCurrentSS;
+  private StatusSignal<Current> deployerSupplyCurrentSS;
+  private StatusSignal<Temperature> deployerTempSS;
 
-  private StatusSignal<Voltage> deployerFollowerVoltageSS;
-  private StatusSignal<Current> deployerFollowerStatorCurrentSS;
-  private StatusSignal<Current> deployerFollowerSupplyCurrentSS;
-  private StatusSignal<Temperature> deployerFollowerTempSS;
+  private StatusSignal<Current> rollerFollowerTorqueCurrentSS;
+  private StatusSignal<Current> rollerFollowerStatorCurrentSS;
+  private StatusSignal<Current> rollerFollowerSupplyCurrentSS;
+  private StatusSignal<AngularVelocity> rollerFollowerVelocitySS;
+  private StatusSignal<Temperature> rollerFollowerTempSS;
 
-  private double rollerReferenceVelocityRPS = 0.0;
+  private double rollerLeadReferenceVelocityRPS = 0.0;
   private double deployerReferencePositionRot = 0.0;
 
-  private Debouncer connectedRollerDebouncer = new Debouncer(0.5);
+  private Debouncer connectedRollerLeadDebouncer = new Debouncer(0.5);
   private Debouncer connectedDeployerDebouncer = new Debouncer(0.5);
-  private Debouncer connectedDeployerFollowerDebouncer = new Debouncer(0.5);
+  private Debouncer connectedRollerFollowerDebouncer = new Debouncer(0.5);
 
   public IntakeIOTalonFX() {
-    rollerMotor = new TalonFX(ROLLER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    deployerMotorLead = new TalonFX(DEPLOYER_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    deployerMotorFollower =
-        new TalonFX(DEPLOYER_FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    rollerMotorLead = new TalonFX(ROLLER_LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    deployerMotor = new TalonFX(DEPLOYER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    rollerMotorFollower =
+        new TalonFX(ROLLER_FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
     // Initialize Signals
-    rollerVoltageSS = rollerMotor.getMotorVoltage();
-    rollerVelocitySS = rollerMotor.getVelocity();
-    rollerStatorCurrentSS = rollerMotor.getStatorCurrent();
-    rollerSupplyCurrentSS = rollerMotor.getSupplyCurrent();
-    rollerTempSS = rollerMotor.getDeviceTemp();
+    rollerLeadVoltageSS = rollerMotorLead.getMotorVoltage();
+    rollerLeadVelocitySS = rollerMotorLead.getVelocity();
+    rollerLeadStatorCurrentSS = rollerMotorLead.getStatorCurrent();
+    rollerLeadSupplyCurrentSS = rollerMotorLead.getSupplyCurrent();
+    rollerLeadTempSS = rollerMotorLead.getDeviceTemp();
 
-    deployerLeadVoltageSS = deployerMotorLead.getMotorVoltage();
-    deployerLeadPositionSS = deployerMotorLead.getPosition();
-    deployerLeadStatorCurrentSS = deployerMotorLead.getStatorCurrent();
-    deployerLeadSupplyCurrentSS = deployerMotorLead.getSupplyCurrent();
-    deployerLeadTempSS = deployerMotorLead.getDeviceTemp();
+    deployerVoltageSS = deployerMotor.getMotorVoltage();
+    deployerPositionSS = deployerMotor.getPosition();
+    deployerStatorCurrentSS = deployerMotor.getStatorCurrent();
+    deployerSupplyCurrentSS = deployerMotor.getSupplyCurrent();
+    deployerTempSS = deployerMotor.getDeviceTemp();
 
-    deployerFollowerVoltageSS = deployerMotorFollower.getMotorVoltage();
-    deployerFollowerStatorCurrentSS = deployerMotorFollower.getStatorCurrent();
-    deployerFollowerSupplyCurrentSS = deployerMotorFollower.getSupplyCurrent();
-    deployerFollowerTempSS = deployerMotorFollower.getDeviceTemp();
+    rollerFollowerTorqueCurrentSS = rollerMotorFollower.getTorqueCurrent();
+    rollerFollowerStatorCurrentSS = rollerMotorFollower.getStatorCurrent();
+    rollerFollowerSupplyCurrentSS = rollerMotorFollower.getSupplyCurrent();
+    rollerFollowerVelocitySS = rollerMotorFollower.getVelocity();
+    rollerFollowerTempSS = rollerMotorFollower.getDeviceTemp();
 
     // Register with Phoenix6Util for optimized refreshing
     Phoenix6Util.registerSignals(
         true,
-        rollerVoltageSS,
-        rollerVelocitySS,
-        rollerStatorCurrentSS,
-        rollerSupplyCurrentSS,
-        rollerTempSS,
-        deployerLeadVoltageSS,
-        deployerLeadPositionSS,
-        deployerLeadStatorCurrentSS,
-        deployerLeadSupplyCurrentSS,
-        deployerLeadTempSS,
-        deployerFollowerVoltageSS,
-        deployerFollowerStatorCurrentSS,
-        deployerFollowerSupplyCurrentSS,
-        deployerFollowerTempSS);
+        rollerLeadVoltageSS,
+        rollerLeadVelocitySS,
+        rollerLeadStatorCurrentSS,
+        rollerLeadSupplyCurrentSS,
+        rollerLeadTempSS,
+        deployerVoltageSS,
+        deployerPositionSS,
+        deployerStatorCurrentSS,
+        deployerSupplyCurrentSS,
+        deployerTempSS,
+        rollerFollowerTorqueCurrentSS,
+        rollerFollowerStatorCurrentSS,
+        rollerFollowerSupplyCurrentSS,
+        rollerFollowerVelocitySS,
+        rollerFollowerTempSS);
 
-    configDeployerMotorLead(deployerMotorLead);
-    configDeployerMotorFollower(deployerMotorFollower);
-    configRollerMotor(rollerMotor);
+    configDeployerMotor(deployerMotor);
+    configRollerMotorFollower(rollerMotorFollower);
+    configRollerMotorLead(rollerMotorLead);
 
-    deployerMotorFollower.setControl(
+    rollerMotorFollower.setControl(
         new Follower(
-            deployerMotorLead.getDeviceID(),
+            rollerMotorLead.getDeviceID(),
             MotorAlignmentValue
                 .Opposed)); // FIXME: not sure what design is mechanically for motor alignment
 
     // Initialize Simulation
     this.rollerSim =
-        new VelocitySystemSim(
-            rollerMotor, ROLLER_MOTOR_INVERTED, ROLLER_KV, ROLLER_KA + 0.001, ROLLER_GEAR_RATIO);
+        new FlywheelSystemSim(
+            ROLLER_KV,
+            ROLLER_KA,
+            ROLLER_GEAR_RATIO,
+            ROLLER_MOMENT_OF_INERTIA,
+            rollerMotorLead,
+            rollerMotorFollower);
     this.deployerSim =
         new ElevatorSystemSim(
-            deployerMotorLead,
+            deployerMotor,
             DEPLOYER_MOTOR_INVERTED,
             DEPLOYER_GEAR_RATIO,
             DEPLOYER_MASS_KG,
@@ -186,71 +194,74 @@ public class IntakeIOTalonFX implements IntakeIO {
       }
     }
     // Check connections
-    inputs.rollerConnected =
-        connectedRollerDebouncer.calculate(
+    inputs.rollerConnectedLead =
+        connectedRollerLeadDebouncer.calculate(
             BaseStatusSignal.isAllGood(
-                rollerVelocitySS,
-                rollerVoltageSS,
-                rollerStatorCurrentSS,
-                rollerTempSS,
-                rollerSupplyCurrentSS));
-    inputs.deployerConnectedLead =
+                rollerLeadVelocitySS,
+                rollerLeadVoltageSS,
+                rollerLeadStatorCurrentSS,
+                rollerLeadTempSS,
+                rollerLeadSupplyCurrentSS));
+    inputs.deployerConnected =
         connectedDeployerDebouncer.calculate(
             BaseStatusSignal.isAllGood(
-                deployerLeadVoltageSS,
-                deployerLeadStatorCurrentSS,
-                deployerLeadSupplyCurrentSS,
-                deployerLeadTempSS,
-                deployerLeadPositionSS));
+                deployerVoltageSS,
+                deployerStatorCurrentSS,
+                deployerSupplyCurrentSS,
+                deployerTempSS,
+                deployerPositionSS));
 
-    inputs.deployerConnectedFollower =
-        connectedDeployerFollowerDebouncer.calculate(
+    inputs.rollerConnectedFollower =
+        connectedRollerFollowerDebouncer.calculate(
             BaseStatusSignal.isAllGood(
-                deployerFollowerVoltageSS,
-                deployerFollowerStatorCurrentSS,
-                deployerFollowerSupplyCurrentSS,
-                deployerFollowerTempSS));
+                rollerFollowerTorqueCurrentSS,
+                rollerFollowerStatorCurrentSS,
+                rollerFollowerSupplyCurrentSS,
+                rollerFollowerVelocitySS,
+                rollerFollowerTempSS));
 
     // Update Roller Inputs
-    inputs.rollerVelocityRPS = rollerVelocitySS.getValueAsDouble();
-    inputs.rollerStatorCurrent = rollerStatorCurrentSS.getValueAsDouble();
-    inputs.rollerSupplyCurrent = rollerSupplyCurrentSS.getValueAsDouble();
-    inputs.rollerTempCelsius = rollerTempSS.getValueAsDouble();
-    inputs.rollerVoltage = rollerVoltageSS.getValueAsDouble();
-    inputs.rollerReferenceVelocityRPS = this.rollerReferenceVelocityRPS;
+    inputs.rollerVelocityRPSLead = rollerLeadVelocitySS.getValueAsDouble();
+    inputs.rollerStatorCurrentLead = rollerLeadStatorCurrentSS.getValueAsDouble();
+    inputs.rollerSupplyCurrentLead = rollerLeadSupplyCurrentSS.getValueAsDouble();
+    inputs.rollerTempCelsiusLead = rollerLeadTempSS.getValueAsDouble();
+    inputs.rollerVoltageLead = rollerLeadVoltageSS.getValueAsDouble();
+    inputs.rollerReferenceVelocityRPSLead = this.rollerLeadReferenceVelocityRPS;
 
     // Update Deployer Inputs
-    inputs.deployerVoltageLead = deployerLeadVoltageSS.getValueAsDouble();
-    inputs.deployerStatorCurrentLead = deployerLeadStatorCurrentSS.getValueAsDouble();
-    inputs.deployerSupplyCurrentLead = deployerLeadSupplyCurrentSS.getValueAsDouble();
-    inputs.deployerTempCelsiusLead = deployerLeadTempSS.getValueAsDouble();
-    inputs.deployerAngularPositionRot = deployerLeadPositionSS.getValueAsDouble();
+    inputs.deployerVoltage = deployerVoltageSS.getValueAsDouble();
+    inputs.deployerStatorCurrent = deployerStatorCurrentSS.getValueAsDouble();
+    inputs.deployerSupplyCurrent = deployerSupplyCurrentSS.getValueAsDouble();
+    inputs.deployerTempCelsius = deployerTempSS.getValueAsDouble();
+    inputs.deployerAngularPositionRot = deployerPositionSS.getValueAsDouble();
     inputs.deployerReferencePositionRot = this.deployerReferencePositionRot;
 
-    inputs.deployerVoltageFollower = deployerFollowerVoltageSS.getValueAsDouble();
-    inputs.deployerStatorCurrentFollower = deployerFollowerStatorCurrentSS.getValueAsDouble();
-    inputs.deployerSupplyCurrentFollower = deployerFollowerSupplyCurrentSS.getValueAsDouble();
-    inputs.deployerTempCelsiusFollower = deployerFollowerTempSS.getValueAsDouble();
+    inputs.rollerTorqueCurrentFollower = rollerFollowerTorqueCurrentSS.getValueAsDouble();
+    inputs.rollerStatorCurrentFollower = rollerFollowerStatorCurrentSS.getValueAsDouble();
+    inputs.rollerSupplyCurrentFollower = rollerFollowerSupplyCurrentSS.getValueAsDouble();
+    inputs.rollerVelocityRPSFollower = rollerFollowerVelocitySS.getValueAsDouble();
+    inputs.rollerTempCelsiusFollower = rollerFollowerTempSS.getValueAsDouble();
 
     if (Constants.TUNING_MODE) {
-      inputs.rollerClosedLoopErrorRPS = rollerMotor.getClosedLoopError().getValueAsDouble();
-      inputs.rollerClosedLoopReferenceRPS = rollerMotor.getClosedLoopReference().getValueAsDouble();
+      inputs.rollerClosedLoopErrorRPSLead = rollerMotorLead.getClosedLoopError().getValueAsDouble();
+      inputs.rollerClosedLoopReferenceRPSLead =
+          rollerMotorLead.getClosedLoopReference().getValueAsDouble();
 
-      inputs.deployerClosedLoopErrorRot = deployerMotorLead.getClosedLoopError().getValueAsDouble();
+      inputs.deployerClosedLoopErrorRot = deployerMotor.getClosedLoopError().getValueAsDouble();
       inputs.deployerClosedLoopReferenceRot =
-          deployerMotorLead.getClosedLoopReference().getValueAsDouble();
+          deployerMotor.getClosedLoopReference().getValueAsDouble();
     }
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
         pid -> {
           Slot0Configs config = new Slot0Configs();
-          this.deployerMotorLead.getConfigurator().refresh(config);
+          this.deployerMotor.getConfigurator().refresh(config);
           config.kP = pid[0];
           config.kI = pid[1];
           config.kD = pid[2];
           config.kS = pid[3];
-          this.deployerMotorLead.getConfigurator().apply(config);
+          this.deployerMotor.getConfigurator().apply(config);
         },
         deployerKp,
         deployerKi,
@@ -261,13 +272,13 @@ public class IntakeIOTalonFX implements IntakeIO {
         hashCode(),
         motionMagic -> {
           TalonFXConfiguration config = new TalonFXConfiguration();
-          this.rollerMotor.getConfigurator().refresh(config);
+          this.rollerMotorLead.getConfigurator().refresh(config);
           config.Slot0.kP = motionMagic[0];
           config.Slot0.kI = motionMagic[1];
           config.Slot0.kD = motionMagic[2];
           config.Slot0.kS = motionMagic[3];
           config.Slot0.kV = motionMagic[4];
-          this.rollerMotor.getConfigurator().apply(config);
+          this.rollerMotorLead.getConfigurator().apply(config);
         },
         rollerKp,
         rollerKi,
@@ -283,32 +294,32 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setRollerVelocity(double velocityRPS) {
-    this.rollerMotor.setControl(rollerVelocityRequest.withVelocity(velocityRPS));
-    this.rollerReferenceVelocityRPS = velocityRPS;
+    this.rollerMotorLead.setControl(rollerLeadVelocityRequest.withVelocity(velocityRPS));
+    this.rollerLeadReferenceVelocityRPS = velocityRPS;
   }
 
   @Override
   public void setRollerCurrent(double amps) {
-    this.rollerMotor.setControl(rollerCurrentRequest.withOutput(amps));
+    this.rollerMotorLead.setControl(rollerLeadCurrentRequest.withOutput(amps));
   }
 
   @Override
   public void setDeployerVoltage(double voltage) {
-    this.deployerMotorLead.setControl(deployerVoltageRequest.withOutput(voltage));
+    this.deployerMotor.setControl(deployerVoltageRequest.withOutput(voltage));
   }
 
   @Override
   public void setDeployerPosition(double angularPositionRot) {
-    deployerMotorLead.setControl(deployerPositionRequest.withPosition(angularPositionRot));
+    deployerMotor.setControl(deployerPositionRequest.withPosition(angularPositionRot));
     this.deployerReferencePositionRot = angularPositionRot;
   }
 
   @Override
   public void setDeployerCurrent(double amps) {
-    this.deployerMotorLead.setControl(deployerCurrentRequest.withOutput(amps));
+    this.deployerMotor.setControl(deployerCurrentRequest.withOutput(amps));
   }
 
-  private void configDeployerMotorLead(TalonFX motor) {
+  private void configDeployerMotor(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_SUPPLY_CURRENT_LIMIT;
@@ -344,29 +355,26 @@ public class IntakeIOTalonFX implements IntakeIO {
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Deployer Motor", motor);
   }
 
-  private void configDeployerMotorFollower(TalonFX motor) {
+  private void configRollerMotorFollower(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    config.CurrentLimits.SupplyCurrentLimit = DEPLOYER_SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit = ROLLER_CONTINUOUS_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerTime = ROLLER_PEAK_CURRENT_DURATION;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = DEPLOYER_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    SoftwareLimitSwitchConfigs deployerLimitSwitches = config.SoftwareLimitSwitch;
+    config.Feedback.SensorToMechanismRatio = ROLLER_GEAR_RATIO;
 
-    deployerLimitSwitches.ForwardSoftLimitEnable = true;
-    deployerLimitSwitches.ForwardSoftLimitThreshold = DEPLOYER_MAX_ANGLE_ROT;
-    deployerLimitSwitches.ReverseSoftLimitEnable = true;
-    deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE_ROT;
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, followerConfigAlert);
 
-    Phoenix6Util.applyAndCheckConfiguration(deployerMotorFollower, config, followerConfigAlert);
-
-    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Deployer Motor Follower", motor);
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Roller Motor Follower", motor);
   }
 
-  private void configRollerMotor(TalonFX motor) {
+  private void configRollerMotorLead(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.CurrentLimits.SupplyCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
@@ -390,7 +398,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.Slot0.kV = rollerKv.get();
     config.Slot0.kA = ROLLER_KA;
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, rollerConfigAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, rollerLeadConfigAlert);
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Roller Motor", motor);
   }
 }

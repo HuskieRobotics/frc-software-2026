@@ -7,29 +7,30 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     // rollers
-    double rollerVoltage = 0.0;
-    double rollerVelocityRPS = 0.0;
-    double rollerReferenceVelocityRPS = 0.0;
-    double rollerStatorCurrent = 0.0;
-    double rollerSupplyCurrent = 0.0;
-    double rollerTempCelsius = 0.0;
-    double rollerClosedLoopErrorRPS = 0.0;
-    double rollerClosedLoopReferenceRPS = 0.0;
-    boolean rollerConnected = false;
+    double rollerVoltageLead = 0.0;
+    double rollerVelocityRPSLead = 0.0;
+    double rollerReferenceVelocityRPSLead = 0.0;
+    double rollerStatorCurrentLead = 0.0;
+    double rollerSupplyCurrentLead = 0.0;
+    double rollerTempCelsiusLead = 0.0;
+    double rollerClosedLoopErrorRPSLead = 0.0;
+    double rollerClosedLoopReferenceRPSLead = 0.0;
+    boolean rollerConnectedLead = false;
 
-    // deployer lead
-    boolean deployerConnectedLead = false;
-    double deployerStatorCurrentLead = 0.0;
-    double deployerSupplyCurrentLead = 0.0;
-    double deployerVoltageLead = 0.0;
-    double deployerTempCelsiusLead = 0.0;
+    // roller follower
+    boolean rollerConnectedFollower = false;
+    double rollerStatorCurrentFollower = 0.0;
+    double rollerSupplyCurrentFollower = 0.0;
+    double rollerVelocityRPSFollower = 0.0;
+    double rollerTorqueCurrentFollower = 0.0;
+    double rollerTempCelsiusFollower = 0.0;
 
-    // deployer follower
-    boolean deployerConnectedFollower = false;
-    double deployerStatorCurrentFollower = 0.0;
-    double deployerSupplyCurrentFollower = 0.0;
-    double deployerVoltageFollower = 0.0;
-    double deployerTempCelsiusFollower = 0.0;
+    // deployer
+    boolean deployerConnected = false;
+    double deployerStatorCurrent = 0.0;
+    double deployerSupplyCurrent = 0.0;
+    double deployerVoltage = 0.0;
+    double deployerTempCelsius = 0.0;
 
     double deployerReferencePositionRot = 0.0;
     double deployerAngularPositionRot = 0.0;
