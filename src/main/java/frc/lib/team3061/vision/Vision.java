@@ -224,7 +224,7 @@ public class Vision extends SubsystemBase {
     // Update disconnected alerts & LEDs
     boolean anyNTDisconnected = false;
     for (int i = 0; i < visionIOs.length; i++) {
-      if (aprilTagInputs[i].timestamps.length > 0
+      if (inputs[i].receivingFrames
           || objDetectInputs[i].timestamps.length > 0
           || inputs[i].poseObservations.length > 0) {
         disconnectedTimers[i].reset();
