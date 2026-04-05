@@ -426,7 +426,10 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
     // replays
     this.timestampQueue.offer(
         Timer.getFPGATimestamp() - (Utils.getCurrentTimeSeconds() - state.Timestamp));
-    this.ctreTimestampQueue.offer(state.Timestamp);
+
+    if (Constants.ENABLE_EXTRA_LOGGING) {
+      this.ctreTimestampQueue.offer(state.Timestamp);
+    }
 
     this.odometryLock.unlock();
   }
@@ -524,9 +527,11 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
         this.timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
     this.timestampQueue.clear();
 
-    inputs.drivetrain.odometryCTRETimestamps =
-        this.ctreTimestampQueue.stream().mapToDouble(Double::valueOf).toArray();
-    this.ctreTimestampQueue.clear();
+    if (Constants.ENABLE_EXTRA_LOGGING) {
+      inputs.drivetrain.odometryCTRETimestamps =
+          this.ctreTimestampQueue.stream().mapToDouble(Double::valueOf).toArray();
+      this.ctreTimestampQueue.clear();
+    }
 
     inputs.drivetrain.odometryYawPositions =
         this.gyroYawQueue.stream().map(Rotation2d::fromDegrees).toArray(Rotation2d[]::new);
