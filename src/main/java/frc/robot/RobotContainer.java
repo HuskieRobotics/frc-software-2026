@@ -216,8 +216,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    // FIXME: initialize other subsystems
-    intake = new Intake(new IntakeIOTalonFX());
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
