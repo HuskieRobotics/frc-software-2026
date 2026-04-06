@@ -52,6 +52,7 @@ public class VisionIONorthstar implements VisionIO {
     this.aprilTagFieldLayout = layout;
     String layoutString = "";
     var northstarTable = NetworkTableInstance.getDefault().getTable(this.deviceId);
+    var powerTable = NetworkTableInstance.getDefault().getTable("northstar_power");
     var configTable = northstarTable.getSubTable("config");
 
     try {
@@ -99,7 +100,10 @@ public class VisionIONorthstar implements VisionIO {
     fpsAprilTagsSubscriber = outputTable.getIntegerTopic("fps_apriltags").subscribe(0);
     fpsObjDetectSubscriber = outputTable.getIntegerTopic("fps_objdetect").subscribe(0);
     powerMetricsSubscriber =
-        outputTable.getDoubleArrayTopic("power_metrics").subscribe(new double[] {});
+        powerTable
+            .getSubTable("output")
+            .getDoubleArrayTopic("power_metrics")
+            .subscribe(new double[] {});
   }
 
   public void updateInputs(
