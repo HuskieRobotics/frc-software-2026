@@ -324,6 +324,18 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       SwerveDrivetrain swerveDrivetrain) {
 
+    Trigger slowModeTrigger =
+        new Trigger(() -> shooterModes.isShootOnTheMoveEnabled())
+            .and(DriverStation::isTeleopEnabled);
+
+    slowModeTrigger.onTrue(
+        Commands.runOnce(swerveDrivetrain::enableAccelerationLimiting)
+            .withName("acceleration limiting enabled"));
+
+    slowModeTrigger.onFalse(
+        Commands.runOnce(swerveDrivetrain::disableAccelerationLimiting)
+            .withName("acceleration limiting disabled"));
+
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
                 () ->
@@ -333,15 +345,7 @@ public class CrossSubsystemsCommandsFactory {
     unloadHopperOnTheMoveTrigger.onTrue(
         getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain));
     unloadHopperOnTheMoveTrigger.onFalse(
-        Commands.sequence(
-                Commands.runOnce(hopper::stop, hopper),
-                Commands.runOnce(
-                    () -> {
-                      swerveDrivetrain.disableAccelerationLimiting();
-                      swerveDrivetrain.disableTranslationSlowMode();
-                      swerveDrivetrain.disableRotationSlowMode();
-                    }),
-                Commands.runOnce(swerveDrivetrain::resetSlowModeMultiplier))
+        Commands.runOnce(hopper::stop, hopper)
             .withName("stop hopper and disable drive to pose on the move"));
   }
 
@@ -352,12 +356,7 @@ public class CrossSubsystemsCommandsFactory {
       SwerveDrivetrain swerveDrivetrain) {
     return Commands.sequence(
             Commands.either(
-                Commands.runOnce(
-                    () -> {
-                      swerveDrivetrain.enableAccelerationLimiting();
-                      swerveDrivetrain.enableTranslationSlowMode();
-                      swerveDrivetrain.enableRotationSlowMode();
-                    }),
+                Commands.runOnce(swerveDrivetrain::enableAccelerationLimiting),
                 Commands.none(),
                 shooterModes::isShootOnTheMoveEnabled),
             Commands.repeatingSequence(
