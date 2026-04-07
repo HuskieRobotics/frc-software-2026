@@ -137,7 +137,9 @@ public class Intake extends SubsystemBase {
     this.deployerLinearPositionMeters =
         DEPLOYER_CIRCUMFERENCE_METERS * inputs.deployerAngularPositionRot;
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPositionMeters);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/DeployerLinearPosition",
+        Units.metersToInches(this.deployerLinearPositionMeters));
     Logger.recordOutput(SUBSYSTEM_NAME + "/RollerStalled", rollerStalled);
     LoggedTracer.record("Intake");
   }
