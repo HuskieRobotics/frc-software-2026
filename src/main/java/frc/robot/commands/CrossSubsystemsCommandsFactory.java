@@ -251,8 +251,8 @@ public class CrossSubsystemsCommandsFactory {
             intake.startSlowJostle(),
             Commands.waitUntil(
                 () -> intake.getPositionMeters() < DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS),
-            Commands.runOnce(intake::stopSlowJostle, intake),
-            Commands.runOnce(() -> intake.setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS)))
+            Commands.runOnce(intake::stopSlowJostle, intake))
+        // Commands.runOnce(() -> intake.setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS)))
         .withName("slow jostle");
   }
 
