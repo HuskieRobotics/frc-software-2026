@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.FieldConstants;
+import frc.robot.Constants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -131,18 +132,22 @@ public class VisionIONorthstar implements VisionIO {
     // Get AprilTag data
     inputs.receivingFrames = false;
     var aprilTagQueue = observationSubscriber.readQueue();
-    aprilTagInputs.timestamps = new double[aprilTagQueue.length];
-    aprilTagInputs.frames = new double[aprilTagQueue.length][];
     for (int i = 0; i < aprilTagQueue.length; i++) {
-      aprilTagInputs.timestamps[i] = aprilTagQueue[i].timestamp / 1000000.0;
-      aprilTagInputs.frames[i] = aprilTagQueue[i].value;
-
-      processAprilTagFrame(aprilTagInputs.timestamps[i], aprilTagInputs.frames[i], observations);
-
       inputs.receivingFrames = true;
+      processAprilTagFrame(
+          aprilTagQueue[i].timestamp / 1000000.0, aprilTagQueue[i].value, observations);
     }
     inputs.poseObservations = observations.toArray(new PoseObservation[0]);
     aprilTagInputs.fps = fpsAprilTagsSubscriber.get();
+
+    if (Constants.ENABLE_EXTRA_LOGGING) {
+      aprilTagInputs.timestamps = new double[aprilTagQueue.length];
+      aprilTagInputs.frames = new double[aprilTagQueue.length][];
+      for (int i = 0; i < aprilTagQueue.length; i++) {
+        aprilTagInputs.timestamps[i] = aprilTagQueue[i].timestamp / 1000000.0;
+        aprilTagInputs.frames[i] = aprilTagQueue[i].value;
+      }
+    }
 
     // Get object detection data
     var objDetectQueue = objDetectObservationSubscriber.readQueue();
