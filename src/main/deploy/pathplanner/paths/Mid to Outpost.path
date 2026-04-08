@@ -33,9 +33,22 @@
     {
       "name": "slow by outpost",
       "minWaypointRelativePos": 0.5026929982046681,
-      "maxWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 0.75,
       "constraints": {
         "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slower by outpost",
+      "minWaypointRelativePos": 0.75,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,

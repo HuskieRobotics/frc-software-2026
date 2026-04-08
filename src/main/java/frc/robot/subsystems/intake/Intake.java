@@ -137,7 +137,9 @@ public class Intake extends SubsystemBase {
     this.deployerLinearPositionMeters =
         DEPLOYER_CIRCUMFERENCE_METERS * inputs.deployerAngularPositionRot;
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPositionMeters);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/DeployerLinearPosition",
+        Units.metersToInches(this.deployerLinearPositionMeters));
     Logger.recordOutput(SUBSYSTEM_NAME + "/RollerStalled", rollerStalled);
     LoggedTracer.record("Intake");
   }
@@ -213,6 +215,16 @@ public class Intake extends SubsystemBase {
     } else {
       intakeIO.setDeployerCurrent(0.0);
     }
+  }
+
+  public Command slowJostleCommand() {
+    return Commands.sequence(
+        Commands.runOnce(() -> this.setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS)),
+        Commands.waitSeconds(0.2),
+        Commands.run(() -> intakeIO.setDeployerCurrent(INTAKE_SLOW_JOSTLE_DEPLOYER_CURRENT), this)
+            .until(
+                () ->
+                    this.deployerLinearPositionMeters < DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS));
   }
 
   public Command getDeployAndStartCommand() {
