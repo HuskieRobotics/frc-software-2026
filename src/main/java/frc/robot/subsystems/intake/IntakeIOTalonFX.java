@@ -287,7 +287,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     deployerLimitSwitches.ReverseSoftLimitThreshold = DEPLOYER_MIN_ANGLE_ROT;
 
     config.Feedback.SensorToMechanismRatio = DEPLOYER_GEAR_RATIO;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     config.Slot0.kP = deployerKp.get();
     config.Slot0.kI = deployerKi.get();
