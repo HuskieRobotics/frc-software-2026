@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.210984308131241,
+        "x": 4.0,
         "y": 7.41845934379458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.8312891882029,
-        "y": 7.704105124547351
+        "x": 7.718336314847942,
+        "y": 7.385545617173523
       },
       "isLocked": false,
       "linkedName": "Left Bank 90 degrees"
