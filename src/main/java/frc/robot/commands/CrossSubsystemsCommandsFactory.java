@@ -170,7 +170,7 @@ public class CrossSubsystemsCommandsFactory {
                 hopper,
                 intake,
                 shooterModes,
-                intake.slowJostleCommand())); // getForceJostleCommand(intake)
+                getSlowJostleCommand(intake))); // getForceJostleCommand(intake)
 
     oi.getForceSafeShootButton()
         .onFalse(
@@ -244,6 +244,16 @@ public class CrossSubsystemsCommandsFactory {
                         () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
                 .until(() -> !shooterModes.isTurretNotNearSetPoint()))
         .withName("shoot or pass");
+  }
+
+  public static Command getSlowJostleCommand(Intake intake) {
+    return Commands.sequence(
+            intake.startSlowJostle(),
+            Commands.waitUntil(
+                () -> intake.getPositionMeters() < DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS),
+            Commands.runOnce(intake::stopSlowJostle, intake),
+            Commands.runOnce(() -> intake.setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS)))
+        .withName("slow jostle");
   }
 
   public static Command getJostleCommand(Intake intake, Shooter shooter) {

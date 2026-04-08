@@ -217,15 +217,17 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  public Command slowJostleCommand() {
+  public Command startSlowJostle() {
     return Commands.sequence(
-        Commands.runOnce(() -> this.setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS)),
         Commands.waitSeconds(0.2),
-        Commands.run(() -> intakeIO.setDeployerCurrent(INTAKE_SLOW_JOSTLE_DEPLOYER_CURRENT), this)
-            .until(
-                () ->
-                    this.deployerLinearPositionMeters < DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS));
+        Commands.runOnce(() -> intakeIO.setDeployerCurrent(-10.0), this));
   }
+
+  public void stopSlowJostle() {
+    intakeIO.setDeployerCurrent(0.0);
+  }
+
+  //
 
   public Command getDeployAndStartCommand() {
     return Commands.sequence(
