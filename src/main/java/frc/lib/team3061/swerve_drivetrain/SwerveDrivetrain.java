@@ -681,22 +681,22 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
         autoTurnKi,
         autoTurnKd);
 
-    if (Constants.TUNING_MODE) {
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        limits -> {
+          slowModeMultiplier = limits[0];
+        },
+        slowModeMultiplierTuneable);
 
-      if (slowModeMultiplierTuneable.get()
-          != RobotConfig.getInstance().getRobotSlowModeMultiplier()) {
-        slowModeMultiplier = slowModeMultiplierTuneable.get();
-      }
-      if (maxAccelerationWhenLimitedTuneable.get()
-          != RobotConfig.getInstance().getRobotMaxAccelerationWhenLimitedMPSPS()) {
-        xFilter = new SlewRateLimiter(maxAccelerationWhenLimitedTuneable.get());
-        yFilter = new SlewRateLimiter(maxAccelerationWhenLimitedTuneable.get());
-      }
-      if (maxAngularAccelerationWhenLimitedTuneable.get()
-          != RobotConfig.getInstance().getRobotMaxAngularAccelerationWhenLimitedRPSPS()) {
-        thetaFilter = new SlewRateLimiter(maxAngularAccelerationWhenLimitedTuneable.get());
-      }
-    }
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        limits -> {
+          xFilter = new SlewRateLimiter(limits[0]);
+          yFilter = new SlewRateLimiter(limits[0]);
+          thetaFilter = new SlewRateLimiter(limits[1]);
+        },
+        maxAccelerationWhenLimitedTuneable,
+        maxAngularAccelerationWhenLimitedTuneable);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/SlowModeMultiplier", slowModeMultiplier);
     Logger.recordOutput(
