@@ -216,7 +216,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    intake = new Intake(new IntakeIO() {});
+    intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
