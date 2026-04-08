@@ -42,7 +42,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getSlowAccelerationAndVelocityButton() {
+  public Trigger getLimitAccelerationAndVelocityButton() {
     return translateJoystickButtons[1];
   }
 

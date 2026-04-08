@@ -105,7 +105,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getSlowAccelerationAndVelocityButton() {
+  public Trigger getLimitAccelerationAndVelocityButton() {
     return rotateJoystickButtons[3];
   }
 

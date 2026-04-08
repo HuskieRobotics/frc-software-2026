@@ -77,24 +77,22 @@ public class SwerveDrivetrainCommandFactory {
     //         Commands.runOnce(swerveDrivetrain::disableRotationSlowMode, swerveDrivetrain)
     //             .withName("disable rotation slow mode"));
 
-    oi.getSlowAccelerationAndVelocityButton()
+    oi.getLimitAccelerationAndVelocityButton()
         .onTrue(
             Commands.runOnce(
                     () -> {
                       swerveDrivetrain.enableTranslationSlowMode();
                       swerveDrivetrain.enableRotationSlowMode();
-                    },
-                    swerveDrivetrain)
+                    })
                 .withName("enable slow mode"));
 
-    oi.getSlowAccelerationAndVelocityButton()
+    oi.getLimitAccelerationAndVelocityButton()
         .onFalse(
             Commands.runOnce(
                     () -> {
                       swerveDrivetrain.disableTranslationSlowMode();
                       swerveDrivetrain.disableRotationSlowMode();
-                    },
-                    swerveDrivetrain)
+                    })
                 .withName("disable slow mode"));
 
     // reset gyro to 0 degrees

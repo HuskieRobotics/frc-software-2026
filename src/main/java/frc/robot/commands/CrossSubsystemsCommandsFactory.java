@@ -151,7 +151,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                     intake.getDeployAndStartCommand(),
                     Commands.either(
-                        getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain),
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
                         Commands.runOnce(hopper::stop, hopper),
                         () ->
                             shooterModes.isShootOnTheMoveEnabled()
@@ -173,7 +173,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                     intake.getDeployAndStartCommand(),
                     Commands.either(
-                        getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain),
+                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
                         Commands.runOnce(hopper::stop, hopper),
                         () ->
                             shooterModes.isShootOnTheMoveEnabled()
@@ -343,22 +343,17 @@ public class CrossSubsystemsCommandsFactory {
             .and(DriverStation::isTeleopEnabled);
 
     unloadHopperOnTheMoveTrigger.onTrue(
-        getShootWhenAimedCommand(shooterModes, shooter, hopper, swerveDrivetrain));
+        getShootWhenAimedCommand(shooterModes, shooter, hopper));
     unloadHopperOnTheMoveTrigger.onFalse(
         Commands.runOnce(hopper::stop, hopper)
-            .withName("stop hopper and disable drive to pose on the move"));
+            .withName("stop hopper on the move"));
   }
 
   private static Command getShootWhenAimedCommand(
       ShooterModes shooterModes,
       Shooter shooter,
-      Hopper hopper,
-      SwerveDrivetrain swerveDrivetrain) {
+      Hopper hopper) {
     return Commands.sequence(
-            Commands.either(
-                Commands.runOnce(swerveDrivetrain::enableAccelerationLimiting),
-                Commands.none(),
-                shooterModes::isShootOnTheMoveEnabled),
             Commands.repeatingSequence(
                 Commands.parallel(
                         hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),

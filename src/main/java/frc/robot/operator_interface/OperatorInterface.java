@@ -81,7 +81,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getSlowAccelerationAndVelocityButton() {
+  public default Trigger getLimitAccelerationAndVelocityButton() {
     return new Trigger(() -> false);
   }
 
