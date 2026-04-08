@@ -87,6 +87,18 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
   private final LoggedTunableNumber autoTurnKd =
       new LoggedTunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
 
+  private final LoggedTunableNumber slowModeMultiplierTuneable =
+      new LoggedTunableNumber(
+          "Drivetrain/SlowModeMultiplier", RobotConfig.getInstance().getRobotSlowModeMultiplier());
+  private final LoggedTunableNumber maxAccelerationWhenLimitedTuneable =
+      new LoggedTunableNumber(
+          "Drivetrain/MaxAccelerationWhenLimitedMPSPS",
+          RobotConfig.getInstance().getRobotMaxAccelerationWhenLimitedMPSPS());
+  private final LoggedTunableNumber maxAngularAccelerationWhenLimitedTuneable =
+      new LoggedTunableNumber(
+          "Drivetrain/MaxAngularAccelerationWhenLimitedRPSPS",
+          RobotConfig.getInstance().getRobotMaxAngularAccelerationWhenLimitedRPSPS());
+
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
   private final PIDController autoYController =
@@ -668,6 +680,30 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
         autoTurnKp,
         autoTurnKi,
         autoTurnKd);
+
+    if (Constants.TUNING_MODE) {
+
+      if (slowModeMultiplierTuneable.get()
+          != RobotConfig.getInstance().getRobotSlowModeMultiplier()) {
+        slowModeMultiplier = slowModeMultiplierTuneable.get();
+      }
+      if (maxAccelerationWhenLimitedTuneable.get()
+          != RobotConfig.getInstance().getRobotMaxAccelerationWhenLimitedMPSPS()) {
+        xFilter = new SlewRateLimiter(maxAccelerationWhenLimitedTuneable.get());
+        yFilter = new SlewRateLimiter(maxAccelerationWhenLimitedTuneable.get());
+      }
+      if (maxAngularAccelerationWhenLimitedTuneable.get()
+          != RobotConfig.getInstance().getRobotMaxAngularAccelerationWhenLimitedRPSPS()) {
+        thetaFilter = new SlewRateLimiter(maxAngularAccelerationWhenLimitedTuneable.get());
+      }
+    }
+
+    Logger.recordOutput(SUBSYSTEM_NAME + "/SlowModeMultiplier", slowModeMultiplier);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/MaxAccelerationWhenLimited", maxAccelerationWhenLimitedTuneable.get());
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/MaxAngularAccelerationWhenLimited",
+        maxAngularAccelerationWhenLimitedTuneable.get());
 
     // Record cycle time
     LoggedTracer.record("Drivetrain");
