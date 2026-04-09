@@ -269,11 +269,15 @@ public class VisionIONorthstar implements VisionIO {
     }
 
     List<Pose3d> tagPoses = new ArrayList<>();
-    for (int i = (values[0] == 1 ? 9 : 17); i < values.length; i += 10) {
-      int tagId = (int) values[i];
-      tagsSeenBitMap |= 1L << tagId;
-      Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(tagId);
-      tagPose.ifPresent(tagPoses::add);
+    int startIndex = (values[0] == 1 ? 9 : 17);
+    if (startIndex < values.length) {
+      int tagCount = (int) values[startIndex];
+      for (int i = startIndex + 1; i < startIndex + 1 + tagCount && i < values.length; i++) {
+        int tagId = (int) values[i];
+        tagsSeenBitMap |= 1L << tagId;
+        Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(tagId);
+        tagPose.ifPresent(tagPoses::add);
+      }
     }
     if (tagPoses.isEmpty()) return;
 
