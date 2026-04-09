@@ -57,7 +57,7 @@ public class IntakeConstants {
   public static final boolean ROLLER_MOTOR_INVERTED = true;
 
   public static final double ROLLER_TARGET_VELOCITY_RPS = 35.0;
-  public static final double ROLLER_AUTO_TARGET_VELOCITY_RPS = 50.0;
+  public static final double ROLLER_AUTO_TARGET_VELOCITY_RPS = 45.0;
 
   public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
   public static final double ROLLER_VELOCITY_TOLERANCE_RPS = 3.0;

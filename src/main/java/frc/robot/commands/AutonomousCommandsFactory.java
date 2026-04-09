@@ -300,7 +300,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
-                .withTimeout(1.5),
+                .withTimeout(2.0),
             CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))
         .withName("Auto Jostle");
   }
@@ -349,7 +349,7 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(6.0),
             Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(intake::deployIntake),
             AutoBuilder.followPath(secondSweep),
@@ -387,7 +387,9 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(hopper::stop, hopper), // could be unnecessary
             Commands.runOnce(intake::deployIntake),
             AutoBuilder.followPath(secondSweep),
-            getUnloadHopperCommand(hopper, intake, shooter, false))
+            Commands.parallel(
+                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+                CrossSubsystemsCommandsFactory.getForceJostleCommand(intake)))
         .finallyDo(
             () -> {
               hopper.stop();
@@ -417,8 +419,8 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
     try {
       // exchange with turn vs. no-turn for testing
-      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
-      secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect");
+      firstSweep = PathPlannerPath.fromPathFile("L Turn Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L Turn Second Collect");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
