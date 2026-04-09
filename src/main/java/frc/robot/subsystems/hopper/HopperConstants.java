@@ -40,10 +40,10 @@ public class HopperConstants {
 
   public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS =
       SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT - 1.0;
-  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 1.0;
+  public static final double SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS = 100.0; // 1.0
   public static final double KICKER_CURRENT_SPIKE_THRESHOLD_AMPS =
       KICKER_MOTOR_PEAK_CURRENT_LIMIT - 1.0;
-  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 1.0;
+  public static final double KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS = 100.0; // 1.0
 
   public static final double SPINDEXER_UNJAM_VELOCITY_RPS =
       -12; // <-- Should be negative (rotations per second) // FIXME: Update value
