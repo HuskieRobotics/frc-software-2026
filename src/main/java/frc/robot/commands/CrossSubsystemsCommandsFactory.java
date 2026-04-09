@@ -166,11 +166,7 @@ public class CrossSubsystemsCommandsFactory {
         .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
         .whileTrue(
             getStopAndShootCommand(
-                shooter,
-                hopper,
-                intake,
-                shooterModes,
-                getForceJostleCommand(intake))); 
+                shooter, hopper, intake, shooterModes, getForceJostleCommand(intake)));
 
     oi.getForceSafeShootButton()
         .onFalse(
