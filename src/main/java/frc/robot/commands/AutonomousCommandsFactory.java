@@ -389,8 +389,8 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(intake::deployIntake),
             AutoBuilder.followPath(secondSweep),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.deadline(
-                AutoBuilder.followPath(slowToTrench),
+            Commands.parallel(
+                AutoBuilder.followPath(secondSlowToTrench),
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 Commands.sequence(
                     Commands.waitSeconds(1.0),
