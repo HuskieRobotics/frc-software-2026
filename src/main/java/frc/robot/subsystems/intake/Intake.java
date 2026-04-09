@@ -219,7 +219,7 @@ public class Intake extends SubsystemBase {
 
   public Command startSlowJostle() {
     return Commands.sequence(
-        Commands.waitSeconds(0.2),
+        Commands.waitSeconds(1.5),
         Commands.runOnce(() -> intakeIO.setDeployerCurrent(-25.0), this)); // -10.0
   }
 

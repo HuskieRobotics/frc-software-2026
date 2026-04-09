@@ -282,7 +282,7 @@ public class CrossSubsystemsCommandsFactory {
                             JOSTLE_FIRST_RETRACT_POSITION_METERS,
                             DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS))),
             Commands.repeatingSequence(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(0.25), // was 0.5
                 Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION_METERS)),
                 Commands.waitUntil(
                     () ->
