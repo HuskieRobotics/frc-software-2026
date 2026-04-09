@@ -64,12 +64,12 @@
     },
     {
       "anchor": {
-        "x": 2.9263338088445083,
-        "y": 5.529415121255349
+        "x": 3.029194991055456,
+        "y": 5.50339892665474
       },
       "prevControl": {
-        "x": 5.530330249758082,
-        "y": 5.529415121255349
+        "x": 5.6331914319690295,
+        "y": 5.50339892665474
       },
       "nextControl": null,
       "isLocked": false,
@@ -147,7 +147,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 133.53119928561424
+    "rotation": 155.0
   },
   "reversed": false,
   "folder": "Trench-Bump Double Sweeps",

@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 2.9263338088445083,
-        "y": 5.529415121255349
+        "x": 3.029194991055456,
+        "y": 5.50339892665474
       },
       "prevControl": {
-        "x": 6.723077994891019,
-        "y": 5.480738913741932
+        "x": 6.825939177101969,
+        "y": 5.454722719141323
       },
       "nextControl": null,
       "isLocked": false,
@@ -70,7 +70,7 @@
       "rotationDegrees": 89.0
     },
     {
-      "waypointRelativePos": 2.4,
+      "waypointRelativePos": 2.6,
       "rotationDegrees": 135.0
     }
   ],
@@ -90,7 +90,7 @@
     },
     {
       "name": "slow otw back",
-      "minWaypointRelativePos": 2.3,
+      "minWaypointRelativePos": 2.6,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 2.5,
@@ -127,7 +127,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 133.53119928561424
+    "rotation": 155.0
   },
   "reversed": false,
   "folder": "Trench-Bump Double Sweeps",

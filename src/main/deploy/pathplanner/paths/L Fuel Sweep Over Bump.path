@@ -105,19 +105,6 @@
       }
     },
     {
-      "name": "slow down on the way back",
-      "minWaypointRelativePos": 2.5,
-      "maxWaypointRelativePos": 3.0,
-      "constraints": {
-        "maxVelocity": 3.5,
-        "maxAcceleration": 7.5,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
       "name": "slow over bump",
       "minWaypointRelativePos": 3.0,
       "maxWaypointRelativePos": 4.0,

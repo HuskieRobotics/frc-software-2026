@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9263338088445083,
-        "y": 5.529415121255349
+        "x": 3.029194991055456,
+        "y": 5.50339892665474
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9160269906626906,
-        "y": 6.735312848528077
+        "x": 3.018888172873638,
+        "y": 6.709296653927468
       },
       "isLocked": false,
       "linkedName": "Near Bump Turned Around"
@@ -62,7 +62,7 @@
   "folder": "Trench-Bump Double Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 133.53119928561424
+    "rotation": 155.0
   },
   "useDefaultConstraints": true
 }
