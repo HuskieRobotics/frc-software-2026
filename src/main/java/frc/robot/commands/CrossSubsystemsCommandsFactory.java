@@ -170,7 +170,7 @@ public class CrossSubsystemsCommandsFactory {
                 hopper,
                 intake,
                 shooterModes,
-                getSlowJostleCommand(intake))); // getForceJostleCommand(intake)
+                getForceJostleCommand(intake))); 
 
     oi.getForceSafeShootButton()
         .onFalse(

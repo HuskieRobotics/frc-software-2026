@@ -384,12 +384,15 @@ public class AutonomousCommandsFactory {
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 getAutoJostleCommand(intake, shooter)),
             Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
-            Commands.runOnce(hopper::stop, hopper), // could be unnecessary
+            Commands.runOnce(hopper::stop, hopper), 
             Commands.runOnce(intake::deployIntake),
             AutoBuilder.followPath(secondSweep),
             Commands.parallel(
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                CrossSubsystemsCommandsFactory.getForceJostleCommand(intake)))
+                Commands.sequence(
+                  Commands.waitSeconds(1.0),
+                  CrossSubsystemsCommandsFactory.getForceJostleCommand(intake)
+                )))
         .finallyDo(
             () -> {
               hopper.stop();
