@@ -48,11 +48,11 @@
     },
     {
       "anchor": {
-        "x": 3.029194991055456,
+        "x": 2.6,
         "y": 5.50339892665474
       },
       "prevControl": {
-        "x": 6.825939177101969,
+        "x": 6.396744186046513,
         "y": 5.454722719141323
       },
       "nextControl": null,
@@ -70,7 +70,7 @@
       "rotationDegrees": 89.0
     },
     {
-      "waypointRelativePos": 2.6,
+      "waypointRelativePos": 2.5,
       "rotationDegrees": 135.0
     }
   ],
@@ -93,7 +93,7 @@
       "minWaypointRelativePos": 2.6,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -127,7 +127,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 155.0
+    "rotation": 150.0
   },
   "reversed": false,
   "folder": "Trench-Bump Double Sweeps",

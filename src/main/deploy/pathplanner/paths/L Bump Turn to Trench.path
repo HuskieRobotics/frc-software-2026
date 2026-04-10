@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.029194991055456,
+        "x": 2.6,
         "y": 5.50339892665474
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0394454382826472,
+        "x": 1.6102504472271915,
         "y": 5.406046511627907
       },
       "isLocked": false,
@@ -53,7 +53,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.75,
-    "maxAcceleration": 8.0,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -67,7 +67,7 @@
   "folder": "Trench-Bump Double Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 155.0
+    "rotation": 150.0
   },
   "useDefaultConstraints": true
 }

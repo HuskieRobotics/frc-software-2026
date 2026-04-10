@@ -64,11 +64,11 @@
     },
     {
       "anchor": {
-        "x": 3.029194991055456,
+        "x": 2.6,
         "y": 5.50339892665474
       },
       "prevControl": {
-        "x": 5.6331914319690295,
+        "x": 5.203996440913574,
         "y": 5.50339892665474
       },
       "nextControl": null,
@@ -139,7 +139,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.75,
-    "maxAcceleration": 8.0,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -147,7 +147,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 155.0
+    "rotation": 150.0
   },
   "reversed": false,
   "folder": "Trench-Bump Double Sweeps",
