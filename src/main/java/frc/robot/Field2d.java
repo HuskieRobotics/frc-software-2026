@@ -59,6 +59,7 @@ public class Field2d {
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
   private Region2d transformedTowerNoPassZone;
+  private Region2d transformedDepotNoShootZone;
 
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
@@ -205,6 +206,31 @@ public class Field2d {
         };
 
     this.transformedTowerNoPassZone = new Region2d(towerEdges);
+  }
+
+  public void populateDepotNoShootZone() {
+    Translation2d[] depotEdges =
+        new Translation2d[] {
+          new Translation2d(
+              0.0,
+              FieldConstants.Depot.leftCorner.getY()
+                  + RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
+          new Translation2d(
+              FieldConstants.Depot.rightCorner.getX()
+                  + RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2,
+              FieldConstants.Depot.leftCorner.getY()
+                  + RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
+          new Translation2d(
+              FieldConstants.Depot.rightCorner.getX()
+                  + RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2,
+              FieldConstants.Depot.rightCorner.getY()
+                  - RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
+          new Translation2d(
+              0.0,
+              FieldConstants.Depot.rightCorner.getY()
+                  - RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2)
+        };
+    this.transformedDepotNoShootZone = new Region2d(depotEdges);
   }
 
   /**
@@ -402,6 +428,10 @@ public class Field2d {
   public void logNoPassZonePoints() {
     transformedNoPassZone.logPoints("noPassZone");
     transformedTowerNoPassZone.logPoints("TowerNoPassZone");
+  }
+
+  public void logDepotNoShootZonePoints() {
+    transformedDepotNoShootZone.logPoints("DepotNoShootZone");
   }
 
   public void logTrenchZonePoints() {
@@ -639,6 +669,16 @@ public class Field2d {
     }
 
     return transformedTowerNoPassZone.contains(pose);
+  }
+
+  public boolean inDepotNoShootZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedDepotNoShootZone.contains(pose);
   }
 
   public boolean inTrenchZone() {
