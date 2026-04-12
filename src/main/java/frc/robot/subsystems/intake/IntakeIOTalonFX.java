@@ -156,10 +156,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     configRollerMotorLead(rollerMotorLead);
 
     rollerMotorFollower.setControl(
-        new Follower(
-            rollerMotorLead.getDeviceID(),
-            MotorAlignmentValue
-                .Opposed)); // FIXME: not sure what design is mechanically for motor alignment
+        new Follower(rollerMotorLead.getDeviceID(), MotorAlignmentValue.Opposed));
 
     // Initialize Simulation
     this.rollerSim =
