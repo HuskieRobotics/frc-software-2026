@@ -456,15 +456,6 @@ public class RobotContainer {
     // Handle practice match timer controls
     if (oi instanceof OperatorDashboard) {
       OperatorDashboard dashboard = (OperatorDashboard) oi;
-      if (dashboard.startPracticeMatch.get()) {
-        dashboard.startTimer();
-      }
-      if (dashboard.pausePracticeMatch.get()) {
-        dashboard.pauseTimer();
-      }
-      if (dashboard.resetPracticeMatch.get()) {
-        dashboard.resetTimer();
-      }
       dashboard.updateTimer();
     }
   }

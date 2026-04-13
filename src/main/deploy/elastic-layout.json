@@ -597,12 +597,13 @@
             "y": 432.0,
             "width": 300.0,
             "height": 128.0,
-            "type": "Large Number Display",
+            "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Practice Match Timer",
               "period": 0.05,
               "data_type": "double",
-              "format": "%5.1f"
+              "format": "%5.1f",
+              "time_display_mode": "Minutes and Seconds"
             }
           }
         ]

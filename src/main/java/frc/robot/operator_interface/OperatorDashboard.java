@@ -47,19 +47,18 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);
 
-  public final LoggedTunableBoolean startPracticeMatch =
-      new LoggedTunableBoolean("operatorDashboard/Start Practice Match", false, true);
+  public final LoggedTunableBoolean practiceMatchTimerRunning =
+      new LoggedTunableBoolean("operatorDashboard/Practice Match Timer Running", false, true);
 
-  public final LoggedTunableBoolean pausePracticeMatch =
-      new LoggedTunableBoolean("operatorDashboard/Pause Practice Match", false, true);
-
-  public final LoggedTunableBoolean resetPracticeMatch =
-      new LoggedTunableBoolean("operatorDashboard/Reset Practice Match", false, true);
+  public final LoggedTunableBoolean practiceMatchTimerReset =
+      new LoggedTunableBoolean("operatorDashboard/Practice Match Timer Reset", false, true);
 
   private static final double MATCH_TIME_SECONDS = 160;
-  private double practiceMatchStartTime = -1.0;
-  private double pausedRemainingTime = 0.0;
+  private double practiceMatchStartTime = 0;
+  private double pausedRemainingTime = MATCH_TIME_SECONDS;
   private boolean isTimerRunning = false;
+  private boolean lastTimerRunningState = false;
+  private boolean lastTimerResetState = false;
   private final DoublePublisher timerPublisher;
 
   public OperatorDashboard() {
@@ -122,20 +121,40 @@ public class OperatorDashboard implements OperatorInterface {
 
   @Override
   public Trigger getStartPracticeMatchTrigger() {
-    return new Trigger(() -> startPracticeMatch.get());
+    return new Trigger(() -> practiceMatchTimerRunning.get());
   }
 
   @Override
   public Trigger getPausePracticeMatchTrigger() {
-    return new Trigger(() -> pausePracticeMatch.get());
+    return new Trigger(() -> practiceMatchTimerRunning.get());
   }
 
   @Override
   public Trigger getResetPracticeMatchTrigger() {
-    return new Trigger(() -> resetPracticeMatch.get());
+    return new Trigger(() -> practiceMatchTimerReset.get());
   }
 
   public void updateTimer() {
+    boolean currentRunningState = practiceMatchTimerRunning.get();
+    boolean currentResetState = practiceMatchTimerReset.get();
+
+    // Detect rising edge for start/pause button
+    if (currentRunningState && !lastTimerRunningState) {
+      if (isTimerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+    lastTimerRunningState = currentRunningState;
+
+    // Detect rising edge for reset button
+    if (currentResetState && !lastTimerResetState) {
+      resetTimer();
+    }
+    lastTimerResetState = currentResetState;
+
+    // Update timer display
     if (!isTimerRunning) {
       timerPublisher.set(pausedRemainingTime);
       return;
