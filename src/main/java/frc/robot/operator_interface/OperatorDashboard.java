@@ -326,7 +326,7 @@ public class OperatorDashboard implements OperatorInterface {
     isTimerRunning = false;
     pausedRemainingTime = MATCH_TIME_SECONDS;
     hasAutoEnded = false;
-    isRedAlliance = false;
+    isRedAlliance = true;
     timerPublisher.set(MATCH_TIME_SECONDS);
     currentShiftPublisher.set("AUTO");
     shiftTimerPublisher.set(AUTO_END_TIME);
