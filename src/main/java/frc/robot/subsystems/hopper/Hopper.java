@@ -40,8 +40,7 @@ public class Hopper extends SubsystemBase {
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Hopper/TestingMode", 0);
 
   private StallDetector spindexerStallDetector =
-      new StallDetector(
-          SPINDEXER_VELOCITY_TOLERANCE_RPS, SPINDEXER_STALL_TIME_THRESHOLD_SECONDS);
+      new StallDetector(SPINDEXER_VELOCITY_TOLERANCE_RPS, SPINDEXER_STALL_TIME_THRESHOLD_SECONDS);
 
   private StallDetector kickerStallDetector =
       new StallDetector(KICKER_VELOCITY_TOLERANCE_RPS, KICKER_STALL_TIME_THRESHOLD_SECONDS);
@@ -220,7 +219,7 @@ public class Hopper extends SubsystemBase {
                             () -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
                         Commands.runOnce(
                             () -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this)))
-                .withTimeout(KICKER_UNJAM_WAIT_TIME),
+                .withTimeout(HOPPER_UNJAM_WAIT_TIME),
             Commands.sequence(
                 Commands.runOnce(
                     () -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
@@ -239,6 +238,7 @@ public class Hopper extends SubsystemBase {
 
   public void stop() {
     io.setSpindexerVelocity(0.0);
+    io.setKickerVelocity(0.0);
     io.setKickerCurrent(0.0);
   }
 }
