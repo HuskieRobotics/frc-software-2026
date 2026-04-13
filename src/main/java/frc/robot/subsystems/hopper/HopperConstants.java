@@ -41,6 +41,9 @@ public class HopperConstants {
   public static final double SPINDEXER_STALL_TIME_THRESHOLD_SECONDS = 0.25;
   public static final double KICKER_STALL_TIME_THRESHOLD_SECONDS = 0.25;
 
+  public static final double SPINDEXER_STALL_VELOCITY_TOLERANCE_RPS = 2.0;
+  public static final double KICKER_STALL_VELOCITY_TOLERANCE_RPS = 5.0;
+
   public static final double SPINDEXER_UNJAM_VELOCITY_RPS =
       -12; // <-- Should be negative (rotations per second) // FIXME: Update value
   public static final double KICKER_UNJAM_VELOCITY_RPS =
