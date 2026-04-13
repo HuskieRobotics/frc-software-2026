@@ -69,7 +69,7 @@ public class OperatorDashboard implements OperatorInterface {
   private static final double SHIFT_4_END_TIME = 30;
   private static final double END_GAME_END_TIME = 0;
 
-  private double practiceMatchStartTime = 0;
+  private double practiceMatchStartTime = 160;
   private double pausedRemainingTime = MATCH_TIME_SECONDS;
   private boolean isTimerRunning = false;
   private boolean lastTimerRunningState = false;
