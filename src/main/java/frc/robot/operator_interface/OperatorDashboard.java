@@ -2,10 +2,12 @@ package frc.robot.operator_interface;
 
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
+import java.util.Random;
 
 /**
  * OperatorDashboard is a class that implements the OperatorInterface. It is not a joystick,
@@ -47,26 +49,52 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);
 
+  // Practice match controls
   public final LoggedTunableBoolean practiceMatchTimerRunning =
       new LoggedTunableBoolean("operatorDashboard/Practice Match Timer Running", false, true);
 
   public final LoggedTunableBoolean practiceMatchTimerReset =
       new LoggedTunableBoolean("operatorDashboard/Practice Match Timer Reset", false, true);
 
+  public final LoggedTunableBoolean selectedTeam =
+      new LoggedTunableBoolean(
+          "operatorDashboard/Selected Team (true=Red, false=Blue)", false, true);
+
   private static final double MATCH_TIME_SECONDS = 160;
+  private static final double AUTO_END_TIME = 140;
+  private static final double TRANSITION_END_TIME = 130;
+  private static final double SHIFT_1_END_TIME = 105;
+  private static final double SHIFT_2_END_TIME = 80;
+  private static final double SHIFT_3_END_TIME = 55;
+  private static final double SHIFT_4_END_TIME = 30;
+  private static final double END_GAME_END_TIME = 0;
+
   private double practiceMatchStartTime = 0;
   private double pausedRemainingTime = MATCH_TIME_SECONDS;
   private boolean isTimerRunning = false;
   private boolean lastTimerRunningState = false;
   private boolean lastTimerResetState = false;
+  private boolean hasAutoEnded = false;
+  private boolean isRedAlliance = false;
+  private final Random random = new Random();
+
+  // Publishers
   private final DoublePublisher timerPublisher;
+  private final DoublePublisher shiftTimerPublisher;
+  private final StringPublisher currentShiftPublisher;
+  private final StringPublisher activeAlliancePublisher;
+  private final StringPublisher autosWinnerPublisher;
 
   public OperatorDashboard() {
-    // Publish timer value to NetworkTables for Elastic to display
-    timerPublisher =
-        NetworkTableInstance.getDefault()
-            .getDoubleTopic("/SmartDashboard/Practice Match Timer")
-            .publish();
+    NetworkTableInstance nt = NetworkTableInstance.getDefault();
+    timerPublisher = nt.getDoubleTopic("/SmartDashboard/Practice Match Timer").publish();
+    shiftTimerPublisher = nt.getDoubleTopic("/SmartDashboard/Shift Timer").publish();
+    currentShiftPublisher = nt.getStringTopic("/SmartDashboard/Current Shift").publish();
+    activeAlliancePublisher = nt.getStringTopic("/SmartDashboard/Active Alliance").publish();
+    autosWinnerPublisher = nt.getStringTopic("/SmartDashboard/Autos Winner").publish();
+
+    // Initialize displays
+    resetTimer();
   }
 
   @Override
@@ -157,6 +185,7 @@ public class OperatorDashboard implements OperatorInterface {
     // Update timer display
     if (!isTimerRunning) {
       timerPublisher.set(pausedRemainingTime);
+      updateShiftDisplay(pausedRemainingTime);
       return;
     }
 
@@ -164,9 +193,116 @@ public class OperatorDashboard implements OperatorInterface {
     double remaining = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
     timerPublisher.set(remaining);
 
+    // Update shift information
+    updateShiftDisplay(remaining);
+
+    // Check if auto period has ended - randomly select alliance
+    if (!hasAutoEnded && remaining <= AUTO_END_TIME) {
+      hasAutoEnded = true;
+      isRedAlliance = random.nextBoolean();
+      String autoWinner = isRedAlliance ? "Red" : "Blue";
+      autosWinnerPublisher.set(autoWinner);
+    }
+
     if (remaining <= 0.0) {
       isTimerRunning = false;
       pausedRemainingTime = 0.0;
+    }
+  }
+
+  private void updateShiftDisplay(double remainingTime) {
+    String shiftName;
+    double shiftEndTime;
+
+    if (remainingTime > AUTO_END_TIME) {
+      shiftName = "AUTO";
+      shiftEndTime = MATCH_TIME_SECONDS;
+    } else if (remainingTime > TRANSITION_END_TIME) {
+      shiftName = "TRANSITION";
+      shiftEndTime = AUTO_END_TIME;
+    } else if (remainingTime > SHIFT_1_END_TIME) {
+      shiftName = "SHIFT 1";
+      shiftEndTime = TRANSITION_END_TIME;
+    } else if (remainingTime > SHIFT_2_END_TIME) {
+      shiftName = "SHIFT 2";
+      shiftEndTime = SHIFT_1_END_TIME;
+    } else if (remainingTime > SHIFT_3_END_TIME) {
+      shiftName = "SHIFT 3";
+      shiftEndTime = SHIFT_2_END_TIME;
+    } else if (remainingTime > SHIFT_4_END_TIME) {
+      shiftName = "SHIFT 4";
+      shiftEndTime = SHIFT_3_END_TIME;
+    } else if (remainingTime > END_GAME_END_TIME) {
+      shiftName = "END GAME";
+      shiftEndTime = SHIFT_4_END_TIME;
+    } else {
+      shiftName = "MATCH ENDED";
+      shiftEndTime = 0;
+    }
+
+    // Calculate time elapsed in current shift
+    double shiftTimeElapsed = getShiftStartBoundary(shiftName) - remainingTime;
+    double shiftTimeRemaining = shiftEndTime - shiftTimeElapsed;
+
+    currentShiftPublisher.set(shiftName);
+    shiftTimerPublisher.set(Math.max(0.0, shiftTimeRemaining));
+
+    // Update active alliance based on shift and auto winner
+    updateActiveAlliance(remainingTime);
+  }
+
+  private double getShiftStartBoundary(String shiftName) {
+    switch (shiftName) {
+      case "AUTO":
+        return MATCH_TIME_SECONDS;
+      case "TRANSITION":
+        return AUTO_END_TIME;
+      case "SHIFT 1":
+        return TRANSITION_END_TIME;
+      case "SHIFT 2":
+        return SHIFT_1_END_TIME;
+      case "SHIFT 3":
+        return SHIFT_2_END_TIME;
+      case "SHIFT 4":
+        return SHIFT_3_END_TIME;
+      case "END GAME":
+        return SHIFT_4_END_TIME;
+      default:
+        return 0;
+    }
+  }
+
+  private void updateActiveAlliance(double remainingTime) {
+    if (!hasAutoEnded) {
+
+      activeAlliancePublisher.set("Both");
+      return;
+    }
+
+    boolean redActive;
+
+    if (remainingTime > TRANSITION_END_TIME) {
+      // Transition shift - both active
+      activeAlliancePublisher.set("Both");
+      return;
+    } else if (remainingTime > SHIFT_1_END_TIME) {
+      redActive = !isRedAlliance;
+    } else if (remainingTime > SHIFT_2_END_TIME) {
+      redActive = isRedAlliance;
+    } else if (remainingTime > SHIFT_3_END_TIME) {
+      redActive = !isRedAlliance;
+    } else if (remainingTime > SHIFT_4_END_TIME) {
+      redActive = isRedAlliance;
+    } else {
+      activeAlliancePublisher.set("Both");
+      return;
+    }
+
+    boolean userSelectedRed = selectedTeam.get();
+    if (userSelectedRed) {
+      activeAlliancePublisher.set(redActive ? "Red (YOU)" : "Blue");
+    } else {
+      activeAlliancePublisher.set(redActive ? "Red" : "Blue (YOU)");
     }
   }
 
@@ -189,6 +325,12 @@ public class OperatorDashboard implements OperatorInterface {
   public void resetTimer() {
     isTimerRunning = false;
     pausedRemainingTime = MATCH_TIME_SECONDS;
+    hasAutoEnded = false;
+    isRedAlliance = false;
     timerPublisher.set(MATCH_TIME_SECONDS);
+    currentShiftPublisher.set("AUTO");
+    shiftTimerPublisher.set(AUTO_END_TIME);
+    activeAlliancePublisher.set("Both");
+    autosWinnerPublisher.set("-");
   }
 }
