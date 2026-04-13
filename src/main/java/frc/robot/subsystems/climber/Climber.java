@@ -53,13 +53,15 @@ public class Climber extends SubsystemBase {
     return Commands.sequence(
         Commands.runOnce(() -> io.setClimberAngle(CLIMBER_ANGLE_SETPOINT_1)),
         Commands.waitSeconds(2),
-        Commands.runOnce(() -> io.checkPosition(CLIMBER_ANGLE_SETPOINT_1)),
+        Commands.runOnce(() -> checkPosition(CLIMBER_ANGLE_SETPOINT_1)),
+
         Commands.runOnce(() -> io.setClimberAngle(CLIMBER_ANGLE_SETPOINT_2)),
         Commands.waitSeconds(2),
-        Commands.runOnce(() -> io.checkPosition(CLIMBER_ANGLE_SETPOINT_2)),
+        Commands.runOnce(() -> checkPosition(CLIMBER_ANGLE_SETPOINT_2)),
+
         Commands.runOnce(() -> io.setClimberAngle(CLIMBER_ANGLE_SETPOINT_3)),
         Commands.waitSeconds(2),
-        Commands.runOnce(() -> io.checkPosition(CLIMBER_ANGLE_SETPOINT_3)));
+        Commands.runOnce(() -> checkPosition(CLIMBER_ANGLE_SETPOINT_3)));
   }
 
   @Override
@@ -95,33 +97,29 @@ public class Climber extends SubsystemBase {
   public void setPosition(Angle angleDegrees) {
     io.setClimberAngle(angleDegrees);
   }
+  
+  public void checkPosition(Angle intendedPositionDegrees) {
+    double currentDeg = inputs.climberAngle.in(Degrees);
+    double intendedDeg = intendedPositionDegrees.in(Degrees);
 
-  public boolean isAtPosition(Angle targetAngle) {
-    return inputs.referenceAngle.isNear(inputs.climberAngle, ANGLE_TOLERANCE_DEGREES);
-  }
-
-  public void checkPosition(double intendedPositionDegrees) {
-    if (Math.abs(getAngle().in(Degrees) - intendedPositionDegrees)
+    if (Math.abs(currentDeg - intendedDeg)
         > ClimberConstants.ANGLE_TOLERANCE_DEGREES.in(Degrees)) {
-      if (getAngle().in(Degrees) - intendedPositionDegrees < 0) {
+      if (currentDeg < intendedDeg) {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
                 "Climber Angle is too low, should be "
-                    + intendedPositionDegrees
+                    + intendedDeg
                     + " but is "
-                    + getAngle().in(Degrees));
-      } else if (getAngle().in(Degrees) - intendedPositionDegrees > 0) {
+                    + currentDeg);
+      } else {
         FaultReporter.getInstance()
             .addFault(
                 SUBSYSTEM_NAME,
                 "Climber Angle is too high, should be "
-                    + intendedPositionDegrees
+                    + intendedDeg
                     + " but is "
-                    + getAngle().in(Degrees));
-      } else {
-        FaultReporter.getInstance()
-            .addFault(SUBSYSTEM_NAME, "Climber Angle is at its intended position");
+                    + currentDeg);
       }
     }
   }

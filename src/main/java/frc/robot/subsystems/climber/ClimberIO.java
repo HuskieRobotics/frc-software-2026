@@ -31,5 +31,4 @@ public interface ClimberIO {
 
   public default void setClimberVoltage(Voltage voltage) {}
 
-  public default void checkPosition(Angle targetAngle) {}
 }
