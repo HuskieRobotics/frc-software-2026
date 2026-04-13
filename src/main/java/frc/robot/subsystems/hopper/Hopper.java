@@ -40,7 +40,8 @@ public class Hopper extends SubsystemBase {
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Hopper/TestingMode", 0);
 
   private StallDetector spindexerStallDetector =
-      new StallDetector(SPINDEXER_STALL_VELOCITY_TOLERANCE_RPS, SPINDEXER_STALL_TIME_THRESHOLD_SECONDS);
+      new StallDetector(
+          SPINDEXER_STALL_VELOCITY_TOLERANCE_RPS, SPINDEXER_STALL_TIME_THRESHOLD_SECONDS);
 
   private StallDetector kickerStallDetector =
       new StallDetector(KICKER_STALL_VELOCITY_TOLERANCE_RPS, KICKER_STALL_TIME_THRESHOLD_SECONDS);
