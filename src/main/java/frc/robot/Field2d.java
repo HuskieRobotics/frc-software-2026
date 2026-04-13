@@ -61,6 +61,8 @@ public class Field2d {
   private Region2d transformedTowerNoPassZone;
   private Region2d transformedDepotNoShootZone;
 
+  private Pose2d[] bumps;
+
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
@@ -393,6 +395,21 @@ public class Field2d {
               FieldConstants.LinesHorizontal.rightBumpStart - bufferBumpY)
         };
 
+    bumps =
+        new Pose2d[] {
+          // Left Blue Bump NZ
+          new Pose2d(6.2, 5.5, Rotation2d.fromDegrees(135)),
+
+          // Right Blue Bump NZ
+          new Pose2d(6.2, 2.5, Rotation2d.fromDegrees(-135)),
+
+          // Left Blue Bump AZ
+          new Pose2d(3.0, 5.5, Rotation2d.fromDegrees(135)),
+
+          // Right Blue Bump AZ
+          new Pose2d(3.0, 2.5, Rotation2d.fromDegrees(-135))
+        };
+
     Translation2d[] leftBumpEdgesRED = new Translation2d[leftBumpEdges.length];
     Translation2d[] rightBumpEdgesRED = new Translation2d[rightBumpEdges.length];
 
@@ -669,6 +686,22 @@ public class Field2d {
     }
 
     return transformedTowerNoPassZone.contains(pose);
+  }
+
+  public Pose2d getNeutralZoneBumpPose(Side side) {
+    if (side == Side.LEFT) {
+      return getAlliance() == Alliance.Blue ? bumps[0] : FlippingUtil.flipFieldPose(bumps[0]);
+    } else {
+      return getAlliance() == Alliance.Blue ? bumps[1] : FlippingUtil.flipFieldPose(bumps[1]);
+    }
+  }
+
+  public Pose2d getAllianceZoneBumpPose(Side side) {
+    if (side == Side.LEFT) {
+      return getAlliance() == Alliance.Blue ? bumps[2] : FlippingUtil.flipFieldPose(bumps[2]);
+    } else {
+      return getAlliance() == Alliance.Blue ? bumps[3] : FlippingUtil.flipFieldPose(bumps[3]);
+    }
   }
 
   public boolean inDepotNoShootZone() {

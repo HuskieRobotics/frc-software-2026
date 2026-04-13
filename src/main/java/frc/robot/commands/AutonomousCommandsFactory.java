@@ -7,7 +7,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.RobotOdometry;
+import frc.robot.Field2d;
+import frc.robot.Field2d.Side;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
@@ -36,6 +43,7 @@ public class AutonomousCommandsFactory {
 
   private Timer hopperUnloadTimer;
   private Timer matchTimer;
+  private Pose2d currentTargetPose;
 
   /**
    * Returns the singleton instance of this class.
@@ -52,6 +60,7 @@ public class AutonomousCommandsFactory {
   private AutonomousCommandsFactory() {
     matchTimer = new Timer();
     hopperUnloadTimer = new Timer();
+    currentTargetPose = new Pose2d();
   }
 
   public Command getAutonomousCommand() {
@@ -266,6 +275,48 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(drivetrain::captureInitialConditions),
         new PathPlannerAuto(autoName),
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
+  }
+
+  // Follow a path. If we fall behind, drive to pose to the bump and then over the bump
+  private Command followCollisionResistantPath(
+      PathPlannerPath path, SwerveDrivetrain drivetrain, Side side) {
+    return AutoBuilder.followPath(path)
+        .until(() -> fallenBehindPath())
+        .andThen(
+            Commands.sequence(
+                new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNeutralZoneBumpPose(side),
+                    CrossSubsystemsCommandsFactory.xController,
+                    CrossSubsystemsCommandsFactory.yController,
+                    CrossSubsystemsCommandsFactory.thetaController,
+                    new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
+                    true,
+                    b -> {},
+                    p -> {},
+                    5.0),
+                new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getAllianceZoneBumpPose(side),
+                    CrossSubsystemsCommandsFactory.xController,
+                    CrossSubsystemsCommandsFactory.yController,
+                    CrossSubsystemsCommandsFactory.thetaController,
+                    new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
+                    true,
+                    b -> {},
+                    p -> {},
+                    5.0)));
+  }
+
+  private boolean fallenBehindPath() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    PathPlannerLogging.logTargetPose(pose);
+    Transform2d diff = pose.minus(getPathFollowingTargetPose());
+    double dist = Math.hypot(diff.getX(), diff.getY());
+
+    // check match timer to make sure we don't trigger this if the target pose isn't updated yet
+    return matchTimer.get() > 0.5 && dist > 2.0;
   }
 
   private Command getUnloadHopperCommand(
@@ -658,6 +709,14 @@ public class AutonomousCommandsFactory {
               intake.startRoller();
               shooterModes.disableShootOnTheMoveInAuto();
             });
+  }
+
+  public void setPathFollowingTargetPose(Pose2d pose) {
+    currentTargetPose = pose;
+  }
+
+  public Pose2d getPathFollowingTargetPose() {
+    return currentTargetPose;
   }
 
   public double getCustomMatchTime() {

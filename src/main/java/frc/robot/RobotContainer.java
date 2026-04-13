@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -434,6 +435,10 @@ public class RobotContainer {
       this.lastAlliance = alliance.get();
       Field2d.getInstance().updateAlliance(this.lastAlliance);
     }
+  }
+
+  public void setPathFollowingTargetPose(Pose2d pose) {
+    AutonomousCommandsFactory.getInstance().setPathFollowingTargetPose(pose);
   }
 
   public void periodic() {
