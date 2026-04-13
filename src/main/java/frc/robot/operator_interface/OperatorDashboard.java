@@ -1,6 +1,9 @@
 package frc.robot.operator_interface;
 
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 
@@ -44,7 +47,28 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);
 
-  public OperatorDashboard() {}
+  public final LoggedTunableBoolean startPracticeMatch =
+      new LoggedTunableBoolean("operatorDashboard/Start Practice Match", false, true);
+
+  public final LoggedTunableBoolean pausePracticeMatch =
+      new LoggedTunableBoolean("operatorDashboard/Pause Practice Match", false, true);
+
+  public final LoggedTunableBoolean resetPracticeMatch =
+      new LoggedTunableBoolean("operatorDashboard/Reset Practice Match", false, true);
+
+  private static final double MATCH_TIME_SECONDS = 160;
+  private double practiceMatchStartTime = -1.0;
+  private double pausedRemainingTime = 0.0;
+  private boolean isTimerRunning = false;
+  private final DoublePublisher timerPublisher;
+
+  public OperatorDashboard() {
+    // Publish timer value to NetworkTables for Elastic to display
+    timerPublisher =
+        NetworkTableInstance.getDefault()
+            .getDoubleTopic("/SmartDashboard/Practice Match Timer")
+            .publish();
+  }
 
   @Override
   public Trigger getPassToggle() {
@@ -94,5 +118,58 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getSlowShooterForPitTest() {
     return new Trigger(() -> slowShooterForPitTest.get());
+  }
+
+  @Override
+  public Trigger getStartPracticeMatchTrigger() {
+    return new Trigger(() -> startPracticeMatch.get());
+  }
+
+  @Override
+  public Trigger getPausePracticeMatchTrigger() {
+    return new Trigger(() -> pausePracticeMatch.get());
+  }
+
+  @Override
+  public Trigger getResetPracticeMatchTrigger() {
+    return new Trigger(() -> resetPracticeMatch.get());
+  }
+
+  public void updateTimer() {
+    if (!isTimerRunning) {
+      timerPublisher.set(pausedRemainingTime);
+      return;
+    }
+
+    double elapsed = Timer.getFPGATimestamp() - practiceMatchStartTime;
+    double remaining = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
+    timerPublisher.set(remaining);
+
+    if (remaining <= 0.0) {
+      isTimerRunning = false;
+      pausedRemainingTime = 0.0;
+    }
+  }
+
+  public void startTimer() {
+    if (!isTimerRunning) {
+      practiceMatchStartTime =
+          Timer.getFPGATimestamp() - (MATCH_TIME_SECONDS - pausedRemainingTime);
+      isTimerRunning = true;
+    }
+  }
+
+  public void pauseTimer() {
+    if (isTimerRunning) {
+      double elapsed = Timer.getFPGATimestamp() - practiceMatchStartTime;
+      pausedRemainingTime = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
+      isTimerRunning = false;
+    }
+  }
+
+  public void resetTimer() {
+    isTimerRunning = false;
+    pausedRemainingTime = MATCH_TIME_SECONDS;
+    timerPublisher.set(MATCH_TIME_SECONDS);
   }
 }

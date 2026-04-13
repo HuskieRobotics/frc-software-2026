@@ -212,4 +212,17 @@ public interface OperatorInterface {
   public default Trigger getCheckForFaults() {
     return new Trigger(() -> false);
   }
+
+  // Practice Match Timer
+  public default Trigger getStartPracticeMatchTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getPausePracticeMatchTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getResetPracticeMatchTrigger() {
+    return new Trigger(() -> false);
+  }
 }

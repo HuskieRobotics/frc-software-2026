@@ -40,6 +40,7 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.SavannaRobotConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
+import frc.robot.operator_interface.OperatorDashboard;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperIO;
@@ -449,5 +450,22 @@ public class RobotContainer {
     // during a match, this would be the first opportunity to check the alliance color based on FMS
     // data.
     this.checkAllianceColor();
+  }
+
+  public void teleopPeriodic() {
+    // Handle practice match timer controls
+    if (oi instanceof OperatorDashboard) {
+      OperatorDashboard dashboard = (OperatorDashboard) oi;
+      if (dashboard.startPracticeMatch.get()) {
+        dashboard.startTimer();
+      }
+      if (dashboard.pausePracticeMatch.get()) {
+        dashboard.pauseTimer();
+      }
+      if (dashboard.resetPracticeMatch.get()) {
+        dashboard.resetTimer();
+      }
+      dashboard.updateTimer();
+    }
   }
 }

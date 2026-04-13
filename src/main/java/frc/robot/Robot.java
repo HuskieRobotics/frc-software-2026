@@ -340,6 +340,12 @@ public class Robot extends LoggedRobot {
     robotContainer.teleopInit();
   }
 
+  /** This method is invoked periodically during the teleop period. */
+  @Override
+  public void teleopPeriodic() {
+    robotContainer.teleopPeriodic();
+  }
+
   /** This method is invoked at the start of the test period. */
   @Override
   public void testInit() {

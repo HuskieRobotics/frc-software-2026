@@ -559,6 +559,54 @@
           }
         ]
       }
+    },
+    {
+      "name": "Practice Match",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Start/Pause Timer",
+            "x": 16.0,
+            "y": 16.0,
+            "width": 240.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Practice Match Timer Running",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Reset Timer",
+            "x": 256.0,
+            "y": 16.0,
+            "width": 240.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Practice Match Timer Reset",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Practice Match Timer",
+            "x": 16.0,
+            "y": 432.0,
+            "width": 300.0,
+            "height": 128.0,
+            "type": "Large Number Display",
+            "properties": {
+              "topic": "/SmartDashboard/Practice Match Timer",
+              "period": 0.05,
+              "data_type": "double",
+              "format": "%5.1f"
+            }
+          }
+        ]
+      }
     }
   ]
 }
