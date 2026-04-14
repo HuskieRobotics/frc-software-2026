@@ -106,9 +106,6 @@ public class AutonomousCommandsFactory {
         rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
-        "Left Support Sweep", leftSupportSweep(drivetrain, hopper, intake, shooter, shooterModes));
-
-    autoChooser.addOption(
         "Outpost and Depot", outpostAndDepot(drivetrain, hopper, intake, shooter, shooterModes));
 
     /************ Start Point ************
@@ -581,21 +578,15 @@ public class AutonomousCommandsFactory {
         secondSlowToTrench);
   }
 
-  private Command leftSupportSweep(
+  private Command getRightFarHubSupportSweep(
+      PathPlannerPath farSweep,
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
-      Shooter shooter,
-      ShooterModes shooterModes) {
-    PathPlannerPath firstSweepToDepot;
-    PathPlannerPath intakeDepot;
-    PathPlannerPath leaveDepot;
-    final Pose2d startingPose;
+      Shooter shooter) {
+    Pose2d startingPose;
     try {
-      firstSweepToDepot = PathPlannerPath.fromPathFile("L Support Collect");
-      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
-      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
-      startingPose = firstSweepToDepot.getStartingHolonomicPose().orElseThrow();
+      startingPose = farSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
@@ -603,18 +594,174 @@ public class AutonomousCommandsFactory {
     }
 
     return Commands.sequence(
-            // shoot preloads
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             intake.getDeployAndStartInAutoCommand(),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
             Commands.runOnce(hopper::stop, hopper),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(firstSweepToDepot),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(farSweep)),
+            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command getLeftHubSupportSweep(
+      PathPlannerPath hubSweep,
+      PathPlannerPath intakeDepot,
+      PathPlannerPath leaveDepot,
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter) {
+    Pose2d startingPose;
+    try {
+      startingPose = hubSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            intake.getDeployAndStartInAutoCommand(),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(hubSweep)),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(4.0),
             Commands.runOnce(hopper::stop, hopper),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(intakeDepot),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(intakeDepot)),
+            AutoBuilder.followPath(leaveDepot),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command getRightFarHubWide(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath farSweep;
+    try {
+      farSweep = PathPlannerPath.fromPathFile("R Support to Far Hub Wide");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getRightFarHubSupportSweep(farSweep, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command getRightFarHubNarrow(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath farSweep;
+    try {
+      farSweep = PathPlannerPath.fromPathFile("R Support to Far Hub Narrow");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getRightFarHubSupportSweep(farSweep, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command getLeftFarHubWide(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath hubSweep;
+    PathPlannerPath intakeDepot;
+    PathPlannerPath leaveDepot;
+    try {
+      hubSweep = PathPlannerPath.fromPathFile("L Support to Far Hub Wide");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftHubSupportSweep(
+        hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command getLeftFarHubNarrow(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath hubSweep;
+    PathPlannerPath intakeDepot;
+    PathPlannerPath leaveDepot;
+    try {
+      hubSweep = PathPlannerPath.fromPathFile("L Support to Far Hub Narrow");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftHubSupportSweep(
+        hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command getLeftCloseHubBait(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath hubSweep;
+    try {
+      hubSweep = PathPlannerPath.fromPathFile("L Support Collect and Bait");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftHubSupportSweep(hubSweep, null, null, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command getLeftMidSupport(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath toMid;
+    PathPlannerPath midSweepToDepot;
+    PathPlannerPath leaveDepot;
+    PathPlannerPath intakeDepot;
+    final Pose2d startingPose;
+    try {
+      toMid = PathPlannerPath.fromPathFile("L Support Delayed to Mid");
+      midSweepToDepot = PathPlannerPath.fromPathFile("L Support Mid to Depot");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = toMid.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            intake.getDeployAndStartInAutoCommand(),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(1.5),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
+            Commands.waitSeconds(1.0),
+            AutoBuilder.followPath(midSweepToDepot),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(4.0),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(intakeDepot)),
             AutoBuilder.followPath(leaveDepot),
             getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(

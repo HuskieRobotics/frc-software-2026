@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0861477272727271,
-        "y": 5.921147727272728
+        "x": 0.8828674698795178,
+        "y": 6.1003373493975905
       },
       "isLocked": false,
       "linkedName": "inside depot"
     },
     {
       "anchor": {
-        "x": 2.271431818181818,
-        "y": 5.405806818181818
+        "x": 1.8772891566265058,
+        "y": 6.581156626506024
       },
       "prevControl": {
-        "x": 1.591181818181818,
-        "y": 5.828386363636364
+        "x": 1.560385542168675,
+        "y": 6.450024096385542
       },
       "nextControl": null,
       "isLocked": false,
@@ -56,7 +56,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.82634202955578
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Outpost and Depot",
