@@ -4,12 +4,12 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringArrayPublisher;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * OperatorDashboard is a class that implements the OperatorInterface. It is not a joystick,
@@ -81,6 +81,7 @@ public class OperatorDashboard implements OperatorInterface {
   private final StringPublisher activeAlliancePublisher;
   private final StringPublisher autosWinnerPublisher;
   private final StringPublisher selectedAlliancePublisher;
+  private final StringSubscriber selectedAllianceSubscriber;
   private final StringArrayPublisher selectedAllianceOptionsPublisher;
 
   public OperatorDashboard() {
@@ -91,11 +92,15 @@ public class OperatorDashboard implements OperatorInterface {
     activeAlliancePublisher = nt.getStringTopic("/SmartDashboard/Active Alliance").publish();
     autosWinnerPublisher = nt.getStringTopic("/SmartDashboard/Autos Winner").publish();
     selectedAlliancePublisher = nt.getStringTopic("/SmartDashboard/Selected Alliance").publish();
-    selectedAllianceOptionsPublisher = nt.getStringArrayTopic("/SmartDashboard/Selected Alliance/options").publish();
+    selectedAllianceSubscriber =
+        nt.getStringTopic("/SmartDashboard/Selected Alliance").subscribe("Red");
+    selectedAllianceOptionsPublisher =
+        nt.getStringArrayTopic("/SmartDashboard/Selected Alliance/options").publish();
 
+    // Set options FIRST before setting the selected value
+    selectedAllianceOptionsPublisher.set(new String[] {"Red", "Blue"});
     resetTimer();
     updateSelectedAllianceDisplay();
-    selectedAllianceOptionsPublisher.set(new String[] {"Red", "Blue"});
   }
 
   @Override
@@ -167,142 +172,144 @@ public class OperatorDashboard implements OperatorInterface {
     boolean currentRunningState = practiceMatchTimerRunning.get();
     boolean currentResetState = practiceMatchTimerReset.get();
 
+    // Read Elastic's alliance selection and update our internal state
+    String elasticSelection = selectedAllianceSubscriber.get();
+    if ("Red".equals(elasticSelection) || "Blue".equals(elasticSelection)) {
+      selectedAlliance = elasticSelection;
+    }
+
+    // ALWAYS publish selected alliance every cycle (keeps Elastic happy)
+    selectedAlliancePublisher.set(selectedAlliance);
+    selectedAllianceOptionsPublisher.set(new String[] {"Red", "Blue"});
+
+    // Handle start/stop button edge detection
     if (currentRunningState && !lastTimerRunningState) {
       if (isTimerRunning) {
         pauseTimer();
       } else {
-        startTimer();
+        // Start timer - capture timestamp ONCE and use it for everything
+        double now = Timer.getFPGATimestamp();
+        practiceMatchStartTime = now - (MATCH_TIME_SECONDS - pausedRemainingTime);
+        isTimerRunning = true;
+        // Immediately calculate and update with current time - no delay
+        double elapsed = now - practiceMatchStartTime;
+        double remaining = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
+        timerPublisher.set(remaining);
+        updateShiftDisplay(remaining, true);
+        lastTimerRunningState = currentRunningState;
+        return;
       }
     }
     lastTimerRunningState = currentRunningState;
 
+    // Handle reset button edge detection
     if (currentResetState && !lastTimerResetState) {
       resetTimer();
     }
     lastTimerResetState = currentResetState;
 
+    // If timer is paused, display paused time
     if (!isTimerRunning) {
       timerPublisher.set(pausedRemainingTime);
-      updateShiftDisplay(pausedRemainingTime);
+      updateShiftDisplay(pausedRemainingTime, false);
       return;
     }
 
-    double elapsed = Math.abs(Timer.getFPGATimestamp() - practiceMatchStartTime);
-    double remaining = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
-    timerPublisher.set(remaining);
+    // Timer is running - calculate remaining time
+    double now = Timer.getFPGATimestamp();
+    double elapsed = now - practiceMatchStartTime;
+    double remaining = MATCH_TIME_SECONDS - elapsed;
 
-    updateShiftDisplay(remaining);
-
+    // Check for auto end
     if (!hasAutoEnded && remaining <= AUTO_END_TIME) {
       hasAutoEnded = true;
       isRedAlliance = random.nextBoolean();
-      String autoWinner = isRedAlliance ? "Red" : "Blue";
-      autosWinnerPublisher.set(autoWinner);
+      autosWinnerPublisher.set(isRedAlliance ? "Red" : "Blue");
     }
 
+    // Check for match end
     if (remaining <= 0.0) {
+      remaining = 0.0;
       isTimerRunning = false;
       pausedRemainingTime = 0.0;
     }
+
+    timerPublisher.set(remaining);
+    updateShiftDisplay(remaining, true);
   }
 
-  private void updateShiftDisplay(double remainingTime) {
+  private void updateShiftDisplay(double remainingTime, boolean timerRunning) {
     String shiftName;
-    double shiftEndTime;
-    
-    if(remainingTime > 0 && remainingTime <= AUTO_END_TIME) {
+    double shiftLowerBound;
+
+    if (remainingTime > AUTO_END_TIME) {
       shiftName = "AUTO";
-      shiftEndTime = AUTO_END_TIME;
-    }
-    else if (remainingTime > AUTO_END_TIME && remainingTime <= TRANSITION_END_TIME) {
+      shiftLowerBound = AUTO_END_TIME;
+    } else if (remainingTime > TRANSITION_END_TIME) {
       shiftName = "TRANSITION";
-      shiftEndTime = TRANSITION_END_TIME;
-    } else if (remainingTime > TRANSITION_END_TIME && remainingTime <= SHIFT_1_END_TIME) {
+      shiftLowerBound = TRANSITION_END_TIME;
+    } else if (remainingTime > SHIFT_1_END_TIME) {
       shiftName = "SHIFT 1";
-      shiftEndTime = SHIFT_1_END_TIME;
-    } else if (remainingTime > SHIFT_1_END_TIME && remainingTime <= SHIFT_2_END_TIME) {
+      shiftLowerBound = SHIFT_1_END_TIME;
+    } else if (remainingTime > SHIFT_2_END_TIME) {
       shiftName = "SHIFT 2";
-      shiftEndTime = SHIFT_2_END_TIME;
-    } else if (remainingTime > SHIFT_2_END_TIME && remainingTime <= SHIFT_3_END_TIME) {
+      shiftLowerBound = SHIFT_2_END_TIME;
+    } else if (remainingTime > SHIFT_3_END_TIME) {
       shiftName = "SHIFT 3";
-      shiftEndTime = SHIFT_3_END_TIME;
-    } else if (remainingTime > SHIFT_3_END_TIME && remainingTime <= SHIFT_4_END_TIME) {
+      shiftLowerBound = SHIFT_3_END_TIME;
+    } else if (remainingTime > SHIFT_4_END_TIME) {
       shiftName = "SHIFT 4";
-      shiftEndTime = SHIFT_4_END_TIME;
-    } else if (remainingTime > SHIFT_4_END_TIME && remainingTime <= END_GAME_END_TIME) {
+      shiftLowerBound = SHIFT_4_END_TIME;
+    } else if (remainingTime > END_GAME_END_TIME) {
       shiftName = "END GAME";
-      shiftEndTime = END_GAME_END_TIME;
+      shiftLowerBound = END_GAME_END_TIME;
     } else {
       shiftName = "MATCH ENDED";
-      shiftEndTime = 0;
+      shiftLowerBound = 0;
     }
 
-    double shiftTimeElapsed = getShiftStartBoundary(shiftName) - remainingTime;
-    double shiftTimeRemaining = shiftEndTime - shiftTimeElapsed;
+    double shiftTimeRemaining = remainingTime - shiftLowerBound;
+    int totalSeconds = (int) Math.round(Math.max(0.0, shiftTimeRemaining));
+    int minutes = totalSeconds / 60;
+    int secs = totalSeconds % 60;
 
     currentShiftPublisher.set(shiftName);
-    shiftTimerPublisher.set(formatTime(Math.max(0.0, shiftTimeRemaining)));
+    shiftTimerPublisher.set(String.format("%02d:%02d", minutes, secs));
+
+    // Update active alliance display
     updateActiveAlliance(remainingTime);
   }
 
-  private String formatTime(double seconds) {
-    int totalSeconds = (int) Math.round(seconds);
-    int minutes = (int) TimeUnit.SECONDS.toMinutes(totalSeconds);
-    int secs = totalSeconds - (minutes * 60);
-    return String.format("%02d:%02d", minutes, secs);
-  }
-
-  private double getShiftStartBoundary(String shiftName) {
-    switch (shiftName) {
-      case "AUTO":
-        return MATCH_TIME_SECONDS;
-      case "TRANSITION":
-        return AUTO_END_TIME + 1;
-      case "SHIFT 1":
-        return TRANSITION_END_TIME + 1;
-      case "SHIFT 2":
-        return SHIFT_1_END_TIME + 1;
-      case "SHIFT 3":
-        return SHIFT_2_END_TIME + 1;
-      case "SHIFT 4":
-        return SHIFT_3_END_TIME + 1;
-      case "END GAME":
-        return SHIFT_4_END_TIME + 1;
-      default:
-        return 0;
-    }
-  }
-
   private void updateActiveAlliance(double remainingTime) {
-    if (!hasAutoEnded) {
-
+    // Before auto ends or during transition, show both alliances
+    if (!hasAutoEnded || remainingTime > TRANSITION_END_TIME) {
       activeAlliancePublisher.set("Both");
       return;
     }
 
-    boolean redActive;
-
-    if (remainingTime > TRANSITION_END_TIME) {
-      activeAlliancePublisher.set("Both");
-      return;
-    } else if (remainingTime > SHIFT_1_END_TIME) {
-      redActive = !isRedAlliance;
+    // Determine which alliance is active for this shift
+    boolean redIsActive;
+    if (remainingTime > SHIFT_1_END_TIME) {
+      redIsActive = !isRedAlliance;
     } else if (remainingTime > SHIFT_2_END_TIME) {
-      redActive = isRedAlliance;
+      redIsActive = isRedAlliance;
     } else if (remainingTime > SHIFT_3_END_TIME) {
-      redActive = !isRedAlliance;
+      redIsActive = !isRedAlliance;
     } else if (remainingTime > SHIFT_4_END_TIME) {
-      redActive = isRedAlliance;
+      redIsActive = isRedAlliance;
     } else {
       activeAlliancePublisher.set("Both");
       return;
     }
 
+    // Show which alliance is active and mark the user's selected alliance
     boolean userSelectedRed = "Red".equals(selectedAlliance);
-    if (userSelectedRed) {
-      activeAlliancePublisher.set(redActive ? "Red (YOU)" : "Blue");
+    if (redIsActive) {
+      // Red alliance is active
+      activeAlliancePublisher.set(userSelectedRed ? "Red (YOU)" : "Red");
     } else {
-      activeAlliancePublisher.set(redActive ? "Red" : "Blue (YOU)");
+      // Blue alliance is active
+      activeAlliancePublisher.set(userSelectedRed ? "Blue (YOU)" : "Blue");
     }
   }
 
@@ -339,8 +346,7 @@ public class OperatorDashboard implements OperatorInterface {
     hasAutoEnded = false;
     isRedAlliance = true;
     timerPublisher.set(MATCH_TIME_SECONDS);
-    currentShiftPublisher.set("AUTO");
-    shiftTimerPublisher.set(formatTime(AUTO_END_TIME));
+    updateShiftDisplay(MATCH_TIME_SECONDS, false);
     activeAlliancePublisher.set("Both");
     autosWinnerPublisher.set("-");
   }
