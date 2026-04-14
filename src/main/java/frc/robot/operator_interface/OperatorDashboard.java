@@ -2,12 +2,14 @@ package frc.robot.operator_interface;
 
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringArrayPublisher;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OperatorDashboard is a class that implements the OperatorInterface. It is not a joystick,
@@ -17,8 +19,6 @@ import java.util.Random;
  * selected at a time, refer to the 2025 Huskie Robotics code base.
  */
 public class OperatorDashboard implements OperatorInterface {
-  // the readAndWrite argument must be true or else the dashboard will not work when tuning mode is
-  // disabled.
   public final LoggedTunableBoolean enableVision =
       new LoggedTunableBoolean("operatorDashboard/Enable Vision", true, true);
 
@@ -49,16 +49,13 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);
 
-  // Practice match controls
   public final LoggedTunableBoolean practiceMatchTimerRunning =
       new LoggedTunableBoolean("operatorDashboard/Practice Match Timer Running", false, true);
 
   public final LoggedTunableBoolean practiceMatchTimerReset =
       new LoggedTunableBoolean("operatorDashboard/Practice Match Timer Reset", false, true);
 
-  public final LoggedTunableBoolean selectedTeam =
-      new LoggedTunableBoolean(
-          "operatorDashboard/Selected Team (true=Red, false=Blue)", false, true);
+  private String selectedAlliance = "Red";
 
   private static final double MATCH_TIME_SECONDS = 160;
   private static final double AUTO_END_TIME = 140;
@@ -78,23 +75,28 @@ public class OperatorDashboard implements OperatorInterface {
   private boolean isRedAlliance = false;
   private final Random random = new Random();
 
-  // Publishers
   private final DoublePublisher timerPublisher;
-  private final DoublePublisher shiftTimerPublisher;
+  private final StringPublisher shiftTimerPublisher;
   private final StringPublisher currentShiftPublisher;
   private final StringPublisher activeAlliancePublisher;
   private final StringPublisher autosWinnerPublisher;
+  private final StringPublisher selectedAlliancePublisher;
+  private final StringArrayPublisher selectedAllianceOptionsPublisher;
 
   public OperatorDashboard() {
     NetworkTableInstance nt = NetworkTableInstance.getDefault();
     timerPublisher = nt.getDoubleTopic("/SmartDashboard/Practice Match Timer").publish();
-    shiftTimerPublisher = nt.getDoubleTopic("/SmartDashboard/Shift Timer").publish();
+    shiftTimerPublisher = nt.getStringTopic("/SmartDashboard/Shift Timer").publish();
     currentShiftPublisher = nt.getStringTopic("/SmartDashboard/Current Shift").publish();
     activeAlliancePublisher = nt.getStringTopic("/SmartDashboard/Active Alliance").publish();
     autosWinnerPublisher = nt.getStringTopic("/SmartDashboard/Autos Winner").publish();
+    selectedAlliancePublisher = nt.getStringTopic("/SmartDashboard/Selected Alliance").publish();
+    selectedAllianceOptionsPublisher =
+        nt.getStringArrayTopic("/SmartDashboard/Selected Alliance/options").publish();
 
-    // Initialize displays
     resetTimer();
+    updateSelectedAllianceDisplay();
+    selectedAllianceOptionsPublisher.set(new String[] {"Red", "Blue"});
   }
 
   @Override
@@ -166,7 +168,6 @@ public class OperatorDashboard implements OperatorInterface {
     boolean currentRunningState = practiceMatchTimerRunning.get();
     boolean currentResetState = practiceMatchTimerReset.get();
 
-    // Detect rising edge for start/pause button
     if (currentRunningState && !lastTimerRunningState) {
       if (isTimerRunning) {
         pauseTimer();
@@ -176,13 +177,11 @@ public class OperatorDashboard implements OperatorInterface {
     }
     lastTimerRunningState = currentRunningState;
 
-    // Detect rising edge for reset button
     if (currentResetState && !lastTimerResetState) {
       resetTimer();
     }
     lastTimerResetState = currentResetState;
 
-    // Update timer display
     if (!isTimerRunning) {
       timerPublisher.set(pausedRemainingTime);
       updateShiftDisplay(pausedRemainingTime);
@@ -193,10 +192,8 @@ public class OperatorDashboard implements OperatorInterface {
     double remaining = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
     timerPublisher.set(remaining);
 
-    // Update shift information
     updateShiftDisplay(remaining);
 
-    // Check if auto period has ended - randomly select alliance
     if (!hasAutoEnded && remaining <= AUTO_END_TIME) {
       hasAutoEnded = true;
       isRedAlliance = random.nextBoolean();
@@ -240,15 +237,19 @@ public class OperatorDashboard implements OperatorInterface {
       shiftEndTime = 0;
     }
 
-    // Calculate time elapsed in current shift
     double shiftTimeElapsed = getShiftStartBoundary(shiftName) - remainingTime;
     double shiftTimeRemaining = shiftEndTime - shiftTimeElapsed;
 
     currentShiftPublisher.set(shiftName);
-    shiftTimerPublisher.set(Math.max(0.0, shiftTimeRemaining));
-
-    // Update active alliance based on shift and auto winner
+    shiftTimerPublisher.set(formatTime(Math.max(0.0, shiftTimeRemaining)));
     updateActiveAlliance(remainingTime);
+  }
+
+  private String formatTime(double seconds) {
+    int totalSeconds = (int) Math.round(seconds);
+    int minutes = (int) TimeUnit.SECONDS.toMinutes(totalSeconds);
+    int secs = totalSeconds - (minutes * 60);
+    return String.format("%02d:%02d", minutes, secs);
   }
 
   private double getShiftStartBoundary(String shiftName) {
@@ -282,7 +283,6 @@ public class OperatorDashboard implements OperatorInterface {
     boolean redActive;
 
     if (remainingTime > TRANSITION_END_TIME) {
-      // Transition shift - both active
       activeAlliancePublisher.set("Both");
       return;
     } else if (remainingTime > SHIFT_1_END_TIME) {
@@ -298,12 +298,23 @@ public class OperatorDashboard implements OperatorInterface {
       return;
     }
 
-    boolean userSelectedRed = selectedTeam.get();
+    boolean userSelectedRed = "Red".equals(selectedAlliance);
     if (userSelectedRed) {
       activeAlliancePublisher.set(redActive ? "Red (YOU)" : "Blue");
     } else {
       activeAlliancePublisher.set(redActive ? "Red" : "Blue (YOU)");
     }
+  }
+
+  public void setSelectedAlliance(String alliance) {
+    if ("Red".equals(alliance) || "Blue".equals(alliance)) {
+      selectedAlliance = alliance;
+      updateSelectedAllianceDisplay();
+    }
+  }
+
+  private void updateSelectedAllianceDisplay() {
+    selectedAlliancePublisher.set(selectedAlliance);
   }
 
   public void startTimer() {
@@ -329,7 +340,7 @@ public class OperatorDashboard implements OperatorInterface {
     isRedAlliance = true;
     timerPublisher.set(MATCH_TIME_SECONDS);
     currentShiftPublisher.set("AUTO");
-    shiftTimerPublisher.set(AUTO_END_TIME);
+    shiftTimerPublisher.set(formatTime(AUTO_END_TIME));
     activeAlliancePublisher.set("Both");
     autosWinnerPublisher.set("-");
   }

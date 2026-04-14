@@ -592,16 +592,17 @@
             }
           },
           {
-            "title": "Selected Team (Red)",
+            "title": "Selected Alliance",
             "x": 16.0,
             "y": 144.0,
             "width": 240.0,
             "height": 128.0,
-            "type": "Toggle Switch",
+            "type": "Split Button Chooser",
             "properties": {
-              "topic": "/Tuning/operatorDashboard/Selected Team (true=Red, false=Blue)",
+              "topic": "/SmartDashboard/Selected Alliance",
               "period": 0.06,
-              "data_type": "boolean"
+              "data_type": "string",
+              "sort_options": false
             }
           },
           {
