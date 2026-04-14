@@ -10,7 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -41,7 +41,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private TalonFX deployerMotor;
 
   // Control requests
-  private VelocityVoltage rollerLeadVelocityRequest = new VelocityVoltage(0).withEnableFOC(false);
+  private VelocityTorqueCurrentFOC rollerLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
   private TorqueCurrentFOC rollerLeadCurrentRequest = new TorqueCurrentFOC(0);
 
   private PositionVoltage deployerPositionRequest = new PositionVoltage(0);
@@ -82,6 +82,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private FlywheelSystemSim rollerSim;
   private ElevatorSystemSim deployerSim;
 
+  private StatusSignal<Current> rollerLeadTorqueCurrentSS;
   private StatusSignal<Voltage> rollerLeadVoltageSS;
   private StatusSignal<AngularVelocity> rollerLeadVelocitySS;
   private StatusSignal<Current> rollerLeadStatorCurrentSS;
@@ -115,6 +116,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     // Initialize Signals
     rollerLeadVoltageSS = rollerMotorLead.getMotorVoltage();
+    rollerLeadTorqueCurrentSS = rollerMotorLead.getTorqueCurrent();
+    rollerLeadTorqueCurrentSS.setUpdateFrequency(1000.0);
     rollerLeadVelocitySS = rollerMotorLead.getVelocity();
     rollerLeadStatorCurrentSS = rollerMotorLead.getStatorCurrent();
     rollerLeadSupplyCurrentSS = rollerMotorLead.getSupplyCurrent();
@@ -135,6 +138,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     // Register with Phoenix6Util for optimized refreshing
     Phoenix6Util.registerSignals(
         true,
+        rollerLeadTorqueCurrentSS,
         rollerLeadVoltageSS,
         rollerLeadVelocitySS,
         rollerLeadStatorCurrentSS,
@@ -195,6 +199,7 @@ public class IntakeIOTalonFX implements IntakeIO {
         connectedRollerLeadDebouncer.calculate(
             BaseStatusSignal.isAllGood(
                 rollerLeadVelocitySS,
+                rollerLeadTorqueCurrentSS,
                 rollerLeadVoltageSS,
                 rollerLeadStatorCurrentSS,
                 rollerLeadTempSS,
@@ -222,6 +227,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollerStatorCurrentLead = rollerLeadStatorCurrentSS.getValueAsDouble();
     inputs.rollerSupplyCurrentLead = rollerLeadSupplyCurrentSS.getValueAsDouble();
     inputs.rollerTempCelsiusLead = rollerLeadTempSS.getValueAsDouble();
+    inputs.rollerTorqueCurrentLead = rollerLeadTorqueCurrentSS.getValueAsDouble();
     inputs.rollerVoltageLead = rollerLeadVoltageSS.getValueAsDouble();
     inputs.rollerReferenceVelocityRPSLead = this.rollerLeadReferenceVelocityRPS;
 
@@ -357,12 +363,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    config.CurrentLimits.SupplyCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerLimit = ROLLER_CONTINUOUS_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerTime = ROLLER_PEAK_CURRENT_DURATION;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = ROLLER_PEAK_CURRENT_LIMIT;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = -ROLLER_PEAK_CURRENT_LIMIT;
 
     config.Feedback.SensorToMechanismRatio = ROLLER_GEAR_RATIO;
 
@@ -374,12 +376,8 @@ public class IntakeIOTalonFX implements IntakeIO {
   private void configRollerMotorLead(TalonFX motor) {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerLimit = ROLLER_CONTINUOUS_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLowerTime = ROLLER_PEAK_CURRENT_DURATION;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = ROLLER_PEAK_CURRENT_LIMIT;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = ROLLER_PEAK_CURRENT_LIMIT;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = -ROLLER_PEAK_CURRENT_LIMIT;
 
     config.Feedback.SensorToMechanismRatio = ROLLER_GEAR_RATIO;
     config.MotorOutput.Inverted =

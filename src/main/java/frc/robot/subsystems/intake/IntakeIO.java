@@ -7,6 +7,7 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     // rollers
+    double rollerTorqueCurrentLead = 0.0;
     double rollerVoltageLead = 0.0;
     double rollerVelocityRPSLead = 0.0;
     double rollerReferenceVelocityRPSLead = 0.0;
