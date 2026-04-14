@@ -597,12 +597,16 @@
             "y": 144.0,
             "width": 240.0,
             "height": 128.0,
-            "type": "Split Button Chooser",
+            "type": "ComboBox Chooser",
             "properties": {
               "topic": "/SmartDashboard/Selected Alliance",
+              "options": [
+                "Red",
+                "Blue"
+              ],
               "period": 0.06,
               "data_type": "string",
-              "sort_options": false
+              "sort_options": true
             }
           },
           {

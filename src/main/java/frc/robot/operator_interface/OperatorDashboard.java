@@ -91,8 +91,7 @@ public class OperatorDashboard implements OperatorInterface {
     activeAlliancePublisher = nt.getStringTopic("/SmartDashboard/Active Alliance").publish();
     autosWinnerPublisher = nt.getStringTopic("/SmartDashboard/Autos Winner").publish();
     selectedAlliancePublisher = nt.getStringTopic("/SmartDashboard/Selected Alliance").publish();
-    selectedAllianceOptionsPublisher =
-        nt.getStringArrayTopic("/SmartDashboard/Selected Alliance/options").publish();
+    selectedAllianceOptionsPublisher = nt.getStringArrayTopic("/SmartDashboard/Selected Alliance/options").publish();
 
     resetTimer();
     updateSelectedAllianceDisplay();
@@ -188,7 +187,7 @@ public class OperatorDashboard implements OperatorInterface {
       return;
     }
 
-    double elapsed = Timer.getFPGATimestamp() - practiceMatchStartTime;
+    double elapsed = Math.abs(Timer.getFPGATimestamp() - practiceMatchStartTime);
     double remaining = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
     timerPublisher.set(remaining);
 
@@ -210,28 +209,29 @@ public class OperatorDashboard implements OperatorInterface {
   private void updateShiftDisplay(double remainingTime) {
     String shiftName;
     double shiftEndTime;
-
-    if (remainingTime > AUTO_END_TIME) {
+    
+    if(remainingTime > 0 && remainingTime <= AUTO_END_TIME) {
       shiftName = "AUTO";
-      shiftEndTime = MATCH_TIME_SECONDS;
-    } else if (remainingTime > TRANSITION_END_TIME) {
-      shiftName = "TRANSITION";
       shiftEndTime = AUTO_END_TIME;
-    } else if (remainingTime > SHIFT_1_END_TIME) {
-      shiftName = "SHIFT 1";
+    }
+    else if (remainingTime > AUTO_END_TIME && remainingTime <= TRANSITION_END_TIME) {
+      shiftName = "TRANSITION";
       shiftEndTime = TRANSITION_END_TIME;
-    } else if (remainingTime > SHIFT_2_END_TIME) {
-      shiftName = "SHIFT 2";
+    } else if (remainingTime > TRANSITION_END_TIME && remainingTime <= SHIFT_1_END_TIME) {
+      shiftName = "SHIFT 1";
       shiftEndTime = SHIFT_1_END_TIME;
-    } else if (remainingTime > SHIFT_3_END_TIME) {
-      shiftName = "SHIFT 3";
+    } else if (remainingTime > SHIFT_1_END_TIME && remainingTime <= SHIFT_2_END_TIME) {
+      shiftName = "SHIFT 2";
       shiftEndTime = SHIFT_2_END_TIME;
-    } else if (remainingTime > SHIFT_4_END_TIME) {
-      shiftName = "SHIFT 4";
+    } else if (remainingTime > SHIFT_2_END_TIME && remainingTime <= SHIFT_3_END_TIME) {
+      shiftName = "SHIFT 3";
       shiftEndTime = SHIFT_3_END_TIME;
-    } else if (remainingTime > END_GAME_END_TIME) {
-      shiftName = "END GAME";
+    } else if (remainingTime > SHIFT_3_END_TIME && remainingTime <= SHIFT_4_END_TIME) {
+      shiftName = "SHIFT 4";
       shiftEndTime = SHIFT_4_END_TIME;
+    } else if (remainingTime > SHIFT_4_END_TIME && remainingTime <= END_GAME_END_TIME) {
+      shiftName = "END GAME";
+      shiftEndTime = END_GAME_END_TIME;
     } else {
       shiftName = "MATCH ENDED";
       shiftEndTime = 0;
@@ -257,17 +257,17 @@ public class OperatorDashboard implements OperatorInterface {
       case "AUTO":
         return MATCH_TIME_SECONDS;
       case "TRANSITION":
-        return AUTO_END_TIME;
+        return AUTO_END_TIME + 1;
       case "SHIFT 1":
-        return TRANSITION_END_TIME;
+        return TRANSITION_END_TIME + 1;
       case "SHIFT 2":
-        return SHIFT_1_END_TIME;
+        return SHIFT_1_END_TIME + 1;
       case "SHIFT 3":
-        return SHIFT_2_END_TIME;
+        return SHIFT_2_END_TIME + 1;
       case "SHIFT 4":
-        return SHIFT_3_END_TIME;
+        return SHIFT_3_END_TIME + 1;
       case "END GAME":
-        return SHIFT_4_END_TIME;
+        return SHIFT_4_END_TIME + 1;
       default:
         return 0;
     }
@@ -328,7 +328,7 @@ public class OperatorDashboard implements OperatorInterface {
   public void pauseTimer() {
     if (isTimerRunning) {
       double elapsed = Timer.getFPGATimestamp() - practiceMatchStartTime;
-      pausedRemainingTime = Math.max(0.0, MATCH_TIME_SECONDS - elapsed);
+      pausedRemainingTime = Math.max(0.0, Math.abs(MATCH_TIME_SECONDS - elapsed));
       isTimerRunning = false;
     }
   }
