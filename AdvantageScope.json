@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 239,
+      "x": 669,
       "y": 30,
-      "width": 1642,
-      "height": 1170,
+      "width": 1340,
+      "height": 1122,
       "state": {
         "sidebar": {
           "width": 381,
@@ -17,8 +17,6 @@
             "/RealOutputs/Vision/1",
             "/RealOutputs/Vision/0",
             "/RealOutputs/CommandsAll",
-            "/Vision/BR",
-            "/Vision/BL",
             "/Tuning/operatorDashboard",
             "/RealOutputs/SystemStatus/Intake",
             "/RealOutputs/SystemStatus/Hopper",
@@ -58,12 +56,10 @@
             "/Vision/BR/AprilTags",
             "/Vision/BR/AprilTags/Frames",
             "/Vision/BL/AprilTags",
-            "/Vision/BL/AprilTags/Frames",
             "/DriverStation/Joystick0",
             "/DriverStation/Joystick0/AxisValues",
             "/ReplayOutputs/ShooterModes",
             "/Phoenix6",
-            "/Phoenix6/TalonFX-26",
             "/Phoenix6/TalonFX-26/PIDPosition",
             "/RealOutputs/Vision/BR",
             "/SystemStats/NTClients/northstar_BR@4",
@@ -71,9 +67,6 @@
             "/NetworkInputs/Vision",
             "/RealOutputs/Vision/BCR",
             "/RealOutputs/Vision/BCL",
-            "/Vision/BCL",
-            "/Vision/BCR",
-            "/Vision/BCR/AprilTags",
             "/Vision/BCL/AprilTags",
             "/Vision/BCR/AprilTags/Frames",
             "/Vision/BCL/AprilTags/Frames",
@@ -95,11 +88,52 @@
             "/RealOutputs/Vision/br old transform/rotation/q",
             "/ReplayOutputs/CommandsAll",
             "/RealOutputs",
-            "/RealOutputs/ShooterModes"
+            "/RealOutputs/ShooterModes",
+            "/ReplayOutputs/Vision",
+            "/ReplayOutputs/Vision/BCR",
+            "/Phoenix6/TalonFX-42",
+            "/Vision/BCR/ObjDetect/Frames",
+            "/Vision/BCR/AprilTags/Frames/0",
+            "/Vision/BL/AprilTags/Timestamps",
+            "/RealOutputs/Vision",
+            "/AdvantageKit",
+            "/AdvantageKit/Vision",
+            "/AdvantageKit/Vision/BCR",
+            "/AdvantageKit/Vision/BCR/AprilTags/Frames",
+            "/AdvantageKit/Vision/BCR/PoseObservations",
+            "/AdvantageKit/Vision/BL",
+            "/AdvantageKit/Vision/BL/PoseObservations",
+            "/AdvantageKit/Vision/BL/AprilTags",
+            "/AdvantageKit/Vision/BCR/AprilTags",
+            "/northstar_BCR/output",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/Vision",
+            "/AdvantageKit/RealOutputs/Vision/BL",
+            "/AdvantageKit/RealOutputs/Vision/BCR",
+            "/AdvantageKit/RealOutputs/Vision/BCL",
+            "/AdvantageKit/RealOutputs/Vision/BCR/RejectedTagPoses",
+            "/AdvantageKit/RealOutputs/Vision/BCR/RobotPoses",
+            "/AdvantageKit/RealOutputs/Vision/BCR/RobotPosesAccepted",
+            "/AdvantageKit/RealOutputs/Vision/BCR/RobotPosesRejected",
+            "/AdvantageKit/Vision/BCR/ObjDetect",
+            "/northstar_BL/output",
+            "/northstar_BL/output/observations",
+            "/AdvantageKit/Vision/BCR/AprilTags/Frames/0",
+            "/Vision/BL/AprilTags/Frames/0",
+            "/Vision/BL/AprilTags/Frames",
+            "/northstar_power/output",
+            "/northstar_BR",
+            "/northstar_BL",
+            "/northstar_BCR",
+            "/northstar_BCL",
+            "/northstar_BR/output",
+            "/northstar_BCR/output/observations",
+            "/Vision/BCR",
+            "/Vision/BCR/AprilTags"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 6,
           "tabs": [
             {
               "type": 0,
@@ -549,7 +583,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/DeployerReferencePositionRot",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#d993aa",
                       "size": "normal"
@@ -559,7 +593,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/DeployerAngularPositionRot",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#5f4528",
                       "size": "normal"
@@ -571,7 +605,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/DeployerStatorCurrent",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#3b875a",
                       "size": "normal"
@@ -591,7 +625,7 @@
                     "type": "stepped",
                     "logKey": "/Intake/DeployerVoltage",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -642,7 +676,29 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "/Intake/RollerVelocityRPS",
+                    "logKey": "/Intake/RollerVelocityRPSLead",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Intake/RollerReferenceVelocityRPSLead",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Intake/RollerStatorCurrentLead",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -652,7 +708,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "/Intake/RollerReferenceVelocityRPS",
+                    "logKey": "/Intake/RollerSupplyCurrentLead",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -661,38 +717,7 @@
                     }
                   }
                 ],
-                "rightSources": [
-                  {
-                    "type": "stepped",
-                    "logKey": "/Intake/RollerStatorCurrent",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#80588e",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "stepped",
-                    "logKey": "/Intake/RollerSupplyCurrent",
-                    "logType": "Number",
-                    "visible": false,
-                    "options": {
-                      "color": "#e48b32",
-                      "size": "normal"
-                    }
-                  }
-                ],
                 "discreteSources": [
-                  {
-                    "type": "stripes",
-                    "logKey": "/Intake/RollerConnected",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#2b66a2"
-                    }
-                  },
                   {
                     "type": "stripes",
                     "logKey": "/SystemStats/BrownedOut",
@@ -709,6 +734,24 @@
                     "visible": true,
                     "options": {
                       "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Intake/RollerConnectedLead",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Intake/RollerConnectedFollower",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
                     }
                   }
                 ],
@@ -790,7 +833,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerVelocityRPS",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#3b875a",
                       "size": "normal"
@@ -800,7 +843,7 @@
                     "type": "stepped",
                     "logKey": "/Hopper/SpindexerReferenceVelocityRPS",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -921,7 +964,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/FlywheelLeadVelocityRPS",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -931,7 +974,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/FlywheelLeadReferenceVelocityRPS",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
@@ -983,7 +1026,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/HoodPositionRot",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#af2437",
                       "size": "normal"
@@ -993,7 +1036,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/HoodReferencePositionRot",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#af2437",
                       "size": "normal"
@@ -1494,7 +1537,7 @@
                     "type": "stepped",
                     "logKey": "/RealOutputs/Drivetrain/ConstrainPoseToFieldCount",
                     "logType": "Number",
-                    "visible": false,
+                    "visible": true,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
