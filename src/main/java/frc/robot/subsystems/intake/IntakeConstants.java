@@ -6,7 +6,8 @@ public class IntakeConstants {
 
   public static final String SUBSYSTEM_NAME = "Intake";
 
-  public static final int ROLLER_MOTOR_ID = 42;
+  public static final int ROLLER_LEAD_MOTOR_ID = 42;
+  public static final int ROLLER_FOLLOWER_MOTOR_ID = 34;
   public static final int DEPLOYER_MOTOR_ID = 33;
 
   public static final double DEPLOYER_KP = 23.0;
@@ -44,12 +45,13 @@ public class IntakeConstants {
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
 
-  public static final double ROLLER_KP = 0.4; // 2.675
+  public static final double ROLLER_KP = 1.25;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 0.4; // 5.8
-  public static final double ROLLER_KV = 0.195;
+  public static final double ROLLER_KS = 5.5;
+  public static final double ROLLER_KV = 0.06;
   public static final double ROLLER_KA = 0;
+  public static final double ROLLER_MOMENT_OF_INERTIA = 0.01;
 
   // this is the gear ratio for the wheels; the roller, which is mechanically linked to the wheel
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
@@ -62,9 +64,7 @@ public class IntakeConstants {
   public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
   public static final double ROLLER_VELOCITY_TOLERANCE_RPS = 3.0;
 
-  public static final double ROLLER_PEAK_CURRENT_LIMIT = 80.0;
-  public static final double ROLLER_CONTINUOUS_CURRENT_LIMIT = 60.0;
-  public static final double ROLLER_PEAK_CURRENT_DURATION = 0.1;
+  public static final double ROLLER_PEAK_CURRENT_LIMIT = 60.0;
 
   public static final double DEPLOYER_HOLD_POSITION_CURRENT_LIMIT = 10;
 
