@@ -736,15 +736,19 @@ public class AutonomousCommandsFactory {
   private Command getLeftCloseHubBait(
       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
     PathPlannerPath hubSweep;
+    PathPlannerPath intakeDepot;
+    PathPlannerPath leaveDepot;
     try {
       hubSweep = PathPlannerPath.fromPathFile("L Support Collect and Bait");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
       return Commands.none();
     }
 
-    return getLeftHubSupportSweep(hubSweep, null, null, drivetrain, hopper, intake, shooter);
+    return getLeftHubSupportSweep(hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
   }
 
   private Command getLeftMidSupport(
