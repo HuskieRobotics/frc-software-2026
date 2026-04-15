@@ -454,6 +454,11 @@ public class SavannaRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getDriveToPoseDriveXKP() {
+    return DRIVE_TO_POSE_DRIVE_KP;
+  }
+
+  @Override
   public double getDriveToPoseDriveYKP() {
     return DRIVE_TO_POSE_DRIVE_KP;
   }
