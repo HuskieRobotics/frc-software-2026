@@ -44,11 +44,11 @@ public class IntakeConstants {
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
 
-  public static final double ROLLER_KP = 2.675; // FIXME: tune
+  public static final double ROLLER_KP = 1.25;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 5.8; // FIXME: tune
-  public static final double ROLLER_KV = 0.195; // FIXME: tune
+  public static final double ROLLER_KS = 5.5;
+  public static final double ROLLER_KV = 0.06;
   public static final double ROLLER_KA = 0;
   public static final double ROLLER_MOMENT_OF_INERTIA = 0.01;
 
