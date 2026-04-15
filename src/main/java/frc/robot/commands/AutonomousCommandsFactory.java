@@ -7,7 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
-import com.pathplanner.lib.util.PathPlannerLogging;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -28,6 +28,7 @@ import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterModes;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -44,6 +45,8 @@ public class AutonomousCommandsFactory {
   private Timer hopperUnloadTimer;
   private Timer matchTimer;
   private Pose2d currentTargetPose;
+  private final Debouncer fallenBehindPathDebouncer =
+      new Debouncer(0.02); // FIXME: increase time when testing on field
 
   /**
    * Returns the singleton instance of this class.
@@ -298,40 +301,49 @@ public class AutonomousCommandsFactory {
     return AutoBuilder.followPath(path)
         .until(() -> fallenBehindPath())
         .andThen(
-            Commands.sequence(
-                new DriveToPose(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNeutralZoneBumpPose(side),
-                    CrossSubsystemsCommandsFactory.xController,
-                    CrossSubsystemsCommandsFactory.yController,
-                    CrossSubsystemsCommandsFactory.thetaController,
-                    new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
-                    true,
-                    b -> {},
-                    p -> {},
-                    5.0),
-                new DriveToPose(
-                    drivetrain,
-                    () -> Field2d.getInstance().getAllianceZoneBumpPose(side),
-                    CrossSubsystemsCommandsFactory.xController,
-                    CrossSubsystemsCommandsFactory.yController,
-                    CrossSubsystemsCommandsFactory.thetaController,
-                    new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
-                    true,
-                    b -> {},
-                    p -> {},
-                    5.0)));
+            Commands.either(
+                Commands.sequence(
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNeutralZoneBumpPose(side),
+                        CrossSubsystemsCommandsFactory.xController,
+                        CrossSubsystemsCommandsFactory.yController,
+                        CrossSubsystemsCommandsFactory.thetaController,
+                        new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
+                        true,
+                        b -> {},
+                        p -> {},
+                        5.0),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getAllianceZoneBumpPose(side),
+                        CrossSubsystemsCommandsFactory.xController,
+                        CrossSubsystemsCommandsFactory.yController,
+                        CrossSubsystemsCommandsFactory.thetaController,
+                        new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
+                        true,
+                        b -> {},
+                        p -> {},
+                        5.0)),
+                Commands.none(),
+                this::fallenBehindPath));
   }
 
   private boolean fallenBehindPath() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    PathPlannerLogging.logTargetPose(pose);
+    // PathPlannerLogging.logTargetPose(pose);
     Transform2d diff = pose.minus(getPathFollowingTargetPose());
     double dist = Math.hypot(diff.getX(), diff.getY());
 
     // check match timer to make sure we don't trigger this if the target pose isn't updated yet
-    return matchTimer.get() > 0.5 && dist > 2.0;
+    boolean fallenBehind =
+        fallenBehindPathDebouncer.calculate(matchTimer.get() > 0.5 && dist > 2.0);
+
+    Logger.recordOutput("Auto/FallenBehindPath/Difference", dist);
+    Logger.recordOutput("Auto/FallenBehindPath/FallenBehind", fallenBehind);
+
+    return fallenBehind;
   }
 
   private Command getUnloadHopperCommand(
@@ -438,25 +450,27 @@ public class AutonomousCommandsFactory {
       PathPlannerPath firstSweep,
       PathPlannerPath slowToTrench,
       PathPlannerPath secondSweep,
-      PathPlannerPath secondSlowToTrench) {
+      PathPlannerPath secondSlowToTrench,
+      Side side) {
 
     return Commands.sequence(
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
+                intake.getDeployAndStartInAutoCommand(),
+                followCollisionResistantPath(firstSweep, drivetrain, side)),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
             Commands.deadline(
-                AutoBuilder.followPath(slowToTrench),
+                followCollisionResistantPath(slowToTrench, drivetrain, side),
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 getAutoJostleCommand(intake, shooter)),
             Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
             Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(secondSweep),
+            followCollisionResistantPath(secondSweep, drivetrain, side),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
             Commands.parallel(
-                AutoBuilder.followPath(secondSlowToTrench),
+                followCollisionResistantPath(secondSlowToTrench, drivetrain, side),
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 Commands.sequence(
                     Commands.waitSeconds(1.0),
@@ -557,7 +571,8 @@ public class AutonomousCommandsFactory {
         firstSweep,
         slowToTrench,
         secondSweep,
-        secondSlowToTrench);
+        secondSlowToTrench,
+        Side.LEFT);
   }
 
   private Command rightTrenchBumpDoubleSweep(
@@ -593,7 +608,8 @@ public class AutonomousCommandsFactory {
         firstSweep,
         slowToTrench,
         secondSweep,
-        secondSlowToTrench);
+        secondSlowToTrench,
+        Side.RIGHT);
   }
 
   private Command getRightFarHubSupportSweep(
