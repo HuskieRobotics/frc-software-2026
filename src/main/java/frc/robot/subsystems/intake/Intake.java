@@ -117,7 +117,9 @@ public class Intake extends SubsystemBase {
     // update debouncer objects; this must be done every cycle
     rollerAtSetPointDebouncer.calculate(
         MathUtils.isNear(
-            inputs.rollerVelocityRPS, ROLLER_TARGET_VELOCITY_RPS, ROLLER_VELOCITY_TOLERANCE_RPS));
+            inputs.rollerVelocityRPSLead,
+            ROLLER_TARGET_VELOCITY_RPS,
+            ROLLER_VELOCITY_TOLERANCE_RPS));
     deployerDeployedDebouncer.calculate(
         MathUtils.isNear(
             this.deployerLinearPositionMeters,
@@ -131,8 +133,8 @@ public class Intake extends SubsystemBase {
     rollerStalled =
         rollerStalledDebouncer.calculate(
             DriverStation.isEnabled()
-                && inputs.rollerReferenceVelocityRPS != 0.0
-                && Math.abs(inputs.rollerVelocityRPS) < ROLLER_STALL_VELOCITY_THRESHOLD_RPS);
+                && inputs.rollerReferenceVelocityRPSLead != 0.0
+                && Math.abs(inputs.rollerVelocityRPSLead) < ROLLER_STALL_VELOCITY_THRESHOLD_RPS);
 
     this.deployerLinearPositionMeters =
         DEPLOYER_CIRCUMFERENCE_METERS * inputs.deployerAngularPositionRot;
@@ -288,14 +290,14 @@ public class Intake extends SubsystemBase {
                 .andThen(
                     () -> {
                       if (!MathUtils.isNear(
-                          inputs.rollerVelocityRPS,
+                          inputs.rollerVelocityRPSLead,
                           ROLLER_TARGET_VELOCITY_RPS,
                           ROLLER_VELOCITY_TOLERANCE_RPS)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
                                 "Roller failed to reach target velocity in System Check; was: "
-                                    + inputs.rollerVelocityRPS
+                                    + inputs.rollerVelocityRPSLead
                                     + " RPS");
                       }
                     }),
@@ -304,14 +306,14 @@ public class Intake extends SubsystemBase {
                 .andThen(
                     () -> {
                       if (!MathUtils.isNear(
-                          inputs.rollerVelocityRPS,
+                          inputs.rollerVelocityRPSLead,
                           ROLLER_EJECT_VELOCITY_RPS,
                           ROLLER_VELOCITY_TOLERANCE_RPS)) {
                         FaultReporter.getInstance()
                             .addFault(
                                 SUBSYSTEM_NAME,
                                 "Roller failed to reach eject velocity in System Check; was: "
-                                    + inputs.rollerVelocityRPS
+                                    + inputs.rollerVelocityRPSLead
                                     + " RPS");
                       }
                     }),
