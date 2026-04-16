@@ -4,7 +4,7 @@ public class HopperConstants {
 
   public static final String SUBSYSTEM_NAME = "Hopper";
 
-  public static final int SPINDEXER_ID = 10;
+  public static final int SPINDEXER_ID = 14;
   public static final int KICKER_ID = 19;
 
   public static final double SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT = 60;
@@ -27,7 +27,7 @@ public class HopperConstants {
 
   public static final double SPINDEXER_VELOCITY_TOLERANCE_RPS = 0.4;
 
-  public static final double KICKER_KP = 5.0;
+  public static final double KICKER_KP = 11.0;
   public static final double KICKER_KI = 0.0;
   public static final double KICKER_KD = 0.0;
   public static final double KICKER_KV = 0.22;
