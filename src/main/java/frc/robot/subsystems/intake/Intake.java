@@ -169,10 +169,6 @@ public class Intake extends SubsystemBase {
     intakeIO.setRollerVelocity(-ROLLER_STATIC_TARGET_VELOCITY_RPS);
   }
 
-  public void startRollerInAuto() {
-    areRollersActiveState = true;
-  }
-
   public void stopRoller() {
     areRollersActiveState = false;
   }
@@ -246,7 +242,7 @@ public class Intake extends SubsystemBase {
     return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
         Commands.waitSeconds(0.5),
-        Commands.runOnce(this::startRollerInAuto, this));
+        Commands.runOnce(this::startRoller, this));
   }
 
   public Command getRetractAndStopCommand() {
