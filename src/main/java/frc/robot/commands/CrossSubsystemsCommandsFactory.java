@@ -136,7 +136,11 @@ public class CrossSubsystemsCommandsFactory {
     // if we are in a shoot on the move mode, it will let the hopper keep running to feed fuel into
     // the shooter
     oi.getManualShootButton()
-        .and(() -> !shooterModes.isCollectAndHoldEnabled() && !shooterModes.isNearTrenchEnabled())
+        .and(
+            () ->
+                shooterModes.isDemoModeEnabled()
+                    || !shooterModes.isCollectAndHoldEnabled()
+                        && !shooterModes.isNearTrenchEnabled())
         .whileTrue(
             Commands.either(
                     getStopAndShootCommand(
