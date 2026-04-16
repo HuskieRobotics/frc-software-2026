@@ -58,8 +58,8 @@ public class IntakeConstants {
   public static final double ROLLER_GEAR_RATIO = 2;
   public static final boolean ROLLER_MOTOR_INVERTED = true;
 
-  public static final double ROLLER_STATIC_TARGET_VELOCITY_RPS = 35.0;
-  public static final double ROLLER_SOM_TARGET_VELOCITY_RPS = 40.0;
+  public static final double ROLLER_STATIC_TARGET_VELOCITY_RPS = 30.0;
+  public static final double ROLLER_SOM_TARGET_VELOCITY_RPS = 35.0;
   public static final double ROLLER_AUTO_TARGET_VELOCITY_RPS = 45.0;
 
   public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
