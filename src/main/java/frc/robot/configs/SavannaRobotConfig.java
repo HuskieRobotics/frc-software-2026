@@ -1,57 +1,53 @@
 package frc.robot.configs;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
+import frc.lib.team6328.util.FieldConstants;
 
 // FIXME: a lot of this is copied directly from the practice bot config, we must update all the
 // necessary values
 
-public class New2026RobotConfig extends RobotConfig {
+public class SavannaRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 24;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 53;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.071045);
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET_ROT = -0.071045;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 61;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 51;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.025879);
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = 0.025879;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 18;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 50;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 9;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.369141);
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.369141;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.166748);
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET_ROT = -0.166748;
 
   private static final int GYRO_ID = 18;
 
-  private static final Distance TRACKWIDTH = Meters.of(0.628650);
-  private static final Distance WHEELBASE = Meters.of(0.476250);
-  private static final Distance WHEEL_RADIUS = Meters.of(0.0515507563);
+  private static final double TRACKWIDTH_METERS = 0.628650;
+  private static final double WHEELBASE_METERS = 0.476250;
+  private static final double WHEEL_RADIUS_METERS = 0.0515507563;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.302940, -0.379140);
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.933450);
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.768350);
+  private static final double ROBOT_WIDTH_WITH_BUMPERS_METERS = 0.933450;
+  private static final double ROBOT_LENGTH_WITH_BUMPERS_METERS = 0.768350;
 
   private static final double COUPLE_RATIO = 3.857142857142857;
 
@@ -76,8 +72,8 @@ public class New2026RobotConfig extends RobotConfig {
   private static final double DRIVE_KV = 0.060631;
   private static final double DRIVE_KA = 0.51114;
 
-  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.936);
-  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
+  private static final double MAX_VELOCITY_MPS = 4.936;
+  private static final double MAX_COAST_VELOCITY_MPS = 0.05;
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
   private static final String CAN_BUS_NAME = "canbus1";
@@ -98,21 +94,23 @@ public class New2026RobotConfig extends RobotConfig {
       6.0; // 18.0; // from preliminary testing, still needs more tuning
   private static final double DRIVE_TO_POSE_THETA_KI = 10.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
-  private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06);
-  private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
-  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(1.25);
+  private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.06;
+  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.02;
+  private static final double DRIVE_TO_POSE_MAX_VELOCITY_MPS = 1.25;
 
-  private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
+  private static final double SQUARING_SPEED_MPS = 1.0;
 
   // Drive Facing Angle constants
   private static final double DRIVE_FACING_ANGLE_KP = 5.0;
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 52;
+  private static final int LED_COUNT = 26;
 
-  private static final String BR_CAMERA_SERIAL_NUMBER = "40708569";
+  private static final String BR_CAMERA_SERIAL_NUMBER = "40708542";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
+  private static final String BCL_CAMERA_SERIAL_NUMBER = "40708569";
+  private static final String BCR_CAMERA_SERIAL_NUMBER = "40777404";
 
   private static final int MONO_EXPOSURE = 2200;
   private static final double MONO_GAIN = 15;
@@ -125,30 +123,76 @@ public class New2026RobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BR_CAMERA =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-8.969),
-              Units.inchesToMeters(-11.729),
-              Units.inchesToMeters(7.434)),
-          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(-90.0)));
+          new Translation3d(-0.226, -0.311, 0.184),
+          new Rotation3d(new Quaternion(-0.686, 0.160, 0.156, 0.692)));
 
   // Back left camera
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-8.969),
-              Units.inchesToMeters(11.729),
-              Units.inchesToMeters(7.434)),
-          new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(90.0)));
+          new Translation3d(-0.246, 0.312, 0.202),
+          new Rotation3d(new Quaternion(-0.699, -0.149, 0.152, -0.685)));
+
+  // Back center left camera
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_BCL_CAMERA =
+      new Transform3d(
+          new Translation3d(-0.296, 0.119, 0.303),
+          new Rotation3d(new Quaternion(0.086, -0.176, -0.981, -0.019)));
+
+  // Back center right camera
+  // x, y, z, pitch, yaw
+  private static final Transform3d ROBOT_TO_BCR_CAMERA =
+      new Transform3d(
+          new Translation3d(-0.299, 0.065, 0.292),
+          new Rotation3d(new Quaternion(0.176, -0.087, -0.008, -0.980)));
+
+  // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
+  private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
+      FieldConstants.defaultAprilTagType
+          .getLayout()
+          .getTagPose(13)
+          .get()
+          .transformBy(
+              new Transform3d(
+                  Units.inchesToMeters(48.0),
+                  Units.inchesToMeters(0.0),
+                  -Units.inchesToMeters(21.75),
+                  new Rotation3d()));
+
+  private static final Pose3d ROBOT_TO_TAG_13_LEFT_CAMERA =
+      FieldConstants.defaultAprilTagType
+          .getLayout()
+          .getTagPose(13)
+          .get()
+          .transformBy(
+              new Transform3d(
+                  Units.inchesToMeters(51.0),
+                  Units.inchesToMeters(2.25),
+                  -Units.inchesToMeters(21.75),
+                  new Rotation3d(0, 0, Units.degreesToRadians(90))));
+
+  private static final Pose3d ROBOT_TO_TAG_13_RIGHT_CAMERA =
+      FieldConstants.defaultAprilTagType
+          .getLayout()
+          .getTagPose(13)
+          .get()
+          .transformBy(
+              new Transform3d(
+                  Units.inchesToMeters(51.0),
+                  Units.inchesToMeters(-2.25),
+                  -Units.inchesToMeters(21.75),
+                  new Rotation3d(0, 0, Units.degreesToRadians(-90))));
 
   @Override
   public CameraConfig[] getCameraConfigs() {
     return new CameraConfig[] {
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BR_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_RIGHT_CAMERA)
           .id(BR_CAMERA_SERIAL_NUMBER)
           .location("BR")
-          .width(1920)
+          .width(1800)
           .height(1200)
           .exposure(MONO_EXPOSURE)
           .gain(MONO_GAIN)
@@ -157,9 +201,34 @@ public class New2026RobotConfig extends RobotConfig {
           .build(),
       CameraConfig.builder()
           .robotToCameraTransform(ROBOT_TO_BL_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_LEFT_CAMERA)
           .id(BL_CAMERA_SERIAL_NUMBER)
           .location("BL")
-          .width(1920)
+          .width(1800)
+          .height(1200)
+          .exposure(MONO_EXPOSURE)
+          .gain(MONO_GAIN)
+          .denoise(MONO_DENOISE)
+          .stdDevFactor(1.0)
+          .build(),
+      CameraConfig.builder()
+          .robotToCameraTransform(ROBOT_TO_BCL_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
+          .id(BCL_CAMERA_SERIAL_NUMBER)
+          .location("BCL")
+          .width(1800)
+          .height(1200)
+          .exposure(MONO_EXPOSURE)
+          .gain(MONO_GAIN)
+          .denoise(MONO_DENOISE)
+          .stdDevFactor(1.0)
+          .build(),
+      CameraConfig.builder()
+          .robotToCameraTransform(ROBOT_TO_BCR_CAMERA)
+          .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
+          .id(BCR_CAMERA_SERIAL_NUMBER)
+          .location("BCR")
+          .width(1800)
           .height(1200)
           .exposure(MONO_EXPOSURE)
           .gain(MONO_GAIN)
@@ -270,12 +339,12 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public Angle[] getSwerveSteerOffsets() {
-    return new Angle[] {
-      FRONT_LEFT_MODULE_STEER_OFFSET,
-      FRONT_RIGHT_MODULE_STEER_OFFSET,
-      BACK_LEFT_MODULE_STEER_OFFSET,
-      BACK_RIGHT_MODULE_STEER_OFFSET
+  public double[] getSwerveSteerOffsetsRots() {
+    return new double[] {
+      FRONT_LEFT_MODULE_STEER_OFFSET_ROT,
+      FRONT_RIGHT_MODULE_STEER_OFFSET_ROT,
+      BACK_LEFT_MODULE_STEER_OFFSET_ROT,
+      BACK_RIGHT_MODULE_STEER_OFFSET_ROT
     };
   }
 
@@ -285,18 +354,18 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public Distance getTrackwidth() {
-    return TRACKWIDTH;
+  public double getTrackwidthMeters() {
+    return TRACKWIDTH_METERS;
   }
 
   @Override
-  public Distance getWheelbase() {
-    return WHEELBASE;
+  public double getWheelbaseMeters() {
+    return WHEELBASE_METERS;
   }
 
   @Override
-  public Distance getWheelRadius() {
-    return WHEEL_RADIUS;
+  public double getWheelRadiusMeters() {
+    return WHEEL_RADIUS_METERS;
   }
 
   @Override
@@ -305,18 +374,18 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public Distance getRobotWidthWithBumpers() {
-    return ROBOT_WIDTH_WITH_BUMPERS;
+  public double getRobotWidthWithBumpersMeters() {
+    return ROBOT_WIDTH_WITH_BUMPERS_METERS;
   }
 
   @Override
-  public Distance getRobotLengthWithBumpers() {
-    return ROBOT_LENGTH_WITH_BUMPERS;
+  public double getRobotLengthWithBumpersMeters() {
+    return ROBOT_LENGTH_WITH_BUMPERS_METERS;
   }
 
   @Override
-  public LinearVelocity getRobotMaxVelocity() {
-    return MAX_VELOCITY;
+  public double getRobotMaxVelocityMPS() {
+    return MAX_VELOCITY_MPS;
   }
 
   @Override
@@ -325,8 +394,8 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public LinearVelocity getRobotMaxCoastVelocity() {
-    return MAX_COAST_VELOCITY;
+  public double getRobotMaxCoastVelocityMPS() {
+    return MAX_COAST_VELOCITY_MPS;
   }
 
   @Override
@@ -360,13 +429,13 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public Mass getMass() {
-    return Pounds.of(137.6);
+  public double getMassKG() {
+    return 62.4143;
   }
 
   @Override
-  public MomentOfInertia getMomentOfInertia() {
-    return KilogramSquareMeters.of(3.40);
+  public double getMomentOfInertiaKGMM() {
+    return 3.40;
   }
 
   @Override
@@ -415,18 +484,18 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public LinearVelocity getDriveToPoseDriveMaxVelocity() {
-    return DRIVE_TO_POSE_MAX_VELOCITY;
+  public double getDriveToPoseDriveMaxVelocityMPS() {
+    return DRIVE_TO_POSE_MAX_VELOCITY_MPS;
   }
 
   @Override
-  public Distance getDriveToPoseDriveTolerance() {
-    return DRIVE_TO_POSE_DRIVE_TOLERANCE;
+  public double getDriveToPoseDriveToleranceMeters() {
+    return DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS;
   }
 
   @Override
-  public Angle getDriveToPoseThetaTolerance() {
-    return DRIVE_TO_POSE_THETA_TOLERANCE;
+  public double getDriveToPoseThetaToleranceRad() {
+    return DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS;
   }
 
   @Override
@@ -435,8 +504,8 @@ public class New2026RobotConfig extends RobotConfig {
   }
 
   @Override
-  public LinearVelocity getMoveToPathFinalVelocity() {
-    return SQUARING_SPEED;
+  public double getMoveToPathFinalVelocityMPS() {
+    return SQUARING_SPEED_MPS;
   }
 
   @Override

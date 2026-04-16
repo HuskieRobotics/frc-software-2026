@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.TUNING_MODE;
-
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -19,7 +17,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
@@ -182,16 +179,16 @@ public class Robot extends LoggedRobot {
     disabledTimer.restart();
 
     // adjust loop overrun warning timeout
-    if (!Constants.TUNING_MODE) {
-      try {
-        Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
-        watchdogField.setAccessible(true);
-        Watchdog watchdog = (Watchdog) watchdogField.get(this);
-        watchdog.setTimeout(0.2);
-      } catch (Exception e) {
-        DriverStation.reportWarning("Failed to disable loop overrun warnings", false);
-      }
+    try {
+      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+      watchdogField.setAccessible(true);
+      Watchdog watchdog = (Watchdog) watchdogField.get(this);
+      watchdog.setTimeout(0.2);
+    } catch (Exception e) {
+      DriverStation.reportWarning("Failed to disable loop overrun warnings", false);
     }
+
+    CommandScheduler.getInstance().setPeriod(0.2);
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
@@ -207,9 +204,9 @@ public class Robot extends LoggedRobot {
     // DO THIS AFTER CONFIGURATION OF YOUR DESIRED PATHFINDER
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
-    if (!TUNING_MODE) {
-      Threads.setCurrentThreadPriority(true, 10);
-    }
+    // if (!TUNING_MODE) {
+    //   Threads.setCurrentThreadPriority(true, 1);
+    // }
   }
 
   /**
@@ -259,7 +256,6 @@ public class Robot extends LoggedRobot {
       disabledTimer.reset();
     }
     double batteryVoltage = RobotController.getBatteryVoltage();
-    Logger.recordOutput("BatteryVoltage", batteryVoltage);
     if (batteryVoltage < LOW_BATTERY_VOLTAGE
         && disabledTimer.hasElapsed(LOW_BATTERY_DISABLED_TIME)) {
       LEDs.getInstance().requestState(LEDs.States.LOW_BATTERY);

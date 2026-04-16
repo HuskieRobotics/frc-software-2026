@@ -1,7 +1,5 @@
 package frc.robot.configs;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -10,12 +8,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
 
@@ -23,31 +15,31 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 37;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 61;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.117676 + 0.5);
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET_ROT = -0.117676 + 0.5;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 40;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 25;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.028809 + 0.5);
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = -0.028809 + 0.5;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 39;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 60;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.378906 + 0.5);
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = -0.378906 + 0.5;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 38;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 59;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.157959 - 0.5);
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET_ROT = 0.157959 - 0.5;
   private static final int GYRO_ID = 3;
 
-  private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
-  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
-  private static final Distance WHEEL_RADIUS = Meters.of(0.0515507563);
+  private static final double TRACKWIDTH_METERS = 0.57785; // 22.75
+  private static final double WHEELBASE_METERS = 0.57785; // 22.75
+  private static final double WHEEL_RADIUS_METERS = 0.0515507563;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.88026); // 34.656 in
+  private static final double ROBOT_WIDTH_WITH_BUMPERS_METERS = 0.88026; // 34.656 in
+  private static final double ROBOT_LENGTH_WITH_BUMPERS_METERS = 0.88026; // 34.656 in
 
   private static final double COUPLE_RATIO = 3.857142857142857;
 
@@ -72,8 +64,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double DRIVE_KV = 0.058846;
   private static final double DRIVE_KA = 0.2817;
 
-  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(5.117);
-  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
+  private static final double MAX_VELOCITY_MPS = 5.117;
+  private static final double MAX_COAST_VELOCITY_MPS = 0.05;
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
   private static final String CAN_BUS_NAME = "canbus1";
@@ -94,13 +86,12 @@ public class NewPracticeRobotConfig extends RobotConfig {
       5; // 18.0; // from preliminary testing, still needs more tuning
   private static final double DRIVE_TO_POSE_THETA_KI = 0.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
-  private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06);
-  private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
-  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(2);
-  private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION =
-      MetersPerSecondPerSecond.of(4);
+  private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.06;
+  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.02;
+  private static final double DRIVE_TO_POSE_MAX_VELOCITY_MPS = 2.0;
+  private static final double DRIVE_TO_POSE_MAX_ACCELERATION_MPSPS = 4.0;
 
-  private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
+  private static final double SQUARING_SPEED_MPS = 1.0;
 
   // Drive Facing Angle constants
   private static final double DRIVE_FACING_ANGLE_KP = 5.0;
@@ -270,12 +261,12 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Angle[] getSwerveSteerOffsets() {
-    return new Angle[] {
-      FRONT_LEFT_MODULE_STEER_OFFSET,
-      FRONT_RIGHT_MODULE_STEER_OFFSET,
-      BACK_LEFT_MODULE_STEER_OFFSET,
-      BACK_RIGHT_MODULE_STEER_OFFSET
+  public double[] getSwerveSteerOffsetsRots() {
+    return new double[] {
+      FRONT_LEFT_MODULE_STEER_OFFSET_ROT,
+      FRONT_RIGHT_MODULE_STEER_OFFSET_ROT,
+      BACK_LEFT_MODULE_STEER_OFFSET_ROT,
+      BACK_RIGHT_MODULE_STEER_OFFSET_ROT
     };
   }
 
@@ -285,18 +276,18 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Distance getTrackwidth() {
-    return TRACKWIDTH;
+  public double getTrackwidthMeters() {
+    return TRACKWIDTH_METERS;
   }
 
   @Override
-  public Distance getWheelbase() {
-    return WHEELBASE;
+  public double getWheelbaseMeters() {
+    return WHEELBASE_METERS;
   }
 
   @Override
-  public Distance getWheelRadius() {
-    return WHEEL_RADIUS;
+  public double getWheelRadiusMeters() {
+    return WHEEL_RADIUS_METERS;
   }
 
   @Override
@@ -305,18 +296,18 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Distance getRobotWidthWithBumpers() {
-    return ROBOT_WIDTH_WITH_BUMPERS;
+  public double getRobotWidthWithBumpersMeters() {
+    return ROBOT_WIDTH_WITH_BUMPERS_METERS;
   }
 
   @Override
-  public Distance getRobotLengthWithBumpers() {
-    return ROBOT_LENGTH_WITH_BUMPERS;
+  public double getRobotLengthWithBumpersMeters() {
+    return ROBOT_LENGTH_WITH_BUMPERS_METERS;
   }
 
   @Override
-  public LinearVelocity getRobotMaxVelocity() {
-    return MAX_VELOCITY;
+  public double getRobotMaxVelocityMPS() {
+    return MAX_VELOCITY_MPS;
   }
 
   @Override
@@ -325,8 +316,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public LinearVelocity getRobotMaxCoastVelocity() {
-    return MAX_COAST_VELOCITY;
+  public double getRobotMaxCoastVelocityMPS() {
+    return MAX_COAST_VELOCITY_MPS;
   }
 
   @Override
@@ -360,13 +351,13 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Mass getMass() {
-    return Pounds.of(111.0);
+  public double getMassKG() {
+    return 50.3487;
   }
 
   @Override
-  public MomentOfInertia getMomentOfInertia() {
-    return KilogramSquareMeters.of(3.40);
+  public double getMomentOfInertiaKGMM() {
+    return 3.40;
   }
 
   @Override
@@ -420,23 +411,23 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public LinearVelocity getDriveToPoseDriveMaxVelocity() {
-    return DRIVE_TO_POSE_MAX_VELOCITY;
+  public double getDriveToPoseDriveMaxVelocityMPS() {
+    return DRIVE_TO_POSE_MAX_VELOCITY_MPS;
   }
 
   @Override
-  public LinearAcceleration getDriveToPoseDriveMaxAcceleration() {
-    return DRIVE_TO_POSE_MAX_ACCELERATION;
+  public double getDriveToPoseDriveMaxAccelerationMPSPS() {
+    return DRIVE_TO_POSE_MAX_ACCELERATION_MPSPS;
   }
 
   @Override
-  public Distance getDriveToPoseDriveTolerance() {
-    return DRIVE_TO_POSE_DRIVE_TOLERANCE;
+  public double getDriveToPoseDriveToleranceMeters() {
+    return DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS;
   }
 
   @Override
-  public Angle getDriveToPoseThetaTolerance() {
-    return DRIVE_TO_POSE_THETA_TOLERANCE;
+  public double getDriveToPoseThetaToleranceRad() {
+    return DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS;
   }
 
   @Override
@@ -445,8 +436,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
   }
 
   @Override
-  public LinearVelocity getMoveToPathFinalVelocity() {
-    return SQUARING_SPEED;
+  public double getMoveToPathFinalVelocityMPS() {
+    return SQUARING_SPEED_MPS;
   }
 
   @Override

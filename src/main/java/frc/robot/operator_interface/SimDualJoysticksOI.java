@@ -42,7 +42,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getScoreFromBankButton() {
+  public Trigger getForceSafeShootButton() {
     return translateJoystickButtons[1];
   }
 
@@ -54,6 +54,11 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getDeployRetractIntakeButton() {
     return translateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getReverseIntakeRollersButton() {
+    return translateJoystickButtons[4];
   }
 
   // rotation joystick
@@ -69,8 +74,8 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getUnjamHopperButton() {
-    return rotateJoystickButtons[3];
+  public Trigger getClearAllFaults() {
+    return rotateJoystickButtons[2].and(rotateJoystickButtons[3]);
   }
 
   @Override

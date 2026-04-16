@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -46,12 +47,16 @@ public class Vision extends SubsystemBase {
   private final AprilTagVisionIOInputsAutoLogged[] aprilTagInputs;
   private final ObjDetectVisionIOInputsAutoLogged[] objDetectInputs;
 
+  private final Debouncer fmsAttachedDebouncer = new Debouncer(3.0, DebounceType.kRising);
   private final LoggedNetworkBoolean recordingRequest =
-      new LoggedNetworkBoolean("/SmartDashboard/Enable Recording", false);
+      new LoggedNetworkBoolean("/Vision/Enable Recording", false);
 
   private double[] lastTimestamps;
   private int[] cyclesWithNoResults;
   private int[] updatePoseCount;
+
+  private static final double DISCONNECTED_TIMEOUT_SECONDS = 0.5;
+  private final Timer[] disconnectedTimers;
   private Alert[] disconnectedAlerts;
 
   private List<Integer> camerasToConsider = new ArrayList<>();
@@ -64,7 +69,6 @@ public class Vision extends SubsystemBase {
       new Alert("Northstar co-processor thermal pressure is critical!", AlertType.kError);
 
   private boolean isEnabled = true;
-  private boolean isVisionUpdating = false;
   private final Debouncer isVisionUpdatingDebounce =
       new Debouncer(0.1, Debouncer.DebounceType.kFalling);
 
@@ -118,15 +122,16 @@ public class Vision extends SubsystemBase {
     this.inputs = new VisionIOInputsAutoLogged[visionIOs.length];
     this.aprilTagInputs = new AprilTagVisionIOInputsAutoLogged[visionIOs.length];
     this.objDetectInputs = new ObjDetectVisionIOInputsAutoLogged[visionIOs.length];
+    this.disconnectedTimers = new Timer[visionIOs.length];
     this.disconnectedAlerts = new Alert[visionIOs.length];
     this.camerasToConsider = new ArrayList<>();
 
-    tagPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    rejectedTagPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    cameraPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    robotPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
-    robotPosesAccepted = new ArrayList<List<Pose3d>>(visionIOs.length);
-    robotPosesRejected = new ArrayList<List<Pose3d>>(visionIOs.length);
+    tagPoses = new ArrayList<>(visionIOs.length);
+    rejectedTagPoses = new ArrayList<>(visionIOs.length);
+    cameraPoses = new ArrayList<>(visionIOs.length);
+    robotPoses = new ArrayList<>(visionIOs.length);
+    robotPosesAccepted = new ArrayList<>(visionIOs.length);
+    robotPosesRejected = new ArrayList<>(visionIOs.length);
 
     for (int i = 0; i < visionIOs.length; i++) {
       this.inputs[i] = new VisionIOInputsAutoLogged();
@@ -148,6 +153,11 @@ public class Vision extends SubsystemBase {
       robotPosesRejected.add(new ArrayList<>());
     }
 
+    for (int i = 0; i < visionIOs.length; i++) {
+      disconnectedTimers[i] = new Timer();
+      disconnectedTimers[i].start();
+    }
+
     this.layout = FieldConstants.defaultAprilTagType.getLayout();
     Pose3d[] aprilTagsPoses = new Pose3d[this.layout.getTags().size()];
     for (int i = 0; i < aprilTagsPoses.length; i++) {
@@ -163,7 +173,7 @@ public class Vision extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    isVisionUpdating = false;
+    boolean isVisionUpdating = false;
     boolean northstarThermalHigh = false;
     boolean northstarThermalCritical = false;
     northstarThermalAlertWarning.set(false);
@@ -204,11 +214,42 @@ public class Vision extends SubsystemBase {
     }
 
     // Update recording state
-    // boolean shouldRecord = DriverStation.isFMSAttached() || recordingRequest.get();
-    // boolean shouldRecord = recordingRequest.get();
+    // boolean shouldRecord =
+    //     // Ensure that match info can be published before recording
+    //     fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) || recordingRequest.get();
     // for (VisionIO io : this.visionIOs) {
     //   io.setRecording(shouldRecord);
     // }
+
+    // Update disconnected alerts & LEDs
+    boolean anyNTDisconnected = false;
+    for (int i = 0; i < visionIOs.length; i++) {
+      if (aprilTagInputs[i].timestamps.length > 0
+          || objDetectInputs[i].timestamps.length > 0
+          || inputs[i].poseObservations.length > 0) {
+        disconnectedTimers[i].reset();
+      }
+      boolean disconnected =
+          disconnectedTimers[i].hasElapsed(DISCONNECTED_TIMEOUT_SECONDS) || !inputs[i].connected;
+      if (disconnected) {
+        disconnectedAlerts[i].setText(
+            inputs[i].connected
+                ? "camera "
+                    + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                    + " connected to NT but not publishing frames"
+                : "camera "
+                    + RobotConfig.getInstance().getCameraConfigs()[i].location()
+                    + " disconnected from NT");
+      }
+      disconnectedAlerts[i].set(disconnected);
+      Logger.recordOutput(
+          SUBSYSTEM_NAME
+              + "/"
+              + RobotConfig.getInstance().getCameraConfigs()[i].location()
+              + "/sending frames",
+          !disconnected);
+      anyNTDisconnected = anyNTDisconnected || !inputs[i].connected;
+    }
 
     this.allRobotPoses.clear();
     this.allRobotPosesAccepted.clear();
@@ -217,10 +258,10 @@ public class Vision extends SubsystemBase {
     this.allRejectedTagPoses.clear();
     this.allDetectedObjectPoses.clear();
 
+    Matrix<N3, N1> stdDev = null;
+
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
       String cameraLocation = RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location();
-
-      disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;
 
       // Initialize logging values
@@ -276,7 +317,6 @@ public class Vision extends SubsystemBase {
                       || observation.type() == PoseObservationType.MULTI_TAG
                       || DriverStation.isDisabled());
 
-          Matrix<N3, N1> stdDev = null;
           if (acceptPoseForPoseReset) {
             stdDev = getStandardDeviations(cameraIndex, observation);
             // if the most-recent "best pose" is too old, capture a new one regardless of its
@@ -299,10 +339,7 @@ public class Vision extends SubsystemBase {
                   lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
                 }
                 Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
-                tagPose.ifPresent(
-                    (e) -> {
-                      tagPoses.get(finalCameraIndex).add(e);
-                    });
+                tagPose.ifPresent(e -> tagPoses.get(finalCameraIndex).add(e));
               }
             }
             robotPosesAccepted.get(cameraIndex).add(estimatedRobotPose3d);
@@ -323,22 +360,13 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput(
                 SUBSYSTEM_NAME + "/" + cameraLocation + "/UpdatePoseCount",
                 this.updatePoseCount[cameraIndex]);
-            Logger.recordOutput(
-                SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevX", stdDev.get(0, 0));
-            Logger.recordOutput(
-                SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevY", stdDev.get(1, 0));
-            Logger.recordOutput(
-                SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevT", stdDev.get(2, 0));
           } else {
             robotPosesRejected.get(cameraIndex).add(estimatedRobotPose3d);
             final int finalCameraIndex = cameraIndex;
             for (int tagID = 1; tagID < FieldConstants.aprilTagCount; tagID++) {
               if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
                 Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
-                tagPose.ifPresent(
-                    (e) -> {
-                      rejectedTagPoses.get(finalCameraIndex).add(e);
-                    });
+                tagPose.ifPresent(e -> rejectedTagPoses.get(finalCameraIndex).add(e));
               }
             }
             if (ENABLE_POSE_PERSISTENCE_LOGGING) {
@@ -386,6 +414,11 @@ public class Vision extends SubsystemBase {
 
       if (ENABLE_EXTRA_LOGGING) {
         // Log data for this camera
+        if (stdDev != null) {
+          Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevX", stdDev.get(0, 0));
+          Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevY", stdDev.get(1, 0));
+          Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraLocation + "/StdDevT", stdDev.get(2, 0));
+        }
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/" + cameraLocation + "/LatencySecs",
             Timer.getTimestamp() - this.lastTimestamps[cameraIndex]);
@@ -596,9 +629,16 @@ public class Vision extends SubsystemBase {
                 .poseForRobotToCameraTransformCalibration());
 
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraTransform", robotToCameraTransform);
+        SUBSYSTEM_NAME
+            + "/"
+            + RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location()
+            + "/RobotToCameraTransform",
+        robotToCameraTransform);
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraPose",
+        SUBSYSTEM_NAME
+            + "/"
+            + RobotConfig.getInstance().getCameraConfigs()[cameraIndex].location()
+            + "/RobotToCameraPose",
         RobotConfig.getInstance()
             .getCameraConfigs()[cameraIndex]
             .poseForRobotToCameraTransformCalibration());

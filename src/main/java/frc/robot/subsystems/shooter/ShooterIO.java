@@ -1,13 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
@@ -16,80 +8,80 @@ public interface ShooterIO {
 
     // FLYWHEEL LEAD
     boolean flywheelLeadConnected = false;
-    Current flywheelLeadStatorCurrent = Amps.of(0.0);
-    Current flywheelLeadSupplyCurrent = Amps.of(0.0);
-    Voltage flywheelLeadVoltage = Volts.of(0.0);
-    Current flywheelLeadTorqueCurrent = Amps.of(0.0);
-    AngularVelocity flywheelLeadVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelLeadClosedLoopReferenceVelocity = RotationsPerSecond.of(0.0);
-    AngularVelocity flywheelLeadClosedLoopErrorVelocity = RotationsPerSecond.of(0.0);
-    Temperature flywheelLeadTemperature = Celsius.of(0.0);
+    double flywheelLeadStatorCurrent = 0.0;
+    double flywheelLeadSupplyCurrent = 0.0;
+    double flywheelLeadVoltage = 0.0;
+    double flywheelLeadTorqueCurrent = 0.0;
+    double flywheelLeadVelocityRPS = 0.0;
+    double flywheelLeadReferenceVelocityRPS = 0.0;
+    double flywheelLeadClosedLoopReferenceVelocityRPS = 0.0;
+    double flywheelLeadClosedLoopErrorVelocityRPS = 0.0;
+    double flywheelLeadTemperature = 0.0;
 
     // FLYWHEEL FOLLOW 1
     boolean flywheelFollow1Connected = false;
-    Current flywheelFollow1StatorCurrent = Amps.of(0.0);
-    Current flywheelFollow1SupplyCurrent = Amps.of(0.0);
-    Voltage flywheelFollow1Voltage = Volts.of(0.0);
-    Current flywheelFollow1TorqueCurrent = Amps.of(0.0);
-    AngularVelocity flywheelFollow1Velocity = RotationsPerSecond.of(0.0);
-    Temperature flywheelFollow1Temperature = Celsius.of(0.0);
+    double flywheelFollow1StatorCurrent = 0.0;
+    double flywheelFollow1SupplyCurrent = 0.0;
+    double flywheelFollow1Voltage = 0.0;
+    double flywheelFollow1TorqueCurrent = 0.0;
+    double flywheelFollow1VelocityRPS = 0.0;
+    double flywheelFollow1Temperature = 0.0;
 
     // FLYWHEEL FOLLOW 2
     boolean flywheelFollow2Connected = false;
-    Current flywheelFollow2StatorCurrent = Amps.of(0.0);
-    Current flywheelFollow2SupplyCurrent = Amps.of(0.0);
-    Voltage flywheelFollow2Voltage = Volts.of(0.0);
-    Current flywheelFollow2TorqueCurrent = Amps.of(0.0);
-    AngularVelocity flywheelFollow2Velocity = RotationsPerSecond.of(0.0);
-    Temperature flywheelFollow2Temperature = Celsius.of(0.0);
+    double flywheelFollow2StatorCurrent = 0.0;
+    double flywheelFollow2SupplyCurrent = 0.0;
+    double flywheelFollow2Voltage = 0.0;
+    double flywheelFollow2TorqueCurrent = 0.0;
+    double flywheelFollow2VelocityRPS = 0.0;
+    double flywheelFollow2Temperature = 0.0;
 
     boolean turretConnected = false;
-    Current turretStatorCurrent = Amps.of(0.0);
-    Current turretSupplyCurrent = Amps.of(0.0);
-    Voltage turretVoltage = Volts.of(0.0);
-    Angle turretPosition = Rotations.of(0.0);
-    Angle turretReferencePosition = Rotations.of(0.0);
-    Angle turretClosedLoopReferencePosition = Rotations.of(0.0);
-    Angle turretClosedLoopErrorPosition = Rotations.of(0.0);
-    Temperature turretTemperature = Celsius.of(0.0);
-    AngularVelocity turretVelocity = RotationsPerSecond.of(0.0);
+    double turretStatorCurrent = 0.0;
+    double turretSupplyCurrent = 0.0;
+    double turretVoltage = 0.0;
+    double turretPositionRot = 0.0;
+    double turretReferencePositionRot = 0.0;
+    double turretClosedLoopReferencePositionRot = 0.0;
+    double turretClosedLoopErrorPositionRot = 0.0;
+    double turretTemperature = 0.0;
+    double turretVelocityRPS = 0.0;
 
     boolean hoodConnected = false;
-    Current hoodStatorCurrent = Amps.of(0.0);
-    Current hoodSupplyCurrent = Amps.of(0.0);
-    Voltage hoodVoltage = Volts.of(0.0);
-    Angle hoodPosition = Rotations.of(0.0);
-    Angle hoodReferencePosition = Rotations.of(0.0);
-    Angle hoodClosedLoopReferencePosition = Rotations.of(0.0);
-    Angle hoodClosedLoopErrorPosition = Rotations.of(0.0);
-    Temperature hoodTemperature = Celsius.of(0.0);
+    double hoodStatorCurrent = 0.0;
+    double hoodSupplyCurrent = 0.0;
+    double hoodVoltage = 0.0;
+    double hoodPositionRot = 0.0;
+    double hoodReferencePositionRot = 0.0;
+    double hoodClosedLoopReferencePositionRot = 0.0;
+    double hoodClosedLoopErrorPositionRot = 0.0;
+    double hoodTemperature = 0.0;
 
     // Fuel Detection
     boolean fuelDetectorConnected = false;
     boolean fuelDetectorHasFuel = false;
-    Distance fuelDetectorDistanceToFuel = Meters.of(0.0); // FIXME: determine if necessary
+    double fuelDetectorDistanceToFuelMeters = 0.0; // FIXME: determine if necessary
     double fuelDetectorSignalStrength = 0.0;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
 
   // Flywheel IO methods
-  public default void setFlywheelVelocity(AngularVelocity velocity) {}
+  public default void setFlywheelVelocity(double velocityRPS) {}
 
-  public default void setFlywheelCurrent(Current amps) {}
+  public default void setFlywheelCurrent(double amps) {}
 
   // Turret IO methods
-  public default void setTurretPosition(Angle position) {}
+  public default void setTurretPosition(double positionRot) {}
 
-  public default void setTurretVoltage(Voltage voltage) {}
+  public default void setTurretVoltage(double voltage) {}
 
   // Hood IO methods
-  public default void setHoodPosition(Angle position) {}
+  public default void setHoodPosition(double positionRot) {}
 
-  public default void setHoodVoltage(Voltage voltage) {}
+  public default void setHoodVoltage(double voltage) {}
 
-  public default void lowerHoodSlow(Voltage voltage) {}
+  public default void lowerHoodSlow(double voltage) {}
 
   public default void zeroTurretPosition() {}
 

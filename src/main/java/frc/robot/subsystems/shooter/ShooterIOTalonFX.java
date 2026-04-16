@@ -24,6 +24,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -38,6 +39,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.FlywheelSystemSim;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 
@@ -99,9 +101,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Double> fuelDetectorSignalStrengthStatusSignal;
   private StatusSignal<Boolean> fuelDetectorDetectedFuelStatusSignal;
 
-  private Angle hoodReferencePosition = Degrees.of(0.0);
-  private Angle turretReferencePosition = Degrees.of(0.0);
-  private AngularVelocity flywheelLeadReferenceVelocity = RotationsPerSecond.of(0.0);
+  private double hoodReferencePositionRot = 0.0;
+  private double turretReferencePositionRot = 0.0;
+  private double flywheelLeadReferenceVelocityRPS = 0.0;
 
   private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer flywheelFollow1ConnectedDebouncer = new Debouncer(0.5);
@@ -323,9 +325,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             TURRET_GEAR_RATIO,
             TURRET_LENGTH_METERS,
             TURRET_MASS_KG,
-            TURRET_LOWER_ANGLE_LIMIT.in(Radians),
-            TURRET_UPPER_ANGLE_LIMIT.in(Radians),
-            TURRET_STARTING_ANGLE.in(Radians),
+            Units.rotationsToRadians(TURRET_LOWER_ANGLE_LIMIT_ROT),
+            Units.rotationsToRadians(TURRET_UPPER_ANGLE_LIMIT_ROT),
+            Units.rotationsToRadians(TURRET_STARTING_ANGLE_ROT),
             false,
             SUBSYSTEM_NAME + " Turret");
     this.hoodLeadSim =
@@ -335,9 +337,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             HOOD_GEAR_RATIO,
             HOOD_LENGTH_METERS,
             HOOD_MASS_KG,
-            HOOD_MIN_ANGLE.in(Radians),
-            HOOD_MAX_ANGLE.in(Radians),
-            HOOD_STARTING_ANGLE.in(Radians),
+            Units.rotationsToRadians(HOOD_MIN_ANGLE_ROT),
+            Units.rotationsToRadians(HOOD_MAX_ANGLE_ROT),
+            Units.rotationsToRadians(HOOD_STARTING_ANGLE_ROT),
             false,
             SUBSYSTEM_NAME + " Hood");
   }
@@ -396,46 +398,52 @@ public class ShooterIOTalonFX implements ShooterIO {
                 fuelDetectorDetectedFuelStatusSignal));
 
     // Updates Flywheel Lead Motor Inputs
-    inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValue();
-    inputs.flywheelLeadSupplyCurrent = flywheelLeadSupplyCurrentStatusSignal.getValue();
-    inputs.flywheelLeadVelocity = flywheelLeadVelocityStatusSignal.getValue();
-    inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValue();
-    inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValue();
-    inputs.flywheelLeadTorqueCurrent = flywheelLeadTorqueCurrentStatusSignal.getValue();
-    inputs.flywheelLeadReferenceVelocity = flywheelLeadReferenceVelocity.copy();
+    inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelLeadSupplyCurrent = flywheelLeadSupplyCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelLeadVelocityRPS = flywheelLeadVelocityStatusSignal.getValueAsDouble();
+    inputs.flywheelLeadTemperature = flywheelLeadTemperatureStatusSignal.getValueAsDouble();
+    inputs.flywheelLeadVoltage = flywheelLeadVoltageStatusSignal.getValueAsDouble();
+    inputs.flywheelLeadTorqueCurrent = flywheelLeadTorqueCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelLeadReferenceVelocityRPS = flywheelLeadReferenceVelocityRPS;
 
     // Updates Flywheel Follow1 Motor Inputs
-    inputs.flywheelFollow1StatorCurrent = flywheelFollow1StatorCurrentStatusSignal.getValue();
-    inputs.flywheelFollow1SupplyCurrent = flywheelFollow1SupplyCurrentStatusSignal.getValue();
-    inputs.flywheelFollow1Velocity = flywheelFollow1VelocityStatusSignal.getValue();
-    inputs.flywheelFollow1Temperature = flywheelFollow1TemperatureStatusSignal.getValue();
-    inputs.flywheelFollow1Voltage = flywheelFollow1VoltageStatusSignal.getValue();
-    inputs.flywheelFollow1TorqueCurrent = flywheelFollow1TorqueCurrentStatusSignal.getValue();
+    inputs.flywheelFollow1StatorCurrent =
+        flywheelFollow1StatorCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow1SupplyCurrent =
+        flywheelFollow1SupplyCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow1VelocityRPS = flywheelFollow1VelocityStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow1Temperature = flywheelFollow1TemperatureStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow1Voltage = flywheelFollow1VoltageStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow1TorqueCurrent =
+        flywheelFollow1TorqueCurrentStatusSignal.getValueAsDouble();
 
     // Updates Flywheel Follow2 Motor Inputs
-    inputs.flywheelFollow2StatorCurrent = flywheelFollow2StatorCurrentStatusSignal.getValue();
-    inputs.flywheelFollow2SupplyCurrent = flywheelFollow2SupplyCurrentStatusSignal.getValue();
-    inputs.flywheelFollow2Velocity = flywheelFollow2VelocityStatusSignal.getValue();
-    inputs.flywheelFollow2Temperature = flywheelFollow2TemperatureStatusSignal.getValue();
-    inputs.flywheelFollow2Voltage = flywheelFollow2VoltageStatusSignal.getValue();
-    inputs.flywheelFollow2TorqueCurrent = flywheelFollow2TorqueCurrentStatusSignal.getValue();
+    inputs.flywheelFollow2StatorCurrent =
+        flywheelFollow2StatorCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow2SupplyCurrent =
+        flywheelFollow2SupplyCurrentStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow2VelocityRPS = flywheelFollow2VelocityStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow2Temperature = flywheelFollow2TemperatureStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow2Voltage = flywheelFollow2VoltageStatusSignal.getValueAsDouble();
+    inputs.flywheelFollow2TorqueCurrent =
+        flywheelFollow2TorqueCurrentStatusSignal.getValueAsDouble();
 
     // Updates Turret Motor Inputs
-    inputs.turretStatorCurrent = turretStatorCurrentStatusSignal.getValue();
-    inputs.turretSupplyCurrent = turretSupplyCurrentStatusSignal.getValue();
-    inputs.turretTemperature = turretTemperatureStatusSignal.getValue();
-    inputs.turretVoltage = turretVoltageStatusSignal.getValue();
-    inputs.turretPosition = turretPositionStatusSignal.getValue();
-    inputs.turretReferencePosition = this.turretReferencePosition;
-    inputs.turretVelocity = turretVelocityStatusSignal.getValue();
+    inputs.turretStatorCurrent = turretStatorCurrentStatusSignal.getValueAsDouble();
+    inputs.turretSupplyCurrent = turretSupplyCurrentStatusSignal.getValueAsDouble();
+    inputs.turretTemperature = turretTemperatureStatusSignal.getValueAsDouble();
+    inputs.turretVoltage = turretVoltageStatusSignal.getValueAsDouble();
+    inputs.turretPositionRot = turretPositionStatusSignal.getValueAsDouble();
+    inputs.turretReferencePositionRot = this.turretReferencePositionRot;
+    inputs.turretVelocityRPS = turretVelocityStatusSignal.getValueAsDouble();
 
     // Updates Hood Motor Inputs
-    inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValue();
-    inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValue();
-    inputs.hoodTemperature = hoodTemperatureStatusSignal.getValue();
-    inputs.hoodVoltage = hoodVoltageStatusSignal.getValue();
-    inputs.hoodPosition = hoodPositionStatusSignal.getValue();
-    inputs.hoodReferencePosition = this.hoodReferencePosition;
+    inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValueAsDouble();
+    inputs.hoodSupplyCurrent = hoodSupplyCurrentStatusSignal.getValueAsDouble();
+    inputs.hoodTemperature = hoodTemperatureStatusSignal.getValueAsDouble();
+    inputs.hoodVoltage = hoodVoltageStatusSignal.getValueAsDouble();
+    inputs.hoodPositionRot = hoodPositionStatusSignal.getValueAsDouble();
+    inputs.hoodReferencePositionRot = this.hoodReferencePositionRot;
 
     // Updates Fuel Detector Inputs
     inputs.fuelDetectorConnected = fuelDetector.isConnected();
@@ -443,17 +451,14 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
-      inputs.flywheelLeadClosedLoopReferenceVelocity =
-          RotationsPerSecond.of(flywheelLead.getClosedLoopReference().getValue());
-      inputs.flywheelLeadClosedLoopErrorVelocity =
-          RotationsPerSecond.of(flywheelLead.getClosedLoopError().getValue());
-      inputs.turretClosedLoopReferencePosition =
-          Rotations.of(turret.getClosedLoopReference().getValue());
-      inputs.turretClosedLoopErrorPosition = Rotations.of(turret.getClosedLoopError().getValue());
-      inputs.hoodClosedLoopReferencePosition =
-          Rotations.of(hood.getClosedLoopReference().getValue());
-      inputs.hoodClosedLoopErrorPosition = Rotations.of(hood.getClosedLoopError().getValue());
-      inputs.fuelDetectorDistanceToFuel = fuelDetectorDistanceStatusSignal.getValue();
+      inputs.flywheelLeadClosedLoopReferenceVelocityRPS =
+          flywheelLead.getClosedLoopReference().getValue();
+      inputs.flywheelLeadClosedLoopErrorVelocityRPS = flywheelLead.getClosedLoopError().getValue();
+      inputs.turretClosedLoopReferencePositionRot = turret.getClosedLoopReference().getValue();
+      inputs.turretClosedLoopErrorPositionRot = turret.getClosedLoopError().getValue();
+      inputs.hoodClosedLoopReferencePositionRot = hood.getClosedLoopReference().getValue();
+      inputs.hoodClosedLoopErrorPositionRot = hood.getClosedLoopError().getValue();
+      inputs.fuelDetectorDistanceToFuelMeters = fuelDetectorDistanceStatusSignal.getValueAsDouble();
       inputs.fuelDetectorSignalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
     }
 
@@ -543,41 +548,46 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
 
   @Override
-  public void setFlywheelVelocity(AngularVelocity velocity) {
-    flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocity));
+  public void setFlywheelVelocity(double velocityRPS) {
+    flywheelLead.setControl(flywheelLeadVelocityRequest.withVelocity(velocityRPS));
 
-    this.flywheelLeadReferenceVelocity = velocity.copy();
+    this.flywheelLeadReferenceVelocityRPS = velocityRPS;
   }
 
   @Override
-  public void setFlywheelCurrent(Current amps) {
+  public void setFlywheelCurrent(double amps) {
     flywheelLead.setControl(flywheelLeadCurrentRequest.withOutput(amps));
   }
 
   @Override
-  public void setTurretPosition(Angle position) {
-    turret.setControl(turretPositionRequest.withPosition(position));
-    this.turretReferencePosition = position.copy();
+  public void setTurretPosition(double positionRot) {
+    turret.setControl(
+        turretPositionRequest
+            .withPosition(positionRot)
+            .withVelocity(
+                RadiansPerSecond.of(
+                    -RobotOdometry.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond)));
+    this.turretReferencePositionRot = positionRot;
   }
 
   @Override
-  public void setTurretVoltage(Voltage voltage) {
+  public void setTurretVoltage(double voltage) {
     turret.setControl(turretVoltageRequest.withLimitReverseMotion(false).withOutput(voltage));
   }
 
   @Override
-  public void setHoodPosition(Angle position) {
-    hood.setControl(hoodPositionRequest.withPosition(position));
-    this.hoodReferencePosition = position.copy();
+  public void setHoodPosition(double positionRot) {
+    hood.setControl(hoodPositionRequest.withPosition(positionRot));
+    this.hoodReferencePositionRot = positionRot;
   }
 
   @Override
-  public void setHoodVoltage(Voltage voltage) {
+  public void setHoodVoltage(double voltage) {
     hood.setControl(hoodVoltageRequest.withLimitReverseMotion(false).withOutput(voltage));
   }
 
   @Override
-  public void lowerHoodSlow(Voltage voltage) {
+  public void lowerHoodSlow(double voltage) {
     hood.setControl(
         hoodVoltageRequest
             .withLimitReverseMotion(false)
@@ -652,8 +662,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.Slot0.kV = turretKV.get();
     turretConfig.Slot0.kA = turretKA.get();
 
-    // turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.0015;
-    // turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
+    turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.00075;
+    turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
     turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     turretConfig.Feedback.SensorToMechanismRatio = TURRET_GEAR_RATIO;
@@ -665,19 +675,19 @@ public class ShooterIOTalonFX implements ShooterIO {
     SoftwareLimitSwitchConfigs turretLimitSwitches = turretConfig.SoftwareLimitSwitch;
 
     turretLimitSwitches.ForwardSoftLimitEnable = true;
-    turretLimitSwitches.ForwardSoftLimitThreshold = TURRET_UPPER_ANGLE_LIMIT.in(Rotations);
+    turretLimitSwitches.ForwardSoftLimitThreshold = TURRET_UPPER_ANGLE_LIMIT_ROT;
     turretLimitSwitches.ReverseSoftLimitEnable = true;
-    turretLimitSwitches.ReverseSoftLimitThreshold = TURRET_LOWER_ANGLE_LIMIT.in(Rotations);
+    turretLimitSwitches.ReverseSoftLimitThreshold = TURRET_LOWER_ANGLE_LIMIT_ROT;
 
     // Configure a hardware limit switch that zeros the turret position to its lower angle limit
     turretConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
     turretConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue =
-        TURRET_LOWER_ANGLE_LIMIT.in(Rotations);
+        TURRET_LOWER_ANGLE_LIMIT_ROT;
     turretConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(turret, turretConfig, configAlert);
 
-    turret.setPosition(TURRET_STARTING_ANGLE.in(Rotations));
+    turret.setPosition(TURRET_STARTING_ANGLE_ROT);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, turret);
   }
@@ -713,19 +723,19 @@ public class ShooterIOTalonFX implements ShooterIO {
     SoftwareLimitSwitchConfigs hoodLimitSwitches = hoodConfig.SoftwareLimitSwitch;
 
     hoodLimitSwitches.ForwardSoftLimitEnable = true;
-    hoodLimitSwitches.ForwardSoftLimitThreshold = HOOD_UPPER_ANGLE_LIMIT.in(Rotations);
+    hoodLimitSwitches.ForwardSoftLimitThreshold = HOOD_UPPER_ANGLE_LIMIT_ROT;
     hoodLimitSwitches.ReverseSoftLimitEnable = true;
-    hoodLimitSwitches.ReverseSoftLimitThreshold = HOOD_LOWER_ANGLE_LIMIT.in(Rotations);
+    hoodLimitSwitches.ReverseSoftLimitThreshold = HOOD_LOWER_ANGLE_LIMIT_ROT;
 
     // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
     // limit switch, but we will set it using a control request
     hoodConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
-    hoodConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = HOOD_MIN_ANGLE.in(Rotations);
+    hoodConfig.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = HOOD_MIN_ANGLE_ROT;
     hoodConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(hood, hoodConfig, configAlert);
 
-    hood.setPosition(HOOD_STARTING_ANGLE.in(Rotations));
+    hood.setPosition(HOOD_STARTING_ANGLE_ROT);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
   }

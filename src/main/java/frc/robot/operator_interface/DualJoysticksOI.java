@@ -41,13 +41,13 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getScoreFromBankButton() {
+  public Trigger getForceSafeShootButton() {
     return translateJoystickButtons[1];
   }
 
   @Override
-  public Trigger getSnakeDriveButton() {
-    return translateJoystickButtons[4];
+  public Trigger getForceDeployIntakeButton() {
+    return translateJoystickButtons[2];
   }
 
   @Override
@@ -56,8 +56,8 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getForceDeployIntakeButton() {
-    return translateJoystickButtons[2];
+  public Trigger getSnakeDriveButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
@@ -98,11 +98,6 @@ public class DualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getUnjamHopperButton() {
-    return rotateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
 
@@ -114,5 +109,10 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
+  }
+
+  @Override
+  public Trigger getReverseIntakeRollersButton() {
+    return rotateJoystickButtons[3];
   }
 }

@@ -34,10 +34,10 @@ import frc.robot.commands.IntakeCommandsFactory;
 import frc.robot.commands.ShooterCommandsFactory;
 import frc.robot.commands.SwerveDrivetrainCommandFactory;
 import frc.robot.configs.DefaultRobotConfig;
-import frc.robot.configs.New2026RobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.NorthstarTestPlatformConfig;
 import frc.robot.configs.PracticeBoardConfig;
+import frc.robot.configs.SavannaRobotConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
@@ -153,7 +153,7 @@ public class RobotContainer {
       visualization = new RobotVisualization(intake);
     }
 
-    shooterModes = new ShooterModes(swerveDrivetrain, shooter);
+    shooterModes = new ShooterModes(shooter);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -162,11 +162,11 @@ public class RobotContainer {
 
     // register autonomous commands
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
-      AutonomousCommandsFactory.getInstance().configureAutoCommands(differentialDrivetrain, vision);
+      AutonomousCommandsFactory.getInstance().configureAutoCommands(differentialDrivetrain);
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       AutonomousCommandsFactory.getInstance()
-          .configureAutoCommands(swerveDrivetrain, vision, hopper, intake, shooter);
+          .configureAutoCommands(swerveDrivetrain, hopper, intake, shooter, shooterModes);
     }
 
     // Alert when tuning
@@ -188,7 +188,7 @@ public class RobotContainer {
         config = new NewPracticeRobotConfig();
         break;
       case ROBOT_COMPETITION, ROBOT_SIMBOT:
-        config = new New2026RobotConfig();
+        config = new SavannaRobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
         config = new PracticeBoardConfig();
@@ -334,6 +334,7 @@ public class RobotContainer {
     Field2d.getInstance().populateNeutralZone();
     Field2d.getInstance().populateOpponentAllianceHighPassZone();
     Field2d.getInstance().populateNoPassZone();
+    Field2d.getInstance().populateTowerNoPassZone();
     Field2d.getInstance().logAllianceZonePoints();
     Field2d.getInstance().logOpponentAllianceZonePoints();
     Field2d.getInstance().logNeutralZonePoints();

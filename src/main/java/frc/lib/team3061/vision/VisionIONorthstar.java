@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.FieldConstants;
-import frc.lib.team6328.util.SystemTimeValidReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +40,6 @@ public class VisionIONorthstar implements VisionIO {
   private final IntegerPublisher matchNumberPublisher;
   private final IntegerPublisher timestampPublisher;
   private final BooleanPublisher isRecordingPublisher;
-
-  private final Timer slowPeriodicTimer = new Timer();
 
   private final List<VisionIO.PoseObservation> observations = new ArrayList<>();
   private final AprilTagFieldLayout aprilTagFieldLayout;
@@ -102,15 +99,12 @@ public class VisionIONorthstar implements VisionIO {
     fpsObjDetectSubscriber = outputTable.getIntegerTopic("fps_objdetect").subscribe(0);
     powerMetricsSubscriber =
         outputTable.getDoubleArrayTopic("power_metrics").subscribe(new double[] {});
-
-    slowPeriodicTimer.start();
   }
 
   public void updateInputs(
       VisionIOInputs inputs,
       AprilTagVisionIOInputs aprilTagInputs,
       ObjDetectVisionIOInputs objDetectInputs) {
-    boolean slowPeriodic = slowPeriodicTimer.advanceIfElapsed(1.0);
 
     observations.clear();
 
@@ -124,15 +118,11 @@ public class VisionIONorthstar implements VisionIO {
     }
 
     // Publish timestamp
-    if (slowPeriodic && SystemTimeValidReader.isValid()) {
-      timestampPublisher.set(WPIUtilJNI.getSystemTime() / 1000000);
-    }
+    timestampPublisher.set(WPIUtilJNI.getSystemTime() / 1000000);
 
-    if (slowPeriodic) {
-      eventNamePublisher.set(DriverStation.getEventName());
-      matchTypePublisher.set(DriverStation.getMatchType().ordinal());
-      matchNumberPublisher.set(DriverStation.getMatchNumber());
-    }
+    eventNamePublisher.set(DriverStation.getEventName());
+    matchTypePublisher.set(DriverStation.getMatchType().ordinal());
+    matchNumberPublisher.set(DriverStation.getMatchNumber());
 
     // Get AprilTag data
     var aprilTagQueue = observationSubscriber.readQueue();
@@ -145,9 +135,7 @@ public class VisionIONorthstar implements VisionIO {
       processAprilTagFrame(aprilTagInputs.timestamps[i], aprilTagInputs.frames[i], observations);
     }
     inputs.poseObservations = observations.toArray(new PoseObservation[0]);
-    if (slowPeriodic) {
-      aprilTagInputs.fps = fpsAprilTagsSubscriber.get();
-    }
+    aprilTagInputs.fps = fpsAprilTagsSubscriber.get();
 
     // Get object detection data
     var objDetectQueue = objDetectObservationSubscriber.readQueue();
@@ -157,33 +145,29 @@ public class VisionIONorthstar implements VisionIO {
       objDetectInputs.timestamps[i] = objDetectQueue[i].timestamp / 1000000.0;
       objDetectInputs.frames[i] = objDetectQueue[i].value;
     }
-    if (slowPeriodic) {
-      objDetectInputs.fps = fpsObjDetectSubscriber.get();
-    }
+    objDetectInputs.fps = fpsObjDetectSubscriber.get();
 
     // Get power metrics
-    if (slowPeriodic) {
-      double[] powerMetrics = powerMetricsSubscriber.get();
-      if (powerMetrics.length >= 4) {
-        inputs.cpuPower = powerMetrics[0];
-        inputs.gpuPower = powerMetrics[1];
-        inputs.anePower = powerMetrics[2];
-        switch ((int) powerMetrics[3]) {
-          case 0:
-            inputs.thermalPressure = "Nominal";
-            break;
-          case 1:
-            inputs.thermalPressure = "Fair";
-            break;
-          case 2:
-            inputs.thermalPressure = "Serious";
-            break;
-          case 3:
-            inputs.thermalPressure = "Critical";
-            break;
-          default:
-            inputs.thermalPressure = "Unknown";
-        }
+    double[] powerMetrics = powerMetricsSubscriber.get();
+    if (powerMetrics.length >= 4) {
+      inputs.cpuPower = powerMetrics[0];
+      inputs.gpuPower = powerMetrics[1];
+      inputs.anePower = powerMetrics[2];
+      switch ((int) powerMetrics[3]) {
+        case 0:
+          inputs.thermalPressure = "Nominal";
+          break;
+        case 1:
+          inputs.thermalPressure = "Fair";
+          break;
+        case 2:
+          inputs.thermalPressure = "Serious";
+          break;
+        case 3:
+          inputs.thermalPressure = "Critical";
+          break;
+        default:
+          inputs.thermalPressure = "Unknown";
       }
     }
   }

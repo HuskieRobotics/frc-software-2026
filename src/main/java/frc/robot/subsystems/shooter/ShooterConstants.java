@@ -4,9 +4,8 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Time;
 
 public class ShooterConstants {
 
@@ -41,7 +40,7 @@ public class ShooterConstants {
   // Follow 2 Constants
   public static final boolean FLYWHEEL_FOLLOWER_2_INVERTED_FROM_LEAD = false;
 
-  public static final AngularVelocity FLYWHEEL_PASS_OVER_NET_VELOCITY = RotationsPerSecond.of(45);
+  public static final double FLYWHEEL_PASS_OVER_NET_VELOCITY_RPS = 45.0;
 
   public static final double TURRET_KP = 50.0;
   public static final double TURRET_KI = 0.0;
@@ -66,21 +65,21 @@ public class ShooterConstants {
   public static final double HOOD_GEAR_RATIO = 144.0;
   public static final double HOOD_LENGTH_METERS = 0.2;
   public static final double HOOD_MASS_KG = 2.0;
-  public static final Angle HOOD_MIN_ANGLE = Degrees.of(20.0);
-  public static final Angle HOOD_MAX_ANGLE = Degrees.of(52.0);
-  public static final Angle HOOD_STARTING_ANGLE = Degrees.of(20.0);
+  public static final double HOOD_MIN_ANGLE_ROT = Units.degreesToRotations(20.0);
+  public static final double HOOD_MAX_ANGLE_ROT = Units.degreesToRotations(52.0);
+  public static final double HOOD_STARTING_ANGLE_ROT = Units.degreesToRotations(20.0);
 
-  public static final Angle HOOD_LOWER_ANGLE_LIMIT = Degrees.of(22.0);
-  public static final Angle HOOD_NEAR_TRENCH_ANGLE_LIMIT = Degrees.of(30.0);
-  public static final Angle HOOD_UPPER_ANGLE_LIMIT = Degrees.of(50.0);
-  public static final Angle HOOD_MAX_PASSING_ANGLE = Degrees.of(49.0);
+  public static final double HOOD_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(22.0);
+  public static final double HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT = Units.degreesToRotations(30.0);
+  public static final double HOOD_UPPER_ANGLE_LIMIT_ROT = Units.degreesToRotations(50.0);
+  public static final double HOOD_MAX_PASSING_ANGLE_ROT = Units.degreesToRotations(49.0);
 
-  public static final Voltage HOOD_SLOW_LOWER_VOLTAGE = Volts.of(-1.0); // FIXME: update value
+  public static final double HOOD_SLOW_LOWER_VOLTAGE = -1.0; // FIXME: update value
 
-  public static final Angle TURRET_LOWER_ANGLE_LIMIT = Degrees.of(-180);
-  public static final Angle TURRET_UPPER_ANGLE_LIMIT = Degrees.of(180);
+  public static final double TURRET_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(-180);
+  public static final double TURRET_UPPER_ANGLE_LIMIT_ROT = Units.degreesToRotations(180);
 
-  public static final Angle TURRET_STARTING_ANGLE = Degrees.of(90.0);
+  public static final double TURRET_STARTING_ANGLE_ROT = Units.degreesToRotations(90.0);
 
   public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 40;
@@ -92,11 +91,13 @@ public class ShooterConstants {
   public static final int TURRET_CONTINUOUS_CURRENT_LIMIT = 15;
   public static final double TURRET_PEAK_CURRENT_DURATION = 0.1;
 
-  public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(1.0);
-  public static final Angle HOOD_TOLERANCE_ANGLE = Degrees.of(0.25); // x`FIXME: update when tuning
-  public static final Angle TURRET_TOLERANCE_ANGLE = Degrees.of(0.25); // FIXME: update when tuning
-  public static final Angle TURRET_DISTANCE_TO_SETPOINT_THRESHOLD =
-      Degrees.of(15.0); // FIXME: update when tuning
+  public static final double VELOCITY_TOLERANCE_RPS = 1.0;
+  public static final double HOOD_TOLERANCE_ANGLE_ROT = Units.degreesToRotations(0.5);
+  public static final double TURRET_TOLERANCE_ANGLE_ROT = Units.degreesToRotations(6.0);
+  public static final double TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_SHOOTING_ROT =
+      Units.degreesToRotations(15.0);
+  public static final double TURRET_DISTANCE_TO_SETPOINT_THRESHOLD_WHEN_PASSING_ROT =
+      Units.degreesToRotations(15.0);
 
   // Hood and turret position setpoints
   public static final double HOOD_SETPOINT_1_DEGREES = 22.0;
@@ -107,18 +108,15 @@ public class ShooterConstants {
   public static final double TURRET_SETPOINT_2_DEGREES = -180.0;
   public static final double TURRET_SETPOINT_3_DEGREES = 180.0;
 
-  public static final Angle TURRET_LOCK_POSITION_DEGREES =
-      Degrees.of(120); // FIXME: determine value
+  public static final double TURRET_LOCK_POSITION_ROT =
+      Units.degreesToRotations(120); // FIXME: determine value
 
   // Velocity setpoints for lead flywheel
-  public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_1_RPS =
-      RotationsPerSecond.of(28.0);
-  public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_2_RPS =
-      RotationsPerSecond.of(36.0);
-  public static final AngularVelocity FLYWHEEL_VELOCITY_SETPOINT_3_RPS =
-      RotationsPerSecond.of(60.0);
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_1_RPS = 28.0;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_2_RPS = 36.0;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_3_RPS = 60.0;
 
-  public static final AngularVelocity FLYWHEEL_MAX_VELOCITY_RPS = RotationsPerSecond.of(60);
+  public static final double FLYWHEEL_MAX_VELOCITY_RPS = 60.0;
 
   public static final double COMMAND_WAIT_TIME_SECONDS = 2.0;
 
@@ -132,18 +130,26 @@ public class ShooterConstants {
   public static final Transform2d ROBOT_TO_TURRET_TRANSFORM =
       new Transform2d(-0.0635, 0.13335, new Rotation2d()); // got from CAD
 
-  public static final Angle HOOD_OFFSET_WHEN_SHOOTING = Degrees.of(5); // FIXME: determine value
+  public static final double HOOD_OFFSET_WHEN_SHOOTING_ROT =
+      Units.degreesToRotations(5); // FIXME: determine value
 
   public static final double FLYWHEEL_VELOCITY_SCALE_FACTOR = 1; // FIXME: determine value
 
-  public static final AngularVelocity LOCK_SHOT_FLYWHEEL_RPS = RotationsPerSecond.of(36);
-  public static final Angle LOCK_SHOT_HOOD_ANGLE = Degrees.of(22);
-  public static final Angle LOCK_SHOT_TURRET_ANGLE = Degrees.of(30); // FIXME: determine value
+  public static final double LOCK_SHOT_FLYWHEEL_RPS = 36.0;
+  public static final double LOCK_SHOT_HOOD_ANGLE_ROT =
+      Units.degreesToRotations(22.0); // FIXME: determine value
+  public static final double LOCK_SHOT_TURRET_ANGLE_ROT =
+      Units.degreesToRotations(30.0); // FIXME: determine value
 
-  public static final AngularVelocity PIT_TEST_FLYWHEEL_RPS = RotationsPerSecond.of(20);
+  public static final double PIT_TEST_FLYWHEEL_RPS = 20.0;
 
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
   public static final double FUEL_DETECTOR_PROXIMITY_THRESHOLD =
       0.03; // meters, FIXME: determine value
+
+  public static final Time TURRET_OUTSIDE_SETPOINT_THRESHOLD =
+      Seconds.of(2.0); // FIXME: determine value
+  public static final double TURRET_STUCK_ROTATION_ADJUSTMENT_ROT = Units.degreesToRotations(180.0);
+  public static final Time TURRET_UNJAM_DURATION = Seconds.of(1.0); // FIXME: determine value
 }

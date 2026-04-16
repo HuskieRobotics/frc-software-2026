@@ -24,13 +24,13 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Shoot On The Move", false, false);
 
   public final LoggedTunableBoolean passOnTheMoveToggle =
-      new LoggedTunableBoolean("operatorDashboard/Pass On The Move", false, false);
+      new LoggedTunableBoolean("operatorDashboard/Pass On The Move", true, true);
 
   // public final LoggedTunableBoolean objectDetectionToggle =
   //     new LoggedTunableBoolean("operatorDashboard/Object Detection Enabled", true, true);
 
   public final LoggedTunableBoolean hubActiveAtHomeToggle =
-      new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", true, true);
+      new LoggedTunableBoolean("operatorDashboard/Hub Active (Home)", false, true);
 
   public final LoggedTunableBoolean lockShooterToggle =
       new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, false);

@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
-
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -60,12 +58,14 @@ public class Field2d {
   private Region2d transformedRightBumpZoneRED;
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
+  private Region2d transformedTowerNoPassZone;
 
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
   private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 19;
   private static final double NO_PASS_ZONE_DEPTH_METERS = 3.0;
+  private static final double TOWER_NO_PASS_ZONE_DEPTH_METERS = 0.25;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -189,6 +189,24 @@ public class Field2d {
     this.transformedNoPassZone = new Region2d(zoneCorners);
   }
 
+  public void populateTowerNoPassZone() {
+    Translation2d[] towerEdges =
+        new Translation2d[] {
+          new Translation2d(
+              0.0, FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
+          new Translation2d(
+              FieldConstants.Tower.rightUpright.getX(),
+              FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
+          new Translation2d(
+              FieldConstants.Tower.leftUpright.getX(),
+              FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
+          new Translation2d(
+              0.0, FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
+        };
+
+    this.transformedTowerNoPassZone = new Region2d(towerEdges);
+  }
+
   /**
    * For now, this method populates all four banks (although only two can be used for any specific
    * match) In the future, it can be improved to only have two banks constructed at the start of the
@@ -206,7 +224,7 @@ public class Field2d {
             FieldConstants.LinesVertical.allianceZone
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
             FieldConstants.fieldWidth
-                - RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                - RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2.0,
             Rotation2d.fromDegrees(-90));
     Logger.recordOutput("Field2d/blueLeftBank", banks[0]);
 
@@ -215,7 +233,7 @@ public class Field2d {
         new Pose2d(
             FieldConstants.LinesVertical.allianceZone
                 - Units.inchesToMeters(BANK_BUFFER_FROM_TRENCH_INCHES),
-            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+            RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2.0,
             Rotation2d.fromDegrees(90));
     Logger.recordOutput("Field2d/blueRightBank", banks[1]);
 
@@ -366,7 +384,7 @@ public class Field2d {
   }
 
   public void logAllianceZonePoints() {
-    transformedAllianceZone.logPoints("aliianceZone");
+    transformedAllianceZone.logPoints("allianceZone");
   }
 
   public void logOpponentAllianceZonePoints() {
@@ -383,6 +401,7 @@ public class Field2d {
 
   public void logNoPassZonePoints() {
     transformedNoPassZone.logPoints("noPassZone");
+    transformedTowerNoPassZone.logPoints("TowerNoPassZone");
   }
 
   public void logTrenchZonePoints() {
@@ -460,7 +479,7 @@ public class Field2d {
         pathConstants,
         null,
         new GoalEndState(
-            RobotConfig.getInstance().getMoveToPathFinalVelocity(), end.getRotation()));
+            RobotConfig.getInstance().getMoveToPathFinalVelocityMPS(), end.getRotation()));
   }
 
   /**
@@ -610,6 +629,16 @@ public class Field2d {
     }
 
     return transformedNoPassZone.contains(pose);
+  }
+
+  public boolean inTowerNoPassZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedTowerNoPassZone.contains(pose);
   }
 
   public boolean inTrenchZone() {
