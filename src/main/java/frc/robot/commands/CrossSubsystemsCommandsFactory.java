@@ -152,14 +152,7 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getManualShootButton()
         .onFalse(
-            Commands.sequence(
-                    intake.getDeployAndStartCommand(),
-                    Commands.either(
-                        getShootWhenAimedCommand(shooterModes, shooter, hopper),
-                        Commands.runOnce(hopper::stop, hopper),
-                        () ->
-                            shooterModes.isShootOnTheMoveEnabled()
-                                || shooterModes.isPassOnTheMoveEnabled()))
+            Commands.runOnce(hopper::stop, hopper)
                 .withName("resume on the move or stop hopper after shoot"));
 
     // this is bound to the left trigger (translate 1)
