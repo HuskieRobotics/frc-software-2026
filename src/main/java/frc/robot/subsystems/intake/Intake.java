@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
   private boolean inDeployedState = false;
   private boolean areRollersActiveState = false;
 
-  private double rollerVelocityAdjustment = ROLLER_TARGET_VELOCITY_RPS;
+  private double rollerVelocityAdjustment = ROLLER_STATIC_TARGET_VELOCITY_RPS;
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
@@ -118,7 +118,7 @@ public class Intake extends SubsystemBase {
     rollerAtSetPointDebouncer.calculate(
         MathUtils.isNear(
             inputs.rollerVelocityRPSLead,
-            ROLLER_TARGET_VELOCITY_RPS,
+            ROLLER_STATIC_TARGET_VELOCITY_RPS,
             ROLLER_VELOCITY_TOLERANCE_RPS));
     deployerDeployedDebouncer.calculate(
         MathUtils.isNear(
@@ -160,8 +160,14 @@ public class Intake extends SubsystemBase {
     intakeIO.setRollerVelocity(rollerVelocityAdjustment);
   }
 
+  public void setRollerVelocity(double v) {
+    if (areRollersActiveState) {
+      intakeIO.setRollerVelocity(v);
+    }
+  }
+
   public void reverseRoller() {
-    intakeIO.setRollerVelocity(-ROLLER_TARGET_VELOCITY_RPS);
+    intakeIO.setRollerVelocity(-ROLLER_STATIC_TARGET_VELOCITY_RPS);
   }
 
   public void startRollerInAuto() {
@@ -305,7 +311,7 @@ public class Intake extends SubsystemBase {
                     () -> {
                       if (!MathUtils.isNear(
                           inputs.rollerVelocityRPSLead,
-                          ROLLER_TARGET_VELOCITY_RPS,
+                          ROLLER_STATIC_TARGET_VELOCITY_RPS,
                           ROLLER_VELOCITY_TOLERANCE_RPS)) {
                         FaultReporter.getInstance()
                             .addFault(

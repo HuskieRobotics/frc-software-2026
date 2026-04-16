@@ -155,7 +155,7 @@ public class RobotContainer {
       visualization = new RobotVisualization(intake);
     }
 
-    shooterModes = new ShooterModes(shooter);
+    shooterModes = new ShooterModes(shooter, intake);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
