@@ -157,7 +157,6 @@ public class Intake extends SubsystemBase {
 
   public void startRoller() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
   }
 
   public void setRollerVelocity(double v) {
@@ -172,12 +171,10 @@ public class Intake extends SubsystemBase {
 
   public void startRollerInAuto() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
   }
 
   public void stopRoller() {
     areRollersActiveState = false;
-    intakeIO.setRollerVelocity(0.0);
   }
 
   public void outTakeRoller() {
