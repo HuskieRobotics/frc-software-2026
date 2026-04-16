@@ -764,7 +764,8 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
-    return getLeftHubSupportSweep(hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
+    return getLeftHubSupportSweep(
+        hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
   }
 
   private Command getLeftMidSupport(
