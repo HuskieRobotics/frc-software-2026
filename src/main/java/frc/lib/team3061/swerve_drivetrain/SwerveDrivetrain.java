@@ -126,7 +126,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
   private boolean accelerationLimiting = false;
   private boolean driveToPoseCanceled = false;
-  private final double ACCELERATION_LIMITING_MAX_VELOCITY_MPS = 3.0;
+  private static final double ACCELERATION_LIMITING_MAX_VELOCITY_MPS = 2.5;
 
   private Alert noPoseAlert =
       new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.kWarning);
