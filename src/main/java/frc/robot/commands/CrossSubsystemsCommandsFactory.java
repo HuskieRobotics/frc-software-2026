@@ -349,22 +349,20 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getShootWhenAimedCommand(
       ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
-    return Commands.sequence(
-            Commands.repeatingSequence(
-                Commands.parallel(
-                        hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                        Commands.repeatingSequence(
-                            Commands.either(
-                                Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
-                                Commands.run(
-                                    () -> LEDs.getInstance().requestState(States.SHOOTING)),
-                                shooterModes::isPassOnTheMoveEnabled)))
-                    .until(shooterModes::isTurretNotNearSetPoint),
-                Commands.parallel(
-                        Commands.runOnce(hopper::stop, hopper),
-                        Commands.run(
-                            () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
-                    .until(() -> !shooterModes.isTurretNotNearSetPoint())))
+    return Commands.repeatingSequence(
+            Commands.parallel(
+                    hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+                    Commands.repeatingSequence(
+                        Commands.either(
+                            Commands.run(() -> LEDs.getInstance().requestState(States.PASSING)),
+                            Commands.run(() -> LEDs.getInstance().requestState(States.SHOOTING)),
+                            shooterModes::isPassOnTheMoveEnabled)))
+                .until(shooterModes::isTurretNotNearSetPoint),
+            Commands.parallel(
+                    Commands.runOnce(hopper::stop, hopper),
+                    Commands.run(
+                        () -> LEDs.getInstance().requestState(States.TURRET_NOT_AT_SETPOINT)))
+                .until(() -> !shooterModes.isTurretNotNearSetPoint()))
         .withName("shoot when aimed");
   }
 }
