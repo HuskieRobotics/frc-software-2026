@@ -87,6 +87,18 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
   private final LoggedTunableNumber autoTurnKd =
       new LoggedTunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
 
+  private final LoggedTunableNumber slowModeMultiplierTuneable =
+      new LoggedTunableNumber(
+          "Drivetrain/SlowModeMultiplier", RobotConfig.getInstance().getRobotSlowModeMultiplier());
+  private final LoggedTunableNumber maxAccelerationWhenLimitedTuneable =
+      new LoggedTunableNumber(
+          "Drivetrain/MaxAccelerationWhenLimitedMPSPS",
+          RobotConfig.getInstance().getRobotMaxAccelerationWhenLimitedMPSPS());
+  private final LoggedTunableNumber maxAngularAccelerationWhenLimitedTuneable =
+      new LoggedTunableNumber(
+          "Drivetrain/MaxAngularAccelerationWhenLimitedRPSPS",
+          RobotConfig.getInstance().getRobotMaxAngularAccelerationWhenLimitedRPSPS());
+
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
   private final PIDController autoYController =
@@ -97,6 +109,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
   private boolean isFieldRelative = true;
   private boolean isTranslationSlowMode = false;
   private boolean isRotationSlowMode = false;
+  private double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
 
   // set to true upon construction to trigger disabling break mode shortly after the code starts
   private boolean brakeMode = true;
@@ -113,6 +126,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
   private boolean accelerationLimiting = false;
   private boolean driveToPoseCanceled = false;
+  private static final double ACCELERATION_LIMITING_MAX_VELOCITY_MPS = 2.5;
 
   private Alert noPoseAlert =
       new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.kWarning);
@@ -446,9 +460,6 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
       boolean isOpenLoop,
       boolean isFieldRelative) {
 
-    // get the slow-mode multiplier from the config
-    double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
-
     // log velocity before and after filter
     Logger.recordOutput(SUBSYSTEM_NAME + "/requestedXVelocity", xVelocityMPS);
     Logger.recordOutput(SUBSYSTEM_NAME + "/requestedYVelocity", yVelocityMPS);
@@ -470,6 +481,11 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
       xVelocityMPS = this.xFilter.lastValue();
       yVelocityMPS = this.yFilter.lastValue();
       rotationalVelocityRadiansPerSecond = this.thetaFilter.lastValue();
+      double currentVelocity = Math.sqrt(Math.pow(xVelocityMPS, 2) + Math.pow(yVelocityMPS, 2));
+      if (currentVelocity > ACCELERATION_LIMITING_MAX_VELOCITY_MPS) {
+        xVelocityMPS = xVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
+        yVelocityMPS = yVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
+      }
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
@@ -535,9 +551,6 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
     this.xFilter.calculate(xVelocityMPS);
     this.yFilter.calculate(yVelocityMPS);
     this.thetaFilter.calculate(0.0);
-
-    // get the slow-mode multiplier from the config
-    double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
     // slow-mode multiplier
@@ -673,6 +686,30 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
         autoTurnKp,
         autoTurnKi,
         autoTurnKd);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        limits -> {
+          slowModeMultiplier = limits[0];
+        },
+        slowModeMultiplierTuneable);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        limits -> {
+          xFilter = new SlewRateLimiter(limits[0]);
+          yFilter = new SlewRateLimiter(limits[0]);
+          thetaFilter = new SlewRateLimiter(limits[1]);
+        },
+        maxAccelerationWhenLimitedTuneable,
+        maxAngularAccelerationWhenLimitedTuneable);
+
+    Logger.recordOutput(SUBSYSTEM_NAME + "/SlowModeMultiplier", slowModeMultiplier);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/MaxAccelerationWhenLimited", maxAccelerationWhenLimitedTuneable.get());
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/MaxAngularAccelerationWhenLimited",
+        maxAngularAccelerationWhenLimitedTuneable.get());
 
     // Record cycle time
     LoggedTracer.record("Drivetrain");

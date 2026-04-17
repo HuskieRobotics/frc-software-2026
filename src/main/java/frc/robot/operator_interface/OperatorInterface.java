@@ -81,6 +81,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getLimitAccelerationAndVelocityButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getManualShootButton() {
     return new Trigger(() -> false);
   }
