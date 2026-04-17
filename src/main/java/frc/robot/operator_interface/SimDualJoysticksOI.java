@@ -42,7 +42,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getForceSafeShootButton() {
+  public Trigger getLimitAccelerationAndVelocityButton() {
     return translateJoystickButtons[1];
   }
 

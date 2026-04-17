@@ -74,7 +74,10 @@ public class SavannaRobotConfig extends RobotConfig {
 
   private static final double MAX_VELOCITY_MPS = 4.936;
   private static final double MAX_COAST_VELOCITY_MPS = 0.05;
-  private static final double SLOW_MODE_MULTIPLIER = 0.75;
+  private static final double SLOW_MODE_MULTIPLIER = 0.3;
+  private static final double MAX_ACCELERATION_WHEN_LIMITED_MPSPS = 9.0;
+  private static final double MAX_ANGULAR_ACCELERATION_WHEN_LIMITED_RPSPS =
+      100.0; // essentially disable angular acceleration limits
 
   private static final String CAN_BUS_NAME = "canbus1";
   private static final CANBus CAN_BUS = new CANBus(CAN_BUS_NAME);
@@ -144,8 +147,8 @@ public class SavannaRobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BCR_CAMERA =
       new Transform3d(
-          new Translation3d(-0.299, 0.065, 0.292),
-          new Rotation3d(new Quaternion(0.176, -0.087, -0.008, -0.980)));
+          new Translation3d(-0.302, 0.063, 0.297),
+          new Rotation3d(new Quaternion(0.176, -0.093, -0.006, -0.980)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
@@ -391,6 +394,16 @@ public class SavannaRobotConfig extends RobotConfig {
   @Override
   public double getRobotSlowModeMultiplier() {
     return SLOW_MODE_MULTIPLIER;
+  }
+
+  @Override
+  public double getRobotMaxAccelerationWhenLimitedMPSPS() {
+    return MAX_ACCELERATION_WHEN_LIMITED_MPSPS;
+  }
+
+  @Override
+  public double getRobotMaxAngularAccelerationWhenLimitedRPSPS() {
+    return MAX_ANGULAR_ACCELERATION_WHEN_LIMITED_RPSPS;
   }
 
   @Override

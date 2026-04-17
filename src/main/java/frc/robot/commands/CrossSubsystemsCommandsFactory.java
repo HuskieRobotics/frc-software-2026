@@ -98,7 +98,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getCheckForFaults()
         .onTrue(FaultReporter.getInstance().getCheckForFaultsCommand().ignoringDisable(true));
 
-    configureCrossSubsystemsTriggers(shooterModes, shooter, hopper);
+    configureCrossSubsystemsTriggers(shooterModes, shooter, hopper, swerveDrivetrain);
 
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(swerveDrivetrain, intake, hopper, shooter, oi));
@@ -319,15 +319,32 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static void configureCrossSubsystemsTriggers(
-      ShooterModes shooterModes, Shooter shooter, Hopper hopper) {
+      ShooterModes shooterModes,
+      Shooter shooter,
+      Hopper hopper,
+      SwerveDrivetrain swerveDrivetrain) {
+
+    Trigger slowModeTrigger =
+        new Trigger(() -> shooterModes.isShootOnTheMoveEnabled())
+            .and(DriverStation::isTeleopEnabled);
+
+    slowModeTrigger.onTrue(
+        Commands.runOnce(swerveDrivetrain::enableAccelerationLimiting)
+            .withName("acceleration limiting enabled"));
+
+    slowModeTrigger.onFalse(
+        Commands.runOnce(swerveDrivetrain::disableAccelerationLimiting)
+            .withName("acceleration limiting disabled"));
+
     Trigger unloadHopperOnTheMoveTrigger =
         new Trigger(
                 () ->
                     shooterModes.isShootOnTheMoveEnabled() || shooterModes.isPassOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);
+
     unloadHopperOnTheMoveTrigger.onTrue(getShootWhenAimedCommand(shooterModes, shooter, hopper));
     unloadHopperOnTheMoveTrigger.onFalse(
-        Commands.runOnce(hopper::stop, hopper).withName("stop hopper"));
+        Commands.runOnce(hopper::stop, hopper).withName("stop hopper on the move"));
   }
 
   private static Command getShootWhenAimedCommand(
