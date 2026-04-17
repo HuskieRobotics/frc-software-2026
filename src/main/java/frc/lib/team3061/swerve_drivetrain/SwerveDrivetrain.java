@@ -126,6 +126,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
   private boolean accelerationLimiting = false;
   private boolean driveToPoseCanceled = false;
+  private final double ACCELERATION_LIMITING_MAX_VELOCITY_MPS = 3.0;
 
   private Alert noPoseAlert =
       new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.kWarning);
@@ -480,6 +481,11 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
       xVelocityMPS = this.xFilter.lastValue();
       yVelocityMPS = this.yFilter.lastValue();
       rotationalVelocityRadiansPerSecond = this.thetaFilter.lastValue();
+      double currentVelocity = Math.sqrt(Math.pow(xVelocityMPS, 2) + Math.pow(yVelocityMPS, 2));
+      if (currentVelocity > ACCELERATION_LIMITING_MAX_VELOCITY_MPS) {
+        xVelocityMPS = xVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
+        yVelocityMPS = yVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
+      }
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
