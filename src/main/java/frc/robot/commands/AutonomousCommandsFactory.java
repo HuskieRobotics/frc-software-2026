@@ -505,8 +505,8 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
     try {
       // exchange with turn vs. no-turn for testing
-      firstSweep = PathPlannerPath.fromPathFile("L Turn Fuel Sweep");
-      secondSweep = PathPlannerPath.fromPathFile("L Turn Second Collect");
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
