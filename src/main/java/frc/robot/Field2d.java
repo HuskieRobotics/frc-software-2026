@@ -59,10 +59,6 @@ public class Field2d {
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
   private Region2d transformedTowerNoPassZone;
-  private Region2d transformedIntakeCornerZoneLeftBLUE;
-  private Region2d transformedIntakeCornerZoneRightBLUE;
-  private Region2d transformedIntakeCornerZoneLeftRED;
-  private Region2d transformedIntakeCornerZoneRightRED;
 
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
@@ -209,42 +205,6 @@ public class Field2d {
         };
 
     this.transformedTowerNoPassZone = new Region2d(towerEdges);
-  }
-
-  public void populateIntakeCornerZone() {
-
-    Translation2d[] leftCornerEdgesBLUE =
-        new Translation2d[] {
-          // blue left corner (top of field)
-          new Translation2d(0, FieldConstants.fieldWidth),
-          new Translation2d(1.0, FieldConstants.fieldWidth),
-          new Translation2d(1.0, FieldConstants.fieldWidth - 1.0),
-          new Translation2d(0, FieldConstants.fieldWidth - 1.0),
-        };
-
-    Translation2d[] rightCornerEdgesBLUE =
-        new Translation2d[] {
-          // blue right corner (bottom of field)
-          new Translation2d(0, 0),
-          new Translation2d(1.0, 0),
-          new Translation2d(1.0, 1.0),
-          new Translation2d(0, 1.0),
-        };
-
-    Translation2d[] leftCornerEdgesRED = new Translation2d[leftCornerEdgesBLUE.length];
-    Translation2d[] rightCornerEdgesRED = new Translation2d[rightCornerEdgesBLUE.length];
-
-    for (int i = 0; i < leftCornerEdgesBLUE.length; i++) {
-      leftCornerEdgesRED[i] = FlippingUtil.flipFieldPosition(leftCornerEdgesBLUE[i]);
-    }
-    for (int i = 0; i < rightCornerEdgesBLUE.length; i++) {
-      rightCornerEdgesRED[i] = FlippingUtil.flipFieldPosition(rightCornerEdgesBLUE[i]);
-    }
-
-    this.transformedIntakeCornerZoneLeftBLUE = new Region2d(leftCornerEdgesBLUE);
-    this.transformedIntakeCornerZoneRightBLUE = new Region2d(rightCornerEdgesBLUE);
-    this.transformedIntakeCornerZoneLeftRED = new Region2d(leftCornerEdgesRED);
-    this.transformedIntakeCornerZoneRightRED = new Region2d(rightCornerEdgesRED);
   }
 
   /**
@@ -456,13 +416,6 @@ public class Field2d {
     transformedRightBumpZoneBLUE.logPoints("rightBumpZone BLUE");
     transformedLeftBumpZoneRED.logPoints("leftBumpZone RED");
     transformedRightBumpZoneRED.logPoints("rightBumpZone RED");
-  }
-
-  public void logIntakeCornerZonePoints() {
-    transformedIntakeCornerZoneLeftBLUE.logPoints("intakeCornerZoneLeft BLUE");
-    transformedIntakeCornerZoneRightBLUE.logPoints("intakeCornerZoneRight BLUE");
-    transformedIntakeCornerZoneLeftRED.logPoints("intakeCornerZoneLeft RED");
-    transformedIntakeCornerZoneRightRED.logPoints("intakeCornerZoneRight RED");
   }
 
   /**
@@ -708,17 +661,6 @@ public class Field2d {
         || transformedRightBumpZoneBLUE.contains(pose)
         || transformedLeftBumpZoneRED.contains(pose)
         || transformedRightBumpZoneRED.contains(pose);
-  }
-
-  public boolean inIntakeCornerZone() {
-    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-
-    if (getAlliance() == Alliance.Red) {
-      return transformedIntakeCornerZoneLeftRED.contains(pose)
-          || transformedIntakeCornerZoneRightRED.contains(pose);
-    }
-    return transformedIntakeCornerZoneLeftBLUE.contains(pose)
-        || transformedIntakeCornerZoneRightBLUE.contains(pose);
   }
 
   public Pose2d getNearestBank() {
