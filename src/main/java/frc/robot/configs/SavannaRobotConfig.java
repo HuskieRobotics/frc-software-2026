@@ -74,7 +74,10 @@ public class SavannaRobotConfig extends RobotConfig {
 
   private static final double MAX_VELOCITY_MPS = 4.936;
   private static final double MAX_COAST_VELOCITY_MPS = 0.05;
-  private static final double SLOW_MODE_MULTIPLIER = 0.75;
+  private static final double SLOW_MODE_MULTIPLIER = 0.3;
+  private static final double MAX_ACCELERATION_WHEN_LIMITED_MPSPS = 9.0;
+  private static final double MAX_ANGULAR_ACCELERATION_WHEN_LIMITED_RPSPS =
+      100.0; // essentially disable angular acceleration limits
 
   private static final String CAN_BUS_NAME = "canbus1";
   private static final CANBus CAN_BUS = new CANBus(CAN_BUS_NAME);
@@ -391,6 +394,16 @@ public class SavannaRobotConfig extends RobotConfig {
   @Override
   public double getRobotSlowModeMultiplier() {
     return SLOW_MODE_MULTIPLIER;
+  }
+
+  @Override
+  public double getRobotMaxAccelerationWhenLimitedMPSPS() {
+    return MAX_ACCELERATION_WHEN_LIMITED_MPSPS;
+  }
+
+  @Override
+  public double getRobotMaxAngularAccelerationWhenLimitedRPSPS() {
+    return MAX_ANGULAR_ACCELERATION_WHEN_LIMITED_RPSPS;
   }
 
   @Override
