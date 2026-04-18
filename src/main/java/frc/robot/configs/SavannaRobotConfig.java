@@ -68,9 +68,9 @@ public class SavannaRobotConfig extends RobotConfig {
   private static final double DRIVE_KD = 0.0;
 
   // values from sysid routines
-  private static final double DRIVE_KS = 2.8277;
-  private static final double DRIVE_KV = 0.060631;
-  private static final double DRIVE_KA = 0.51114;
+  private static final double DRIVE_KS = 3.7725;
+  private static final double DRIVE_KV = 0.03518;
+  private static final double DRIVE_KA = 0.584427;
 
   private static final double MAX_VELOCITY_MPS = 4.936;
   private static final double MAX_COAST_VELOCITY_MPS = 0.05;

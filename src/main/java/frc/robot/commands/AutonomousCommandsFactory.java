@@ -181,8 +181,7 @@ public class AutonomousCommandsFactory {
     //  * useful for tuning the drive velocity PID controller
     //  *
     //  */
-    // autoChooser.addOption("Drive Velocity Tuning",
-    // this.getDriveVelocityTuningCommand(drivetrain));
+    autoChooser.addOption("Drive Velocity Tuning", this.getDriveVelocityTuningCommand(drivetrain));
 
     // /************ Swerve Rotation Tuning ************
     //  *
@@ -249,7 +248,7 @@ public class AutonomousCommandsFactory {
                 Commands.waitSeconds(1.0),
                 Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(1.0),
                 Commands.run(() -> drivetrain.drive(3.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
@@ -258,7 +257,7 @@ public class AutonomousCommandsFactory {
                 Commands.waitSeconds(2.0),
                 Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(1.0),
                 Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
