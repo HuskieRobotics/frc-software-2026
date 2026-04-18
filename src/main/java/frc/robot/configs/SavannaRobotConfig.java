@@ -63,14 +63,14 @@ public class SavannaRobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.15068;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 20.0;
+  private static final double DRIVE_KP = 16.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
   // values from sysid routines
-  private static final double DRIVE_KS = 7.5;
-  private static final double DRIVE_KV = 0.05;
-  private static final double DRIVE_KA = 0;
+  private static final double DRIVE_KS = 2.8277;
+  private static final double DRIVE_KV = 0.060631;
+  private static final double DRIVE_KA = 0.51114;
 
   private static final double MAX_VELOCITY_MPS = 4.936;
   private static final double MAX_COAST_VELOCITY_MPS = 0.05;
