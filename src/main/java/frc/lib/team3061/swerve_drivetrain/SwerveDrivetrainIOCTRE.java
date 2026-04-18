@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.DeviceEnableValue;
@@ -331,6 +332,8 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   private StatusSignal<Angle> pitchStatusSignal;
   private StatusSignal<Angle> rollStatusSignal;
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
+
+  private TorqueCurrentFOC driveCurrentRequest = new TorqueCurrentFOC(0);
 
   // brake mode
   private static final Executor brakeModeExecutor = Executors.newFixedThreadPool(1);
@@ -806,6 +809,14 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
               .withWheelForceFeedforwardsX(forcesX)
               .withWheelForceFeedforwardsY(forcesY)
               .withCenterOfRotation(this.centerOfRotation));
+    }
+  }
+
+  @Override
+  public void setDriveCurrent(double currentAmps) {
+    for (SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : this.getModules()) {
+      TalonFX driveMotor = swerveModule.getDriveMotor();
+      driveMotor.setControl(driveCurrentRequest.withOutput(currentAmps));
     }
   }
 
