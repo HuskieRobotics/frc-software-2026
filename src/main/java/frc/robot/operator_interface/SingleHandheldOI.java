@@ -79,4 +79,9 @@ public class SingleHandheldOI extends OperatorDashboard {
   public Trigger getSysIdQuasistaticReverse() {
     return controller.start().and(controller.x());
   }
+
+  @Override
+  public Trigger getClearAllFaults() {
+    return controller.leftBumper().and(controller.rightBumper());
+  }
 }

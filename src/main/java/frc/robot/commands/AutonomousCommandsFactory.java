@@ -345,21 +345,9 @@ public class AutonomousCommandsFactory {
       PathPlannerPath secondSweep) {
 
     return Commands.sequence(
-            Commands.runOnce(matchTimer::restart),
-            setStartingPoseForAuto(startingPose, drivetrain),
-            Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(6.0),
-            Commands.runOnce(hopper::stop, hopper),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(secondSweep),
-            getUnloadHopperCommand(hopper, intake, shooter, false))
-        .finallyDo(
-            () -> {
-              hopper.stop();
-              intake.deployIntake();
-              intake.startRoller();
-            });
+        Commands.runOnce(matchTimer::restart),
+        setStartingPoseForAuto(startingPose, drivetrain),
+        AutoBuilder.followPath(firstSweep));
   }
 
   private Command getTrenchBumpDoubleSweepAuto(
@@ -445,7 +433,7 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
     try {
       // exchange with turn vs. no-turn for testing
-      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep").mirrorPath();
+      firstSweep = PathPlannerPath.fromPathFile("L Turn Fuel Sweep").mirrorPath();
       secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect").mirrorPath();
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
