@@ -447,7 +447,6 @@ public class AutonomousCommandsFactory {
       ShooterModes shooterModes,
       Pose2d startingPose,
       PathPlannerPath firstSweep,
-      PathPlannerPath slowToTrench,
       PathPlannerPath secondSweep,
       PathPlannerPath secondSlowToTrench,
       Side side) {
@@ -456,14 +455,10 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(),
-                followCollisionResistantPath(firstSweep, drivetrain, side)),
-            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.deadline(
-                followCollisionResistantPath(slowToTrench, drivetrain, side),
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                getAutoJostleCommand(intake, shooter)),
-            Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(6.0),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
             Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(intake::deployIntake),
             followCollisionResistantPath(secondSweep, drivetrain, side),
@@ -505,7 +500,7 @@ public class AutonomousCommandsFactory {
     try {
       // exchange with turn vs. no-turn for testing
       firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
-      secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect");
+      secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -545,13 +540,11 @@ public class AutonomousCommandsFactory {
       ShooterModes shooterModes) {
     PathPlannerPath firstSweep;
     PathPlannerPath secondSweep;
-    PathPlannerPath slowToTrench;
     PathPlannerPath secondSlowToTrench;
     final Pose2d startingPose;
     try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump");
-      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
-      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect");
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect");
       secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump Turn to Trench");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
@@ -568,7 +561,6 @@ public class AutonomousCommandsFactory {
         shooterModes,
         startingPose,
         firstSweep,
-        slowToTrench,
         secondSweep,
         secondSlowToTrench,
         Side.LEFT);
@@ -582,13 +574,11 @@ public class AutonomousCommandsFactory {
       ShooterModes shooterModes) {
     PathPlannerPath firstSweep;
     PathPlannerPath secondSweep;
-    PathPlannerPath slowToTrench;
     PathPlannerPath secondSlowToTrench;
     final Pose2d startingPose;
     try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump").mirrorPath();
-      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
-      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect").mirrorPath();
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect").mirrorPath();
       secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump Turn to Trench").mirrorPath();
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
@@ -605,7 +595,6 @@ public class AutonomousCommandsFactory {
         shooterModes,
         startingPose,
         firstSweep,
-        slowToTrench,
         secondSweep,
         secondSlowToTrench,
         Side.RIGHT);
