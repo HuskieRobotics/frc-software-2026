@@ -134,10 +134,23 @@
     },
     {
       "name": "slow pickup",
-      "minWaypointRelativePos": 1.5,
+      "minWaypointRelativePos": 0.6,
       "maxWaypointRelativePos": 2.5,
       "constraints": {
         "maxVelocity": 3.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0,
+      "constraints": {
+        "maxVelocity": 3.75,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
