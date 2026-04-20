@@ -68,7 +68,7 @@ public class Field2d {
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
   private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 19;
   private static final double NO_PASS_ZONE_DEPTH_METERS = 3.0;
-  private static final double TOWER_NO_PASS_ZONE_DEPTH_METERS = 0.25;
+  private static final double TOWER_NO_PASS_ZONE_DEPTH_METERS = 0.5;
 
   /**
    * Get the singleton instance of the Field2d class.
