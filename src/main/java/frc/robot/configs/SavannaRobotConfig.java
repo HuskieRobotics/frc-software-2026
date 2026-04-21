@@ -112,15 +112,14 @@ public class SavannaRobotConfig extends RobotConfig {
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40708542";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
-  private static final String BCL_CAMERA_SERIAL_NUMBER = "40708569";
-  private static final String BCR_CAMERA_SERIAL_NUMBER = "40777404";
+  private static final String BCL_CAMERA_SERIAL_NUMBER = "24608727";
+  private static final String BCH_CAMERA_SERIAL_NUMBER = "40777404";
 
-  private static final int MONO_EXPOSURE = 2200;
+  private static final int DAA1920_160UM_EXPOSURE = 2200;
+  private static final int DAA1280_54UM_EXPOSURE = 1100;
   private static final double MONO_GAIN = 15;
-  private static final double MONO_DENOISE = 1.0;
-
-  private static final int COLOR_EXPOSURE = 4500;
-  private static final double COLOR_GAIN = 5.0;
+  private static final double DAA1920_160UM_DENOISE = 1.0;
+  private static final double DAA1280_54UM_DENOISE = 0.0;
 
   // Back right camera
   // x, y, z, pitch, yaw
@@ -138,6 +137,7 @@ public class SavannaRobotConfig extends RobotConfig {
 
   // Back center left camera
   // x, y, z, pitch, yaw
+  // FIXME: update
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
           new Translation3d(-0.296, 0.119, 0.303),
@@ -145,7 +145,8 @@ public class SavannaRobotConfig extends RobotConfig {
 
   // Back center right camera
   // x, y, z, pitch, yaw
-  private static final Transform3d ROBOT_TO_BCR_CAMERA =
+  // FIXME: update
+  private static final Transform3d ROBOT_TO_BCH_CAMERA =
       new Transform3d(
           new Translation3d(-0.302, 0.063, 0.297),
           new Rotation3d(new Quaternion(0.176, -0.093, -0.006, -0.980)));
@@ -197,9 +198,9 @@ public class SavannaRobotConfig extends RobotConfig {
           .location("BR")
           .width(1800)
           .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .exposure(DAA1920_160UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1920_160UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
@@ -209,9 +210,9 @@ public class SavannaRobotConfig extends RobotConfig {
           .location("BL")
           .width(1800)
           .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .exposure(DAA1920_160UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1920_160UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
@@ -219,23 +220,23 @@ public class SavannaRobotConfig extends RobotConfig {
           .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
           .id(BCL_CAMERA_SERIAL_NUMBER)
           .location("BCL")
-          .width(1800)
-          .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .width(1280)
+          .height(960)
+          .exposure(DAA1280_54UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1280_54UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
-          .robotToCameraTransform(ROBOT_TO_BCR_CAMERA)
+          .robotToCameraTransform(ROBOT_TO_BCH_CAMERA)
           .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
-          .id(BCR_CAMERA_SERIAL_NUMBER)
-          .location("BCR")
+          .id(BCH_CAMERA_SERIAL_NUMBER)
+          .location("BCH")
           .width(1800)
           .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .exposure(DAA1920_160UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1920_160UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
     };
