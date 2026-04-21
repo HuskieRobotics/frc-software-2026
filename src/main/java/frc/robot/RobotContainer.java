@@ -46,7 +46,6 @@ import frc.robot.subsystems.hopper.HopperIO;
 import frc.robot.subsystems.hopper.HopperIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
@@ -217,7 +216,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    intake = new Intake(new IntakeIOTalonFX());
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
@@ -257,7 +256,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: initialize other subsystems
-    intake = new Intake(new IntakeIOTalonFX());
+    intake = new Intake(new IntakeIO() {});
     hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
     visualization = new RobotVisualization(intake);
