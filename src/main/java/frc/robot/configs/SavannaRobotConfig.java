@@ -112,9 +112,11 @@ public class SavannaRobotConfig extends RobotConfig {
   private static final String BCL_CAMERA_SERIAL_NUMBER = "24608727";
   private static final String BCH_CAMERA_SERIAL_NUMBER = "40777404";
 
-  private static final int MONO_EXPOSURE = 2200;
+  private static final int DAA1920_160UM_EXPOSURE = 2200;
+  private static final int DAA1280_54UM_EXPOSURE = 1100;
   private static final double MONO_GAIN = 15;
-  private static final double MONO_DENOISE = 1.0;
+  private static final double DAA1920_160UM_DENOISE = 1.0;
+  private static final double DAA1280_54UM_DENOISE = 0.0;
 
   // Back right camera
   // x, y, z, pitch, yaw
@@ -193,9 +195,9 @@ public class SavannaRobotConfig extends RobotConfig {
           .location("BR")
           .width(1800)
           .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .exposure(DAA1920_160UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1920_160UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
@@ -205,9 +207,9 @@ public class SavannaRobotConfig extends RobotConfig {
           .location("BL")
           .width(1800)
           .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .exposure(DAA1920_160UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1920_160UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
@@ -215,11 +217,11 @@ public class SavannaRobotConfig extends RobotConfig {
           .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
           .id(BCL_CAMERA_SERIAL_NUMBER)
           .location("BCL")
-          .width(1800)
-          .height(1200)
-          .exposure(MONO_EXPOSURE)
+          .width(1280)
+          .height(960)
+          .exposure(DAA1280_54UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1280_54UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
       CameraConfig.builder()
@@ -227,11 +229,11 @@ public class SavannaRobotConfig extends RobotConfig {
           .poseForRobotToCameraTransformCalibration(ROBOT_TO_TAG_13_BACK_CAMERAS)
           .id(BCH_CAMERA_SERIAL_NUMBER)
           .location("BCH")
-          .width(1280)
-          .height(960)
-          .exposure(MONO_EXPOSURE)
+          .width(1800)
+          .height(1200)
+          .exposure(DAA1920_160UM_EXPOSURE)
           .gain(MONO_GAIN)
-          .denoise(MONO_DENOISE)
+          .denoise(DAA1920_160UM_DENOISE)
           .stdDevFactor(1.0)
           .build(),
     };
