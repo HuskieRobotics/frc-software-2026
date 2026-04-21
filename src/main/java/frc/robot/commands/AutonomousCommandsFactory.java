@@ -199,6 +199,36 @@ public class AutonomousCommandsFactory {
     // autoChooser.addOption( // start by driving slowing in a circle to align wheels
     //     "Drive Wheel Radius Characterization",
     //     this.getDriveWheelRadiusCharacterizationCommand(drivetrain));
+
+    autoChooser.addOption("Head-On Slow", getIntakeTestingPath(intake, "Intake Head-On Slow"));
+    autoChooser.addOption("Head-On Fast", getIntakeTestingPath(intake, "Intake Head-On Fast"));
+    autoChooser.addOption("In-to-Out Slow", getIntakeTestingPath(intake, "Intake In-to-Out Slow"));
+    autoChooser.addOption("In-to-Out Fast", getIntakeTestingPath(intake, "Intake In-to-Out Fast"));
+    autoChooser.addOption("Out-to-In Slow", getIntakeTestingPath(intake, "Intake Out-to-In Slow"));
+    autoChooser.addOption("Out-to-In Fast", getIntakeTestingPath(intake, "Intake Out-to-In Fast"));
+    autoChooser.addOption(
+        "Diagonal In-to-Out Slow", getIntakeTestingPath(intake, "Intake In-to-Out Diagonal Slow"));
+    autoChooser.addOption(
+        "Diagonal In-to-Out Fast", getIntakeTestingPath(intake, "Intake In-to-Out Diagonal Fast"));
+  }
+
+  /**
+   * Depot testing paths: head-on slow head-on fast in-to-out slow in-to-out fast out-to-in slow
+   * out-to-in fast diagonal in-to-out slow diagonal in-to-out fast
+   */
+  private Command getIntakeTestingPath(Intake intake, String pathName) {
+    PathPlannerPath path;
+    try {
+      path = PathPlannerPath.fromPathFile(pathName);
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file: " + pathName);
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+        Commands.runOnce(matchTimer::restart),
+        Commands.parallel(intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(path)));
   }
 
   public void configureAutoCommands(DifferentialDrivetrain drivetrain) {
