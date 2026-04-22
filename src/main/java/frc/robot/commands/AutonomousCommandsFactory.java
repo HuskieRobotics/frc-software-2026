@@ -118,7 +118,8 @@ public class AutonomousCommandsFactory {
     //     "Wide Right Far Hub Support", getRightFarHubWide(drivetrain, hopper, intake, shooter));
 
     // autoChooser.addOption(
-    //     "Narrow Right Far Hub Support", getRightFarHubNarrow(drivetrain, hopper, intake, shooter));
+    //     "Narrow Right Far Hub Support", getRightFarHubNarrow(drivetrain, hopper, intake,
+    // shooter));
 
     autoChooser.addOption(
         "Left Close Hub Bait Support", getLeftCloseHubBait(drivetrain, hopper, intake, shooter));

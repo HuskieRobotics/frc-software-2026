@@ -148,8 +148,8 @@ public class SavannaRobotConfig extends RobotConfig {
   // FIXME: update
   private static final Transform3d ROBOT_TO_BCH_CAMERA =
       new Transform3d(
-          new Translation3d(-0.302, 0.063, 0.297),
-          new Rotation3d(new Quaternion(0.176, -0.093, -0.006, -0.980)));
+          new Translation3d(-0.231, 0.070, 0.243),
+          new Rotation3d(new Quaternion(0.178, 0.067, -0.020, 0.982)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
