@@ -104,21 +104,21 @@ public class AutonomousCommandsFactory {
         "Right Trench-Bump Sweep",
         rightTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
-    autoChooser.addOption(
-        "Right Sweep and Outpost",
-        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
+    // autoChooser.addOption(
+    //     "Right Sweep and Outpost",
+    //     rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
 
-    autoChooser.addOption(
-        "Wide Left Far Hub Support", getLeftFarHubWide(drivetrain, hopper, intake, shooter));
+    // autoChooser.addOption(
+    //     "Wide Left Far Hub Support", getLeftFarHubWide(drivetrain, hopper, intake, shooter));
 
-    autoChooser.addOption(
-        "Narrow Left Far Hub Support", getLeftFarHubNarrow(drivetrain, hopper, intake, shooter));
+    // autoChooser.addOption(
+    //     "Narrow Left Far Hub Support", getLeftFarHubNarrow(drivetrain, hopper, intake, shooter));
 
-    autoChooser.addOption(
-        "Wide Right Far Hub Support", getRightFarHubWide(drivetrain, hopper, intake, shooter));
+    // autoChooser.addOption(
+    //     "Wide Right Far Hub Support", getRightFarHubWide(drivetrain, hopper, intake, shooter));
 
-    autoChooser.addOption(
-        "Narrow Right Far Hub Support", getRightFarHubNarrow(drivetrain, hopper, intake, shooter));
+    // autoChooser.addOption(
+    //     "Narrow Right Far Hub Support", getRightFarHubNarrow(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
         "Left Close Hub Bait Support", getLeftCloseHubBait(drivetrain, hopper, intake, shooter));
