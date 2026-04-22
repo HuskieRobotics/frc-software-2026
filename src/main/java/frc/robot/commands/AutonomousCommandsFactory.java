@@ -365,31 +365,8 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
-            Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.deadline(
-                AutoBuilder.followPath(slowToTrench),
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                getAutoJostleCommand(intake, shooter)),
-            Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
-            Commands.runOnce(hopper::stop, hopper),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(secondSweep),
-            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.parallel(
-                AutoBuilder.followPath(secondSlowToTrench),
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                Commands.sequence(
-                    Commands.waitSeconds(1.0),
-                    CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))))
-        .finallyDo(
-            () -> {
-              hopper.stop();
-              intake.deployIntake();
-              intake.startRoller();
-              shooterModes.disableShootOnTheMoveInAuto();
-            });
+            AutoBuilder.followPath(firstSweep),
+            AutoBuilder.followPath(slowToTrench));
   }
 
   private Command setStartingPoseForAuto(Pose2d startingPose, SwerveDrivetrain drivetrain) {

@@ -179,6 +179,8 @@ public interface SwerveDrivetrainIO {
   public default void applyRobotSpeeds(
       ChassisSpeeds speeds, Force[] forcesX, Force[] forcesY, boolean isOpenLoop) {}
 
+  public default void setDriveCurrent(double currentAmps) {}
+
   /**
    * Applies the specified characterization mode to the drivetrain with the specified value. This is
    * used to characterize the robot for the purpose of system identification.

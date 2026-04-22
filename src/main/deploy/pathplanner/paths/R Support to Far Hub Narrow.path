@@ -3,117 +3,108 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.414279600570612,
-        "y": 7.586661911554922
+        "x": 3.5732667617689007,
+        "y": 0.6127246790299581
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.235089680903943,
-        "y": 7.505075437383758
-      },
-      "isLocked": false,
-      "linkedName": "Left Starting Point"
-    },
-    {
-      "anchor": {
-        "x": 8.352454545454545,
-        "y": 6.5910909090909096
-      },
-      "prevControl": {
-        "x": 8.022636363636364,
-        "y": 7.106431818181818
-      },
-      "nextControl": {
-        "x": 8.53410876736821,
-        "y": 6.307256187350808
+        "x": 6.980530120481928,
+        "y": 0.5490602409638552
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.352454545454545,
-        "y": 4.724579606440071
+        "x": 10.3,
+        "y": 3.7727349397590366
       },
       "prevControl": {
-        "x": 9.10740696529737,
-        "y": 4.891966386349792
+        "x": 10.649686746987953,
+        "y": 2.9531566265060234
       },
       "nextControl": {
-        "x": 7.767012522361359,
-        "y": 4.594776386404293
+        "x": 9.83768461498085,
+        "y": 4.856286623397673
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.476613636363636,
-        "y": 5.539795454545454
+        "x": 5.9423975903614465,
+        "y": 2.6
       },
       "prevControl": {
-        "x": 7.180653065529539,
-        "y": 5.539795454545454
+        "x": 8.251560514444604,
+        "y": 2.665608741514469
       },
       "nextControl": {
-        "x": 5.755136363636364,
-        "y": 5.539795454545454
+        "x": 3.7568554216867476,
+        "y": 2.5379036144578304
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.50339892665474
+        "x": 2.904493975903614,
+        "y": 2.6
       },
       "prevControl": {
-        "x": 5.203996440913574,
-        "y": 5.50339892665474
+        "x": 3.123048192771084,
+        "y": 2.873192771084337
+      },
+      "nextControl": {
+        "x": 2.7483202140150076,
+        "y": 2.4047827976392426
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.7,
+        "y": 0.664
+      },
+      "prevControl": {
+        "x": 1.541012838801711,
+        "y": 0.612245363766048
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Near Bump Turned Around"
+      "linkedName": "Outpost"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": 19.32481603159675
     },
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": -119.99999999999999
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": 47.59811186327775
     },
     {
-      "waypointRelativePos": 2.65,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 1.2999999999999998,
+      "rotationDegrees": -160.0
     },
     {
-      "waypointRelativePos": 3.2,
-      "rotationDegrees": 135.0
+      "waypointRelativePos": 1.9500000000000002,
+      "rotationDegrees": -135.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -135.0
     }
   ],
   "constraintZones": [
     {
-      "name": "slow down to pickup",
-      "minWaypointRelativePos": 0.75,
-      "maxWaypointRelativePos": 2.0,
-      "constraints": {
-        "maxVelocity": 1.5,
-        "maxAcceleration": 7.5,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "slow to turn",
+      "name": "slow over bump",
       "minWaypointRelativePos": 2.0,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 2.75,
+        "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -122,8 +113,21 @@
       }
     },
     {
-      "name": "slow over bump",
-      "minWaypointRelativePos": 3.0,
+      "name": "slow to pickup",
+      "minWaypointRelativePos": 0.75,
+      "maxWaypointRelativePos": 1.2999999999999998,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow to outpost",
+      "minWaypointRelativePos": 3.4,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 2.0,
@@ -138,22 +142,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 8.0,
+    "maxVelocity": 3.75,
+    "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 150.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Trench-Bump Double Sweeps",
+  "folder": "Support Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.50339892665474
+        "x": 3.54922891566265,
+        "y": 7.553722891566265
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1465,
-        "y": 5.7404557448365585
+        "x": 4.54922891566265,
+        "y": 7.553722891566265
       },
       "isLocked": false,
-      "linkedName": "Near Bump Turned Around"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3,
-        "y": 5.95
+        "x": 8.292,
+        "y": 7.553722891566265
       },
       "prevControl": {
-        "x": 1.9209999999999998,
-        "y": 5.879920454545454
+        "x": 7.292,
+        "y": 7.553722891566265
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Support Mid"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -91.21887523513118
   },
   "reversed": false,
   "folder": "Support Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 150.0
+    "rotation": -90.67976515726366
   },
   "useDefaultConstraints": true
 }

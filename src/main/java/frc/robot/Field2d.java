@@ -59,13 +59,16 @@ public class Field2d {
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
   private Region2d transformedTowerNoPassZone;
+  private Region2d transformedDepotNoShootZone;
+
+  private Pose2d[] bumps;
 
   private static final double TRENCH_ZONE_BUFFER_X_INCHES = 48;
   private static final double BUMP_ZONE_BUFFER_X_INCHES = 40;
   private static final double BUMP_ZONE_BUFFER_Y_INCHES = 25;
   private static final double BANK_BUFFER_FROM_TRENCH_INCHES = 19;
   private static final double NO_PASS_ZONE_DEPTH_METERS = 3.0;
-  private static final double TOWER_NO_PASS_ZONE_DEPTH_METERS = 0.25;
+  private static final double TOWER_NO_PASS_ZONE_DEPTH_METERS = 0.5;
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -205,6 +208,31 @@ public class Field2d {
         };
 
     this.transformedTowerNoPassZone = new Region2d(towerEdges);
+  }
+
+  public void populateDepotNoShootZone() {
+    Translation2d[] depotEdges =
+        new Translation2d[] {
+          new Translation2d(
+              0.0,
+              FieldConstants.Depot.leftCorner.getY()
+                  + RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
+          new Translation2d(
+              FieldConstants.Depot.rightCorner.getX()
+                  + RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2,
+              FieldConstants.Depot.leftCorner.getY()
+                  + RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
+          new Translation2d(
+              FieldConstants.Depot.rightCorner.getX()
+                  + RobotConfig.getInstance().getRobotLengthWithBumpersMeters() / 2,
+              FieldConstants.Depot.rightCorner.getY()
+                  - RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
+          new Translation2d(
+              0.0,
+              FieldConstants.Depot.rightCorner.getY()
+                  - RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2)
+        };
+    this.transformedDepotNoShootZone = new Region2d(depotEdges);
   }
 
   /**
@@ -367,6 +395,21 @@ public class Field2d {
               FieldConstants.LinesHorizontal.rightBumpStart - bufferBumpY)
         };
 
+    bumps =
+        new Pose2d[] {
+          // Left Blue Bump NZ
+          new Pose2d(6.2, 5.5, Rotation2d.fromDegrees(135)),
+
+          // Right Blue Bump NZ
+          new Pose2d(6.2, 2.5, Rotation2d.fromDegrees(-135)),
+
+          // Left Blue Bump AZ
+          new Pose2d(3.0, 5.5, Rotation2d.fromDegrees(135)),
+
+          // Right Blue Bump AZ
+          new Pose2d(3.0, 2.5, Rotation2d.fromDegrees(-135))
+        };
+
     Translation2d[] leftBumpEdgesRED = new Translation2d[leftBumpEdges.length];
     Translation2d[] rightBumpEdgesRED = new Translation2d[rightBumpEdges.length];
 
@@ -402,6 +445,10 @@ public class Field2d {
   public void logNoPassZonePoints() {
     transformedNoPassZone.logPoints("noPassZone");
     transformedTowerNoPassZone.logPoints("TowerNoPassZone");
+  }
+
+  public void logDepotNoShootZonePoints() {
+    transformedDepotNoShootZone.logPoints("DepotNoShootZone");
   }
 
   public void logTrenchZonePoints() {
@@ -639,6 +686,32 @@ public class Field2d {
     }
 
     return transformedTowerNoPassZone.contains(pose);
+  }
+
+  public Pose2d getNeutralZoneBumpPose(Side side) {
+    if (side == Side.LEFT) {
+      return getAlliance() == Alliance.Blue ? bumps[0] : FlippingUtil.flipFieldPose(bumps[0]);
+    } else {
+      return getAlliance() == Alliance.Blue ? bumps[1] : FlippingUtil.flipFieldPose(bumps[1]);
+    }
+  }
+
+  public Pose2d getAllianceZoneBumpPose(Side side) {
+    if (side == Side.LEFT) {
+      return getAlliance() == Alliance.Blue ? bumps[2] : FlippingUtil.flipFieldPose(bumps[2]);
+    } else {
+      return getAlliance() == Alliance.Blue ? bumps[3] : FlippingUtil.flipFieldPose(bumps[3]);
+    }
+  }
+
+  public boolean inDepotNoShootZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return transformedDepotNoShootZone.contains(pose);
   }
 
   public boolean inTrenchZone() {
