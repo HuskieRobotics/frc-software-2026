@@ -169,7 +169,6 @@ public class Robot extends LoggedRobot {
     PathPlannerLogging.setLogTargetPoseCallback(
         pose -> {
           Logger.recordOutput("PathFollowing/targetPose", pose);
-          robotContainer.setPathFollowingTargetPose(pose);
         });
     // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback(

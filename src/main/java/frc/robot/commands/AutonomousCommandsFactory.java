@@ -363,10 +363,10 @@ public class AutonomousCommandsFactory {
       PathPlannerPath secondSlowToTrench) {
 
     return Commands.sequence(
-            Commands.runOnce(matchTimer::restart),
-            setStartingPoseForAuto(startingPose, drivetrain),
-            AutoBuilder.followPath(firstSweep),
-            AutoBuilder.followPath(slowToTrench));
+        Commands.runOnce(matchTimer::restart),
+        setStartingPoseForAuto(startingPose, drivetrain),
+        AutoBuilder.followPath(firstSweep),
+        AutoBuilder.followPath(slowToTrench));
   }
 
   private Command setStartingPoseForAuto(Pose2d startingPose, SwerveDrivetrain drivetrain) {
