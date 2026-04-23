@@ -541,14 +541,14 @@
             }
           },
           {
-            "title": "BCR",
+            "title": "BCH",
             "x": 768.0,
             "y": 432.0,
             "width": 128.0,
             "height": 112.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Vision/BCR/sending frames",
+              "topic": "/AdvantageKit/RealOutputs/Vision/BCH/sending frames",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
