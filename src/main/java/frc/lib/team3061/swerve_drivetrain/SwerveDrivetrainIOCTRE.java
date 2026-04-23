@@ -787,16 +787,18 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   @Override
   public void applyRobotSpeeds(
       ChassisSpeeds speeds, Force[] forcesX, Force[] forcesY, boolean isOpenLoop) {
-    this.targetChassisSpeeds.vxMetersPerSecond = speeds.vxMetersPerSecond;
-    this.targetChassisSpeeds.vyMetersPerSecond = speeds.vyMetersPerSecond;
-    this.targetChassisSpeeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond;
 
+        this.targetChassisSpeeds =
+        ChassisSpeeds.discretize(
+            speeds,
+            Constants.LOOP_PERIOD_SECS);
+    
     if (isOpenLoop) {
       this.setControl(
           this.applyRobotSpeedsRequest
               .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
               .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)
-              .withSpeeds(speeds)
+              .withSpeeds(this.targetChassisSpeeds)
               .withWheelForceFeedforwardsX(forcesX)
               .withWheelForceFeedforwardsY(forcesY)
               .withCenterOfRotation(this.centerOfRotation));
@@ -805,7 +807,7 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
           this.applyRobotSpeedsRequest
               .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
               .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)
-              .withSpeeds(speeds)
+              .withSpeeds(this.targetChassisSpeeds)
               .withWheelForceFeedforwardsX(forcesX)
               .withWheelForceFeedforwardsY(forcesY)
               .withCenterOfRotation(this.centerOfRotation));
