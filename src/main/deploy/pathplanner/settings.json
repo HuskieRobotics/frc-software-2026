@@ -3,9 +3,10 @@
   "robotLength": 0.76835,
   "holonomicMode": true,
   "pathFolders": [
-    "Support Sweeps",
+    "Bump Sweeps",
     "Outpost and Depot",
     "Right Sweep and Outpost",
+    "Support Sweeps",
     "Trench Double Sweeps",
     "Trench-Bump Double Sweeps",
     "Tuning",

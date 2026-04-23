@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.50339892665474
+        "x": 2.632170454545454,
+        "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 6.396744186046513,
-        "y": 5.454722719141323
+        "x": 6.428914640591968,
+        "y": 5.491119247032037
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Near Bump Turned Around"
+      "linkedName": "L Near Bump"
     }
   ],
   "rotationTargets": [
@@ -71,7 +71,7 @@
     },
     {
       "waypointRelativePos": 2.5,
-      "rotationDegrees": 135.0
+      "rotationDegrees": -145.42998643441044
     }
   ],
   "constraintZones": [
@@ -127,10 +127,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -141.63384728529988
+    "rotation": -137.20259816176568
   },
   "reversed": false,
-  "folder": "Trench-Bump Double Sweeps",
+  "folder": "Bump Sweeps",
   "idealStartingState": {
     "velocity": 0.5,
     "rotation": -90.0

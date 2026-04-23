@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.235089680903943,
-        "y": 7.505075437383758
+        "x": 6.663685152057245,
+        "y": 7.580250447227192
       },
       "isLocked": false,
       "linkedName": "Left Starting Point"
@@ -20,28 +20,28 @@
         "y": 6.5910909090909096
       },
       "prevControl": {
-        "x": 7.670181818181819,
-        "y": 7.106431818181818
+        "x": 7.812220903647256,
+        "y": 6.756133361123551
       },
       "nextControl": {
-        "x": 8.181654221913664,
-        "y": 6.307256187350808
+        "x": 8.187779096352743,
+        "y": 6.426048457058267
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.26,
-        "y": 5.024454545454546
+        "x": 8.0,
+        "y": 5.016636851520572
       },
       "prevControl": {
-        "x": 8.239386363636363,
-        "y": 5.797465909090908
+        "x": 8.363521773057464,
+        "y": 5.311138015111745
       },
       "nextControl": {
-        "x": 8.284946405519648,
-        "y": 4.0889643384677585
+        "x": 7.5909984002248985,
+        "y": 4.6852909570743035
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 7.0667047075606275,
-        "y": 5.322396576319543
+        "x": 7.02517157840911,
+        "y": 5.4084812554950314
       },
       "nextControl": {
-        "x": 5.7996192515823175,
-        "y": 5.789210887180542
+        "x": 6.233456102258663,
+        "y": 5.598002681871357
       },
       "isLocked": false,
       "linkedName": null
@@ -68,8 +68,8 @@
         "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 5.236166895459029,
-        "y": 5.539795454545454
+        "x": 5.329238049334997,
+        "y": 5.4379155682929206
       },
       "nextControl": null,
       "isLocked": false,
@@ -93,10 +93,10 @@
   "constraintZones": [
     {
       "name": "slow down to pickup",
-      "minWaypointRelativePos": 0.75,
+      "minWaypointRelativePos": 0.65,
       "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -146,7 +146,7 @@
     "rotation": -137.20259816176568
   },
   "reversed": false,
-  "folder": "Trench-Bump Double Sweeps",
+  "folder": "Bump Sweeps",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
