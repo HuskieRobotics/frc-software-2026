@@ -46,7 +46,7 @@ public class AutonomousCommandsFactory {
   private Timer matchTimer;
   private Pose2d currentTargetPose;
   private final Debouncer fallenBehindPathDebouncer =
-      new Debouncer(0.02); // FIXME: increase time when testing on field
+      new Debouncer(0.2); 
 
   /**
    * Returns the singleton instance of this class.
