@@ -97,8 +97,8 @@ public class AutonomousCommandsFactory {
         "Left Trench-Bump Sweep",
         leftTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
-    autoChooser.addOption("Left Bump Sweep",
-        leftBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
+    autoChooser.addOption(
+        "Left Bump Sweep", leftBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
         "Right Trench Sweep", rightTrenchDoubleSweep(drivetrain, hopper, intake, shooter));
@@ -107,7 +107,8 @@ public class AutonomousCommandsFactory {
         "Right Trench-Bump Sweep",
         rightTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
-    autoChooser.addOption("Right Bump Sweep",
+    autoChooser.addOption(
+        "Right Bump Sweep",
         rightBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
     // autoChooser.addOption(
@@ -687,7 +688,6 @@ public class AutonomousCommandsFactory {
     PathPlannerPath firstSweep;
     PathPlannerPath secondSweep;
     PathPlannerPath slowToTrench;
-    PathPlannerPath secondSlowToTrench;
     final Pose2d startingPose;
     try {
       firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump").mirrorPath();
