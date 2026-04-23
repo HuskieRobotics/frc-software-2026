@@ -473,6 +473,50 @@ public class AutonomousCommandsFactory {
             });
   }
 
+  private Command getBumpDoubleSweepAuto(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes,
+      Pose2d startingPose,
+      PathPlannerPath firstSweep,
+      PathPlannerPath slowToTrench,
+      PathPlannerPath secondSweep,
+      PathPlannerPath secondSlowToTrench,
+      Side side) {
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(),
+                followCollisionResistantPath(firstSweep, drivetrain, side)),
+            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+            Commands.deadline(
+                followCollisionResistantPath(slowToTrench, drivetrain, side),
+                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+                getAutoJostleCommand(intake, shooter)),
+            Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
+            followCollisionResistantPath(secondSweep, drivetrain, side),
+            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+            Commands.parallel(
+                followCollisionResistantPath(secondSlowToTrench, drivetrain, side),
+                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
+                Commands.sequence(
+                    Commands.waitSeconds(1.0),
+                    CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+              shooterModes.disableShootOnTheMoveInAuto();
+            });
+  }
+
   private Command setStartingPoseForAuto(Pose2d startingPose, SwerveDrivetrain drivetrain) {
     return Commands.runOnce(
         () -> {
