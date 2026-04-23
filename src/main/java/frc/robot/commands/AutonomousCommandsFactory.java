@@ -97,12 +97,18 @@ public class AutonomousCommandsFactory {
         "Left Trench-Bump Sweep",
         leftTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
+    autoChooser.addOption("Left Bump Sweep",
+        leftBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
+
     autoChooser.addOption(
         "Right Trench Sweep", rightTrenchDoubleSweep(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
         "Right Trench-Bump Sweep",
         rightTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
+
+    autoChooser.addOption("Right Bump Sweep",
+        rightBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
     // autoChooser.addOption(
     //     "Right Sweep and Outpost",
@@ -483,7 +489,6 @@ public class AutonomousCommandsFactory {
       PathPlannerPath firstSweep,
       PathPlannerPath slowToTrench,
       PathPlannerPath secondSweep,
-      PathPlannerPath secondSlowToTrench,
       Side side) {
 
     return Commands.sequence(
@@ -503,7 +508,7 @@ public class AutonomousCommandsFactory {
             followCollisionResistantPath(secondSweep, drivetrain, side),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
             Commands.parallel(
-                followCollisionResistantPath(secondSlowToTrench, drivetrain, side),
+                followCollisionResistantPath(slowToTrench, drivetrain, side),
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 Commands.sequence(
                     Commands.waitSeconds(1.0),
@@ -636,6 +641,75 @@ public class AutonomousCommandsFactory {
         firstSweep,
         secondSweep,
         secondSlowToTrench,
+        Side.RIGHT);
+  }
+
+  private Command leftBumpDoubleSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    PathPlannerPath slowToTrench;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump");
+      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
+      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect");
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getBumpDoubleSweepAuto(
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes,
+        startingPose,
+        firstSweep,
+        slowToTrench,
+        secondSweep,
+        Side.LEFT);
+  }
+
+  private Command rightBumpDoubleSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    PathPlannerPath slowToTrench;
+    PathPlannerPath secondSlowToTrench;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump").mirrorPath();
+      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect").mirrorPath();
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getBumpDoubleSweepAuto(
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes,
+        startingPose,
+        firstSweep,
+        slowToTrench,
+        secondSweep,
         Side.RIGHT);
   }
 
