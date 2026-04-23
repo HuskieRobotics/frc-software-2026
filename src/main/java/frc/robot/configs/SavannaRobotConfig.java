@@ -449,7 +449,7 @@ public class SavannaRobotConfig extends RobotConfig {
 
   @Override
   public double getMomentOfInertiaKGMM() {
-    return 3.40;
+    return 6.0;
   }
 
   @Override
