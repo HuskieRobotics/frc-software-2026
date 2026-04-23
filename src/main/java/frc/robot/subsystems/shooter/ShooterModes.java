@@ -579,7 +579,7 @@ public class ShooterModes extends SubsystemBase {
 
     // do not run the flywheels if we are racing to the middle in auto
     if (DriverStation.isAutonomousEnabled()
-        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 3.0) {
+        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 4.0) {
       shooterSetpoints.flywheelVelocityRPS = 0.0;
     }
 

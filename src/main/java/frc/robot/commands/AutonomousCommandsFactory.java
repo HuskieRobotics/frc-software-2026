@@ -457,19 +457,13 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(6.0),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.5),
             Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(intake::deployIntake),
             Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(intake::deployIntake),
             followCollisionResistantPath(secondSweep, drivetrain, side),
-            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.parallel(
-                followCollisionResistantPath(secondSlowToTrench, drivetrain, side),
-                hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
-                Commands.sequence(
-                    Commands.waitSeconds(1.0),
-                    CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))))
+            getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
             () -> {
               hopper.stop();

@@ -67,7 +67,7 @@
   "folder": "Trench-Bump Double Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 150.0
+    "rotation": -141.63384728529988
   },
   "useDefaultConstraints": true
 }

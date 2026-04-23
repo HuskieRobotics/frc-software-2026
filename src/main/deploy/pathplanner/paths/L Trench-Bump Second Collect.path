@@ -71,7 +71,7 @@
     },
     {
       "waypointRelativePos": 2.5,
-      "rotationDegrees": 135.0
+      "rotationDegrees": -148.3934386237612
     }
   ],
   "constraintZones": [
@@ -127,7 +127,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 150.0
+    "rotation": -141.63384728529988
   },
   "reversed": false,
   "folder": "Trench-Bump Double Sweeps",
