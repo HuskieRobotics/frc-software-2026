@@ -58,7 +58,8 @@ public class Field2d {
   private Region2d transformedRightBumpZoneRED;
   private Region2d transformedOpponentAllianceHighPassZone;
   private Region2d transformedNoPassZone;
-  private Region2d transformedTowerNoPassZone;
+  private Region2d transformedTowerNoPassZoneBLUE;
+  private Region2d transformedTowerNoPassZoneRED;
   private Region2d transformedDepotNoShootZone;
 
   private Pose2d[] bumps;
@@ -193,7 +194,7 @@ public class Field2d {
   }
 
   public void populateTowerNoPassZone() {
-    Translation2d[] towerEdges =
+    Translation2d[] towerEdgesBLUE =
         new Translation2d[] {
           new Translation2d(
               0.0, FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
@@ -207,7 +208,15 @@ public class Field2d {
               0.0, FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
         };
 
-    this.transformedTowerNoPassZone = new Region2d(towerEdges);
+    Translation2d[] towerEdgesRED = new Translation2d[towerEdgesBLUE.length];
+
+    for (int i = 0; i < towerEdgesBLUE.length; i++) {
+      towerEdgesRED[i] = FlippingUtil.flipFieldPosition(towerEdgesBLUE[i]);
+    }
+
+    this.transformedTowerNoPassZoneBLUE = new Region2d(towerEdgesBLUE);
+
+    this.transformedTowerNoPassZoneRED = new Region2d(towerEdgesRED);
   }
 
   public void populateDepotNoShootZone() {
@@ -444,7 +453,8 @@ public class Field2d {
 
   public void logNoPassZonePoints() {
     transformedNoPassZone.logPoints("noPassZone");
-    transformedTowerNoPassZone.logPoints("TowerNoPassZone");
+    transformedTowerNoPassZoneBLUE.logPoints("TowerNoPassZone BLUE");
+    transformedTowerNoPassZoneRED.logPoints("TowerNoPassZone RED");
   }
 
   public void logDepotNoShootZonePoints() {
@@ -681,11 +691,8 @@ public class Field2d {
   public boolean inTowerNoPassZone() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    if (getAlliance() == Alliance.Red) {
-      pose = FlippingUtil.flipFieldPose(pose);
-    }
-
-    return transformedTowerNoPassZone.contains(pose);
+    return transformedTowerNoPassZoneBLUE.contains(pose)
+        || transformedTowerNoPassZoneRED.contains(pose);
   }
 
   public Pose2d getNeutralZoneBumpPose(Side side) {
