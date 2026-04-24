@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.357,
-        "y": 7.586661911554922
+        "x": 3.5700909090909088,
+        "y": 7.590852272727272
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.242353780313837,
-        "y": 7.5996005706134095
+        "x": 5.455444689404746,
+        "y": 7.60379093178576
       },
       "isLocked": false,
-      "linkedName": "Left Bank"
+      "linkedName": "L Support"
     },
     {
       "anchor": {
         "x": 6.083366619115549,
-        "y": 7.250256776034237
+        "y": 7.1855634807417985
       },
       "prevControl": {
-        "x": 6.083366619115549,
-        "y": 7.806619115549217
+        "x": 6.091141676082612,
+        "y": 7.741871490139239
       },
       "nextControl": {
-        "x": 6.083366619115549,
-        "y": 6.418776069785754
+        "x": 6.070346647646218,
+        "y": 6.253980028530671
       },
       "isLocked": false,
       "linkedName": null
@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 5.904459290203874,
-        "y": 7.0830315240941255
+        "y": 7.083031524094126
       },
       "nextControl": {
         "x": 6.010311744376736,
@@ -52,28 +52,60 @@
         "y": 5.0
       },
       "prevControl": {
-        "x": 7.794644008489372,
-        "y": 3.964870360798263
+        "x": 7.905902583252435,
+        "y": 3.9682371758488117
       },
       "nextControl": {
-        "x": 7.896631954350926,
-        "y": 8.299358059914407
+        "x": 7.6360057061340925,
+        "y": 7.17262482168331
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.8729159212880147,
+        "x": 6.083366619115549,
         "y": 7.466672629695886
       },
       "prevControl": {
-        "x": 7.669660107334526,
-        "y": 7.417996422182468
+        "x": 6.743238231098431,
+        "y": 7.431398002853067
+      },
+      "nextControl": {
+        "x": 5.280594444398171,
+        "y": 7.509586263785797
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.745545454545454,
+        "y": 7.364102272727273
+      },
+      "prevControl": {
+        "x": 3.126602706850043,
+        "y": 7.618140440930333
+      },
+      "nextControl": {
+        "x": 2.343579545454545,
+        "y": 7.096125
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.2960627674750356,
+        "y": 5.982268188302426
+      },
+      "prevControl": {
+        "x": 1.8694659090909087,
+        "y": 6.508636363636364
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot"
     }
   ],
   "rotationTargets": [
@@ -86,19 +118,15 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 3.1,
-      "rotationDegrees": 100.0
-    },
-    {
-      "waypointRelativePos": 3.6,
+      "waypointRelativePos": 3.7,
       "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
       "name": "slow otw back",
-      "minWaypointRelativePos": 3.5,
-      "maxWaypointRelativePos": 4.0,
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 5.0,
       "constraints": {
         "maxVelocity": 3.5,
         "maxAcceleration": 7.5,
@@ -133,6 +161,19 @@
         "nominalVoltage": 12.0,
         "unlimited": false
       }
+    },
+    {
+      "name": "slow to depot",
+      "minWaypointRelativePos": 5.0,
+      "maxWaypointRelativePos": 6.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
     }
   ],
   "pointTowardsZones": [],
@@ -150,7 +191,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Trench Double Sweeps",
+  "folder": "Support Collects",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
