@@ -8,11 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.584251069900143,
-        "y": 7.638416547788873
+        "x": 5.811654778887304,
+        "y": 7.5996005706134095
       },
       "isLocked": false,
       "linkedName": "Left Starting Point"
+    },
+    {
+      "anchor": {
+        "x": 6.186875891583452,
+        "y": 7.17262482168331
+      },
+      "prevControl": {
+        "x": 6.221232271353166,
+        "y": 7.633000310597474
+      },
+      "nextControl": {
+        "x": 6.122182596291013,
+        "y": 6.305734664764623
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -62,23 +78,23 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 2.0,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 1.9198113207547132,
+      "waypointRelativePos": 2.919811320754713,
       "rotationDegrees": 89.0
     },
     {
-      "waypointRelativePos": 2.5,
+      "waypointRelativePos": 3.5,
       "rotationDegrees": -145.42998643441044
     }
   ],
   "constraintZones": [
     {
       "name": "slow to pickup",
-      "minWaypointRelativePos": 0.5,
-      "maxWaypointRelativePos": 1.3,
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 2.3,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 7.5,
@@ -90,8 +106,8 @@
     },
     {
       "name": "slow otw back",
-      "minWaypointRelativePos": 2.6,
-      "maxWaypointRelativePos": 3.0,
+      "minWaypointRelativePos": 3.6,
+      "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
@@ -103,13 +119,26 @@
     },
     {
       "name": "slow to turn",
-      "minWaypointRelativePos": 1.3,
-      "maxWaypointRelativePos": 2.6,
+      "minWaypointRelativePos": 2.3,
+      "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 360.0,
         "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow final turn",
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 3.6,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 8.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
