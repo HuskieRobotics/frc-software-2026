@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.521337349397589,
-        "y": 6.406313253012048
+        "x": 8.357514316660533,
+        "y": 5.896656776181722
       },
       "isLocked": false,
       "linkedName": "Support Mid"
@@ -20,12 +20,12 @@
         "y": 4.015592011412268
       },
       "prevControl": {
-        "x": 8.560616709348091,
-        "y": 4.561977553580943
+        "x": 8.342305077594364,
+        "y": 4.32061396754869
       },
       "nextControl": {
-        "x": 7.85493941681799,
-        "y": 3.7216208176889185
+        "x": 7.896112507617004,
+        "y": 3.7547337008016193
       },
       "isLocked": false,
       "linkedName": null
@@ -36,60 +36,44 @@
         "y": 3.8383012048192775
       },
       "prevControl": {
-        "x": 6.766075740965441,
-        "y": 3.514053345630745
+        "x": 6.7912072923082,
+        "y": 3.55134124392773
       },
       "nextControl": {
-        "x": 6.128168674698795,
-        "y": 4.231698795180723
+        "x": 5.856644579999999,
+        "y": 4.407190863854328
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.215590361445784,
-        "y": 5.379108433734939
+        "x": 6.173937232524963,
+        "y": 7.366704707560627
       },
       "prevControl": {
-        "x": 6.506933850888681,
-        "y": 4.983713698062436
+        "x": 6.730299572039942,
+        "y": 7.211440798858773
       },
       "nextControl": {
-        "x": 5.909614457831326,
-        "y": 5.7943614457831325
+        "x": 5.884872430411669,
+        "y": 7.4473739546620115
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.632170454545454,
-        "y": 5.539795454545454
+        "x": 1.9429957203994292,
+        "y": 7.366704707560627
       },
       "prevControl": {
-        "x": 3.7667505638553416,
-        "y": 5.151564904706484
-      },
-      "nextControl": {
-        "x": 1.8882168674698794,
-        "y": 5.7943614457831325
-      },
-      "isLocked": false,
-      "linkedName": "L Near Bump"
-    },
-    {
-      "anchor": {
-        "x": 1.2960627674750356,
-        "y": 5.982268188302426
-      },
-      "prevControl": {
-        "x": 1.9935567433786505,
-        "y": 5.7938465015554375
+        "x": 3.5864904977440855,
+        "y": 7.332365399440963
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -106,23 +90,15 @@
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 2.6,
+      "waypointRelativePos": 2.3,
       "rotationDegrees": 90.0
-    },
-    {
-      "waypointRelativePos": 3.0,
-      "rotationDegrees": 135.0
-    },
-    {
-      "waypointRelativePos": 4.0,
-      "rotationDegrees": 135.0
     }
   ],
   "constraintZones": [
     {
-      "name": "slow bump",
-      "minWaypointRelativePos": 3.0,
-      "maxWaypointRelativePos": 4.0,
+      "name": "slower trench",
+      "minWaypointRelativePos": 2.25,
+      "maxWaypointRelativePos": 3.0,
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
@@ -134,10 +110,10 @@
     },
     {
       "name": "slow pickup",
-      "minWaypointRelativePos": 0.6,
-      "maxWaypointRelativePos": 2.5,
+      "minWaypointRelativePos": 0.4,
+      "maxWaypointRelativePos": 2.25,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 2.25,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -146,11 +122,11 @@
       }
     },
     {
-      "name": "slow to depot",
-      "minWaypointRelativePos": 4.0,
-      "maxWaypointRelativePos": 5.0,
+      "name": "slower",
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 4.0,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 3.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -171,7 +147,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Support Sweeps",

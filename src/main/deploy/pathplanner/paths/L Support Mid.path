@@ -3,124 +3,124 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.573,
-        "y": 7.5
+        "x": 8.292,
+        "y": 7.553722891566265
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.572999999999999,
-        "y": 7.500000000000001
+        "x": 8.521337349397589,
+        "y": 6.406313253012048
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Support Mid"
     },
     {
       "anchor": {
-        "x": 7.934,
-        "y": 7.5
+        "x": 8.101797432239657,
+        "y": 4.015592011412268
       },
       "prevControl": {
-        "x": 7.226744745582354,
-        "y": 7.485927900540423
+        "x": 8.560616709348091,
+        "y": 4.561977553580943
       },
       "nextControl": {
-        "x": 10.226465376484544,
-        "y": 7.545612670367632
+        "x": 7.85493941681799,
+        "y": 3.7216208176889185
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 10.4,
-        "y": 3.7309415121255354
+        "x": 6.477855421686746,
+        "y": 3.8383012048192775
       },
       "prevControl": {
-        "x": 11.086802059429905,
-        "y": 4.10423149284947
+        "x": 6.766075740965441,
+        "y": 3.514053345630745
       },
       "nextControl": {
-        "x": 9.592253012048191,
-        "y": 3.2919156626506028
+        "x": 6.128168674698795,
+        "y": 4.231698795180723
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.199814550641939,
-        "y": 7.5
+        "x": 6.215590361445784,
+        "y": 5.379108433734939
       },
       "prevControl": {
-        "x": 8.508977474725096,
-        "y": 7.565608741514469
+        "x": 6.506933850888681,
+        "y": 4.983713698062436
       },
       "nextControl": {
-        "x": 4.01427238196724,
-        "y": 7.437903614457831
+        "x": 5.909614457831326,
+        "y": 5.7943614457831325
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9651497860199716,
-        "y": 7.5
+        "x": 2.632170454545454,
+        "y": 5.539795454545454
       },
       "prevControl": {
-        "x": 3.2140247371306616,
-        "y": 7.717362376142172
+        "x": 3.7667505638553416,
+        "y": 5.151564904706484
       },
       "nextControl": {
-        "x": 2.382910128388017,
-        "y": 6.991483594864479
+        "x": 1.8882168674698794,
+        "y": 5.7943614457831325
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.2960627674750356,
-        "y": 5.982268188302426
+        "x": 1.5936519258202564,
+        "y": 7.366704707560627
       },
       "prevControl": {
-        "x": 1.8096718972895858,
-        "y": 6.506205420827389
+        "x": 2.0076890156918683,
+        "y": 6.732710413694722
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.75,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.7,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 2.3,
-      "rotationDegrees": 115.01339944541022
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 1.6,
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 2.6,
-      "rotationDegrees": 129.86811077746106
+      "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 2.95,
-      "rotationDegrees": 179.50269439064775
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": 135.0
     },
     {
       "waypointRelativePos": 4.0,
-      "rotationDegrees": -179.66061655577133
+      "rotationDegrees": 135.0
     }
   ],
   "constraintZones": [
     {
-      "name": "slow over bump",
+      "name": "slow bump",
       "minWaypointRelativePos": 3.0,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
@@ -133,11 +133,24 @@
       }
     },
     {
-      "name": "slow to pickup",
-      "minWaypointRelativePos": 1.5,
-      "maxWaypointRelativePos": 2.3,
+      "name": "slow pickup",
+      "minWaypointRelativePos": 0.6,
+      "maxWaypointRelativePos": 2.5,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.25,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slower",
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -161,10 +174,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "[OLD] Far Supports",
+  "folder": "Support Sweeps",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -91.21887523513118
   },
   "useDefaultConstraints": true
 }
