@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.5,
-        "y": 5.95
+        "x": 6.0,
+        "y": 7.405329545454546
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.334878744650499,
-        "y": 6.021084165477889
+        "x": 6.999999999999999,
+        "y": 7.405329545454546
       },
       "isLocked": false,
-      "linkedName": "inside depot"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7560909090909091,
-        "y": 7.498090909090909
+        "x": 8.0,
+        "y": 7.405329545454546
       },
       "prevControl": {
-        "x": 1.7560909090909091,
-        "y": 6.980544546751394
+        "x": 7.0,
+        "y": 7.405329545454546
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,21 +29,7 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "go slower",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 2.5,
-        "maxAcceleration": 7.5,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -56,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Outpost and Depot",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
