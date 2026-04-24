@@ -589,7 +589,7 @@ public class AutonomousCommandsFactory {
     try {
       firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
       secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect");
-      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump Turn to Trench");
+      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -623,7 +623,7 @@ public class AutonomousCommandsFactory {
     try {
       firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep").mirrorPath();
       secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect").mirrorPath();
-      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump Turn to Trench").mirrorPath();
+      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -891,8 +891,9 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             intake.getDeployAndStartInAutoCommand(),
-            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(1.5),
-            Commands.runOnce(hopper::stop, hopper),
+            Commands.waitSeconds(0.25),
+            // getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(1.5),
+            // Commands.runOnce(hopper::stop, hopper),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
             Commands.waitSeconds(1.0),

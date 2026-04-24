@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.280545454545454,
-        "y": 7.652693181818183
+        "x": 7.584251069900143,
+        "y": 7.638416547788873
       },
       "isLocked": false,
       "linkedName": "Left Starting Point"
@@ -106,7 +106,7 @@
       "minWaypointRelativePos": 1.3,
       "maxWaypointRelativePos": 2.6,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 360.0,
         "maxAngularAcceleration": 360.0,

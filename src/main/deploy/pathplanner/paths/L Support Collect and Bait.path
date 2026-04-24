@@ -8,8 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.239318181818181,
-        "y": 7.889749999999999
+        "x": 4.996519258202567,
+        "y": 7.6125392296718974
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.096305278174036,
+        "y": 7.35376604850214
+      },
+      "prevControl": {
+        "x": 6.10478892167034,
+        "y": 7.6734740650531705
+      },
+      "nextControl": {
+        "x": 6.0758310929743855,
+        "y": 6.582191766351982
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +36,12 @@
         "y": 4.49432239657632
       },
       "prevControl": {
-        "x": 5.9043779777930325,
-        "y": 6.577353920670445
+        "x": 5.953980028530669,
+        "y": 5.684679029957205
       },
       "nextControl": {
-        "x": 6.010230431965894,
-        "y": 3.0517463657900814
+        "x": 5.982605000944264,
+        "y": 3.051181567906692
       },
       "isLocked": false,
       "linkedName": null
@@ -78,27 +94,27 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 2.0,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 1.9198113207547132,
+      "waypointRelativePos": 2.919811320754713,
       "rotationDegrees": 89.0
     },
     {
-      "waypointRelativePos": 2.25,
+      "waypointRelativePos": 3.25,
       "rotationDegrees": 135.0
     },
     {
-      "waypointRelativePos": 2.8,
+      "waypointRelativePos": 3.8,
       "rotationDegrees": 135.0
     }
   ],
   "constraintZones": [
     {
       "name": "slow to pickup",
-      "minWaypointRelativePos": 0.5,
-      "maxWaypointRelativePos": 1.3,
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 1.8,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 7.5,
@@ -110,8 +126,8 @@
     },
     {
       "name": "slow otw back",
-      "minWaypointRelativePos": 2.25,
-      "maxWaypointRelativePos": 3.0,
+      "minWaypointRelativePos": 3.25,
+      "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 7.5,
@@ -123,13 +139,26 @@
     },
     {
       "name": "slow to turn and bait",
-      "minWaypointRelativePos": 1.3,
-      "maxWaypointRelativePos": 2.25,
+      "minWaypointRelativePos": 1.8,
+      "maxWaypointRelativePos": 3.25,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 360.0,
         "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow to depot",
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }

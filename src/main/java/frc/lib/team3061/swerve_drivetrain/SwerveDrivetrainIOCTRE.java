@@ -788,11 +788,8 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   public void applyRobotSpeeds(
       ChassisSpeeds speeds, Force[] forcesX, Force[] forcesY, boolean isOpenLoop) {
 
-        this.targetChassisSpeeds =
-        ChassisSpeeds.discretize(
-            speeds,
-            Constants.LOOP_PERIOD_SECS);
-    
+    this.targetChassisSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SECS);
+
     if (isOpenLoop) {
       this.setControl(
           this.applyRobotSpeedsRequest
