@@ -19,6 +19,7 @@ import frc.lib.team3061.util.MathUtils;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
 
@@ -53,6 +54,8 @@ public class ShooterModes extends SubsystemBase {
 
   private Timer turretOutsideSetpointTimer = new Timer();
   private Timer turretUnJammingTimer = new Timer();
+
+  private double autoWaitTime = 4.0;
 
   /*
   Create interpolating tree map for data points
@@ -578,10 +581,10 @@ public class ShooterModes extends SubsystemBase {
     }
 
     // do not run the flywheels if we are racing to the middle in auto
-    // if (DriverStation.isAutonomousEnabled()
-    //     && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 4.0) {
-    //   shooterSetpoints.flywheelVelocityRPS = 0.0;
-    // }
+    if (DriverStation.isAutonomousEnabled()
+        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < autoWaitTime) {
+      shooterSetpoints.flywheelVelocityRPS = 0.0;
+    }
 
     // finally, override the hood position if the robot is in a trench zone to ensure that the
     // shooter doesn't get decapitated
@@ -669,6 +672,10 @@ public class ShooterModes extends SubsystemBase {
   // decreases turret angle by 1 deg
   public void moveTurretOneDegreeRight() {
     this.turretAngleAdjustmentDeg -= 1.0;
+  }
+
+  public void setAutoWaitTime(double waitTime) {
+    this.autoWaitTime = waitTime;
   }
 
   private double idealVelocityFromFunction(double distance) {

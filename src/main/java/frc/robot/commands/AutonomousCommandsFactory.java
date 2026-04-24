@@ -128,7 +128,7 @@ public class AutonomousCommandsFactory {
     // shooter));
 
     autoChooser.addOption(
-        "Left Close Hub Bait Support", getLeftCloseHubBait(drivetrain, hopper, intake, shooter));
+        "Left Close Hub Bait Support", getLeftCloseHubBait(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
         "Left Mid Support", getLeftMidSupport(drivetrain, hopper, intake, shooter));
@@ -850,7 +850,7 @@ public class AutonomousCommandsFactory {
   }
 
   private Command getLeftCloseHubBait(
-      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter, ShooterModes shooterModes) {
     PathPlannerPath hubSweep;
     PathPlannerPath intakeDepot;
     PathPlannerPath leaveDepot;
@@ -864,8 +864,10 @@ public class AutonomousCommandsFactory {
       return Commands.none();
     }
 
-    return getLeftHubSupportSweep(
-        hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
+    return Commands.sequence(
+      Commands.runOnce(() -> shooterModes.setAutoWaitTime(0.0)), 
+      getLeftHubSupportSweep(
+        hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter));
   }
 
   private Command getLeftMidSupport(

@@ -448,6 +448,7 @@ public class RobotContainer {
 
   public void autonomousInit() {
     // add robot-wide code here that will be executed when autonomous starts
+    shooterModes.setAutoWaitTime(4.0);
   }
 
   public void teleopInit() {
