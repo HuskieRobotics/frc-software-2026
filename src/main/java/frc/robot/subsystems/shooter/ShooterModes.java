@@ -21,6 +21,8 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.operator_interface.OISelector;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
@@ -43,6 +45,7 @@ public class ShooterModes extends SubsystemBase {
   public static final double TELEOP_DURATION_SECONDS = 140.0;
 
   private final Shooter shooter;
+  private final Intake intake;
 
   private Timer shiftTimer = new Timer();
   private double shiftTimerOffset = 0.0;
@@ -107,8 +110,9 @@ public class ShooterModes extends SubsystemBase {
 
   private ShooterMode currentMode = ShooterMode.COLLECT_AND_HOLD;
 
-  public ShooterModes(Shooter shooter) {
+  public ShooterModes(Shooter shooter, Intake intake) {
     this.shooter = shooter;
+    this.intake = intake;
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
@@ -599,6 +603,8 @@ public class ShooterModes extends SubsystemBase {
     shooter.setHoodPosition(shooterSetpoints.hoodAngleRot);
     shooter.setTurretPosition(shooterSetpoints.turretAngleRot);
 
+    setIntakeVelocity(currentMode);
+
     Logger.recordOutput(
         "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
     Logger.recordOutput(
@@ -735,5 +741,15 @@ public class ShooterModes extends SubsystemBase {
 
     return new ShooterSetpoints(
         idealShotVelocityRPS, idealHoodAngleRot, robotRelativeTurretAngleRot);
+  }
+
+  private void setIntakeVelocity(ShooterMode mode) {
+    if (mode == ShooterMode.SHOOT_OTM || mode == ShooterMode.PASS_OTM) {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_SOM_TARGET_VELOCITY_RPS);
+    } else if (DriverStation.isAutonomous()) {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
+    } else {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_STATIC_TARGET_VELOCITY_RPS);
+    }
   }
 }
