@@ -44,7 +44,7 @@ public class AutonomousCommandsFactory {
   private Timer hopperUnloadTimer;
   private Timer matchTimer;
   private Pose2d currentTargetPose;
-  private final Debouncer fallenBehindPathDebouncer = new Debouncer(0.2);
+  private final Debouncer fallenBehindPathDebouncer = new Debouncer(0.02);
 
   /**
    * Returns the singleton instance of this class.
@@ -340,7 +340,7 @@ public class AutonomousCommandsFactory {
                         b -> {},
                         p -> {},
                         5.0),
-                    new DriveToPose(
+                    new DriveOverBump(
                         drivetrain,
                         () -> Field2d.getInstance().getAllianceZoneBumpPose(side),
                         CrossSubsystemsCommandsFactory.xController,
