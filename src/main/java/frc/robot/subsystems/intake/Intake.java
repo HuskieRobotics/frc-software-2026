@@ -171,6 +171,7 @@ public class Intake extends SubsystemBase {
 
   public void stopRoller() {
     areRollersActiveState = false;
+    intakeIO.setRollerVelocity(0.0);
   }
 
   public void outTakeRoller() {
