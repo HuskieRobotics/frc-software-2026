@@ -28,10 +28,10 @@ public class SavannaRobotConfig extends RobotConfig {
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
   private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = 0.025879;
 
-  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 18;
-  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 50;
-  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 9;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.369141;
+  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 40;
+  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 25;
+  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 17;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.469727;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
@@ -132,8 +132,8 @@ public class SavannaRobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.246, 0.312, 0.202),
-          new Rotation3d(new Quaternion(-0.699, -0.149, 0.152, -0.685)));
+          new Translation3d(-0.219768, 0.306363, 0.202798),
+          new Rotation3d(new Quaternion(-0.680614, -0.147614, 0.145496, -0.702325)));
 
   // Back center left camera
   // x, y, z, pitch, yaw
