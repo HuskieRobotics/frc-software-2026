@@ -149,16 +149,6 @@ public class SwerveDrivetrainCommandFactory {
       if (OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean()) {
         double currentRotationDeg = drivetrain.getPose().getRotation().getDegrees();
 
-        // if the robot is near the bump, force the heading to a multiple of 45 degrees to
-        // facilitate traversal
-        if (Field2d.getInstance().inBumpZone()) {
-          double nearest45DegreeAngle =
-              (Math.round(((currentRotationDeg - 45.0) / 90.0)) * 90.0)
-                  + 45.0; // this should grab the nearest diamond angle (45+90x)
-          Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
-          return Optional.of(targetRotation);
-        }
-
         // if the robot is near a wall, force the heading to a multiple of 90 degrees to facilitate
         // traversal
         double currentYPose = drivetrain.getPose().getY();
