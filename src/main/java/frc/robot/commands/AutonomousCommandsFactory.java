@@ -44,7 +44,7 @@ public class AutonomousCommandsFactory {
   private Timer hopperUnloadTimer;
   private Timer matchTimer;
   private Pose2d currentTargetPose;
-  private final Debouncer fallenBehindPathDebouncer = new Debouncer(0.02);
+  private final Debouncer fallenBehindPathDebouncer = new Debouncer(0.2);
 
   /**
    * Returns the singleton instance of this class.
