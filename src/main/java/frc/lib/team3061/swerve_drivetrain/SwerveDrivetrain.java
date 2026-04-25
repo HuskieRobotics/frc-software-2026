@@ -494,6 +494,11 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
         xVelocityMPS = xVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
         yVelocityMPS = yVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
       }
+      if (rotationalVelocityRadiansPerSecond > 4.0) {
+        rotationalVelocityRadiansPerSecond = 4.0;
+      } else if (rotationalVelocityRadiansPerSecond < -4.0) {
+        rotationalVelocityRadiansPerSecond = -4.0;
+      }
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.292,
-        "y": 7.553722891566265
+        "x": 7.933594864479314,
+        "y": 7.521968616262482
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.521337349397589,
-        "y": 6.406313253012048
+        "x": 8.162932213876903,
+        "y": 6.374558977708265
       },
       "isLocked": false,
       "linkedName": "Support Mid"
@@ -134,7 +134,7 @@
     },
     {
       "name": "slow pickup",
-      "minWaypointRelativePos": 0.6,
+      "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 2.5,
       "constraints": {
         "maxVelocity": 2.25,
