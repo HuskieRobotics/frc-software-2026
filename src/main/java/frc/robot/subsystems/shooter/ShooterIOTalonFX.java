@@ -147,9 +147,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber flywheelLeadKA =
       new LoggedTunableNumber("Shooter/Flywheel kA", FLYWHEEL_KA);
   private final LoggedTunableNumber turretFarKP =
-      new LoggedTunableNumber("Shooter/Turret kP", TURRET_FAR_KP);
+      new LoggedTunableNumber("Shooter/Turret Far kP", TURRET_FAR_KP);
   private final LoggedTunableNumber turretCloseKP =
-      new LoggedTunableNumber("Shooter/Turret kP", TURRET_CLOSE_KP);
+      new LoggedTunableNumber("Shooter/Turret Close kP", TURRET_CLOSE_KP);
   private final LoggedTunableNumber turretKI =
       new LoggedTunableNumber("Shooter/Turret kI", TURRET_KI);
   private final LoggedTunableNumber turretKD =
