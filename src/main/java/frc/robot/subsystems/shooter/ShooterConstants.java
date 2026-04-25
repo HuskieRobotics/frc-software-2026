@@ -42,12 +42,15 @@ public class ShooterConstants {
 
   public static final double FLYWHEEL_PASS_OVER_NET_VELOCITY_RPS = 45.0;
 
-  public static final double TURRET_KP = 50.0;
+  public static final double TURRET_FAR_KP = 50.0;
+  public static final double TURRET_CLOSE_KP = 250.0;
   public static final double TURRET_KI = 0.0;
   public static final double TURRET_KD = 0.0;
-  public static final double TURRET_KS = 0.4;
+  public static final double TURRET_KS = 0.8;
   public static final double TURRET_KV = 0.0;
   public static final double TURRET_KA = 0.0;
+
+  public static final double TURRET_CLOSE_POSITION_THRESHOLD_ROT = Units.degreesToRotations(10.0);
 
   public static final boolean TURRET_INVERTED = false;
   public static final double TURRET_GEAR_RATIO = 41.666;
