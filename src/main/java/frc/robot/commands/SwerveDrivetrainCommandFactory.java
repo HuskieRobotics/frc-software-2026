@@ -60,22 +60,23 @@ public class SwerveDrivetrainCommandFactory {
                 .withName("toggle field relative"));
 
     // slow-mode toggle
-    oi.getTranslationSlowModeButton()
+    oi.getLimitAccelerationAndVelocityButton()
         .onTrue(
-            Commands.runOnce(swerveDrivetrain::enableTranslationSlowMode, swerveDrivetrain)
-                .withName("enable translation slow mode"));
-    oi.getTranslationSlowModeButton()
+            Commands.runOnce(
+                    () -> {
+                      swerveDrivetrain.enableTranslationSlowMode();
+                      swerveDrivetrain.enableRotationSlowMode();
+                    })
+                .withName("enable slow mode"));
+
+    oi.getLimitAccelerationAndVelocityButton()
         .onFalse(
-            Commands.runOnce(swerveDrivetrain::disableTranslationSlowMode, swerveDrivetrain)
-                .withName("disable translation slow mode"));
-    oi.getRotationSlowModeButton()
-        .onTrue(
-            Commands.runOnce(swerveDrivetrain::enableRotationSlowMode, swerveDrivetrain)
-                .withName("enable rotation slow mode"));
-    oi.getRotationSlowModeButton()
-        .onFalse(
-            Commands.runOnce(swerveDrivetrain::disableRotationSlowMode, swerveDrivetrain)
-                .withName("disable rotation slow mode"));
+            Commands.runOnce(
+                    () -> {
+                      swerveDrivetrain.disableTranslationSlowMode();
+                      swerveDrivetrain.disableRotationSlowMode();
+                    })
+                .withName("disable slow mode"));
 
     // reset gyro to 0 degrees
     oi.getResetGyroButton()
@@ -147,16 +148,6 @@ public class SwerveDrivetrainCommandFactory {
     return () -> {
       if (OISelector.getOperatorInterface().getAutoSnapsEnabledTrigger().getAsBoolean()) {
         double currentRotationDeg = drivetrain.getPose().getRotation().getDegrees();
-
-        // if the robot is near the bump, force the heading to a multiple of 45 degrees to
-        // facilitate traversal
-        if (Field2d.getInstance().inBumpZone()) {
-          double nearest45DegreeAngle =
-              (Math.round(((currentRotationDeg - 45.0) / 90.0)) * 90.0)
-                  + 45.0; // this should grab the nearest diamond angle (45+90x)
-          Rotation2d targetRotation = Rotation2d.fromDegrees(nearest45DegreeAngle);
-          return Optional.of(targetRotation);
-        }
 
         // if the robot is near a wall, force the heading to a multiple of 90 degrees to facilitate
         // traversal

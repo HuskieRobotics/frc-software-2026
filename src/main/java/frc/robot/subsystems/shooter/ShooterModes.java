@@ -21,6 +21,8 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.operator_interface.OISelector;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
@@ -43,6 +45,7 @@ public class ShooterModes extends SubsystemBase {
   public static final double TELEOP_DURATION_SECONDS = 140.0;
 
   private final Shooter shooter;
+  private final Intake intake;
 
   private Timer shiftTimer = new Timer();
   private double shiftTimerOffset = 0.0;
@@ -54,6 +57,8 @@ public class ShooterModes extends SubsystemBase {
 
   private Timer turretOutsideSetpointTimer = new Timer();
   private Timer turretUnJammingTimer = new Timer();
+
+  private double autoWaitTime = 4.0;
 
   /*
   Create interpolating tree map for data points
@@ -105,8 +110,9 @@ public class ShooterModes extends SubsystemBase {
 
   private ShooterMode currentMode = ShooterMode.COLLECT_AND_HOLD;
 
-  public ShooterModes(Shooter shooter) {
+  public ShooterModes(Shooter shooter, Intake intake) {
     this.shooter = shooter;
+    this.intake = intake;
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
@@ -449,7 +455,9 @@ public class ShooterModes extends SubsystemBase {
 
       // if the hub is not active, put the robot in collect and hold mode to prepare for when the
       // hub becomes active
-      if (!this.hubActive || Field2d.getInstance().inTowerNoPassZone()) {
+      if (!this.hubActive
+          || Field2d.getInstance().inTowerNoPassZone()
+          || Field2d.getInstance().inDepotNoShootZone()) {
         this.currentMode = ShooterMode.COLLECT_AND_HOLD;
       } else {
         // if the hub is active, the robot is either shooting on the move or manually shooting based
@@ -491,9 +499,9 @@ public class ShooterModes extends SubsystemBase {
 
         // check if the robot is in the high pass zone and override the hood and flywheel setpoints
         // to be the high pass setpoints
-        if (Field2d.getInstance().inOpponentAllianceHighPassZone()) {
-          shooterSetpoints.flywheelVelocityRPS = FLYWHEEL_PASS_OVER_NET_VELOCITY_RPS;
-          shooterSetpoints.hoodAngleRot = HOOD_LOWER_ANGLE_LIMIT_ROT;
+        if (Field2d.getInstance().inOpponentAllianceHighPassZone()
+            || Field2d.getInstance().inTowerNoPassZone()) {
+          this.currentMode = ShooterMode.COLLECT_AND_HOLD;
         }
         // check if the robot is in the no pass zone and switch to collect and hold mode if so to
         // prevent shooting
@@ -577,7 +585,7 @@ public class ShooterModes extends SubsystemBase {
 
     // do not run the flywheels if we are racing to the middle in auto
     if (DriverStation.isAutonomousEnabled()
-        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 3.0) {
+        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < autoWaitTime) {
       shooterSetpoints.flywheelVelocityRPS = 0.0;
     }
 
@@ -593,6 +601,8 @@ public class ShooterModes extends SubsystemBase {
     shooter.setFlywheelVelocity(shooterSetpoints.flywheelVelocityRPS);
     shooter.setHoodPosition(shooterSetpoints.hoodAngleRot);
     shooter.setTurretPosition(shooterSetpoints.turretAngleRot);
+
+    setIntakeVelocity(currentMode);
 
     Logger.recordOutput(
         "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
@@ -669,6 +679,10 @@ public class ShooterModes extends SubsystemBase {
     this.turretAngleAdjustmentDeg -= 1.0;
   }
 
+  public void setAutoWaitTime(double waitTime) {
+    this.autoWaitTime = waitTime;
+  }
+
   private double idealVelocityFromFunction(double distance) {
     double vMetersPerSecond =
         0.0094236446 * Math.pow(distance, 3)
@@ -726,5 +740,15 @@ public class ShooterModes extends SubsystemBase {
 
     return new ShooterSetpoints(
         idealShotVelocityRPS, idealHoodAngleRot, robotRelativeTurretAngleRot);
+  }
+
+  private void setIntakeVelocity(ShooterMode mode) {
+    if (mode == ShooterMode.SHOOT_OTM || mode == ShooterMode.PASS_OTM) {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_SOM_TARGET_VELOCITY_RPS);
+    } else if (DriverStation.isAutonomous()) {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
+    } else {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_STATIC_TARGET_VELOCITY_RPS);
+    }
   }
 }

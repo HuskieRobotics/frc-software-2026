@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 7.41845934379458
+        "x": 3.54922891566265,
+        "y": 7.553722891566265
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9390299572039944,
-        "y": 5.723495007132667
+        "x": 4.54922891566265,
+        "y": 7.553722891566265
       },
       "isLocked": false,
-      "linkedName": "Left Bank 90 degrees"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.2960627674750356,
-        "y": 5.982268188302426
+        "x": 7.933594864479314,
+        "y": 7.521968616262482
       },
       "prevControl": {
-        "x": 2.3182168330955775,
-        "y": 5.982268188302426
+        "x": 6.933594864479314,
+        "y": 7.521968616262482
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Support Mid"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.75,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -91.21887523513118
   },
   "reversed": false,
-  "folder": "[Unused] Depot Paths",
+  "folder": "Mid Delayed Support",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.67976515726366
   },
   "useDefaultConstraints": true
 }

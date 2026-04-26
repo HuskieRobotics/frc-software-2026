@@ -7,15 +7,24 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     // rollers
-    double rollerVoltage = 0.0;
-    double rollerVelocityRPS = 0.0;
-    double rollerReferenceVelocityRPS = 0.0;
-    double rollerStatorCurrent = 0.0;
-    double rollerSupplyCurrent = 0.0;
-    double rollerTempCelsius = 0.0;
-    double rollerClosedLoopErrorRPS = 0.0;
-    double rollerClosedLoopReferenceRPS = 0.0;
-    boolean rollerConnected = false;
+    double rollerTorqueCurrentLead = 0.0;
+    double rollerVoltageLead = 0.0;
+    double rollerVelocityRPSLead = 0.0;
+    double rollerReferenceVelocityRPSLead = 0.0;
+    double rollerStatorCurrentLead = 0.0;
+    double rollerSupplyCurrentLead = 0.0;
+    double rollerTempCelsiusLead = 0.0;
+    double rollerClosedLoopErrorRPSLead = 0.0;
+    double rollerClosedLoopReferenceRPSLead = 0.0;
+    boolean rollerConnectedLead = false;
+
+    // roller follower
+    boolean rollerConnectedFollower = false;
+    double rollerStatorCurrentFollower = 0.0;
+    double rollerSupplyCurrentFollower = 0.0;
+    double rollerVelocityRPSFollower = 0.0;
+    double rollerTorqueCurrentFollower = 0.0;
+    double rollerTempCelsiusFollower = 0.0;
 
     // deployer
     boolean deployerConnected = false;
@@ -23,6 +32,7 @@ public interface IntakeIO {
     double deployerSupplyCurrent = 0.0;
     double deployerVoltage = 0.0;
     double deployerTempCelsius = 0.0;
+
     double deployerReferencePositionRot = 0.0;
     double deployerAngularPositionRot = 0.0;
 

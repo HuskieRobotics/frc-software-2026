@@ -1,13 +1,16 @@
 package frc.robot.commands;
 
 import static frc.robot.subsystems.intake.IntakeConstants.JOSTLE_INITIAL_FUEL_COUNT;
-import static frc.robot.subsystems.intake.IntakeConstants.JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,10 +20,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.differential_drivetrain.DifferentialDrivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
+import frc.lib.team3061.util.RobotOdometry;
+import frc.robot.Field2d;
+import frc.robot.Field2d.Side;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterModes;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandsFactory {
@@ -36,6 +43,8 @@ public class AutonomousCommandsFactory {
 
   private Timer hopperUnloadTimer;
   private Timer matchTimer;
+  private Pose2d currentTargetPose;
+  private final Debouncer fallenBehindPathDebouncer = new Debouncer(0.2);
 
   /**
    * Returns the singleton instance of this class.
@@ -52,6 +61,7 @@ public class AutonomousCommandsFactory {
   private AutonomousCommandsFactory() {
     matchTimer = new Timer();
     hopperUnloadTimer = new Timer();
+    currentTargetPose = new Pose2d();
   }
 
   public Command getAutonomousCommand() {
@@ -86,6 +96,9 @@ public class AutonomousCommandsFactory {
         leftTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
+        "Left Bump Sweep", leftBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
+
+    autoChooser.addOption(
         "Right Trench Sweep", rightTrenchDoubleSweep(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
@@ -93,14 +106,55 @@ public class AutonomousCommandsFactory {
         rightTrenchBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
-        "Right Sweep and Outpost",
-        rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
+        "Right Bump Sweep",
+        rightBumpDoubleSweep(drivetrain, hopper, intake, shooter, shooterModes));
+
+    // Support Sweeps
+    autoChooser.addOption(
+        "Left Mid Delayed Bump Support",
+        leftMidDelayedBumpSupport(drivetrain, hopper, intake, shooter));
+    autoChooser.addOption(
+        "Right Mid Delayed Bump Support",
+        rightMidDelayedBumpSupport(drivetrain, hopper, intake, shooter));
+    autoChooser.addOption(
+        "Left Mid Delayed Trench Support",
+        leftMidDelayedTrenchSupport(drivetrain, hopper, intake, shooter));
+    autoChooser.addOption(
+        "Right Mid Delayed Trench Support",
+        rightMidDelayedTrenchSupport(drivetrain, hopper, intake, shooter));
 
     autoChooser.addOption(
-        "Left Support Sweep", leftSupportSweep(drivetrain, hopper, intake, shooter, shooterModes));
+        "Left Bump Support Collect",
+        leftBumpSupportCollect(drivetrain, hopper, intake, shooter, shooterModes));
+    autoChooser.addOption(
+        "Right Bump Support Collect",
+        rightBumpSupportCollect(drivetrain, hopper, intake, shooter, shooterModes));
+    autoChooser.addOption(
+        "Left Trench Support Collect",
+        leftTrenchSupportCollect(drivetrain, hopper, intake, shooter, shooterModes));
+    autoChooser.addOption(
+        "Right Trench Support Collect",
+        rightTrenchSupportCollect(drivetrain, hopper, intake, shooter, shooterModes));
 
     autoChooser.addOption(
         "Outpost and Depot", outpostAndDepot(drivetrain, hopper, intake, shooter, shooterModes));
+
+    // autoChooser.addOption(
+    //     "Right Sweep and Outpost",
+    //     rightNeutralZoneSweepAndOutpost(drivetrain, hopper, intake, shooter, shooterModes));
+
+    // autoChooser.addOption(
+    //     "Wide Left Far Hub Support", getLeftFarHubWide(drivetrain, hopper, intake, shooter));
+
+    // autoChooser.addOption(
+    //     "Narrow Left Far Hub Support", getLeftFarHubNarrow(drivetrain, hopper, intake, shooter));
+
+    // autoChooser.addOption(
+    //     "Wide Right Far Hub Support", getRightFarHubWide(drivetrain, hopper, intake, shooter));
+
+    // autoChooser.addOption(
+    //     "Narrow Right Far Hub Support", getRightFarHubNarrow(drivetrain, hopper, intake,
+    // shooter));
 
     /************ Start Point ************
      *
@@ -154,8 +208,7 @@ public class AutonomousCommandsFactory {
     //  * useful for tuning the drive velocity PID controller
     //  *
     //  */
-    // autoChooser.addOption("Drive Velocity Tuning",
-    // this.getDriveVelocityTuningCommand(drivetrain));
+    autoChooser.addOption("Drive Velocity Tuning", this.getDriveVelocityTuningCommand(drivetrain));
 
     // /************ Swerve Rotation Tuning ************
     //  *
@@ -222,7 +275,7 @@ public class AutonomousCommandsFactory {
                 Commands.waitSeconds(1.0),
                 Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(1.0),
                 Commands.run(() -> drivetrain.drive(3.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
@@ -231,7 +284,7 @@ public class AutonomousCommandsFactory {
                 Commands.waitSeconds(2.0),
                 Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(1.0),
                 Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, false, false), drivetrain)),
             Commands.deadline(
                 Commands.waitSeconds(2.0),
@@ -266,6 +319,57 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(drivetrain::captureInitialConditions),
         new PathPlannerAuto(autoName),
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
+  }
+
+  // Follow a path. If we fall behind, drive to pose to the bump and then over the bump
+  private Command followCollisionResistantPath(
+      PathPlannerPath path, SwerveDrivetrain drivetrain, Side side) {
+    return AutoBuilder.followPath(path)
+        .until(() -> fallenBehindPath())
+        .andThen(
+            Commands.either(
+                Commands.sequence(
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNeutralZoneBumpPose(side),
+                        CrossSubsystemsCommandsFactory.xController,
+                        CrossSubsystemsCommandsFactory.yController,
+                        CrossSubsystemsCommandsFactory.thetaController,
+                        new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
+                        true,
+                        b -> {},
+                        p -> {},
+                        5.0),
+                    new DriveOverBump(
+                        drivetrain,
+                        () -> Field2d.getInstance().getAllianceZoneBumpPose(side),
+                        CrossSubsystemsCommandsFactory.xController,
+                        CrossSubsystemsCommandsFactory.yController,
+                        CrossSubsystemsCommandsFactory.thetaController,
+                        new Transform2d(new Translation2d(0.1, 0.1), Rotation2d.fromDegrees(5.0)),
+                        true,
+                        b -> {},
+                        p -> {},
+                        5.0)),
+                Commands.none(),
+                this::fallenBehindPath));
+  }
+
+  private boolean fallenBehindPath() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    // PathPlannerLogging.logTargetPose(pose);
+    Transform2d diff = pose.minus(getPathFollowingTargetPose());
+    double dist = Math.hypot(diff.getX(), diff.getY());
+
+    // check match timer to make sure we don't trigger this if the target pose isn't updated yet
+    boolean fallenBehind =
+        fallenBehindPathDebouncer.calculate(matchTimer.get() > 0.5 && dist > 2.0);
+
+    Logger.recordOutput("Auto/FallenBehindPath/Difference", dist);
+    Logger.recordOutput("Auto/FallenBehindPath/FallenBehind", fallenBehind);
+
+    return fallenBehind;
   }
 
   private Command getUnloadHopperCommand(
@@ -370,27 +474,61 @@ public class AutonomousCommandsFactory {
       ShooterModes shooterModes,
       Pose2d startingPose,
       PathPlannerPath firstSweep,
-      PathPlannerPath slowToTrench,
       PathPlannerPath secondSweep,
-      PathPlannerPath secondSlowToTrench) {
+      PathPlannerPath secondSlowToTrench,
+      Side side) {
 
     return Commands.sequence(
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.5),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intake::deployIntake),
+            followCollisionResistantPath(secondSweep, drivetrain, side),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+              shooterModes.disableShootOnTheMoveInAuto();
+            });
+  }
+
+  private Command getBumpDoubleSweepAuto(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes,
+      Pose2d startingPose,
+      PathPlannerPath firstSweep,
+      PathPlannerPath slowToTrench,
+      PathPlannerPath secondSweep,
+      Side side) {
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(),
+                followCollisionResistantPath(firstSweep, drivetrain, side)),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
             Commands.deadline(
-                AutoBuilder.followPath(slowToTrench),
+                followCollisionResistantPath(slowToTrench, drivetrain, side),
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 getAutoJostleCommand(intake, shooter)),
             Commands.runOnce(shooterModes::disableShootOnTheMoveInAuto),
             Commands.runOnce(hopper::stop, hopper),
             Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(secondSweep),
+            followCollisionResistantPath(secondSweep, drivetrain, side),
             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
             Commands.parallel(
-                AutoBuilder.followPath(secondSlowToTrench),
+                followCollisionResistantPath(slowToTrench, drivetrain, side),
                 hopper.getFeedFuelIntoShooterCommand(shooter::getFlywheelLeadVelocityRPS),
                 Commands.sequence(
                     Commands.waitSeconds(1.0),
@@ -425,8 +563,8 @@ public class AutonomousCommandsFactory {
     final Pose2d startingPose;
     try {
       // exchange with turn vs. no-turn for testing
-      firstSweep = PathPlannerPath.fromPathFile("L Turn Fuel Sweep");
-      secondSweep = PathPlannerPath.fromPathFile("L Turn Second Collect");
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L No-Turn Second Collect");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -466,14 +604,12 @@ public class AutonomousCommandsFactory {
       ShooterModes shooterModes) {
     PathPlannerPath firstSweep;
     PathPlannerPath secondSweep;
-    PathPlannerPath slowToTrench;
     PathPlannerPath secondSlowToTrench;
     final Pose2d startingPose;
     try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump");
-      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
-      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect");
-      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump Turn to Trench");
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep");
+      secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect");
+      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -489,9 +625,9 @@ public class AutonomousCommandsFactory {
         shooterModes,
         startingPose,
         firstSweep,
-        slowToTrench,
         secondSweep,
-        secondSlowToTrench);
+        secondSlowToTrench,
+        Side.LEFT);
   }
 
   private Command rightTrenchBumpDoubleSweep(
@@ -502,14 +638,12 @@ public class AutonomousCommandsFactory {
       ShooterModes shooterModes) {
     PathPlannerPath firstSweep;
     PathPlannerPath secondSweep;
-    PathPlannerPath slowToTrench;
     PathPlannerPath secondSlowToTrench;
     final Pose2d startingPose;
     try {
-      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump").mirrorPath();
-      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
-      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect").mirrorPath();
-      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump Turn to Trench").mirrorPath();
+      firstSweep = PathPlannerPath.fromPathFile("L No-Turn Fuel Sweep").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Trench-Bump Second Collect").mirrorPath();
+      secondSlowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -525,45 +659,105 @@ public class AutonomousCommandsFactory {
         shooterModes,
         startingPose,
         firstSweep,
-        slowToTrench,
         secondSweep,
-        secondSlowToTrench);
+        secondSlowToTrench,
+        Side.RIGHT);
   }
 
-  private Command leftSupportSweep(
+  private Command leftBumpDoubleSweep(
       SwerveDrivetrain drivetrain,
       Hopper hopper,
       Intake intake,
       Shooter shooter,
       ShooterModes shooterModes) {
-    PathPlannerPath firstSweepToDepot;
-    PathPlannerPath intakeDepot;
-    PathPlannerPath leaveDepot;
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    PathPlannerPath slowToTrench;
     final Pose2d startingPose;
     try {
-      firstSweepToDepot = PathPlannerPath.fromPathFile("L Support Collect");
-      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
-      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
-      startingPose = firstSweepToDepot.getStartingHolonomicPose().orElseThrow();
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump");
+      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench");
+      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect");
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
       return Commands.none();
     }
 
+    return getBumpDoubleSweepAuto(
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes,
+        startingPose,
+        firstSweep,
+        slowToTrench,
+        secondSweep,
+        Side.LEFT);
+  }
+
+  private Command rightBumpDoubleSweep(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath firstSweep;
+    PathPlannerPath secondSweep;
+    PathPlannerPath slowToTrench;
+    final Pose2d startingPose;
+    try {
+      firstSweep = PathPlannerPath.fromPathFile("L Fuel Sweep Over Bump").mirrorPath();
+      slowToTrench = PathPlannerPath.fromPathFile("L Bump to Trench").mirrorPath();
+      secondSweep = PathPlannerPath.fromPathFile("L Bump Second Collect").mirrorPath();
+      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getBumpDoubleSweepAuto(
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes,
+        startingPose,
+        firstSweep,
+        slowToTrench,
+        secondSweep,
+        Side.RIGHT);
+  }
+
+  private Command getLeftSupportCollect(
+      PathPlannerPath hubSweep,
+      PathPlannerPath intakeDepot,
+      PathPlannerPath leaveDepot,
+      Pose2d startingPose,
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+
     return Commands.sequence(
-            // shoot preloads
+            Commands.runOnce(() -> shooterModes.setAutoWaitTime(0.0)),
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             intake.getDeployAndStartInAutoCommand(),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
             Commands.runOnce(hopper::stop, hopper),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(firstSweepToDepot),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(),
+                followCollisionResistantPath(hubSweep, drivetrain, Side.LEFT)),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(4.0),
             Commands.runOnce(hopper::stop, hopper),
-            Commands.runOnce(intake::deployIntake),
-            AutoBuilder.followPath(intakeDepot),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(intakeDepot)),
+            Commands.waitSeconds(0.5),
             AutoBuilder.followPath(leaveDepot),
             getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
@@ -572,6 +766,304 @@ public class AutonomousCommandsFactory {
               intake.deployIntake();
               intake.startRoller();
             });
+  }
+
+  private Command getRightSupportCollect(
+      PathPlannerPath hubSweep,
+      Pose2d startingPose,
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+
+    return Commands.sequence(
+            Commands.runOnce(() -> shooterModes.setAutoWaitTime(0.0)),
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            intake.getDeployAndStartInAutoCommand(),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(),
+                followCollisionResistantPath(hubSweep, drivetrain, Side.LEFT)),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command getLeftMidDelayedSupport(
+      PathPlannerPath toMid,
+      PathPlannerPath sweepToDepot,
+      PathPlannerPath intakeDepot,
+      PathPlannerPath leaveDepot,
+      Pose2d startingPose,
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter) {
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            intake.getDeployAndStartInAutoCommand(),
+            Commands.waitSeconds(0.25),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
+            Commands.waitSeconds(1.0),
+            followCollisionResistantPath(sweepToDepot, drivetrain, Side.LEFT),
+            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(intakeDepot)),
+            Commands.waitSeconds(0.5),
+            AutoBuilder.followPath(leaveDepot),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command getRightMidDelayedSupport(
+      PathPlannerPath toMid,
+      PathPlannerPath sweepToCorner,
+      Pose2d startingPose,
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter) {
+
+    return Commands.sequence(
+            Commands.runOnce(matchTimer::restart),
+            setStartingPoseForAuto(startingPose, drivetrain),
+            intake.getDeployAndStartInAutoCommand(),
+            Commands.waitSeconds(0.25),
+            Commands.parallel(
+                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
+            Commands.waitSeconds(1.0),
+            followCollisionResistantPath(sweepToCorner, drivetrain, Side.RIGHT),
+            getUnloadHopperCommand(hopper, intake, shooter, false))
+        .finallyDo(
+            () -> {
+              hopper.stop();
+              intake.deployIntake();
+              intake.startRoller();
+            });
+  }
+
+  private Command leftMidDelayedBumpSupport(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath toMid;
+    PathPlannerPath midSweepToDepot;
+    PathPlannerPath leaveDepot;
+    PathPlannerPath intakeDepot;
+    final Pose2d startingPose;
+    try {
+      toMid = PathPlannerPath.fromPathFile("L Support Delayed to Mid");
+      midSweepToDepot = PathPlannerPath.fromPathFile("L Mid Support Bump Depot");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = toMid.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftMidDelayedSupport(
+        toMid,
+        midSweepToDepot,
+        intakeDepot,
+        leaveDepot,
+        startingPose,
+        drivetrain,
+        hopper,
+        intake,
+        shooter);
+  }
+
+  private Command rightMidDelayedBumpSupport(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath toMid;
+    PathPlannerPath midSweepToCorner;
+    final Pose2d startingPose;
+    try {
+      toMid = PathPlannerPath.fromPathFile("L Support Delayed to Mid").mirrorPath();
+      midSweepToCorner = PathPlannerPath.fromPathFile("R Mid Support Bump").mirrorPath();
+      startingPose = toMid.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getRightMidDelayedSupport(
+        toMid, midSweepToCorner, startingPose, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command leftMidDelayedTrenchSupport(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath toMid;
+    PathPlannerPath midSweepToDepot;
+    PathPlannerPath leaveDepot;
+    PathPlannerPath intakeDepot;
+    final Pose2d startingPose;
+    try {
+      toMid = PathPlannerPath.fromPathFile("L Support Delayed to Mid");
+      midSweepToDepot = PathPlannerPath.fromPathFile("L Mid Support Trench Depot");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = toMid.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftMidDelayedSupport(
+        toMid,
+        midSweepToDepot,
+        intakeDepot,
+        leaveDepot,
+        startingPose,
+        drivetrain,
+        hopper,
+        intake,
+        shooter);
+  }
+
+  private Command rightMidDelayedTrenchSupport(
+      SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+    PathPlannerPath toMid;
+    PathPlannerPath midSweepToCorner;
+    final Pose2d startingPose;
+    try {
+      toMid = PathPlannerPath.fromPathFile("L Support Delayed to Mid").mirrorPath();
+      midSweepToCorner = PathPlannerPath.fromPathFile("R Mid Support Trench").mirrorPath();
+      startingPose = toMid.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getRightMidDelayedSupport(
+        toMid, midSweepToCorner, startingPose, drivetrain, hopper, intake, shooter);
+  }
+
+  private Command leftBumpSupportCollect(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath supportCollectToDepot;
+    PathPlannerPath leaveDepot;
+    PathPlannerPath intakeDepot;
+    final Pose2d startingPose;
+    try {
+      supportCollectToDepot = PathPlannerPath.fromPathFile("L Support Collect Bump Depot");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = supportCollectToDepot.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftSupportCollect(
+        supportCollectToDepot,
+        intakeDepot,
+        leaveDepot,
+        startingPose,
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes);
+  }
+
+  private Command rightBumpSupportCollect(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath supportCollect;
+    final Pose2d startingPose;
+    try {
+      supportCollect = PathPlannerPath.fromPathFile("R Support Collect Bump").mirrorPath();
+      startingPose = supportCollect.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getRightSupportCollect(
+        supportCollect, startingPose, drivetrain, hopper, intake, shooter, shooterModes);
+  }
+
+  private Command leftTrenchSupportCollect(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath supportCollectToDepot;
+    PathPlannerPath leaveDepot;
+    PathPlannerPath intakeDepot;
+    final Pose2d startingPose;
+    try {
+      supportCollectToDepot = PathPlannerPath.fromPathFile("L Support Collect Trench Depot");
+      intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+      leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+      startingPose = supportCollectToDepot.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getLeftSupportCollect(
+        supportCollectToDepot,
+        intakeDepot,
+        leaveDepot,
+        startingPose,
+        drivetrain,
+        hopper,
+        intake,
+        shooter,
+        shooterModes);
+  }
+
+  private Command rightTrenchSupportCollect(
+      SwerveDrivetrain drivetrain,
+      Hopper hopper,
+      Intake intake,
+      Shooter shooter,
+      ShooterModes shooterModes) {
+    PathPlannerPath supportCollect;
+    final Pose2d startingPose;
+    try {
+      supportCollect = PathPlannerPath.fromPathFile("R Support Collect Trench").mirrorPath();
+      startingPose = supportCollect.getStartingHolonomicPose().orElseThrow();
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+      return Commands.none();
+    }
+
+    return getRightSupportCollect(
+        supportCollect, startingPose, drivetrain, hopper, intake, shooter, shooterModes);
   }
 
   private Command outpostAndDepot(
@@ -615,52 +1107,161 @@ public class AutonomousCommandsFactory {
         Commands.runOnce(hopper::stop, hopper),
         Commands.runOnce(intake::deployIntake),
         AutoBuilder.followPath(intakeDepot),
+        Commands.waitSeconds(0.5),
         AutoBuilder.followPath(leaveDepot),
         getUnloadHopperCommand(hopper, intake, shooter, false));
   }
 
-  private Command rightNeutralZoneSweepAndOutpost(
-      SwerveDrivetrain drivetrain,
-      Hopper hopper,
-      Intake intake,
-      Shooter shooter,
-      ShooterModes shooterModes) {
-    PathPlannerPath firstSweep;
-    PathPlannerPath outpostToMid;
-    final Pose2d startingPose;
+  public void setPathFollowingTargetPose(Pose2d pose) {
+    currentTargetPose = pose;
+  }
 
-    try {
-      firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep to Outpost");
-      outpostToMid = PathPlannerPath.fromPathFile("Outpost to Mid");
-      startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
-    } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    return Commands.sequence(
-            Commands.runOnce(matchTimer::restart),
-            setStartingPoseForAuto(startingPose, drivetrain),
-            Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
-            getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)
-                .until(() -> (matchTimer.get() > 17.5)),
-            Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
-            Commands.runOnce(
-                () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS)),
-            AutoBuilder.followPath(outpostToMid))
-        .finallyDo(
-            () -> {
-              hopper.stop();
-              intake.deployIntake();
-              intake.startRoller();
-              shooterModes.disableShootOnTheMoveInAuto();
-            });
+  public Pose2d getPathFollowingTargetPose() {
+    return currentTargetPose;
   }
 
   public double getCustomMatchTime() {
     return matchTimer.get();
   }
+
+  // DEPRECATED PATHS
+
+  //   private Command getRightFarHubWide(
+  //       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+  //     PathPlannerPath farSweep;
+  //     try {
+  //       farSweep = PathPlannerPath.fromPathFile("R Support to Far Hub Wide");
+  //     } catch (Exception e) {
+  //       pathFileMissingAlert.setText("Could not find the specified path file.");
+  //       pathFileMissingAlert.set(true);
+  //       return Commands.none();
+  //     }
+
+  //     return getRightFarHubSupportSweep(farSweep, drivetrain, hopper, intake, shooter);
+  //   }
+
+  //   private Command getRightFarHubNarrow(
+  //       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+  //     PathPlannerPath farSweep;
+  //     try {
+  //       farSweep = PathPlannerPath.fromPathFile("R Support to Far Hub Narrow");
+  //     } catch (Exception e) {
+  //       pathFileMissingAlert.setText("Could not find the specified path file.");
+  //       pathFileMissingAlert.set(true);
+  //       return Commands.none();
+  //     }
+
+  //     return getRightFarHubSupportSweep(farSweep, drivetrain, hopper, intake, shooter);
+  //   }
+
+  //   private Command getLeftFarHubWide(
+  //       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+  //     PathPlannerPath hubSweep;
+  //     PathPlannerPath intakeDepot;
+  //     PathPlannerPath leaveDepot;
+  //     try {
+  //       hubSweep = PathPlannerPath.fromPathFile("L Support to Far Hub Wide");
+  //       intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+  //       leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+  //     } catch (Exception e) {
+  //       pathFileMissingAlert.setText("Could not find the specified path file.");
+  //       pathFileMissingAlert.set(true);
+  //       return Commands.none();
+  //     }
+
+  //     return getLeftHubSupportSweep(
+  //         hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
+  //   }
+
+  // private Command getRightFarHubSupportSweep(
+  //     PathPlannerPath farSweep,
+  //     SwerveDrivetrain drivetrain,
+  //     Hopper hopper,
+  //     Intake intake,
+  //     Shooter shooter) {
+  //   Pose2d startingPose;
+  //   try {
+  //     startingPose = farSweep.getStartingHolonomicPose().orElseThrow();
+  //   } catch (Exception e) {
+  //     pathFileMissingAlert.setText("Could not find the specified path file.");
+  //     pathFileMissingAlert.set(true);
+  //     return Commands.none();
+  //   }
+
+  //   return Commands.sequence(
+  //           Commands.runOnce(matchTimer::restart),
+  //           setStartingPoseForAuto(startingPose, drivetrain),
+  //           intake.getDeployAndStartInAutoCommand(),
+  //           getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(2.5),
+  //           Commands.runOnce(hopper::stop, hopper),
+  //           Commands.parallel(
+  //               intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(farSweep)),
+  //           getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true))
+  //       .finallyDo(
+  //           () -> {
+  //             hopper.stop();
+  //             intake.deployIntake();
+  //             intake.startRoller();
+  //           });
+  // }
+
+  //   private Command getLeftFarHubNarrow(
+  //       SwerveDrivetrain drivetrain, Hopper hopper, Intake intake, Shooter shooter) {
+  //     PathPlannerPath hubSweep;
+  //     PathPlannerPath intakeDepot;
+  //     PathPlannerPath leaveDepot;
+  //     try {
+  //       hubSweep = PathPlannerPath.fromPathFile("L Support to Far Hub Narrow");
+  //       intakeDepot = PathPlannerPath.fromPathFile("Intake Depot");
+  //       leaveDepot = PathPlannerPath.fromPathFile("Leave Depot");
+  //     } catch (Exception e) {
+  //       pathFileMissingAlert.setText("Could not find the specified path file.");
+  //       pathFileMissingAlert.set(true);
+  //       return Commands.none();
+  //     }
+
+  //     return getLeftHubSupportSweep(
+  //         hubSweep, intakeDepot, leaveDepot, drivetrain, hopper, intake, shooter);
+  //   }
+
+  //   private Command rightNeutralZoneSweepAndOutpost(
+  //       SwerveDrivetrain drivetrain,
+  //       Hopper hopper,
+  //       Intake intake,
+  //       Shooter shooter,
+  //       ShooterModes shooterModes) {
+  //     PathPlannerPath firstSweep;
+  //     PathPlannerPath outpostToMid;
+  //     final Pose2d startingPose;
+
+  //     try {
+  //       firstSweep = PathPlannerPath.fromPathFile("R Fuel Sweep to Outpost");
+  //       outpostToMid = PathPlannerPath.fromPathFile("Outpost to Mid");
+  //       startingPose = firstSweep.getStartingHolonomicPose().orElseThrow();
+  //     } catch (Exception e) {
+  //       pathFileMissingAlert.setText("Could not find the specified path file.");
+  //       pathFileMissingAlert.set(true);
+
+  //       return Commands.none();
+  //     }
+
+  //     return Commands.sequence(
+  //             Commands.runOnce(matchTimer::restart),
+  //             setStartingPoseForAuto(startingPose, drivetrain),
+  //             Commands.parallel(
+  //                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(firstSweep)),
+  //             getUnloadHopperAtOutpostCommand(hopper, intake, shooter, true)
+  //                 .until(() -> (matchTimer.get() > 17.5)),
+  //             Commands.runOnce(shooterModes::enableShootOnTheMoveInAuto),
+  //             Commands.runOnce(
+  //                 () -> intake.setLinearPosition(JOSTLE_SUBSEQUENT_RETRACT_POSITION_METERS)),
+  //             AutoBuilder.followPath(outpostToMid))
+  //         .finallyDo(
+  //             () -> {
+  //               hopper.stop();
+  //               intake.deployIntake();
+  //               intake.startRoller();
+  //               shooterModes.disableShootOnTheMoveInAuto();
+  //             });
+  //   }
 }
