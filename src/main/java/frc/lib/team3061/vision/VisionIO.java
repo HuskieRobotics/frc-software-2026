@@ -14,7 +14,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface VisionIO {
   @AutoLog
   public static class VisionIOInputs {
-    boolean connected;
+    boolean connected = false;
+    boolean receivingFrames = false;
     PoseObservation[] poseObservations = new PoseObservation[0];
     double cpuPower = 0.0;
     double gpuPower = 0.0;

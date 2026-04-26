@@ -1,0 +1,188 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5700909090909088,
+        "y": 7.590852272727272
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.996519258202567,
+        "y": 7.6125392296718974
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.096305278174036,
+        "y": 7.35376604850214
+      },
+      "prevControl": {
+        "x": 6.10478892167034,
+        "y": 7.6734740650531705
+      },
+      "nextControl": {
+        "x": 6.0758310929743855,
+        "y": 6.582191766351982
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.966918687589158,
+        "y": 4.49432239657632
+      },
+      "prevControl": {
+        "x": 5.953980028530669,
+        "y": 5.684679029957205
+      },
+      "nextControl": {
+        "x": 5.982605000944264,
+        "y": 3.051181567906692
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.819,
+        "y": 4.653409090909091
+      },
+      "prevControl": {
+        "x": 7.771553738739298,
+        "y": 3.6190805954257823
+      },
+      "nextControl": {
+        "x": 7.87053409090909,
+        "y": 5.776852272727273
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.6,
+        "y": 5.50339892665474
+      },
+      "prevControl": {
+        "x": 3.390869734509145,
+        "y": 5.099494759099594
+      },
+      "nextControl": {
+        "x": 2.0302771084337348,
+        "y": 5.7943614457831325
+      },
+      "isLocked": false,
+      "linkedName": "Near Bump Turned Around"
+    },
+    {
+      "anchor": {
+        "x": 1.2960627674750356,
+        "y": 5.982268188302426
+      },
+      "prevControl": {
+        "x": 1.7640748156678068,
+        "y": 5.870340477459052
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.919811320754713,
+      "rotationDegrees": 89.0
+    },
+    {
+      "waypointRelativePos": 3.25,
+      "rotationDegrees": 135.0
+    },
+    {
+      "waypointRelativePos": 3.8,
+      "rotationDegrees": 135.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "slow to pickup",
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 1.8,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow otw back",
+      "minWaypointRelativePos": 3.25,
+      "maxWaypointRelativePos": 4.0,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow to turn and bait",
+      "minWaypointRelativePos": 1.8,
+      "maxWaypointRelativePos": 3.25,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow to depot",
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.75,
+    "maxAcceleration": 7.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Support Collects",
+  "idealStartingState": {
+    "velocity": 0.5,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

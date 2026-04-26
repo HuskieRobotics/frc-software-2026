@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.DeviceEnableValue;
@@ -28,7 +29,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Force;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -75,6 +78,11 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
       new LoggedTunableNumber("Drivetrain/DriveKi", RobotConfig.getInstance().getSwerveDriveKI());
   private final LoggedTunableNumber driveKd =
       new LoggedTunableNumber("Drivetrain/DriveKd", RobotConfig.getInstance().getSwerveDriveKD());
+  private final LoggedTunableNumber driveKs =
+      new LoggedTunableNumber("Drivetrain/DriveKs", RobotConfig.getInstance().getDriveKS());
+  private final LoggedTunableNumber driveKv =
+      new LoggedTunableNumber("Drivetrain/DriveKv", RobotConfig.getInstance().getDriveKV());
+
   private final LoggedTunableNumber steerKp =
       new LoggedTunableNumber("Drivetrain/TurnKp", RobotConfig.getInstance().getSwerveAngleKP());
   private final LoggedTunableNumber steerKi =
@@ -325,12 +333,73 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   private StatusSignal<Angle> rollStatusSignal;
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
+  private TorqueCurrentFOC driveCurrentRequest = new TorqueCurrentFOC(0);
+
   // brake mode
   private static final Executor brakeModeExecutor = Executors.newFixedThreadPool(1);
 
   // simulation
   private static final double SIM_LOOP_PERIOD = 0.005; // 5 ms
   private double lastSimTime;
+
+  class ModuleStatusSignals {
+    StatusSignal<DeviceEnableValue> driveEnabled;
+    StatusSignal<Current> driveStatorCurrent;
+    StatusSignal<Current> driveSupplyCurrent;
+    StatusSignal<Temperature> driveTemp;
+    StatusSignal<Voltage> driveVoltage;
+
+    StatusSignal<Angle> steerAbsolutePositionRot;
+    StatusSignal<DeviceEnableValue> steerEnabled;
+    StatusSignal<Current> steerStatorCurrent;
+    StatusSignal<Current> steerSupplyCurrent;
+    StatusSignal<Temperature> steerTemp;
+
+    ModuleStatusSignals(SwerveModule<TalonFX, TalonFX, CANcoder> module) {
+      driveEnabled = module.getDriveMotor().getDeviceEnable();
+      driveStatorCurrent = module.getDriveMotor().getStatorCurrent();
+      driveSupplyCurrent = module.getDriveMotor().getSupplyCurrent();
+      driveTemp = module.getDriveMotor().getDeviceTemp();
+      driveVoltage = module.getDriveMotor().getMotorVoltage();
+
+      steerAbsolutePositionRot = module.getEncoder().getAbsolutePosition();
+
+      steerEnabled = module.getSteerMotor().getDeviceEnable();
+      steerStatorCurrent = module.getSteerMotor().getStatorCurrent();
+      steerSupplyCurrent = module.getSteerMotor().getSupplyCurrent();
+      steerTemp = module.getSteerMotor().getDeviceTemp();
+
+      Phoenix6Util.registerSignals(
+          true,
+          driveEnabled,
+          driveStatorCurrent,
+          driveSupplyCurrent,
+          driveTemp,
+          driveVoltage,
+          steerAbsolutePositionRot,
+          steerEnabled,
+          steerStatorCurrent,
+          steerSupplyCurrent,
+          steerTemp);
+    }
+
+    private void updateSwerveModuleInputs(SwerveIOInputs inputs) {
+      inputs.driveEnabled = driveEnabled.getValue() == DeviceEnableValue.Enabled;
+      inputs.driveStatorCurrent = driveStatorCurrent.getValueAsDouble();
+      inputs.driveSupplyCurrent = driveSupplyCurrent.getValueAsDouble();
+      inputs.driveTemp = driveTemp.getValueAsDouble();
+      inputs.driveVoltage = driveVoltage.getValueAsDouble();
+
+      inputs.steerAbsolutePositionRot = steerAbsolutePositionRot.getValueAsDouble();
+
+      inputs.steerEnabled = steerEnabled.getValue() == DeviceEnableValue.Enabled;
+      inputs.steerStatorCurrent = steerStatorCurrent.getValueAsDouble();
+      inputs.steerSupplyCurrent = steerSupplyCurrent.getValueAsDouble();
+      inputs.steerTemp = steerTemp.getValueAsDouble();
+    }
+  }
+
+  private final ModuleStatusSignals[] moduleStatusSignals = new ModuleStatusSignals[4];
 
   /** Creates a new Drivetrain subsystem. */
   public SwerveDrivetrainIOCTRE() {
@@ -344,6 +413,10 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
         frontRight,
         backLeft,
         backRight);
+
+    for (int i = 0; i < this.getModules().length; i++) {
+      this.moduleStatusSignals[i] = new ModuleStatusSignals(this.getModule(i));
+    }
 
     this.centerOfRotation = new Translation2d(); // default to (0,0)
 
@@ -426,7 +499,10 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
     // replays
     this.timestampQueue.offer(
         Timer.getFPGATimestamp() - (Utils.getCurrentTimeSeconds() - state.Timestamp));
-    this.ctreTimestampQueue.offer(state.Timestamp);
+
+    if (Constants.ENABLE_EXTRA_LOGGING) {
+      this.ctreTimestampQueue.offer(state.Timestamp);
+    }
 
     this.odometryLock.unlock();
   }
@@ -435,8 +511,8 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   public void updateInputs(SwerveDrivetrainIOInputsCollection inputs) {
 
     // update and log the swerve modules inputs
-    for (int i = 0; i < this.getModules().length; i++) {
-      this.updateSwerveModuleInputs(inputs.swerve[i], this.getModule(i));
+    for (int i = 0; i < this.moduleStatusSignals.length; i++) {
+      this.moduleStatusSignals[i].updateSwerveModuleInputs(inputs.swerve[i]);
     }
 
     inputs.drivetrain.swerveModulePositions = this.getState().ModulePositions;
@@ -524,9 +600,11 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
         this.timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
     this.timestampQueue.clear();
 
-    inputs.drivetrain.odometryCTRETimestamps =
-        this.ctreTimestampQueue.stream().mapToDouble(Double::valueOf).toArray();
-    this.ctreTimestampQueue.clear();
+    if (Constants.ENABLE_EXTRA_LOGGING) {
+      inputs.drivetrain.odometryCTRETimestamps =
+          this.ctreTimestampQueue.stream().mapToDouble(Double::valueOf).toArray();
+      this.ctreTimestampQueue.clear();
+    }
 
     inputs.drivetrain.odometryYawPositions =
         this.gyroYawQueue.stream().map(Rotation2d::fromDegrees).toArray(Rotation2d[]::new);
@@ -555,12 +633,16 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
             slot0.kP = pid[0];
             slot0.kI = pid[1];
             slot0.kD = pid[2];
+            slot0.kS = pid[3];
+            slot0.kV = pid[4];
             swerveModule.getDriveMotor().getConfigurator().apply(slot0);
           }
         },
         driveKp,
         driveKi,
-        driveKd);
+        driveKd,
+        driveKs,
+        driveKv);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -584,24 +666,6 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
         driveFacingAngleThetaKp,
         driveFacingAngleThetaKi,
         driveFacingAngleThetaKd);
-  }
-
-  private void updateSwerveModuleInputs(
-      SwerveIOInputs inputs, SwerveModule<TalonFX, TalonFX, CANcoder> module) {
-    inputs.driveEnabled =
-        module.getDriveMotor().getDeviceEnable().getValue() == DeviceEnableValue.Enabled;
-    inputs.driveStatorCurrent = module.getDriveMotor().getStatorCurrent().getValueAsDouble();
-    inputs.driveSupplyCurrent = module.getDriveMotor().getSupplyCurrent().getValueAsDouble();
-    inputs.driveTemp = module.getDriveMotor().getDeviceTemp().getValueAsDouble();
-    inputs.driveVoltage = module.getDriveMotor().getMotorVoltage().getValueAsDouble();
-
-    inputs.steerAbsolutePositionRot = module.getEncoder().getAbsolutePosition().getValueAsDouble();
-
-    inputs.steerEnabled =
-        module.getSteerMotor().getDeviceEnable().getValue() == DeviceEnableValue.Enabled;
-    inputs.steerStatorCurrent = module.getSteerMotor().getStatorCurrent().getValueAsDouble();
-    inputs.steerSupplyCurrent = module.getSteerMotor().getSupplyCurrent().getValueAsDouble();
-    inputs.steerTemp = module.getSteerMotor().getDeviceTemp().getValueAsDouble();
   }
 
   @Override
@@ -723,16 +787,15 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
   @Override
   public void applyRobotSpeeds(
       ChassisSpeeds speeds, Force[] forcesX, Force[] forcesY, boolean isOpenLoop) {
-    this.targetChassisSpeeds.vxMetersPerSecond = speeds.vxMetersPerSecond;
-    this.targetChassisSpeeds.vyMetersPerSecond = speeds.vyMetersPerSecond;
-    this.targetChassisSpeeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond;
+
+    this.targetChassisSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SECS);
 
     if (isOpenLoop) {
       this.setControl(
           this.applyRobotSpeedsRequest
               .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
               .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)
-              .withSpeeds(speeds)
+              .withSpeeds(this.targetChassisSpeeds)
               .withWheelForceFeedforwardsX(forcesX)
               .withWheelForceFeedforwardsY(forcesY)
               .withCenterOfRotation(this.centerOfRotation));
@@ -741,10 +804,18 @@ public class SwerveDrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, C
           this.applyRobotSpeedsRequest
               .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
               .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)
-              .withSpeeds(speeds)
+              .withSpeeds(this.targetChassisSpeeds)
               .withWheelForceFeedforwardsX(forcesX)
               .withWheelForceFeedforwardsY(forcesY)
               .withCenterOfRotation(this.centerOfRotation));
+    }
+  }
+
+  @Override
+  public void setDriveCurrent(double currentAmps) {
+    for (SwerveModule<TalonFX, TalonFX, CANcoder> swerveModule : this.getModules()) {
+      TalonFX driveMotor = swerveModule.getDriveMotor();
+      driveMotor.setControl(driveCurrentRequest.withOutput(currentAmps));
     }
   }
 

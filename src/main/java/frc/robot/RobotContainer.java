@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -154,7 +155,7 @@ public class RobotContainer {
       visualization = new RobotVisualization(intake);
     }
 
-    shooterModes = new ShooterModes(shooter);
+    shooterModes = new ShooterModes(shooter, intake);
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
@@ -216,7 +217,6 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    // FIXME: initialize other subsystems
     intake = new Intake(new IntakeIOTalonFX());
     hopper = new Hopper(new HopperIOTalonFX());
     shooter = new Shooter(new ShooterIOTalonFX());
@@ -336,11 +336,13 @@ public class RobotContainer {
     Field2d.getInstance().populateOpponentAllianceHighPassZone();
     Field2d.getInstance().populateNoPassZone();
     Field2d.getInstance().populateTowerNoPassZone();
+    Field2d.getInstance().populateDepotNoShootZone();
     Field2d.getInstance().logAllianceZonePoints();
     Field2d.getInstance().logOpponentAllianceZonePoints();
     Field2d.getInstance().logNeutralZonePoints();
     Field2d.getInstance().logOpponentAllianceHighPassZonePoints();
     Field2d.getInstance().logNoPassZonePoints();
+    Field2d.getInstance().logDepotNoShootZonePoints();
     Field2d.getInstance().populateTrenchZone();
     Field2d.getInstance().logTrenchZonePoints();
     Field2d.getInstance().populateBumpZone();
@@ -435,6 +437,10 @@ public class RobotContainer {
     }
   }
 
+  public void setPathFollowingTargetPose(Pose2d pose) {
+    AutonomousCommandsFactory.getInstance().setPathFollowingTargetPose(pose);
+  }
+
   public void periodic() {
     // add robot-wide periodic code here
     visualization.update();
@@ -442,6 +448,7 @@ public class RobotContainer {
 
   public void autonomousInit() {
     // add robot-wide code here that will be executed when autonomous starts
+    shooterModes.setAutoWaitTime(4.0);
   }
 
   public void teleopInit() {

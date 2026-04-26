@@ -40,6 +40,7 @@ public class IntakeConstants {
   public static final double DEPLOYER_ANGULAR_POSITION_TOLERANCE_ROT =
       DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS / DEPLOYER_CIRCUMFERENCE_METERS;
   public static final double DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS = Units.inchesToMeters(3.0);
+  public static final double INTAKE_SLOW_JOSTLE_DEPLOYER_CURRENT = -10;
 
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
@@ -57,8 +58,9 @@ public class IntakeConstants {
   public static final double ROLLER_GEAR_RATIO = 2;
   public static final boolean ROLLER_MOTOR_INVERTED = true;
 
-  public static final double ROLLER_TARGET_VELOCITY_RPS = 40.0;
-  public static final double ROLLER_AUTO_TARGET_VELOCITY_RPS = 50.0;
+  public static final double ROLLER_STATIC_TARGET_VELOCITY_RPS = 40.0;
+  public static final double ROLLER_SOM_TARGET_VELOCITY_RPS = 32.0;
+  public static final double ROLLER_AUTO_TARGET_VELOCITY_RPS = 45.0;
 
   public static final double ROLLER_EJECT_VELOCITY_RPS = -40.0;
   public static final double ROLLER_VELOCITY_TOLERANCE_RPS = 3.0;

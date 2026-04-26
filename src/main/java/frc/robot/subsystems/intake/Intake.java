@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
   private boolean inDeployedState = false;
   private boolean areRollersActiveState = false;
 
-  private double rollerVelocityAdjustment = ROLLER_TARGET_VELOCITY_RPS;
+  private double rollerVelocityAdjustment = ROLLER_STATIC_TARGET_VELOCITY_RPS;
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
@@ -118,7 +118,7 @@ public class Intake extends SubsystemBase {
     rollerAtSetPointDebouncer.calculate(
         MathUtils.isNear(
             inputs.rollerVelocityRPSLead,
-            ROLLER_TARGET_VELOCITY_RPS,
+            ROLLER_STATIC_TARGET_VELOCITY_RPS,
             ROLLER_VELOCITY_TOLERANCE_RPS));
     deployerDeployedDebouncer.calculate(
         MathUtils.isNear(
@@ -139,7 +139,9 @@ public class Intake extends SubsystemBase {
     this.deployerLinearPositionMeters =
         DEPLOYER_CIRCUMFERENCE_METERS * inputs.deployerAngularPositionRot;
 
-    Logger.recordOutput(SUBSYSTEM_NAME + "/DeployerLinearPosition", deployerLinearPositionMeters);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/DeployerLinearPosition",
+        Units.metersToInches(this.deployerLinearPositionMeters));
     Logger.recordOutput(SUBSYSTEM_NAME + "/RollerStalled", rollerStalled);
     LoggedTracer.record("Intake");
   }
@@ -155,16 +157,16 @@ public class Intake extends SubsystemBase {
 
   public void startRoller() {
     areRollersActiveState = true;
-    intakeIO.setRollerVelocity(rollerVelocityAdjustment);
+  }
+
+  public void setRollerVelocity(double v) {
+    if (areRollersActiveState) {
+      intakeIO.setRollerVelocity(v);
+    }
   }
 
   public void reverseRoller() {
-    intakeIO.setRollerVelocity(-ROLLER_TARGET_VELOCITY_RPS);
-  }
-
-  public void startRollerInAuto() {
-    areRollersActiveState = true;
-    intakeIO.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
+    intakeIO.setRollerVelocity(-ROLLER_STATIC_TARGET_VELOCITY_RPS);
   }
 
   public void stopRoller() {
@@ -217,6 +219,18 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  public Command startSlowJostle() {
+    return Commands.sequence(
+        Commands.waitSeconds(1.5),
+        Commands.runOnce(() -> intakeIO.setDeployerCurrent(-25.0), this)); // -10.0
+  }
+
+  public void stopSlowJostle() {
+    intakeIO.setDeployerCurrent(0.0);
+  }
+
+  //
+
   public Command getDeployAndStartCommand() {
     return Commands.sequence(
             Commands.runOnce(this::deployIntake, this),
@@ -228,8 +242,8 @@ public class Intake extends SubsystemBase {
   public Command getDeployAndStartInAutoCommand() {
     return Commands.sequence(
         Commands.runOnce(this::deployIntake, this),
-        Commands.waitSeconds(0.5),
-        Commands.runOnce(this::startRollerInAuto, this));
+        Commands.waitSeconds(0.25),
+        Commands.runOnce(this::startRoller, this));
   }
 
   public Command getRetractAndStopCommand() {
@@ -291,7 +305,7 @@ public class Intake extends SubsystemBase {
                     () -> {
                       if (!MathUtils.isNear(
                           inputs.rollerVelocityRPSLead,
-                          ROLLER_TARGET_VELOCITY_RPS,
+                          ROLLER_STATIC_TARGET_VELOCITY_RPS,
                           ROLLER_VELOCITY_TOLERANCE_RPS)) {
                         FaultReporter.getInstance()
                             .addFault(

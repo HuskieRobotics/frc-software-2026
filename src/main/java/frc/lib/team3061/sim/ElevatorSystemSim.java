@@ -54,13 +54,13 @@ public class ElevatorSystemSim {
 
     this.systemSim =
         new ElevatorSim(
-            DCMotor.getKrakenX60Foc(2),
+            DCMotor.getKrakenX44Foc(1),
             gearRatio,
             carriageMassKg,
             pulleyRadiusMeters,
             minHeightMeters,
             maxHeightMeters,
-            true,
+            false,
             startingHeightMeters);
 
     this.mech2d = new LoggedMechanism2d(1, 1);

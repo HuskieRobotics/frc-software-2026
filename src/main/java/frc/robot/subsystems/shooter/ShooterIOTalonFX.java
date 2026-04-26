@@ -8,6 +8,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -103,6 +104,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   private double hoodReferencePositionRot = 0.0;
   private double turretReferencePositionRot = 0.0;
+  private double turretCurrentPositionRot = 0.0;
   private double flywheelLeadReferenceVelocityRPS = 0.0;
 
   private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
@@ -144,8 +146,10 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Flywheel kV", FLYWHEEL_KV);
   private final LoggedTunableNumber flywheelLeadKA =
       new LoggedTunableNumber("Shooter/Flywheel kA", FLYWHEEL_KA);
-  private final LoggedTunableNumber turretKP =
-      new LoggedTunableNumber("Shooter/Turret kP", TURRET_KP);
+  private final LoggedTunableNumber turretFarKP =
+      new LoggedTunableNumber("Shooter/Turret Far kP", TURRET_FAR_KP);
+  private final LoggedTunableNumber turretCloseKP =
+      new LoggedTunableNumber("Shooter/Turret Close kP", TURRET_CLOSE_KP);
   private final LoggedTunableNumber turretKI =
       new LoggedTunableNumber("Shooter/Turret kI", TURRET_KI);
   private final LoggedTunableNumber turretKD =
@@ -436,6 +440,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretPositionRot = turretPositionStatusSignal.getValueAsDouble();
     inputs.turretReferencePositionRot = this.turretReferencePositionRot;
     inputs.turretVelocityRPS = turretVelocityStatusSignal.getValueAsDouble();
+    this.turretCurrentPositionRot = inputs.turretPositionRot;
 
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValueAsDouble();
@@ -496,13 +501,27 @@ public class ShooterIOTalonFX implements ShooterIO {
           config.kA = pid[5];
 
           turret.getConfigurator().apply(config);
+
+          Slot1Configs config1 = new Slot1Configs();
+
+          turret.getConfigurator().refresh(config1);
+
+          config1.kP = pid[6];
+          config1.kI = pid[1];
+          config1.kD = pid[2];
+          config1.kS = pid[3];
+          config1.kV = pid[4];
+          config1.kA = pid[5];
+
+          turret.getConfigurator().apply(config1);
         },
-        turretKP,
+        turretCloseKP,
         turretKI,
         turretKD,
         turretKS,
         turretKV,
-        turretKA);
+        turretKA,
+        turretFarKP);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -566,7 +585,12 @@ public class ShooterIOTalonFX implements ShooterIO {
             .withPosition(positionRot)
             .withVelocity(
                 RadiansPerSecond.of(
-                    -RobotOdometry.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond)));
+                    -RobotOdometry.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond))
+            .withSlot(
+                Math.abs(this.turretReferencePositionRot - this.turretCurrentPositionRot)
+                        < TURRET_CLOSE_POSITION_THRESHOLD_ROT
+                    ? 0
+                    : 1));
     this.turretReferencePositionRot = positionRot;
   }
 
@@ -656,7 +680,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.CurrentLimits.StatorCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    turretConfig.Slot0.kP = turretKP.get();
+    turretConfig.Slot0.kP = turretCloseKP.get();
     turretConfig.Slot0.kI = turretKI.get();
     turretConfig.Slot0.kD = turretKD.get();
     turretConfig.Slot0.kV = turretKV.get();
@@ -665,6 +689,15 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.00075;
     turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
     turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+    turretConfig.Slot1.kP = turretFarKP.get();
+    turretConfig.Slot1.kI = turretKI.get();
+    turretConfig.Slot1.kD = turretKD.get();
+    turretConfig.Slot1.kV = turretKV.get();
+    turretConfig.Slot1.kA = turretKA.get();
+
+    turretConfig.Slot1.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
+    turretConfig.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     turretConfig.Feedback.SensorToMechanismRatio = TURRET_GEAR_RATIO;
 

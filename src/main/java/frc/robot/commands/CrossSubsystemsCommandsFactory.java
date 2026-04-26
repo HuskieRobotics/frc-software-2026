@@ -4,6 +4,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +17,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.swerve_drivetrain.SwerveDrivetrain;
 import frc.lib.team3061.util.MathUtils;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
@@ -97,6 +99,16 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(FaultReporter.getInstance().getClearAllFaultsCommand().ignoringDisable(true));
     oi.getCheckForFaults()
         .onTrue(FaultReporter.getInstance().getCheckForFaultsCommand().ignoringDisable(true));
+
+    oi.getSimulateCollisionButton()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  swerveDrivetrain.resetPose(
+                      RobotOdometry.getInstance()
+                          .getEstimatedPose()
+                          .plus(new Transform2d(3.0, 3.0, new Rotation2d())));
+                }));
 
     configureCrossSubsystemsTriggers(shooterModes, shooter, hopper, swerveDrivetrain);
 
@@ -242,6 +254,16 @@ public class CrossSubsystemsCommandsFactory {
         .withName("shoot or pass");
   }
 
+  public static Command getSlowJostleCommand(Intake intake) {
+    return Commands.sequence(
+            intake.startSlowJostle(),
+            Commands.waitUntil(
+                () -> intake.getPositionMeters() < DEPLOYER_HOPPER_INTERFERENCE_LIMIT_METERS),
+            Commands.runOnce(intake::stopSlowJostle, intake))
+        // Commands.runOnce(() -> intake.setLinearPosition(DEPLOYED_LINEAR_POSITION_METERS)))
+        .withName("slow jostle");
+  }
+
   public static Command getJostleCommand(Intake intake, Shooter shooter) {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
@@ -268,7 +290,7 @@ public class CrossSubsystemsCommandsFactory {
                             JOSTLE_FIRST_RETRACT_POSITION_METERS,
                             DEPLOYER_LINEAR_POSITION_TOLERANCE_METERS))),
             Commands.repeatingSequence(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(0.25),
                 Commands.runOnce(() -> intake.setLinearPosition(JOSTLE_EXTENDED_POSITION_METERS)),
                 Commands.waitUntil(
                     () ->

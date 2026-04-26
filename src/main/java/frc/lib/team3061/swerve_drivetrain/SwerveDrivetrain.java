@@ -74,6 +74,14 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    * If TUNING is set to true in Constants.java, the following tunables will be available in
    * AdvantageScope. This enables efficient tuning of PID coefficients without restarting the code.
    */
+
+  private final LoggedTunableNumber testingMode =
+      new LoggedTunableNumber("Drivetrain/TestingMode", 0);
+  private final LoggedTunableNumber driveCurrent =
+      new LoggedTunableNumber("Drivetrain/DriveCurrent", 0);
+  private final LoggedTunableNumber driveVelocity =
+      new LoggedTunableNumber("Drivetrain/DriveVelocity", 0);
+
   private final LoggedTunableNumber autoDriveKp =
       new LoggedTunableNumber("AutoDrive/DriveKp", RobotConfig.getInstance().getAutoDriveKP());
   private final LoggedTunableNumber autoDriveKi =
@@ -126,7 +134,7 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
 
   private boolean accelerationLimiting = false;
   private boolean driveToPoseCanceled = false;
-  private static final double ACCELERATION_LIMITING_MAX_VELOCITY_MPS = 2.5;
+  private static final double ACCELERATION_LIMITING_MAX_VELOCITY_MPS = 1.5;
 
   private Alert noPoseAlert =
       new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.kWarning);
@@ -486,6 +494,11 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
         xVelocityMPS = xVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
         yVelocityMPS = yVelocityMPS / currentVelocity * ACCELERATION_LIMITING_MAX_VELOCITY_MPS;
       }
+      if (rotationalVelocityRadiansPerSecond > 4.0) {
+        rotationalVelocityRadiansPerSecond = 4.0;
+      } else if (rotationalVelocityRadiansPerSecond < -4.0) {
+        rotationalVelocityRadiansPerSecond = -4.0;
+      }
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
@@ -601,6 +614,15 @@ public class SwerveDrivetrain extends SubsystemBase implements CustomPoseEstimat
    */
   @Override
   public void periodic() {
+
+    if (testingMode.get() == 1) {
+      if (driveCurrent.get() != 0) {
+        this.io.setDriveCurrent(driveCurrent.get());
+      } else if (driveVelocity.get() != 0) {
+        this.drive(driveVelocity.get(), 0.0, 0.0, false, true);
+      }
+    }
+
     this.io.updateInputs(this.inputs);
     Logger.processInputs(SUBSYSTEM_NAME, this.inputs.drivetrain);
     Logger.processInputs(SUBSYSTEM_NAME + "/FL", this.inputs.swerve[0]);

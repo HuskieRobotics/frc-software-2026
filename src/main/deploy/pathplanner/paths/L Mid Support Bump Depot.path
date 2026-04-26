@@ -1,0 +1,183 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.933594864479314,
+        "y": 7.521968616262482
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.162932213876903,
+        "y": 6.374558977708265
+      },
+      "isLocked": false,
+      "linkedName": "Support Mid"
+    },
+    {
+      "anchor": {
+        "x": 8.101797432239657,
+        "y": 4.015592011412268
+      },
+      "prevControl": {
+        "x": 8.560616709348091,
+        "y": 4.561977553580943
+      },
+      "nextControl": {
+        "x": 7.85493941681799,
+        "y": 3.7216208176889185
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.477855421686746,
+        "y": 3.8383012048192775
+      },
+      "prevControl": {
+        "x": 6.766075740965441,
+        "y": 3.514053345630745
+      },
+      "nextControl": {
+        "x": 6.128168674698795,
+        "y": 4.231698795180723
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.215590361445784,
+        "y": 5.379108433734939
+      },
+      "prevControl": {
+        "x": 6.506933850888681,
+        "y": 4.983713698062436
+      },
+      "nextControl": {
+        "x": 5.909614457831326,
+        "y": 5.7943614457831325
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.632170454545454,
+        "y": 5.539795454545454
+      },
+      "prevControl": {
+        "x": 3.7667505638553416,
+        "y": 5.151564904706484
+      },
+      "nextControl": {
+        "x": 1.8882168674698794,
+        "y": 5.7943614457831325
+      },
+      "isLocked": false,
+      "linkedName": "L Near Bump"
+    },
+    {
+      "anchor": {
+        "x": 1.2960627674750356,
+        "y": 5.982268188302426
+      },
+      "prevControl": {
+        "x": 1.9935567433786505,
+        "y": 5.7938465015554375
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 1.6,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 2.6,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": 135.0
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": 135.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "slow bump",
+      "minWaypointRelativePos": 3.0,
+      "maxWaypointRelativePos": 4.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow pickup",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 2.5,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "slow to depot",
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.75,
+    "maxAcceleration": 7.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Mid Delayed Support",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -91.21887523513118
+  },
+  "useDefaultConstraints": true
+}

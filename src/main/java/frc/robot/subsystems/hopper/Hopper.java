@@ -105,7 +105,10 @@ public class Hopper extends SubsystemBase {
     }
 
     if (Constants.getMode() != Constants.Mode.SIM) {
-      kickerJammedAlert.set(kickerSpikeDetector.update(Math.abs(inputs.kickerStatorCurrent)));
+      kickerJammedAlert.set(
+          kickerSpikeDetector.update(
+              Math.abs(
+                  inputs.kickerStatorCurrent))); // can change this to velocity with new thresholds
       spindexerJammedAlert.set(
           spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent)));
     }

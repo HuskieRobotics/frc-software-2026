@@ -64,11 +64,11 @@
     },
     {
       "anchor": {
-        "x": 3.0169044222539223,
+        "x": 3.357,
         "y": 7.586661911554922
       },
       "prevControl": {
-        "x": 4.181198568872987,
+        "x": 4.5212941466190655,
         "y": 7.547799642218246
       },
       "nextControl": null,
@@ -120,7 +120,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.75,
     "maxAcceleration": 7.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -132,7 +132,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Fuel Eradication",
+  "folder": "[UNUSED] Fuel Eradication",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

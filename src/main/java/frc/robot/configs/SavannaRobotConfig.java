@@ -28,10 +28,10 @@ public class SavannaRobotConfig extends RobotConfig {
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
   private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = 0.025879;
 
-  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 18;
-  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 50;
-  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 9;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.369141;
+  private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 40;
+  private static final int BACK_LEFT_MODULE_STEER_MOTOR = 25;
+  private static final int BACK_LEFT_MODULE_STEER_ENCODER = 17;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.469727;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
@@ -132,24 +132,24 @@ public class SavannaRobotConfig extends RobotConfig {
   // x, y, z, pitch, yaw
   private static final Transform3d ROBOT_TO_BL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.246, 0.312, 0.202),
-          new Rotation3d(new Quaternion(-0.699, -0.149, 0.152, -0.685)));
+          new Translation3d(-0.219768, 0.306363, 0.202798),
+          new Rotation3d(new Quaternion(-0.680614, -0.147614, 0.145496, -0.702325)));
 
   // Back center left camera
   // x, y, z, pitch, yaw
   // FIXME: update
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.296, 0.119, 0.303),
-          new Rotation3d(new Quaternion(0.086, -0.176, -0.981, -0.019)));
+          new Translation3d(-0.245148, 0.060266, 0.164957),
+          new Rotation3d(new Quaternion(0.080854, 0.174676, -0.981165, 0.01633)));
 
   // Back center right camera
   // x, y, z, pitch, yaw
   // FIXME: update
   private static final Transform3d ROBOT_TO_BCH_CAMERA =
       new Transform3d(
-          new Translation3d(-0.302, 0.063, 0.297),
-          new Rotation3d(new Quaternion(0.176, -0.093, -0.006, -0.980)));
+          new Translation3d(-0.235796, 0.05949, 0.228167),
+          new Rotation3d(new Quaternion(0.184804, 0.075057, -0.016074, 0.979773)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =
@@ -449,7 +449,7 @@ public class SavannaRobotConfig extends RobotConfig {
 
   @Override
   public double getMomentOfInertiaKGMM() {
-    return 3.40;
+    return 6.0;
   }
 
   @Override
@@ -465,6 +465,11 @@ public class SavannaRobotConfig extends RobotConfig {
   @Override
   public CANBus getCANBus() {
     return CAN_BUS;
+  }
+
+  @Override
+  public double getDriveToPoseDriveXKP() {
+    return DRIVE_TO_POSE_DRIVE_KP;
   }
 
   @Override
