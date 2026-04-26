@@ -161,7 +161,11 @@ public class Intake extends SubsystemBase {
 
   public void setRollerVelocity(double v) {
     if (areRollersActiveState) {
-      intakeIO.setRollerVelocity(v);
+      if (v == ROLLER_AUTO_TARGET_VELOCITY_RPS) {
+        intakeIO.setRollerCurrent(ROLLER_PEAK_CURRENT_LIMIT);
+      } else {
+        intakeIO.setRollerVelocity(v);
+      }
     }
   }
 
