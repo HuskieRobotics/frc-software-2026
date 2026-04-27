@@ -16,48 +16,48 @@
     },
     {
       "anchor": {
-        "x": 6.186875891583452,
-        "y": 7.17262482168331
-      },
-      "prevControl": {
-        "x": 6.221232271353166,
-        "y": 7.633000310597474
-      },
-      "nextControl": {
         "x": 6.122182596291013,
-        "y": 6.305734664764623
+        "y": 7.159686162624822
+      },
+      "prevControl": {
+        "x": 6.1351212553495,
+        "y": 7.5996005706134095
+      },
+      "nextControl": {
+        "x": 6.099688403875894,
+        "y": 6.3948836205107416
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.966918687589158,
-        "y": 4.49432239657632
+        "x": 5.953980028530669,
+        "y": 5.011868758915835
       },
       "prevControl": {
-        "x": 5.9043779777930325,
-        "y": 6.577353920670445
+        "x": 5.891439318734544,
+        "y": 7.09490028300996
       },
       "nextControl": {
-        "x": 6.010230431965894,
-        "y": 3.0517463657900814
+        "x": 5.997291772907405,
+        "y": 3.5692927281295965
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.817,
-        "y": 4.653409090909091
+        "x": 7.778330955777461,
+        "y": 5.011868758915835
       },
       "prevControl": {
-        "x": 7.769553738739298,
-        "y": 3.6190805954257823
+        "x": 7.730884694516759,
+        "y": 3.9775402634325263
       },
       "nextControl": {
-        "x": 7.86853409090909,
-        "y": 5.776852272727273
+        "x": 7.829865046686551,
+        "y": 6.135311940734017
       },
       "isLocked": false,
       "linkedName": null
@@ -94,9 +94,9 @@
     {
       "name": "slow to pickup",
       "minWaypointRelativePos": 1.0,
-      "maxWaypointRelativePos": 2.3,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.25,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -106,7 +106,7 @@
     },
     {
       "name": "slow otw back",
-      "minWaypointRelativePos": 3.6,
+      "minWaypointRelativePos": 3.55,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 3.0,
@@ -119,10 +119,10 @@
     },
     {
       "name": "slow to turn",
-      "minWaypointRelativePos": 2.3,
+      "minWaypointRelativePos": 2.2,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.5,
         "maxAcceleration": 7.5,
         "maxAngularVelocity": 360.0,
         "maxAngularAcceleration": 360.0,
@@ -133,9 +133,9 @@
     {
       "name": "slow final turn",
       "minWaypointRelativePos": 3.0,
-      "maxWaypointRelativePos": 3.6,
+      "maxWaypointRelativePos": 3.55,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 8.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
