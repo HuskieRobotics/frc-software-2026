@@ -72,7 +72,7 @@ public class ShooterConstants {
   public static final double HOOD_MAX_ANGLE_ROT = Units.degreesToRotations(52.0);
   public static final double HOOD_STARTING_ANGLE_ROT = Units.degreesToRotations(20.0);
 
-  public static final double HOOD_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(22.0);
+  public static final double HOOD_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(21.0);
   public static final double HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT = Units.degreesToRotations(30.0);
   public static final double HOOD_UPPER_ANGLE_LIMIT_ROT = Units.degreesToRotations(50.0);
   public static final double HOOD_MAX_PASSING_ANGLE_ROT = Units.degreesToRotations(49.0);
