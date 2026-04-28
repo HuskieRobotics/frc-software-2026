@@ -7,10 +7,9 @@
       "height": 1170,
       "state": {
         "sidebar": {
-          "width": 381,
+          "width": 374,
           "expanded": [
             "/NetworkInputs/SmartDashboard",
-            "/RealOutputs/DriveToPose/pose difference (target frame)",
             "/RealOutputs/DriveToPose/pose difference (target frame)/translation",
             "/RealOutputs/Vision/3",
             "/RealOutputs/Vision/2",
@@ -51,7 +50,6 @@
             "/SystemStats/NTClients/northstar_BR@3",
             "/Vision/BR/ObjDetect/Frames",
             "/Vision/BR/AprilTags",
-            "/Vision/BR/AprilTags/Frames",
             "/Vision/BL/AprilTags",
             "/DriverStation/Joystick0",
             "/DriverStation/Joystick0/AxisValues",
@@ -60,7 +58,6 @@
             "/Phoenix6/TalonFX-26/PIDPosition",
             "/RealOutputs/Vision/BR",
             "/SystemStats/NTClients/northstar_BR@4",
-            "/Tuning",
             "/NetworkInputs/Vision",
             "/RealOutputs/Vision/BCR",
             "/RealOutputs/Vision/BCL",
@@ -90,7 +87,6 @@
             "/Phoenix6/TalonFX-42",
             "/Vision/BCR/ObjDetect/Frames",
             "/Vision/BCR/AprilTags/Frames/0",
-            "/Vision/BL/AprilTags/Timestamps",
             "/AdvantageKit",
             "/AdvantageKit/Vision",
             "/AdvantageKit/Vision/BCR",
@@ -115,7 +111,6 @@
             "/northstar_BL/output/observations",
             "/AdvantageKit/Vision/BCR/AprilTags/Frames/0",
             "/Vision/BL/AprilTags/Frames/0",
-            "/Vision/BL/AprilTags/Frames",
             "/northstar_power/output",
             "/northstar_BR",
             "/northstar_BL",
@@ -125,12 +120,8 @@
             "/northstar_BCR/output/observations",
             "/Vision/BCR",
             "/Vision/BCR/AprilTags",
-            "/Vision/BR",
-            "/Vision/BL",
-            "/Vision/BCL",
             "/Vision/BCH/AprilTags",
             "/RealOutputs/Vision/BCH",
-            "/Vision/BCH",
             "/Drivetrain/MeasuredChassisSpeeds",
             "/Drivetrain/ReferenceChassisSpeeds",
             "/Vision/BCH/ObjDetect/Timestamps",
@@ -264,6 +255,56 @@
                     "visible": true,
                     "options": {
                       "position": "front"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Region2d/TowerNoPassZone BLUE",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Region2d/TowerNoPassZone RED",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Region2d/noPassZone",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Region2d/opponentAllianceHighPassZone",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "trajectory",
+                    "logKey": "/RealOutputs/Region2d/DepotNoShootZone",
+                    "logType": "Pose2d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
                     }
                   }
                 ],
@@ -988,7 +1029,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/FlywheelLeadVelocityRPS",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#e48b32",
                       "size": "normal"
@@ -998,7 +1039,7 @@
                     "type": "stepped",
                     "logKey": "/Shooter/FlywheelLeadReferenceVelocityRPS",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
@@ -1734,7 +1775,7 @@
                     "type": "stepped",
                     "logKey": "/RealOutputs/Vision/BCH/RobotToCameraTransform/translation/x",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#2b66a2",
                       "size": "normal"
@@ -2858,15 +2899,6 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "/Intake/RollerConnected",
-                    "logType": "Boolean",
-                    "visible": true,
-                    "options": {
-                      "color": "#858584"
-                    }
-                  },
-                  {
-                    "type": "stripes",
                     "logKey": "/Shooter/FlywheelFollow1Connected",
                     "logType": "Boolean",
                     "visible": true,
@@ -2908,6 +2940,24 @@
                     "visible": true,
                     "options": {
                       "color": "#858584"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Intake/RollerConnectedLead",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Intake/RollerConnectedFollower",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
                     }
                   }
                 ],
