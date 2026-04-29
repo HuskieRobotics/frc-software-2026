@@ -48,8 +48,8 @@ public class IntakeConstants {
   public static final double ROLLER_KP = 20.0;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 4.4;
-  public static final double ROLLER_KV = 0.007;
+  public static final double ROLLER_KS = 4.1;
+  public static final double ROLLER_KV = 0.008;
   public static final double ROLLER_KA = 0;
   public static final double ROLLER_MOMENT_OF_INERTIA = 0.01;
 
