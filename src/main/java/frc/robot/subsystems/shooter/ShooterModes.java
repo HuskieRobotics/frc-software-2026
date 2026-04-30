@@ -518,7 +518,7 @@ public class ShooterModes extends SubsystemBase {
         if (OISelector.getOperatorInterface().getShootOnTheMoveToggle().getAsBoolean()) {
           shooterSetpoints = calculateShootOnTheMove(shooterSetpoints);
         } else if (DriverStation.isAutonomousEnabled()) {
-          shooterSetpoints.turretAngleRot = Units.degreesToRotations(90.0);
+          shooterSetpoints.turretAngleRot = Units.degreesToRotations(-90.0);
         }
 
         this.currentMode = ShooterMode.COLLECT_AND_HOLD;
