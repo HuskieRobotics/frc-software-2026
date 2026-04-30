@@ -45,11 +45,11 @@ public class IntakeConstants {
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
 
-  public static final double ROLLER_KP = 20.0;
+  public static final double ROLLER_KP = 10.0;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 4.1;
-  public static final double ROLLER_KV = 0.008;
+  public static final double ROLLER_KS = 3.9;
+  public static final double ROLLER_KV = 0.012;
   public static final double ROLLER_KA = 0;
   public static final double ROLLER_MOMENT_OF_INERTIA = 0.01;
 
