@@ -6,8 +6,8 @@ public class IntakeConstants {
 
   public static final String SUBSYSTEM_NAME = "Intake";
 
-  public static final int ROLLER_LEAD_MOTOR_ID = 34; //42
-  public static final int ROLLER_FOLLOWER_MOTOR_ID = 42; //34
+  public static final int ROLLER_LEAD_MOTOR_ID = 34; // 42
+  public static final int ROLLER_FOLLOWER_MOTOR_ID = 42; // 34
   public static final int DEPLOYER_MOTOR_ID = 33;
 
   public static final double DEPLOYER_KP = 23.0;
