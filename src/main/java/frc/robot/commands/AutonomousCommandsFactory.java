@@ -844,7 +844,7 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             intake.getDeployAndStartInAutoCommand(),
-            Commands.waitSeconds(0.25),
+            Commands.waitSeconds(0.5),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
             Commands.waitSeconds(0.25),
