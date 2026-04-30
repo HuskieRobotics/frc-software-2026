@@ -814,7 +814,7 @@ public class AutonomousCommandsFactory {
             Commands.waitSeconds(0.25),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
-            Commands.waitSeconds(1.5),
+            Commands.waitSeconds(0.8),
             followCollisionResistantPath(sweepToDepot, drivetrain, Side.LEFT),
             getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
             Commands.runOnce(hopper::stop, hopper),
