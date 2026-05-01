@@ -60,6 +60,8 @@ public class ShooterModes extends SubsystemBase {
 
   private double autoWaitTime = 4.0;
 
+  private boolean enableIntake = true;
+
   /*
   Create interpolating tree map for data points
   First tree map is for our shoot on the move mode
@@ -685,6 +687,15 @@ public class ShooterModes extends SubsystemBase {
     this.autoWaitTime = waitTime;
   }
 
+  public void toggleIntakeEnable() {
+    enableIntake = !enableIntake;
+    if (enableIntake) {
+      this.intake.startRoller();
+    } else {
+      this.intake.stopRoller();
+    }
+  }
+
   private double idealVelocityFromFunction(double distance) {
     double vMetersPerSecond =
         0.0094236446 * Math.pow(distance, 3)
@@ -745,12 +756,14 @@ public class ShooterModes extends SubsystemBase {
   }
 
   private void setIntakeVelocity(ShooterMode mode) {
-    if (mode == ShooterMode.SHOOT_OTM || mode == ShooterMode.PASS_OTM) {
-      intake.setRollerVelocity(IntakeConstants.ROLLER_SOM_TARGET_VELOCITY_RPS);
-    } else if (DriverStation.isAutonomous()) {
-      intake.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
-    } else {
-      intake.setRollerVelocity(IntakeConstants.ROLLER_STATIC_TARGET_VELOCITY_RPS);
+    if (this.enableIntake) {
+      if (mode == ShooterMode.SHOOT_OTM || mode == ShooterMode.PASS_OTM) {
+        intake.setRollerVelocity(IntakeConstants.ROLLER_SOM_TARGET_VELOCITY_RPS);
+      } else if (DriverStation.isAutonomous()) {
+        intake.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
+      } else {
+        intake.setRollerVelocity(IntakeConstants.ROLLER_STATIC_TARGET_VELOCITY_RPS);
+      }
     }
   }
 }
