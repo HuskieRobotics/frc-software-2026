@@ -171,7 +171,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getEnableIntakeToggle() {
+  public default Trigger getEnableIntake() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDisableIntake() {
     return new Trigger(() -> false);
   }
 
