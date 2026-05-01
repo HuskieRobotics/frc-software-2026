@@ -404,7 +404,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
-                .withTimeout(2.0),
+                .withTimeout(2.5),
             CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))
         .withName("Auto Jostle");
   }
