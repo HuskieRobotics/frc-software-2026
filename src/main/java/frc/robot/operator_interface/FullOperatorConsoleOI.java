@@ -124,6 +124,11 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
     return rotateJoystickButtons[6];
   }
 
+  @Override
+  public Trigger getEnableIntakeToggle() {
+    return rotateJoystickButtons[11];
+  }
+
   // Operator Controller
   @Override
   public Trigger getReverseIntakeRollersButton() {

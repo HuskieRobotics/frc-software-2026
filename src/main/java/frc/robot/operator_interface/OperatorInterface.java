@@ -171,6 +171,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getEnableIntakeToggle() {
+    return new Trigger(() -> false);
+  }
+
   // only for at home
   public default Trigger getHubActiveAtHomeToggle() {
     return new Trigger(() -> false);
