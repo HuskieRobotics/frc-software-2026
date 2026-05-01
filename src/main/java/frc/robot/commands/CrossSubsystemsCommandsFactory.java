@@ -201,8 +201,6 @@ public class CrossSubsystemsCommandsFactory {
     oi.getMoveTurretLeftButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeLeft));
     oi.getMoveTurretRightButton().onTrue(Commands.runOnce(shooterModes::moveTurretOneDegreeRight));
 
-    oi.getEnableIntakeToggle().onTrue(Commands.runOnce(shooterModes::toggleIntakeEnable));
-
     // Reset hub shift timer when enabling
     RobotModeTriggers.teleop().onTrue(Commands.runOnce(shooterModes::initialize));
     RobotModeTriggers.autonomous().onTrue(Commands.runOnce(shooterModes::initialize));
