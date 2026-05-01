@@ -812,7 +812,7 @@ public class AutonomousCommandsFactory {
             setStartingPoseForAuto(startingPose, drivetrain),
             AutoBuilder.followPath(toMid),
             intake.getDeployAndStartInAutoCommand(),
-            //Commands.waitSeconds(0.25),
+            // Commands.waitSeconds(0.25),
             // Commands.parallel(
             //     intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
             Commands.waitSeconds(1.0),
