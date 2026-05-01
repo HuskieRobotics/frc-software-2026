@@ -6,8 +6,8 @@ public class IntakeConstants {
 
   public static final String SUBSYSTEM_NAME = "Intake";
 
-  public static final int ROLLER_LEAD_MOTOR_ID = 42;
-  public static final int ROLLER_FOLLOWER_MOTOR_ID = 34;
+  public static final int ROLLER_LEAD_MOTOR_ID = 34; // 42
+  public static final int ROLLER_FOLLOWER_MOTOR_ID = 42; // 34
   public static final int DEPLOYER_MOTOR_ID = 33;
 
   public static final double DEPLOYER_KP = 23.0;
@@ -45,18 +45,18 @@ public class IntakeConstants {
   public static final double DEPLOYER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double DEPLOYER_STATOR_CURRENT_LIMIT = 40.0;
 
-  public static final double ROLLER_KP = 20.0;
+  public static final double ROLLER_KP = 10.0;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 4.1;
-  public static final double ROLLER_KV = 0.008;
+  public static final double ROLLER_KS = 3.9;
+  public static final double ROLLER_KV = 0.012;
   public static final double ROLLER_KA = 0;
   public static final double ROLLER_MOMENT_OF_INERTIA = 0.01;
 
   // this is the gear ratio for the wheels; the roller, which is mechanically linked to the wheel
   // shaft, has a different gear ratio, but we will control the velocity of the wheels
   public static final double ROLLER_GEAR_RATIO = 2;
-  public static final boolean ROLLER_MOTOR_INVERTED = true;
+  public static final boolean ROLLER_MOTOR_INVERTED = false;
 
   public static final double ROLLER_STATIC_TARGET_VELOCITY_RPS = 45.0;
   public static final double ROLLER_SOM_TARGET_VELOCITY_RPS = 35.0;
