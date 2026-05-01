@@ -48,8 +48,8 @@ public class IntakeConstants {
   public static final double ROLLER_KP = 10.0;
   public static final double ROLLER_KI = 0;
   public static final double ROLLER_KD = 0;
-  public static final double ROLLER_KS = 3.9;
-  public static final double ROLLER_KV = 0.012;
+  public static final double ROLLER_KS = 3.3;
+  public static final double ROLLER_KV = 0.005;
   public static final double ROLLER_KA = 0;
   public static final double ROLLER_MOMENT_OF_INERTIA = 0.01;
 
@@ -82,5 +82,5 @@ public class IntakeConstants {
       Units.inchesToMeters(3.5); // possibly change to 4
 
   public static final double JOSTLE_EXTENDED_POSITION_METERS = Units.inchesToMeters(11.0);
-  public static final int JOSTLE_INITIAL_FUEL_COUNT = 10;
+  public static final int JOSTLE_INITIAL_FUEL_COUNT = 20;
 }
