@@ -63,6 +63,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  //declares all subsystems and the OI here
   private OperatorInterface oi = new OperatorInterface() {};
   private RobotConfig config;
   private SwerveDrivetrain swerveDrivetrain;
@@ -142,7 +143,7 @@ public class RobotContainer {
       swerveDrivetrain = new SwerveDrivetrain(new SwerveDrivetrainIO() {});
 
       CameraConfig[] cameraConfigs = config.getCameraConfigs();
-      VisionIO[] visionIOs = new VisionIO[cameraConfigs.length];
+      VisionIO[] visionIOs = new VisionIO[cameraConfigs.length]; //create a visionIO class for each camera
       for (int i = 0; i < visionIOs.length; i++) {
         visionIOs[i] = new VisionIO() {};
       }
@@ -153,6 +154,7 @@ public class RobotContainer {
       hopper = new Hopper(new HopperIO() {});
       shooter = new Shooter(new ShooterIO() {});
       visualization = new RobotVisualization(intake);
+
     }
 
     shooterModes = new ShooterModes(shooter, intake);
@@ -165,10 +167,12 @@ public class RobotContainer {
     // register autonomous commands
     if (RobotConfig.getInstance().getDrivetrainType() == RobotConfig.DRIVETRAIN_TYPE.DIFFERENTIAL) {
       AutonomousCommandsFactory.getInstance().configureAutoCommands(differentialDrivetrain);
+      // configure auto commands for the differential drivetrain
     } else if (RobotConfig.getInstance().getDrivetrainType()
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       AutonomousCommandsFactory.getInstance()
           .configureAutoCommands(swerveDrivetrain, hopper, intake, shooter, shooterModes);
+      // if we have a swerve drivtrain, configure auto commands for the swerve drivetrain and all subsystems since we will probably want to use them in auto
     }
 
     // Alert when tuning
@@ -181,6 +185,7 @@ public class RobotContainer {
    * The RobotConfig subclass object *must* be created before any other objects that use it directly
    * or indirectly. If this isn't done, a null pointer exception will result.
    */
+  //create the robot config basically based on the robot type
   private void createRobotConfig() {
     switch (Constants.getRobot()) {
       case ROBOT_DEFAULT:

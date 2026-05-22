@@ -50,6 +50,7 @@ public final class Constants {
       if (ROBOT == RobotType.ROBOT_SIMBOT
           || ROBOT == RobotType.ROBOT_XRP) { // Invalid robot selected
         invalidRobotAlert.set(true);
+        // if the robot type chosen is the xrp or simbot, throw an invalid alert 
         return RobotType.ROBOT_COMPETITION;
       } else {
         return ROBOT;
