@@ -32,6 +32,8 @@ import org.littletonrobotics.junction.Logger;
  * <p>The coordinate system of the field is oriented such that the origin is in the lower left
  * corner when the blue alliance is to the left (i.e., to the blue alliance driver's right).
  */
+
+// now the starting coordinates of the field are now in the direct middle of the field, not the lower left corner
 public class Field2d {
   private static Field2d instance = null;
 
@@ -40,10 +42,11 @@ public class Field2d {
   // for all four possible banks depending on alliance
   private Pose2d[] banks = new Pose2d[4];
 
+  // what is this?
   private Pose2d[] bluePassingPoses = new Pose2d[2];
   private Pose2d[] redPassingPoses = new Pose2d[2];
 
-  private Alliance alliance = DriverStation.Alliance.Blue;
+  private Alliance alliance = DriverStation.Alliance.Red;
 
   private Region2d transformedAllianceZone;
   private Region2d transformedOpponentAllianceZone;
@@ -76,12 +79,13 @@ public class Field2d {
    *
    * @return the singleton instance of the Field2d class
    */
-  public static Field2d getInstance() {
+  public static Field2d getInstance() { //a singleton class creates only one instance of itself
     if (instance == null) {
       instance = new Field2d();
     }
     return instance;
   }
+  
   /**
    * Construct a Field2d from an array of regions. These regions should not be overlapping (aside
    * from edges) and any regions with overlapping edges should be neighbors (see
