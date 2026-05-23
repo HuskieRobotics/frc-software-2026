@@ -371,7 +371,7 @@ public class AutonomousCommandsFactory {
 
     return fallenBehind;
   }
-
+// Command to unload the hopper 
   private Command getUnloadHopperCommand(
       Hopper hopper, Intake intake, Shooter shooter, boolean checkForFuel) {
 
@@ -438,7 +438,7 @@ public class AutonomousCommandsFactory {
             Commands.waitSeconds(2.0), getAutoJostleCommand(intake, shooter)),
         () -> fullHopper);
   }
-
+  // Sweep autos
   private Command getTrenchDoubleSweepAuto(
       SwerveDrivetrain drivetrain,
       Hopper hopper,
@@ -732,6 +732,7 @@ public class AutonomousCommandsFactory {
         Side.RIGHT);
   }
 
+  // Support Autos
   private Command getLeftSupportCollect(
       PathPlannerPath hubSweep,
       PathPlannerPath intakeDepot,
