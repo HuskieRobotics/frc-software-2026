@@ -346,6 +346,7 @@ public class CrossSubsystemsCommandsFactory {
       Hopper hopper,
       SwerveDrivetrain swerveDrivetrain) {
 
+    // Configure triggers involving multiple subsystems that are used in several commands
     Trigger slowModeTrigger =
         new Trigger(() -> shooterModes.isShootOnTheMoveEnabled())
             .and(DriverStation::isTeleopEnabled);

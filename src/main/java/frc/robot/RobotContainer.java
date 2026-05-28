@@ -371,6 +371,7 @@ public class RobotContainer {
   }
 
   /** Use this method to define your button->command mappings. */
+  // registers commands for each individual subsystem along with triggers that are used for either endgame alerts, or that run a sequence of commands
   private void configureButtonBindings() {
 
     configureDrivetrainCommands();

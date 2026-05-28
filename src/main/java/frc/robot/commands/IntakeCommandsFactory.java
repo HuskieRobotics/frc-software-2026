@@ -13,6 +13,7 @@ public class IntakeCommandsFactory {
 
   public static void registerCommands(OperatorInterface oi, Intake intake) {
 
+    // access many buttons from the operator interface to bind them to several commands (similar to how triggers are bonded to commands)
     oi.getForceDeployIntakeButton()
         .onTrue(intake.getDeployAndStartCommand().withName("force-deploy intake"));
 

@@ -38,6 +38,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   // Translation Joystick
+  // binds different joystick buttons to different triggers, and then those triggers can be used in the RobotContainer to bind commands to them, this allows for more flexibility in changing button bindings without having to change code in the RobotContainer
   @Override
   public double getTranslateX() {
     return -translateJoystick.getY();
