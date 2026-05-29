@@ -24,9 +24,10 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
 
   private final CommandXboxController operatorController;
 
-  public FullOperatorConsoleOI(int translatePort, int rotatePort, int dilatePort, int operatorControllerPort) {
+  public FullOperatorConsoleOI(int translatePort, int rotatePort, int operatorControllerPort) {
     translateJoystick = new CommandJoystick(translatePort);
     rotateJoystick = new CommandJoystick(rotatePort);
+    int dilatePort = 5;
     dilateJoystick = new CommandJoystick(dilatePort);
     operatorController = new CommandXboxController(operatorControllerPort);
 
