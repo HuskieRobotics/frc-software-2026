@@ -19,21 +19,26 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   private final CommandJoystick rotateJoystick;
   private final Trigger[] rotateJoystickButtons;
 
+  private final CommandJoystick dilateJoystick;
+  private final Trigger[] dilateJoystickButtons;
+
   private final CommandXboxController operatorController;
 
-  public FullOperatorConsoleOI(int translatePort, int rotatePort, int operatorControllerPort) {
+  public FullOperatorConsoleOI(int translatePort, int rotatePort, int dilatePort, int operatorControllerPort) {
     translateJoystick = new CommandJoystick(translatePort);
     rotateJoystick = new CommandJoystick(rotatePort);
+    dilateJoystick = new CommandJoystick(dilatePort);
     operatorController = new CommandXboxController(operatorControllerPort);
 
     // buttons use 1-based indexing such that the index matches the button number; leave index 0 set
     // to null
     this.translateJoystickButtons = new Trigger[13];
     this.rotateJoystickButtons = new Trigger[13];
-
+    this.dilateJoystickButtons = new Trigger[13];
     for (int i = 1; i < translateJoystickButtons.length; i++) {
       translateJoystickButtons[i] = translateJoystick.button(i);
       rotateJoystickButtons[i] = rotateJoystick.button(i);
+      dilateJoystickButtons[i] = dilateJoystick.button(i);
     }
   }
 
@@ -41,6 +46,7 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   // binds different joystick buttons to different triggers, and then those triggers can be used in the RobotContainer to bind commands to them, this allows for more flexibility in changing button bindings without having to change code in the RobotContainer
   @Override
   public double getTranslateX() {
+    // why is the axis remapped and why is the value negated
     return -translateJoystick.getY();
   }
 
@@ -124,6 +130,9 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
   }
+
+  // Dilation joysticks
+  // Since there is no actual dilation joystick, there are no methods or triggers to register with it
 
   // Operator Controller
   @Override
