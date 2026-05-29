@@ -114,6 +114,9 @@ public abstract class LEDs extends SubsystemBase {
   protected static final boolean MIRROR_LEDS = true;
   protected static final int ACTUAL_LENGTH = 26; // RobotConfig.getInstance().getLEDCount();
   protected static final int LENGTH = MIRROR_LEDS ? ACTUAL_LENGTH / 2 : ACTUAL_LENGTH;
+  protected static final boolean MIRROR_LEDS_WIDTH = false;
+  protected static final int ACTUAL_WIDTH = 30;
+  protected static final int WIDTH = MIRROR_LEDS_WIDTH ? ACTUAL_WIDTH / 2 : ACTUAL_WIDTH;
   private static final int STATIC_LENGTH = LENGTH / 2;
   private static final int STATIC_SECTION_LENGTH = STATIC_LENGTH / 3;
   private static final int MIN_LOOP_CYCLE_COUNT = 10;
