@@ -35,6 +35,7 @@ import org.littletonrobotics.junction.Logger;
  *
  * <p>At End: stops the drivetrain, disables acceleration limiting
  */
+// Every command has an initialize(), execute(), end(), 
 public class DriveToPose extends Command {
   private final SwerveDrivetrain drivetrain;
   private final Supplier<Pose2d> targetPoseSupplier;
@@ -43,12 +44,13 @@ public class DriveToPose extends Command {
   private final ProfiledPIDController thetaController;
   private Transform2d targetTolerance;
   private final boolean finishesWhenAtTarget;
+  // what is a Consumer
   private final Consumer<Boolean> atTargetConsumer;
   private final Consumer<Transform2d> poseDifferenceConsumer;
   private double timeout;
 
   private Timer timer;
-  private boolean firstRun = true;
+  private boolean firstRun = true; //what's this?
   private Transform2d poseDifferenceInTargetFrame; // optimization to calculate once per loop
 
   /**

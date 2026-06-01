@@ -54,6 +54,8 @@ public class DifferentialDrivetrain extends SubsystemBase {
   public void arcadeDrive(double xVelocityMPS, double rotationalVelocityRPS) {
 
     io.driveRobotRelative(xVelocityMPS, rotationalVelocityRPS, true);
+    // open loop = continously apply voltage until the mechanism reaches a certain setpoint
+    // closed loop = apply x volts (instead of uncontrolled amount of voltage)
   }
 
   /**
