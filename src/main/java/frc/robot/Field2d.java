@@ -33,7 +33,8 @@ import org.littletonrobotics.junction.Logger;
  * corner when the blue alliance is to the left (i.e., to the blue alliance driver's right).
  */
 
-// now the starting coordinates of the field are now in the direct middle of the field, not the lower left corner
+// now the starting coordinates of the field are now in the direct middle of the field, not the
+// lower left corner
 public class Field2d {
   private static Field2d instance = null;
 
@@ -79,13 +80,13 @@ public class Field2d {
    *
    * @return the singleton instance of the Field2d class
    */
-  public static Field2d getInstance() { //a singleton class creates only one instance of itself
+  public static Field2d getInstance() { // a singleton class creates only one instance of itself
     if (instance == null) {
       instance = new Field2d();
     }
     return instance;
   }
-  
+
   /**
    * Construct a Field2d from an array of regions. These regions should not be overlapping (aside
    * from edges) and any regions with overlapping edges should be neighbors (see

@@ -2,6 +2,4 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class DriveZigzag extends Command {
-    
-}
+public class DriveZigzag extends Command {}

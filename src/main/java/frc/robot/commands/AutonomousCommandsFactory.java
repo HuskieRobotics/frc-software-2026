@@ -371,7 +371,7 @@ public class AutonomousCommandsFactory {
 
     return fallenBehind;
   }
-// Command to unload the hopper 
+  // Command to unload the hopper
   private Command getUnloadHopperCommand(
       Hopper hopper, Intake intake, Shooter shooter, boolean checkForFuel) {
 

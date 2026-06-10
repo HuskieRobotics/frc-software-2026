@@ -67,11 +67,11 @@ public class ShooterModes extends SubsystemBase {
   */
 
   /* An interpolating tree map is a way to approximate data values based on known values
-  * For example, since we have a map of distances to velocities for shooting into the hub, if we want to know what velocity to shoot at for a distance that isn't in the map, we can use the interpolating tree map to get an approximate value based on the known values in the map. 
-  * The tree map will find the two closest known values and interpolate between them to give us an estimated value for the distance we want to shoot from. 
-  * This allows us to have a more continuous range of setpoints for our shooter instead of just discrete points.
+   * For example, since we have a map of distances to velocities for shooting into the hub, if we want to know what velocity to shoot at for a distance that isn't in the map, we can use the interpolating tree map to get an approximate value based on the known values in the map.
+   * The tree map will find the two closest known values and interpolate between them to give us an estimated value for the distance we want to shoot from.
+   * This allows us to have a more continuous range of setpoints for our shooter instead of just discrete points.
    */
-  
+
   private final InterpolatingDoubleTreeMap hubDistanceToVelocityMap =
       new InterpolatingDoubleTreeMap();
   private final InterpolatingDoubleTreeMap hubDistanceToHoodMap = new InterpolatingDoubleTreeMap();

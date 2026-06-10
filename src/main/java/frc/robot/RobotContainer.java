@@ -63,7 +63,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  //declares all subsystems and the OI here
+  // declares all subsystems and the OI here
   private OperatorInterface oi = new OperatorInterface() {};
   private RobotConfig config;
   private SwerveDrivetrain swerveDrivetrain;
@@ -143,7 +143,8 @@ public class RobotContainer {
       swerveDrivetrain = new SwerveDrivetrain(new SwerveDrivetrainIO() {});
 
       CameraConfig[] cameraConfigs = config.getCameraConfigs();
-      VisionIO[] visionIOs = new VisionIO[cameraConfigs.length]; //create a visionIO class for each camera
+      VisionIO[] visionIOs =
+          new VisionIO[cameraConfigs.length]; // create a visionIO class for each camera
       for (int i = 0; i < visionIOs.length; i++) {
         visionIOs[i] = new VisionIO() {};
       }
@@ -154,7 +155,6 @@ public class RobotContainer {
       hopper = new Hopper(new HopperIO() {});
       shooter = new Shooter(new ShooterIO() {});
       visualization = new RobotVisualization(intake);
-
     }
 
     shooterModes = new ShooterModes(shooter, intake);
@@ -172,7 +172,8 @@ public class RobotContainer {
         == RobotConfig.DRIVETRAIN_TYPE.SWERVE) {
       AutonomousCommandsFactory.getInstance()
           .configureAutoCommands(swerveDrivetrain, hopper, intake, shooter, shooterModes);
-      // if we have a swerve drivtrain, configure auto commands for the swerve drivetrain and all subsystems since we will probably want to use them in auto
+      // if we have a swerve drivtrain, configure auto commands for the swerve drivetrain and all
+      // subsystems since we will probably want to use them in auto
     }
 
     // Alert when tuning
@@ -185,7 +186,7 @@ public class RobotContainer {
    * The RobotConfig subclass object *must* be created before any other objects that use it directly
    * or indirectly. If this isn't done, a null pointer exception will result.
    */
-  //create the robot config basically based on the robot type
+  // create the robot config basically based on the robot type
   private void createRobotConfig() {
     switch (Constants.getRobot()) {
       case ROBOT_DEFAULT:
@@ -371,7 +372,8 @@ public class RobotContainer {
   }
 
   /** Use this method to define your button->command mappings. */
-  // registers commands for each individual subsystem along with triggers that are used for either endgame alerts, or that run a sequence of commands
+  // registers commands for each individual subsystem along with triggers that are used for either
+  // endgame alerts, or that run a sequence of commands
   private void configureButtonBindings() {
 
     configureDrivetrainCommands();

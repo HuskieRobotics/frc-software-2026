@@ -116,7 +116,9 @@ public class Shooter extends SubsystemBase {
     hoodJamDetector.update(shooterInputs.hoodStatorCurrent);
     turretJamDetector.update(shooterInputs.turretStatorCurrent);
 
-    // create a way to simulate the fuel we intake in every 5 cycles during sim, as periodic runs every 20 ms, and we want to simulate fuel being intaken every 1/10 second, we can increment the fuel count every 5 cycles
+    // create a way to simulate the fuel we intake in every 5 cycles during sim, as periodic runs
+    // every 20 ms, and we want to simulate fuel being intaken every 1/10 second, we can increment
+    // the fuel count every 5 cycles
     if (Constants.getMode() == Constants.Mode.SIM) {
       simulatedFuelCounter++;
       if (simulatedFuelCounter >= 5) { // every 1/10 second (5 cycles)

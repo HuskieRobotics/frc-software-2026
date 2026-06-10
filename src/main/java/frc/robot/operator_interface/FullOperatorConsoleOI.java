@@ -44,16 +44,15 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   // Translation Joystick
-  // binds different joystick buttons to different triggers, and then those triggers can be used in the RobotContainer to bind commands to them, this allows for more flexibility in changing button bindings without having to change code in the RobotContainer
-  
+  // binds different joystick buttons to different triggers, and then those triggers can be used in
+  // the RobotContainer to bind commands to them, this allows for more flexibility in changing
+  // button bindings without having to change code in the RobotContainer
+
   /**
-   * // A positive rotation around the X axis moves the joystick right, and a
-    // positive rotation around the Y axis moves the joystick backward. When
-    // treating them as translations, 0 radians is measured from the right
-    // direction, and angle increases clockwise.
-    //
-    // It's rotated 90 degrees CCW (y is negated and the arguments are reversed)
-    // so that 0 radians is forward.
+   * // A positive rotation around the X axis moves the joystick right, and a // positive rotation
+   * around the Y axis moves the joystick backward. When // treating them as translations, 0 radians
+   * is measured from the right // direction, and angle increases clockwise. // // It's rotated 90
+   * degrees CCW (y is negated and the arguments are reversed) // so that 0 radians is forward.
    */
   @Override
   public double getTranslateX() {
@@ -142,7 +141,8 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   // Dilation joysticks
-  // Since there is no actual dilation joystick, there are no methods or triggers to register with it
+  // Since there is no actual dilation joystick, there are no methods or triggers to register with
+  // it
 
   // Operator Controller
   @Override
