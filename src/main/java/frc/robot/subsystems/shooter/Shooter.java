@@ -217,12 +217,18 @@ public class Shooter extends SubsystemBase {
             () -> io.setHoodPosition(Units.degreesToRotations(HOOD_SETPOINT_1_DEGREES)), this),
         Commands.runOnce(
             () -> io.setTurretPosition(Units.degreesToRotations(TURRET_SETPOINT_1_DEGREES)), this),
+        Commands.waitSeconds(0.06),
+        Commands.runOnce(
+            () -> io.setTurretPosition(Units.degreesToRotations(TURRET_SETPOINT_1_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
         Commands.runOnce(
             () -> this.checkPosition(HOOD_SETPOINT_1_DEGREES, TURRET_SETPOINT_1_DEGREES), this),
         // check if hood and turret are at setpoint 2
         Commands.runOnce(
             () -> io.setHoodPosition(Units.degreesToRotations(HOOD_SETPOINT_2_DEGREES)), this),
+        Commands.runOnce(
+            () -> io.setTurretPosition(Units.degreesToRotations(TURRET_SETPOINT_2_DEGREES)), this),
+        Commands.waitSeconds(0.06),
         Commands.runOnce(
             () -> io.setTurretPosition(Units.degreesToRotations(TURRET_SETPOINT_2_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),
@@ -232,6 +238,9 @@ public class Shooter extends SubsystemBase {
         // check if hood and turret are at setpoint 3
         Commands.runOnce(
             () -> io.setHoodPosition(Units.degreesToRotations(HOOD_SETPOINT_3_DEGREES)), this),
+        Commands.runOnce(
+            () -> io.setTurretPosition(Units.degreesToRotations(TURRET_SETPOINT_3_DEGREES)), this),
+        Commands.waitSeconds(0.06),
         Commands.runOnce(
             () -> io.setTurretPosition(Units.degreesToRotations(TURRET_SETPOINT_3_DEGREES)), this),
         Commands.waitSeconds(COMMAND_WAIT_TIME_SECONDS),

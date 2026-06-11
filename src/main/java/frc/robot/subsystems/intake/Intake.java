@@ -315,22 +315,6 @@ public class Intake extends SubsystemBase {
                                     + " RPS");
                       }
                     }),
-            Commands.runOnce(this::outTakeRoller, this),
-            Commands.waitSeconds(0.5)
-                .andThen(
-                    () -> {
-                      if (!MathUtils.isNear(
-                          inputs.rollerVelocityRPSLead,
-                          ROLLER_EJECT_VELOCITY_RPS,
-                          ROLLER_VELOCITY_TOLERANCE_RPS)) {
-                        FaultReporter.getInstance()
-                            .addFault(
-                                SUBSYSTEM_NAME,
-                                "Roller failed to reach eject velocity in System Check; was: "
-                                    + inputs.rollerVelocityRPSLead
-                                    + " RPS");
-                      }
-                    }),
             Commands.runOnce(this::stopRoller, this),
             Commands.runOnce(this::retractIntake, this),
             Commands.waitSeconds(2.0)

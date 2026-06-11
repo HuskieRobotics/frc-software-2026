@@ -97,16 +97,17 @@ public class Field2d {
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // bottom right corner
-          new Translation2d(0.0, 0.0),
+          new Translation2d(-1.0, -1.0),
 
           // top right corner
-          new Translation2d(FieldConstants.LinesVertical.hubCenter, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, -1.0),
 
           // top left corner
-          new Translation2d(FieldConstants.LinesVertical.hubCenter, FieldConstants.fieldWidth),
+          new Translation2d(
+              FieldConstants.LinesVertical.hubCenter, FieldConstants.fieldWidth + 1.0),
 
           // bottom left corner
-          new Translation2d(0.0, FieldConstants.fieldWidth)
+          new Translation2d(-1.0, FieldConstants.fieldWidth + 1.0)
         };
 
     this.transformedAllianceZone = new Region2d(zoneCorners);
@@ -116,16 +117,17 @@ public class Field2d {
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // far left corner
-          new Translation2d(FieldConstants.fieldLength, FieldConstants.fieldWidth),
+          new Translation2d(FieldConstants.fieldLength + 1.0, FieldConstants.fieldWidth + 1.0),
 
           // far right corner
-          new Translation2d(FieldConstants.fieldLength, 0.0),
+          new Translation2d(FieldConstants.fieldLength + 1.0, -1.0),
 
           // opposite trench right corner
-          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, -1.0),
 
           // opposite trench left corner
-          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, FieldConstants.fieldWidth)
+          new Translation2d(
+              FieldConstants.LinesVertical.oppHubCenter, FieldConstants.fieldWidth + 1.0)
         };
     this.transformedOpponentAllianceZone = new Region2d(zoneCorners);
   }
@@ -134,16 +136,17 @@ public class Field2d {
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // near right corner
-          new Translation2d(FieldConstants.LinesVertical.hubCenter, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, -1.0),
 
           // far right corner
-          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, 0.0),
+          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, -1.0),
 
           // far left corner
-          new Translation2d(FieldConstants.LinesVertical.oppHubCenter, FieldConstants.fieldWidth),
+          new Translation2d(
+              FieldConstants.LinesVertical.oppHubCenter, FieldConstants.fieldWidth + 1.0),
 
           // near left corner
-          new Translation2d(FieldConstants.LinesVertical.hubCenter, FieldConstants.fieldWidth)
+          new Translation2d(FieldConstants.LinesVertical.hubCenter, FieldConstants.fieldWidth + 1.0)
         };
 
     this.transformedNeutralZone = new Region2d(zoneCorners);
@@ -153,10 +156,10 @@ public class Field2d {
     Translation2d[] zoneCorners =
         new Translation2d[] {
           // far left corner
-          new Translation2d(FieldConstants.fieldLength, FieldConstants.Hub.leftFace.getY()),
+          new Translation2d(FieldConstants.fieldLength + 1.0, FieldConstants.Hub.leftFace.getY()),
 
           // far right corner
-          new Translation2d(FieldConstants.fieldLength, FieldConstants.Hub.rightFace.getY()),
+          new Translation2d(FieldConstants.fieldLength + 1.0, FieldConstants.Hub.rightFace.getY()),
 
           // opposite trench right corner
           new Translation2d(
@@ -197,7 +200,7 @@ public class Field2d {
     Translation2d[] towerEdgesBLUE =
         new Translation2d[] {
           new Translation2d(
-              0.0, FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
+              -1.0, FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
           new Translation2d(
               FieldConstants.Tower.rightUpright.getX(),
               FieldConstants.Tower.rightUpright.getY() - TOWER_NO_PASS_ZONE_DEPTH_METERS),
@@ -205,7 +208,7 @@ public class Field2d {
               FieldConstants.Tower.leftUpright.getX(),
               FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
           new Translation2d(
-              0.0, FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
+              -1.0, FieldConstants.Tower.leftUpright.getY() + TOWER_NO_PASS_ZONE_DEPTH_METERS),
         };
 
     Translation2d[] towerEdgesRED = new Translation2d[towerEdgesBLUE.length];
@@ -223,7 +226,7 @@ public class Field2d {
     Translation2d[] depotEdges =
         new Translation2d[] {
           new Translation2d(
-              0.0,
+              -1.0,
               FieldConstants.Depot.leftCorner.getY()
                   + RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
           new Translation2d(
@@ -237,7 +240,7 @@ public class Field2d {
               FieldConstants.Depot.rightCorner.getY()
                   - RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2),
           new Translation2d(
-              0.0,
+              -1.0,
               FieldConstants.Depot.rightCorner.getY()
                   - RobotConfig.getInstance().getRobotWidthWithBumpersMeters() / 2)
         };
@@ -319,7 +322,7 @@ public class Field2d {
           // Left Trench
           new Translation2d(
               FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
-              FieldConstants.LinesHorizontal.leftTrenchOpenStart),
+              FieldConstants.LinesHorizontal.leftTrenchOpenStart + 1.0),
           new Translation2d(
               FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
               FieldConstants.LinesHorizontal.leftTrenchOpenEnd),
@@ -328,7 +331,7 @@ public class Field2d {
               FieldConstants.LinesHorizontal.leftTrenchOpenEnd),
           new Translation2d(
               FieldConstants.LinesVertical.neutralZoneNear + bufferTrenchX,
-              FieldConstants.LinesHorizontal.leftTrenchOpenStart),
+              FieldConstants.LinesHorizontal.leftTrenchOpenStart + 1.0),
         };
 
     Translation2d[] rightTrenchEdgesBLUE =
@@ -336,7 +339,7 @@ public class Field2d {
           // Right Trench
           new Translation2d(
               FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
-              FieldConstants.LinesHorizontal.rightTrenchOpenEnd),
+              FieldConstants.LinesHorizontal.rightTrenchOpenEnd - 1.0),
           new Translation2d(
               FieldConstants.LinesVertical.allianceZone - bufferTrenchX,
               FieldConstants.LinesHorizontal.rightTrenchOpenStart),
@@ -345,7 +348,7 @@ public class Field2d {
               FieldConstants.LinesHorizontal.rightTrenchOpenStart),
           new Translation2d(
               FieldConstants.LinesVertical.neutralZoneNear + bufferTrenchX,
-              FieldConstants.LinesHorizontal.rightTrenchOpenEnd),
+              FieldConstants.LinesHorizontal.rightTrenchOpenEnd - 1.0),
         };
 
     Translation2d[] leftTrenchEdgesRED = new Translation2d[leftTrenchEdgesBLUE.length];

@@ -115,9 +115,9 @@ public class SavannaRobotConfig extends RobotConfig {
   private static final String BCL_CAMERA_SERIAL_NUMBER = "24608727";
   private static final String BCH_CAMERA_SERIAL_NUMBER = "40777404";
 
-  private static final int DAA1920_160UM_EXPOSURE = 2200;
-  private static final int DAA1280_54UM_EXPOSURE = 1100;
-  private static final double MONO_GAIN = 15;
+  private static final int DAA1920_160UM_EXPOSURE = 2000;
+  private static final int DAA1280_54UM_EXPOSURE = 800;
+  private static final double MONO_GAIN = 10;
   private static final double DAA1920_160UM_DENOISE = 1.0;
   private static final double DAA1280_54UM_DENOISE = 0.0;
 
@@ -140,16 +140,16 @@ public class SavannaRobotConfig extends RobotConfig {
   // FIXME: update
   private static final Transform3d ROBOT_TO_BCL_CAMERA =
       new Transform3d(
-          new Translation3d(-0.245148, 0.060266, 0.164957),
-          new Rotation3d(new Quaternion(0.080854, 0.174676, -0.981165, 0.01633)));
+          new Translation3d(-0.249052, 0.072636, 0.160716),
+          new Rotation3d(new Quaternion(0.106805, 0.165791, -0.980344, 0.005602)));
 
   // Back center right camera
   // x, y, z, pitch, yaw
   // FIXME: update
   private static final Transform3d ROBOT_TO_BCH_CAMERA =
       new Transform3d(
-          new Translation3d(-0.235796, 0.05949, 0.228167),
-          new Rotation3d(new Quaternion(0.184804, 0.075057, -0.016074, 0.979773)));
+          new Translation3d(-0.231423, 0.054115, 0.222039),
+          new Rotation3d(new Quaternion(0.205042, 0.094613, -0.015936, 0.974039)));
 
   // use AprilTag ID 13 for empirical determination of the robot-to-camera transform
   private static final Pose3d ROBOT_TO_TAG_13_BACK_CAMERAS =

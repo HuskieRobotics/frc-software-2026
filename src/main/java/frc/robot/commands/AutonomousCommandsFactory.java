@@ -404,7 +404,7 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(shooter::resetFuelCount),
             Commands.waitUntil(() -> shooter.getFuelCount() >= JOSTLE_INITIAL_FUEL_COUNT)
-                .withTimeout(2.0),
+                .withTimeout(2.5),
             CrossSubsystemsCommandsFactory.getForceJostleCommand(intake))
         .withName("Auto Jostle");
   }
@@ -810,13 +810,14 @@ public class AutonomousCommandsFactory {
     return Commands.sequence(
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
+            AutoBuilder.followPath(toMid),
             intake.getDeployAndStartInAutoCommand(),
-            Commands.waitSeconds(0.25),
-            Commands.parallel(
-                intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
-            Commands.waitSeconds(1.0),
+            // Commands.waitSeconds(0.25),
+            // Commands.parallel(
+            //     intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
+            Commands.waitSeconds(4.0),
             followCollisionResistantPath(sweepToDepot, drivetrain, Side.LEFT),
-            getUnloadHopperCommand(hopper, intake, shooter, true).withTimeout(5.0),
+            getUnloadHopperCommand(hopper, intake, shooter, false).withTimeout(4.5),
             Commands.runOnce(hopper::stop, hopper),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(intakeDepot)),
@@ -844,10 +845,10 @@ public class AutonomousCommandsFactory {
             Commands.runOnce(matchTimer::restart),
             setStartingPoseForAuto(startingPose, drivetrain),
             intake.getDeployAndStartInAutoCommand(),
-            Commands.waitSeconds(0.25),
+            Commands.waitSeconds(0.5),
             Commands.parallel(
                 intake.getDeployAndStartInAutoCommand(), AutoBuilder.followPath(toMid)),
-            Commands.waitSeconds(1.0),
+            Commands.waitSeconds(0.25),
             followCollisionResistantPath(sweepToCorner, drivetrain, Side.RIGHT),
             getUnloadHopperCommand(hopper, intake, shooter, false))
         .finallyDo(
