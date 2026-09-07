@@ -17,10 +17,10 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
   private static final double FRONT_LEFT_MODULE_STEER_OFFSET_ROT = -0.117676 + 0.5;
 
-  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 40;
-  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 25;
-  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = -0.028809 + 0.5;
+  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 18;
+  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 50;
+  private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 9;
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = 0.370361;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 39;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 60;
