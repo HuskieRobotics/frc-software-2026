@@ -15,20 +15,21 @@ public class SingleHandheldOI extends OperatorDashboard {
     controller = new CommandXboxController(port);
   }
 
-  @Override
-  public double getTranslateX() {
-    return -controller.getLeftY();
-  }
+  // @Override
+  // public double getTranslateX() {
+  //   return -controller.getLeftY();
+  // }
 
-  @Override
-  public double getTranslateY() {
-    return -controller.getLeftX();
-  }
+  // @Override
+  // public double getTranslateY() {
+  //   return -controller.getLeftX();
+  // }
 
-  @Override
-  public double getRotate() {
-    return -controller.getRightX();
-  }
+  // @Override
+  // public double getRotate() {
+  //   return -controller.getRightX();
+  // }
+  
 
   @Override
   public Trigger getFieldRelativeButton() {

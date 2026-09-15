@@ -428,7 +428,9 @@ public class ShooterModes extends SubsystemBase {
     // conditions except for the toggle
     if (testingEnable.get() == 1) {
       this.currentMode = ShooterMode.TESTING;
-      shooter.setFlywheelVelocity(testingFlywheelVelocity.get());
+      if (testingFlywheelVelocity.get() != 0.0) {
+        shooter.setFlywheelVelocity(testingFlywheelVelocity.get());
+      }
       shooter.setHoodPosition(Units.degreesToRotations(testingHoodAngle.get()));
       shooter.setTurretPosition(Units.degreesToRotations(testingTurretAngle.get()));
       return;
