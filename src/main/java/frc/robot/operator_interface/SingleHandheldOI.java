@@ -29,7 +29,6 @@ public class SingleHandheldOI extends OperatorDashboard {
   // public double getRotate() {
   //   return -controller.getRightX();
   // }
-  
 
   @Override
   public Trigger getFieldRelativeButton() {
@@ -80,5 +79,10 @@ public class SingleHandheldOI extends OperatorDashboard {
   public Trigger getSysIdQuasistaticReverse() {
 
     return controller.start().and(controller.x());
+  }
+
+  @Override
+  public Trigger getClearAllFaults() {
+    return controller.leftBumper().and(controller.rightBumper());
   }
 }
