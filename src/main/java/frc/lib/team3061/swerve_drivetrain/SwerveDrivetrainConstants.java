@@ -21,6 +21,14 @@ public class SwerveDrivetrainConstants {
   public static final double SYSTEM_TEST_ANGLE_TOLERANCE_ROT = Units.degreesToRotations(10.0);
 
   /**
+   * Duration, in seconds, of odometry samples that the queues fed by CTRE's odometry thread can
+   * hold. The queues are drained once per iteration, so this must exceed the longest expected loop
+   * overrun or samples will be discarded. At the default 250 Hz odometry frequency, 0.5 s is 125
+   * samples.
+   */
+  public static final double ODOMETRY_QUEUE_CAPACITY_SECONDS = 0.5;
+
+  /**
    * Multiplier applied to the robot's maximum velocity when validating the wheel distance delta of
    * an odometry sample. Wheel slip lets a wheel travel faster than the chassis, so this must be
    * greater than 1.0 to avoid rejecting valid samples.
