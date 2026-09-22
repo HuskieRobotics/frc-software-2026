@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -34,6 +35,9 @@ public class HopperIOTalonFX implements HopperIO {
 
   private VelocityTorqueCurrentFOC spindexerVelocityRequest;
   private VelocityTorqueCurrentFOC kickerVelocityRequest;
+
+  private VoltageOut spindexerVoltageRequest;
+  private VoltageOut kickerVoltageRequest;
 
   private TorqueCurrentFOC spindexerCurrentRequest;
   private TorqueCurrentFOC kickerCurrentRequest;
@@ -97,6 +101,9 @@ public class HopperIOTalonFX implements HopperIO {
 
     spindexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
     kickerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
+
+    spindexerVoltageRequest = new VoltageOut(0.0);
+    kickerVoltageRequest = new VoltageOut(0.0);
 
     spindexerCurrentRequest = new TorqueCurrentFOC(0.0);
     kickerCurrentRequest = new TorqueCurrentFOC(0.0);
@@ -231,13 +238,21 @@ public class HopperIOTalonFX implements HopperIO {
 
   @Override
   public void setSpindexerVelocity(double velocityRPS) {
-    spindexerMotor.setControl(spindexerVelocityRequest.withVelocity(velocityRPS));
+    if (velocityRPS > 0) {
+      spindexerMotor.setControl(spindexerVoltageRequest.withOutput(12.0));
+    } else {
+      spindexerMotor.setControl(spindexerVelocityRequest.withVelocity(velocityRPS));
+    }
     this.spindexerReferenceVelocityRPS = velocityRPS;
   }
 
   @Override
   public void setKickerVelocity(double velocityRPS) {
-    kickerMotor.setControl(kickerVelocityRequest.withVelocity(velocityRPS));
+    if (velocityRPS > 0) {
+      kickerMotor.setControl(kickerVoltageRequest.withOutput(12.0));
+    } else {
+      kickerMotor.setControl(kickerVelocityRequest.withVelocity(velocityRPS));
+    }
     this.kickerReferenceVelocityRPS = velocityRPS;
   }
 
