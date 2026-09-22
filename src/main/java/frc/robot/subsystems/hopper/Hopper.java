@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.lib.team254.CurrentSpikeDetector;
+import frc.lib.team254.StallDetector;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.MathUtils;
@@ -39,20 +39,19 @@ public class Hopper extends SubsystemBase {
 
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Hopper/TestingMode", 0);
 
-  private CurrentSpikeDetector spindexerSpikeDetector =
-      new CurrentSpikeDetector(
-          SPINDEXER_CURRENT_SPIKE_THRESHOLD_AMPS, SPINDEXER_CURRENT_SPIKE_THRESHOLD_SECONDS);
+  private StallDetector spindexerStallDetector =
+      new StallDetector(
+          SPINDEXER_STALL_VELOCITY_TOLERANCE_RPS, SPINDEXER_STALL_TIME_THRESHOLD_SECONDS);
 
-  private CurrentSpikeDetector kickerSpikeDetector =
-      new CurrentSpikeDetector(
-          KICKER_CURRENT_SPIKE_THRESHOLD_AMPS, KICKER_CURRENT_SPIKE_THRESHOLD_SECONDS);
+  private StallDetector kickerStallDetector =
+      new StallDetector(KICKER_STALL_VELOCITY_TOLERANCE_RPS, KICKER_STALL_TIME_THRESHOLD_SECONDS);
 
   private final Debouncer spindexerAtSetpointDebouncer = new Debouncer(0.2);
   private final Debouncer kickerAtSetpointDebouncer = new Debouncer(0.2);
 
-  private Alert spindexerJammedAlert = new Alert("Spindexer jam detected.", AlertType.kError);
+  private Alert spindexerStalledAlert = new Alert("Spindexer stall detected.", AlertType.kError);
 
-  private Alert kickerJammedAlert = new Alert("Kicker jam detected.", AlertType.kError);
+  private Alert kickerStalledAlert = new Alert("Kicker stall detected.", AlertType.kError);
 
   private final SysIdRoutine kickerSysIdRoutine =
       new SysIdRoutine(
@@ -105,12 +104,11 @@ public class Hopper extends SubsystemBase {
     }
 
     if (Constants.getMode() != Constants.Mode.SIM) {
-      kickerJammedAlert.set(
-          kickerSpikeDetector.update(
-              Math.abs(
-                  inputs.kickerStatorCurrent))); // can change this to velocity with new thresholds
-      spindexerJammedAlert.set(
-          spindexerSpikeDetector.update(Math.abs(inputs.spindexerStatorCurrent)));
+      kickerStalledAlert.set(
+          kickerStallDetector.update(inputs.kickerReferenceVelocityRPS, inputs.kickerVelocityRPS));
+      spindexerStalledAlert.set(
+          spindexerStallDetector.update(
+              inputs.spindexerReferenceVelocityRPS, inputs.spindexerVelocityRPS));
     }
 
     LoggedTracer.record(SUBSYSTEM_NAME);
@@ -223,13 +221,13 @@ public class Hopper extends SubsystemBase {
                             () -> this.setKickerVelocity(KICKER_UNJAM_VELOCITY_RPS), this),
                         Commands.runOnce(
                             () -> this.setSpindexerVelocity(SPINDEXER_UNJAM_VELOCITY_RPS), this)))
-                .withTimeout(KICKER_UNJAM_WAIT_TIME),
+                .withTimeout(HOPPER_UNJAM_WAIT_TIME),
             Commands.sequence(
                 Commands.runOnce(
                     () -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
                 Commands.runOnce(
                     () -> io.setKickerVelocity(kickerVelocitySupplier.getAsDouble()), this)),
-            () -> (kickerSpikeDetector.getAsBoolean() || spindexerSpikeDetector.getAsBoolean())));
+            () -> (kickerStallDetector.getAsBoolean() || spindexerStallDetector.getAsBoolean())));
   }
 
   public double getKickerVelocityRPS() {
@@ -242,6 +240,7 @@ public class Hopper extends SubsystemBase {
 
   public void stop() {
     io.setSpindexerVelocity(0.0);
+    io.setKickerVelocity(0.0);
     io.setKickerCurrent(0.0);
   }
 }
