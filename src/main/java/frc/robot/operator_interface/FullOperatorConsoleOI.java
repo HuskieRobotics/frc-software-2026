@@ -54,8 +54,8 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getSnakeDriveButton() {
-    return translateJoystickButtons[4];
+  public Trigger getForceDeployIntakeButton() {
+    return translateJoystickButtons[2];
   }
 
   @Override
@@ -64,8 +64,8 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getForceDeployIntakeButton() {
-    return translateJoystickButtons[2];
+  public Trigger getSnakeDriveButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
@@ -105,6 +105,11 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getLimitAccelerationAndVelocityButton() {
+    return operatorController.x();
+  }
+
+  @Override
   public Trigger getUnjamHopperButton() {
     return rotateJoystickButtons[4];
   }
@@ -117,6 +122,16 @@ public class FullOperatorConsoleOI extends OperatorDashboard {
   @Override
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
+  }
+
+  @Override
+  public Trigger getEnableIntake() {
+    return rotateJoystickButtons[10];
+  }
+
+  @Override
+  public Trigger getDisableIntake() {
+    return rotateJoystickButtons[11];
   }
 
   // Operator Controller

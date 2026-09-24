@@ -1,6 +1,6 @@
 package frc.lib.team3061.util;
 
-import static frc.robot.Constants.TUNING_MODE;
+import static frc.robot.Constants.ENABLE_EXTRA_LOGGING;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.Matrix;
@@ -115,7 +115,7 @@ public abstract class RobotOdometry {
 
     // log the difference between the vision pose estimate and the pose estimate corresponding to
     // the same timestamp
-    if (TUNING_MODE) {
+    if (ENABLE_EXTRA_LOGGING) {
       var sample = this.sampleAt(adjustedTimestamp);
       if (!sample.isEmpty()) {
         Pose2d pastPose = sample.get();

@@ -42,12 +42,15 @@ public class ShooterConstants {
 
   public static final double FLYWHEEL_PASS_OVER_NET_VELOCITY_RPS = 45.0;
 
-  public static final double TURRET_KP = 50.0;
+  public static final double TURRET_FAR_KP = 50.0;
+  public static final double TURRET_CLOSE_KP = 250.0;
   public static final double TURRET_KI = 0.0;
   public static final double TURRET_KD = 0.0;
-  public static final double TURRET_KS = 0.4;
+  public static final double TURRET_KS = 0.8;
   public static final double TURRET_KV = 0.0;
   public static final double TURRET_KA = 0.0;
+
+  public static final double TURRET_CLOSE_POSITION_THRESHOLD_ROT = Units.degreesToRotations(10.0);
 
   public static final boolean TURRET_INVERTED = false;
   public static final double TURRET_GEAR_RATIO = 41.666;
@@ -69,7 +72,7 @@ public class ShooterConstants {
   public static final double HOOD_MAX_ANGLE_ROT = Units.degreesToRotations(52.0);
   public static final double HOOD_STARTING_ANGLE_ROT = Units.degreesToRotations(20.0);
 
-  public static final double HOOD_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(22.0);
+  public static final double HOOD_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(21.0);
   public static final double HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT = Units.degreesToRotations(30.0);
   public static final double HOOD_UPPER_ANGLE_LIMIT_ROT = Units.degreesToRotations(50.0);
   public static final double HOOD_MAX_PASSING_ANGLE_ROT = Units.degreesToRotations(49.0);
@@ -105,8 +108,8 @@ public class ShooterConstants {
   public static final double HOOD_SETPOINT_3_DEGREES = 49.0;
 
   public static final double TURRET_SETPOINT_1_DEGREES = 0.0;
-  public static final double TURRET_SETPOINT_2_DEGREES = -180.0;
-  public static final double TURRET_SETPOINT_3_DEGREES = 180.0;
+  public static final double TURRET_SETPOINT_2_DEGREES = -170.0;
+  public static final double TURRET_SETPOINT_3_DEGREES = 170.0;
 
   public static final double TURRET_LOCK_POSITION_ROT =
       Units.degreesToRotations(120); // FIXME: determine value
@@ -114,7 +117,7 @@ public class ShooterConstants {
   // Velocity setpoints for lead flywheel
   public static final double FLYWHEEL_VELOCITY_SETPOINT_1_RPS = 28.0;
   public static final double FLYWHEEL_VELOCITY_SETPOINT_2_RPS = 36.0;
-  public static final double FLYWHEEL_VELOCITY_SETPOINT_3_RPS = 60.0;
+  public static final double FLYWHEEL_VELOCITY_SETPOINT_3_RPS = 55.0;
 
   public static final double FLYWHEEL_MAX_VELOCITY_RPS = 60.0;
 

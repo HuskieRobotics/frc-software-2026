@@ -50,6 +50,10 @@ public class IntakeCommandsFactory {
     oi.getDecrementRollerVelocityButton()
         .onTrue(Commands.runOnce(intake::decrementRollerVelocityByOne));
 
+    oi.getEnableIntake().onTrue(Commands.runOnce(intake::startRoller));
+
+    oi.getDisableIntake().onTrue(Commands.runOnce(intake::stopRoller));
+
     FaultReporter.getInstance()
         .registerSystemCheck(
             IntakeConstants.SUBSYSTEM_NAME,

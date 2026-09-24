@@ -44,6 +44,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);
 
+  public final LoggedTunableBoolean simulateCollisionButton =
+      new LoggedTunableBoolean("operatorDashboard/Simulate Collision", false, true);
+
   public OperatorDashboard() {}
 
   @Override
@@ -94,5 +97,10 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getSlowShooterForPitTest() {
     return new Trigger(() -> slowShooterForPitTest.get());
+  }
+
+  @Override
+  public Trigger getSimulateCollisionButton() {
+    return new Trigger(() -> simulateCollisionButton.get());
   }
 }

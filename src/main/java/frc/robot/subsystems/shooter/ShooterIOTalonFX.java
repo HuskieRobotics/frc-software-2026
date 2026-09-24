@@ -5,9 +5,8 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -15,25 +14,21 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.RobotController;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -96,13 +91,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   private StatusSignal<Angle> turretPositionStatusSignal;
   private StatusSignal<Angle> hoodPositionStatusSignal;
 
-  // status signals for detector
-  private StatusSignal<Distance> fuelDetectorDistanceStatusSignal;
-  private StatusSignal<Double> fuelDetectorSignalStrengthStatusSignal;
-  private StatusSignal<Boolean> fuelDetectorDetectedFuelStatusSignal;
-
   private double hoodReferencePositionRot = 0.0;
   private double turretReferencePositionRot = 0.0;
+  private double turretCurrentPositionRot = 0.0;
   private double flywheelLeadReferenceVelocityRPS = 0.0;
 
   private final Debouncer flywheelLeadConnectedDebouncer = new Debouncer(0.5);
@@ -110,14 +101,12 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final Debouncer flywheelFollow2ConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer hoodConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer turretConnectedDebouncer = new Debouncer(0.5);
-  private final Debouncer fuelDetectorConnectedDebouncer = new Debouncer(0.5);
 
   private TalonFX flywheelLead;
   private TalonFX flywheelFollow1;
   private TalonFX flywheelFollow2;
   private TalonFX turret;
   private TalonFX hood;
-  private CANrange fuelDetector;
 
   private Alert flywheelLeadConfigAlert =
       new Alert("Failed to apply configuration for fly wheel lead motor.", AlertType.kError);
@@ -129,8 +118,6 @@ public class ShooterIOTalonFX implements ShooterIO {
       new Alert("Failed to apply configuration for hood motor.", AlertType.kError);
   private Alert turretConfigAlert =
       new Alert("Failed to apply configuration for turret motor.", AlertType.kError);
-  private Alert fuelDetectorConfigAlert =
-      new Alert("Failed to apply configuration for fuel detector CANrange.", AlertType.kError);
 
   private final LoggedTunableNumber flywheelLeadKP =
       new LoggedTunableNumber("Shooter/Flywheel kP", FLYWHEEL_KP);
@@ -144,8 +131,10 @@ public class ShooterIOTalonFX implements ShooterIO {
       new LoggedTunableNumber("Shooter/Flywheel kV", FLYWHEEL_KV);
   private final LoggedTunableNumber flywheelLeadKA =
       new LoggedTunableNumber("Shooter/Flywheel kA", FLYWHEEL_KA);
-  private final LoggedTunableNumber turretKP =
-      new LoggedTunableNumber("Shooter/Turret kP", TURRET_KP);
+  private final LoggedTunableNumber turretFarKP =
+      new LoggedTunableNumber("Shooter/Turret Far kP", TURRET_FAR_KP);
+  private final LoggedTunableNumber turretCloseKP =
+      new LoggedTunableNumber("Shooter/Turret Close kP", TURRET_CLOSE_KP);
   private final LoggedTunableNumber turretKI =
       new LoggedTunableNumber("Shooter/Turret kI", TURRET_KI);
   private final LoggedTunableNumber turretKD =
@@ -162,15 +151,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final LoggedTunableNumber hoodKS = new LoggedTunableNumber("Shooter/Hood kS", HOOD_KS);
   private final LoggedTunableNumber hoodKV = new LoggedTunableNumber("Shooter/Hood kV", HOOD_KV);
   private final LoggedTunableNumber hoodKA = new LoggedTunableNumber("Shooter/Hood kA", HOOD_KA);
-  private final LoggedTunableNumber fuelDetectorMinSignalStrength =
-      new LoggedTunableNumber(
-          "Shooter/Fuel Detector Min Signal Strength", FUEL_DETECTOR_MIN_SIGNAL_STRENGTH);
-  private final LoggedTunableNumber fuelDetectorProximityThreshold =
-      new LoggedTunableNumber(
-          "Shooter/Fuel Detector Proximity Threshold", FUEL_DETECTOR_PROXIMITY_THRESHOLD);
-
-  private final LoggedTunableNumber simFuelDetectorDistance =
-      new LoggedTunableNumber("Shooter/Sim Fuel Detector Distance (m)", 1.0);
 
   private FlywheelSystemSim flywheelSim;
   private ArmSystemSim turretLeadSim;
@@ -185,7 +165,6 @@ public class ShooterIOTalonFX implements ShooterIO {
         new TalonFX(FLYWHEEL_FOLLOW_2_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     turret = new TalonFX(TURRET_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     hood = new TalonFX(HOOD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
-    fuelDetector = new CANrange(FUEL_DETECTOR_ENCODER_ID, RobotConfig.getInstance().getCANBus());
 
     flywheelLeadVelocityRequest = new VelocityTorqueCurrentFOC(0);
     flywheelLeadCurrentRequest = new TorqueCurrentFOC(0.0);
@@ -250,11 +229,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     hoodVoltageStatusSignal = hood.getMotorVoltage();
     hoodPositionStatusSignal = hood.getPosition();
 
-    // Assign fuel detector status signals
-    fuelDetectorDistanceStatusSignal = fuelDetector.getDistance();
-    fuelDetectorSignalStrengthStatusSignal = fuelDetector.getSignalStrength();
-    fuelDetectorDetectedFuelStatusSignal = fuelDetector.getIsDetected();
-
     Phoenix6Util.registerSignals(
         true,
         // FLYWHEEL LEAD
@@ -294,12 +268,7 @@ public class ShooterIOTalonFX implements ShooterIO {
         hoodSupplyCurrentStatusSignal,
         hoodTemperatureStatusSignal,
         hoodVoltageStatusSignal,
-        hoodPositionStatusSignal,
-
-        // FUEL DETECTOR
-        fuelDetectorDistanceStatusSignal,
-        fuelDetectorSignalStrengthStatusSignal,
-        fuelDetectorDetectedFuelStatusSignal);
+        hoodPositionStatusSignal);
 
     // Configure all motors
     configFlywheelLead(flywheelLead, "flywheel lead", flywheelLeadConfigAlert);
@@ -307,7 +276,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     configFlywheelFollow(flywheelFollow2, "flywheel follow 2", flywheelFollow2ConfigAlert);
     configTurret(turret, TURRET_INVERTED, "turret", turretConfigAlert);
     configHood(hood, HOOD_INVERTED, "hood", hoodConfigAlert);
-    configFuelDetector(fuelDetector, "fuel detector", fuelDetectorConfigAlert);
 
     this.flywheelSim =
         new FlywheelSystemSim(
@@ -390,12 +358,6 @@ public class ShooterIOTalonFX implements ShooterIO {
                 turretVoltageStatusSignal,
                 turretPositionStatusSignal,
                 turretVelocityStatusSignal));
-    inputs.fuelDetectorConnected =
-        fuelDetectorConnectedDebouncer.calculate(
-            BaseStatusSignal.isAllGood(
-                fuelDetectorDistanceStatusSignal,
-                fuelDetectorSignalStrengthStatusSignal,
-                fuelDetectorDetectedFuelStatusSignal));
 
     // Updates Flywheel Lead Motor Inputs
     inputs.flywheelLeadStatorCurrent = flywheelLeadStatorCurrentStatusSignal.getValueAsDouble();
@@ -436,6 +398,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.turretPositionRot = turretPositionStatusSignal.getValueAsDouble();
     inputs.turretReferencePositionRot = this.turretReferencePositionRot;
     inputs.turretVelocityRPS = turretVelocityStatusSignal.getValueAsDouble();
+    this.turretCurrentPositionRot = inputs.turretPositionRot;
 
     // Updates Hood Motor Inputs
     inputs.hoodStatorCurrent = hoodStatorCurrentStatusSignal.getValueAsDouble();
@@ -444,10 +407,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.hoodVoltage = hoodVoltageStatusSignal.getValueAsDouble();
     inputs.hoodPositionRot = hoodPositionStatusSignal.getValueAsDouble();
     inputs.hoodReferencePositionRot = this.hoodReferencePositionRot;
-
-    // Updates Fuel Detector Inputs
-    inputs.fuelDetectorConnected = fuelDetector.isConnected();
-    inputs.fuelDetectorHasFuel = fuelDetectorDetectedFuelStatusSignal.getValue();
 
     if (Constants.TUNING_MODE) { // If the entire robot is in tuning mode
       // Flywheel Lead
@@ -458,8 +417,6 @@ public class ShooterIOTalonFX implements ShooterIO {
       inputs.turretClosedLoopErrorPositionRot = turret.getClosedLoopError().getValue();
       inputs.hoodClosedLoopReferencePositionRot = hood.getClosedLoopReference().getValue();
       inputs.hoodClosedLoopErrorPositionRot = hood.getClosedLoopError().getValue();
-      inputs.fuelDetectorDistanceToFuelMeters = fuelDetectorDistanceStatusSignal.getValueAsDouble();
-      inputs.fuelDetectorSignalStrength = fuelDetectorSignalStrengthStatusSignal.getValue();
     }
 
     LoggedTunableNumber.ifChanged(
@@ -496,13 +453,27 @@ public class ShooterIOTalonFX implements ShooterIO {
           config.kA = pid[5];
 
           turret.getConfigurator().apply(config);
+
+          Slot1Configs config1 = new Slot1Configs();
+
+          turret.getConfigurator().refresh(config1);
+
+          config1.kP = pid[6];
+          config1.kI = pid[1];
+          config1.kD = pid[2];
+          config1.kS = pid[3];
+          config1.kV = pid[4];
+          config1.kA = pid[5];
+
+          turret.getConfigurator().apply(config1);
         },
-        turretKP,
+        turretCloseKP,
         turretKI,
         turretKD,
         turretKS,
         turretKV,
-        turretKA);
+        turretKA,
+        turretFarKP);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -525,25 +496,10 @@ public class ShooterIOTalonFX implements ShooterIO {
         hoodKV,
         hoodKA);
 
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        detectorConfig -> {
-          ProximityParamsConfigs config = new ProximityParamsConfigs();
-          fuelDetector.getConfigurator().refresh(config);
-          config.MinSignalStrengthForValidMeasurement = detectorConfig[0];
-          config.ProximityThreshold = detectorConfig[1];
-
-          fuelDetector.getConfigurator().apply(config);
-        },
-        fuelDetectorMinSignalStrength,
-        fuelDetectorProximityThreshold);
-
     if (Constants.getMode() == Constants.Mode.SIM) { // If the entire robot is in simulation
       flywheelSim.updateSim();
       turretLeadSim.updateSim();
       hoodLeadSim.updateSim();
-      fuelDetector.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
-      fuelDetector.getSimState().setDistance(simFuelDetectorDistance.get());
     }
   }
 
@@ -566,7 +522,12 @@ public class ShooterIOTalonFX implements ShooterIO {
             .withPosition(positionRot)
             .withVelocity(
                 RadiansPerSecond.of(
-                    -RobotOdometry.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond)));
+                    -RobotOdometry.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond))
+            .withSlot(
+                Math.abs(this.turretReferencePositionRot - this.turretCurrentPositionRot)
+                        < TURRET_CLOSE_POSITION_THRESHOLD_ROT
+                    ? 0
+                    : 1));
     this.turretReferencePositionRot = positionRot;
   }
 
@@ -656,7 +617,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.CurrentLimits.StatorCurrentLimit = TURRET_PEAK_CURRENT_LIMIT;
     turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    turretConfig.Slot0.kP = turretKP.get();
+    turretConfig.Slot0.kP = turretCloseKP.get();
     turretConfig.Slot0.kI = turretKI.get();
     turretConfig.Slot0.kD = turretKD.get();
     turretConfig.Slot0.kV = turretKV.get();
@@ -665,6 +626,15 @@ public class ShooterIOTalonFX implements ShooterIO {
     turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.00075;
     turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
     turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+    turretConfig.Slot1.kP = turretFarKP.get();
+    turretConfig.Slot1.kI = turretKI.get();
+    turretConfig.Slot1.kD = turretKD.get();
+    turretConfig.Slot1.kV = turretKV.get();
+    turretConfig.Slot1.kA = turretKA.get();
+
+    turretConfig.Slot1.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
+    turretConfig.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     turretConfig.Feedback.SensorToMechanismRatio = TURRET_GEAR_RATIO;
 
@@ -738,20 +708,5 @@ public class ShooterIOTalonFX implements ShooterIO {
     hood.setPosition(HOOD_STARTING_ANGLE_ROT);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, motorName, hood);
-  }
-
-  private void configFuelDetector(CANrange encoder, String encoderName, Alert configAlert) {
-    CANrangeConfiguration config = new CANrangeConfiguration();
-
-    config.ProximityParams.MinSignalStrengthForValidMeasurement =
-        fuelDetectorMinSignalStrength.get();
-
-    config.ProximityParams.ProximityThreshold = fuelDetectorProximityThreshold.get();
-
-    config.ToFParams.UpdateMode = UpdateModeValue.ShortRange100Hz;
-
-    Phoenix6Util.applyAndCheckConfiguration(encoder, config, configAlert);
-
-    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, encoderName, encoder);
   }
 }

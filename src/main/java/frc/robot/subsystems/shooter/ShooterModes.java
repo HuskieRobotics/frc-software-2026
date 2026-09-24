@@ -22,6 +22,8 @@ import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.commands.AutonomousCommandsFactory;
 import frc.robot.operator_interface.OISelector;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterModes extends SubsystemBase {
@@ -44,6 +46,7 @@ public class ShooterModes extends SubsystemBase {
   public static final double TELEOP_DURATION_SECONDS = 140.0;
 
   private final Shooter shooter;
+  private final Intake intake;
 
   private Timer shiftTimer = new Timer();
   private double shiftTimerOffset = 0.0;
@@ -55,6 +58,8 @@ public class ShooterModes extends SubsystemBase {
 
   private Timer turretOutsideSetpointTimer = new Timer();
   private Timer turretUnJammingTimer = new Timer();
+
+  private double autoWaitTime = 4.0;
 
   /*
   Create interpolating tree map for data points
@@ -107,8 +112,9 @@ public class ShooterModes extends SubsystemBase {
 
   private ShooterMode currentMode = ShooterMode.COLLECT_AND_HOLD;
 
-  public ShooterModes(Shooter shooter) {
+  public ShooterModes(Shooter shooter, Intake intake) {
     this.shooter = shooter;
+    this.intake = intake;
     this.hubActive = OISelector.getOperatorInterface().getHubActiveAtHomeToggle().getAsBoolean();
 
     populateMaps();
@@ -595,7 +601,7 @@ public class ShooterModes extends SubsystemBase {
 
     // do not run the flywheels if we are racing to the middle in auto
     if (DriverStation.isAutonomousEnabled()
-        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < 3.0) {
+        && AutonomousCommandsFactory.getInstance().getCustomMatchTime() < autoWaitTime) {
       shooterSetpoints.flywheelVelocityRPS = 0.0;
     }
 
@@ -611,6 +617,8 @@ public class ShooterModes extends SubsystemBase {
     shooter.setFlywheelVelocity(shooterSetpoints.flywheelVelocityRPS);
     shooter.setHoodPosition(shooterSetpoints.hoodAngleRot);
     shooter.setTurretPosition(shooterSetpoints.turretAngleRot);
+
+    setIntakeVelocity(currentMode);
 
     Logger.recordOutput(
         "ShooterModes/targetLandingPose", new Pose2d(targetLandingPosition, new Rotation2d()));
@@ -687,6 +695,10 @@ public class ShooterModes extends SubsystemBase {
     this.turretAngleAdjustmentDeg -= 1.0;
   }
 
+  public void setAutoWaitTime(double waitTime) {
+    this.autoWaitTime = waitTime;
+  }
+
   private double idealVelocityFromFunction(double distance) {
     double vMetersPerSecond =
         0.0094236446 * Math.pow(distance, 3)
@@ -744,5 +756,15 @@ public class ShooterModes extends SubsystemBase {
 
     return new ShooterSetpoints(
         idealShotVelocityRPS, idealHoodAngleRot, robotRelativeTurretAngleRot);
+  }
+
+  private void setIntakeVelocity(ShooterMode mode) {
+    if (mode == ShooterMode.SHOOT_OTM || mode == ShooterMode.PASS_OTM) {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_SOM_TARGET_VELOCITY_RPS);
+    } else if (DriverStation.isAutonomous()) {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_AUTO_TARGET_VELOCITY_RPS);
+    } else {
+      intake.setRollerVelocity(IntakeConstants.ROLLER_STATIC_TARGET_VELOCITY_RPS);
+    }
   }
 }
