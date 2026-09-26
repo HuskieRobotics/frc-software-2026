@@ -437,7 +437,7 @@ public class ShooterModes extends SubsystemBase {
       this.currentMode = ShooterMode.DEMO_MODE;
       shooterSetpoints =
           new ShooterSetpoints(
-              PIT_TEST_FLYWHEEL_RPS, HOOD_MAX_PASSING_ANGLE_ROT, Units.degreesToRotations(90.0));
+              DEMO_MODE_FLYWHEEL_RPS, DEMO_PASSING_ANGLE_ROT, Units.degreesToRotations(0));
     } else {
 
       // check for testing mode first since that overrides all other modes and doesn't rely on any
