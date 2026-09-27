@@ -76,7 +76,7 @@ public class ShooterConstants {
   public static final double HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT = Units.degreesToRotations(30.0);
   public static final double HOOD_UPPER_ANGLE_LIMIT_ROT = Units.degreesToRotations(50.0);
   public static final double HOOD_MAX_PASSING_ANGLE_ROT = Units.degreesToRotations(30.0);
-  public static final double DEMO_PASSING_ANGLE_ROT = Units.degreesToRotations(28.0);
+  public static final double HOOD_DEMO_PASSING_ANGLE_ROT = Units.degreesToRotations(28.0);
 
   public static final double HOOD_SLOW_LOWER_VOLTAGE = -1.0; // FIXME: update value
 

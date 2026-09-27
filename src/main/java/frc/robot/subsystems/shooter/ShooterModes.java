@@ -437,7 +437,9 @@ public class ShooterModes extends SubsystemBase {
       this.currentMode = ShooterMode.DEMO_MODE;
       shooterSetpoints =
           new ShooterSetpoints(
-              DEMO_MODE_FLYWHEEL_RPS, DEMO_PASSING_ANGLE_ROT, Units.degreesToRotations(0));
+              DEMO_MODE_FLYWHEEL_RPS,
+              HOOD_DEMO_PASSING_ANGLE_ROT,
+              Units.degreesToRotations(0)); // Start turret at zeroed position
     } else {
 
       // check for testing mode first since that overrides all other modes and doesn't rely on any
