@@ -75,7 +75,8 @@ public class ShooterConstants {
   public static final double HOOD_LOWER_ANGLE_LIMIT_ROT = Units.degreesToRotations(21.0);
   public static final double HOOD_NEAR_TRENCH_ANGLE_LIMIT_ROT = Units.degreesToRotations(30.0);
   public static final double HOOD_UPPER_ANGLE_LIMIT_ROT = Units.degreesToRotations(50.0);
-  public static final double HOOD_MAX_PASSING_ANGLE_ROT = Units.degreesToRotations(49.0);
+  public static final double HOOD_MAX_PASSING_ANGLE_ROT = Units.degreesToRotations(30.0);
+  public static final double HOOD_DEMO_PASSING_ANGLE_ROT = Units.degreesToRotations(28.0);
 
   public static final double HOOD_SLOW_LOWER_VOLTAGE = -1.0; // FIXME: update value
 
@@ -145,6 +146,7 @@ public class ShooterConstants {
       Units.degreesToRotations(30.0); // FIXME: determine value
 
   public static final double PIT_TEST_FLYWHEEL_RPS = 20.0;
+  public static final double DEMO_MODE_FLYWHEEL_RPS = 25.0;
 
   // fuel detector detection constants
   public static final double FUEL_DETECTOR_MIN_SIGNAL_STRENGTH = 2000; // FIXME: determine value
