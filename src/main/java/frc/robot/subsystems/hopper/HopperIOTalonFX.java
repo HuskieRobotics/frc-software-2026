@@ -248,11 +248,7 @@ public class HopperIOTalonFX implements HopperIO {
 
   @Override
   public void setKickerVelocity(double velocityRPS) {
-    if (velocityRPS > 0) {
-      kickerMotor.setControl(kickerVoltageRequest.withOutput(12.0));
-    } else {
-      kickerMotor.setControl(kickerVelocityRequest.withVelocity(velocityRPS));
-    }
+    kickerMotor.setControl(kickerVelocityRequest.withVelocity(velocityRPS));
     this.kickerReferenceVelocityRPS = velocityRPS;
   }
 
