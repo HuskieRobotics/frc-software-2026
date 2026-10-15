@@ -25,7 +25,7 @@ public class HopperConstants {
 
   public static final double SPINDEXER_MOI = 0.05;
 
-  public static final double SPINDEXER_VELOCITY_TOLERANCE_RPS = 0.4;
+  public static final double SPINDEXER_VELOCITY_TOLERANCE_RPS = 2.5;
 
   public static final double KICKER_KP = 9.0;
   public static final double KICKER_KI = 0.0;
@@ -58,5 +58,5 @@ public class HopperConstants {
   public static final double KICKER_UNJAM_WAIT_TIME = 0.2;
 
   public static final double KICKER_FUEL_INTO_SHOOTER_VELOCITY_RPS = 20.0;
-  public static final double SPIN_FUEL_INTO_KICKER_VELOCITY_RPS = 12.0;
+  public static final double SPIN_FUEL_INTO_KICKER_VELOCITY_RPS = 10.0;
 }

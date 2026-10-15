@@ -136,22 +136,7 @@ public class Hopper extends SubsystemBase {
         Commands.runOnce(() -> io.setSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
         Commands.waitSeconds(1),
         Commands.runOnce(
-            () -> this.checkSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this),
-
-        // check if kicker velocity is at setpoint 1
-        Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS), this),
-        Commands.waitSeconds(1),
-        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_1_RPS), this),
-
-        // check if kicker velocity is at setpoint 2
-        Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_2_RPS), this),
-        Commands.waitSeconds(1),
-        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_2_RPS), this),
-
-        // check if kicker velocity is at setpoint 3
-        Commands.runOnce(() -> io.setKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS), this),
-        Commands.waitSeconds(1),
-        Commands.runOnce(() -> this.checkKickerVelocity(KICKER_VELOCITY_SETPOINT_3_RPS), this));
+            () -> this.checkSpindexerVelocity(SPIN_FUEL_INTO_KICKER_VELOCITY_RPS), this));
   }
 
   public void checkSpindexerVelocity(double spindexerTargetVelocityRPS) {
