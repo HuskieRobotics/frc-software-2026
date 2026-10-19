@@ -218,8 +218,7 @@ public class Vision extends SubsystemBase {
     // Update recording state
     boolean shouldRecord =
         // Ensure that match info can be published before recording
-        // fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) ||
-        recordingRequest.get();
+        fmsAttachedDebouncer.calculate(DriverStation.isFMSAttached()) || recordingRequest.get();
     for (VisionIO io : this.visionIOs) {
       io.setRecording(shouldRecord);
     }
