@@ -270,6 +270,11 @@ public class HopperIOTalonFX implements HopperIO {
     config.TorqueCurrent.PeakReverseTorqueCurrent =
         -HopperConstants.SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
 
+    config.CurrentLimits.SupplyCurrentLimit = SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = SPINDEXER_MOTOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
     config.Feedback.SensorToMechanismRatio = SPINDEXER_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
