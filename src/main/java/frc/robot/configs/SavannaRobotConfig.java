@@ -109,7 +109,7 @@ public class SavannaRobotConfig extends RobotConfig {
 
   private static final String BR_CAMERA_SERIAL_NUMBER = "40708542";
   private static final String BL_CAMERA_SERIAL_NUMBER = "40708556";
-  private static final String BCL_CAMERA_SERIAL_NUMBER = "24608727";
+  private static final String BCL_CAMERA_SERIAL_NUMBER = "24608715";
   private static final String BCH_CAMERA_SERIAL_NUMBER = "40777404";
 
   private static final int DAA1920_160UM_EXPOSURE = 2500;
