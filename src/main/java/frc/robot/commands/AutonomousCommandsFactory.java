@@ -65,7 +65,7 @@ public class AutonomousCommandsFactory {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Commands.none();
   }
 
   public void configureAutoCommands(
