@@ -39,7 +39,7 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Lock Shooter", false, true);
 
   public final LoggedTunableBoolean autoSnapsEnabled =
-      new LoggedTunableBoolean("operatorDashboard/Auto Snaps Enabled", true, true);
+      new LoggedTunableBoolean("operatorDashboard/Auto Snaps Enabled", false, true);
 
   public final LoggedTunableBoolean slowShooterForPitTest =
       new LoggedTunableBoolean("operatorDashboard/Slow Shooter For Pit Test", false, true);

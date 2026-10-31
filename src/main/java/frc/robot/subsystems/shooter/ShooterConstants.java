@@ -84,7 +84,7 @@ public class ShooterConstants {
 
   public static final double TURRET_STARTING_ANGLE_ROT = Units.degreesToRotations(90.0);
 
-  public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 80;
+  public static final int FLYWHEEL_PEAK_CURRENT_LIMIT = 75;
   public static final int TURRET_PEAK_CURRENT_LIMIT = 40;
 
   public static final double HOOD_PEAK_CURRENT_LIMIT = 20;
