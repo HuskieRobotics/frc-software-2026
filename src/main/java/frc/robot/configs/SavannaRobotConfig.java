@@ -15,25 +15,25 @@ import frc.lib.team3061.swerve_drivetrain.swerve.SwerveConstants;
 import frc.lib.team6328.util.FieldConstants;
 
 public class SavannaRobotConfig extends RobotConfig {
-  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 24;
+  private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 61;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 53;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
-  private static final double FRONT_LEFT_MODULE_STEER_OFFSET_ROT = -0.071045;
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET_ROT = -0.069824;
 
-  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 61;
+  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 24;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 51;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = 0.025879;
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET_ROT = 0.024414;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 40;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 25;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 17;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.469727;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET_ROT = 0.471436;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 35;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 52;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET_ROT = -0.166748;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET_ROT = -0.165527;
 
   private static final int GYRO_ID = 18;
 
